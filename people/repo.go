@@ -3,6 +3,7 @@ package people
 import (
 	"context"
 	"errors"
+	"log"
 	"slices"
 
 	"github.com/google/uuid"
@@ -58,6 +59,8 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 	}
 	defer tx.Rollback(ctx)
 
+	log.Print("get existing...")
+
 	var rows []*personRow
 
 	for _, id := range params.Identifiers {
@@ -83,6 +86,7 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 
 	switch len(rows) {
 	case 0:
+		log.Print("insert...")
 		if !slices.ContainsFunc(params.Identifiers, func(id Identifier) bool { return id.Kind == "id" }) {
 			params.Identifiers = append(params.Identifiers, newID())
 		}
@@ -90,11 +94,13 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 			return err
 		}
 	case 1:
+		log.Print("update...")
 		params = transferValues(rows, params)
 		if err := updatePerson(ctx, tx, rows[0].ID, params); err != nil {
 			return err
 		}
 	default:
+		log.Print("merge...")
 		params = transferValues(rows, params)
 		id, err := insertPerson(ctx, tx, params)
 		if err != nil {

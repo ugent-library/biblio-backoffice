@@ -8,6 +8,23 @@ info:
   version: 0.0.1
 
 paths:
+  "/add-person":
+    post:
+      summary: Upsert a person
+      description: Upsert a person
+      operationId: addPerson
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddPersonRequest"
+        required: true
+      responses:
+        '200':
+          description: Success
+        default:
+          $ref: "#/components/responses/Error"
+
   "/add-project":
     post:
       summary: Upsert a project
@@ -56,6 +73,78 @@ components:
       required:
         - code
         - message
+
+    AddPersonRequest:
+      type: object
+      properties:
+        person:
+          type: object
+          properties:
+            identifiers:
+              type: array
+              items:
+                $ref: "#/components/schemas/PersonIdentifier"
+              minItems: 1
+            name:
+              type: string
+              minLength: 1
+            preferredName:
+              type: string
+              minLength: 1
+            givenName:
+              type: string
+              minLength: 1
+            preferredGivenName:
+              type: string
+              minLength: 1
+            familyName:
+              type: string
+              minLength: 1
+            preferredFamilyName:
+              type: string
+              minLength: 1
+            honorificPrefix:
+              type: string
+              minLength: 1
+            email:
+              type: string
+              minLength: 1
+            # username:
+            #   type: string
+            #   minLength: 1
+            # active:
+            #   type: boolean
+            attributes:
+              type: array
+              items:
+                $ref: "#/components/schemas/PersonAttribute"
+          required: [identifiers, name]
+      required: [person]
+
+    PersonIdentifier:
+      type: object
+      properties:
+        kind:
+          type: string
+          minLength: 1
+        value:
+          type: string
+          minLength: 1
+      required: [kind, value]
+
+    PersonAttribute:
+      type: object
+      properties:
+        scope:
+          type: string
+          minLength: 1
+        key:
+          type: string
+          minLength: 1
+        value:
+          type: string
+          minLength: 1
+      required: [scope, key, value]
 
     Project:
       type: object

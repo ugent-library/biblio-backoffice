@@ -13,6 +13,13 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 )
 
+func encodeAddPersonResponse(response *AddPersonOK, w http.ResponseWriter, span trace.Span) error {
+	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
+
+	return nil
+}
+
 func encodeAddProjectResponse(response *AddProjectOK, w http.ResponseWriter, span trace.Span) error {
 	w.WriteHeader(200)
 	span.SetStatus(codes.Ok, http.StatusText(200))

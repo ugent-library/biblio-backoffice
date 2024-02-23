@@ -13,6 +13,15 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// AddPerson implements addPerson operation.
+//
+// Upsert a person.
+//
+// POST /add-person
+func (UnimplementedHandler) AddPerson(ctx context.Context, req *AddPersonRequest) error {
+	return ht.ErrNotImplemented
+}
+
 // AddProject implements addProject operation.
 //
 // Upsert a project.

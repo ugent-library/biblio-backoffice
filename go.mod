@@ -13,9 +13,12 @@ require (
 	github.com/caarlos0/env/v10 v10.0.0
 	github.com/caltechlibrary/doitools v0.0.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
+	github.com/georgysavva/scany/v2 v2.1.0
 	github.com/go-chi/chi/v5 v5.0.10
+	github.com/go-faster/errors v0.7.1
+	github.com/go-faster/jx v1.1.0
 	github.com/go-playground/form/v4 v4.2.1
-	github.com/google/uuid v1.4.0
+	github.com/google/uuid v1.6.0
 	github.com/gorilla/csrf v1.7.1
 	github.com/gorilla/sessions v1.2.1
 	github.com/iancoleman/strcase v0.3.0
@@ -24,6 +27,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/jpillora/ipfilter v1.2.9
 	github.com/leonelquinteros/gotext v1.5.2
+	github.com/ogen-go/ogen v0.82.0
 	github.com/ory/graceful v0.1.3
 	github.com/pkg/errors v0.9.1
 	github.com/rvflash/elapsed v0.3.0
@@ -31,6 +35,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
+	github.com/swaggest/swgui v1.8.0
 	github.com/tidwall/gjson v1.17.0
 	github.com/ugent-library/oai-service v0.0.0-20230922094424-2e5e8941ea8a
 	github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c
@@ -39,10 +44,14 @@ require (
 	github.com/unrolled/secure v1.14.0
 	github.com/xuri/excelize/v2 v2.8.0
 	go.mongodb.org/mongo-driver v1.12.1
+	go.opentelemetry.io/otel v1.23.1
+	go.opentelemetry.io/otel/metric v1.23.1
+	go.opentelemetry.io/otel/trace v1.23.1
 	golang.org/x/text v0.14.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231012201019-e917dd12ba7a
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
+	mvdan.cc/xurls/v2 v2.5.0
 )
 
 require (
@@ -75,13 +84,10 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.10.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
-	github.com/georgysavva/scany/v2 v2.1.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-faster/errors v0.7.0 // indirect
-	github.com/go-faster/jx v1.1.0 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
-	github.com/go-logr/logr v1.3.0 // indirect
+	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/golang/geo v0.0.0-20230421003525-6adc56603217 // indirect
@@ -91,7 +97,7 @@ require (
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.17.0 // indirect
+	github.com/klauspost/compress v1.17.6 // indirect
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
@@ -102,14 +108,12 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
-	github.com/ogen-go/ogen v0.80.1 // indirect
 	github.com/phuslu/iploc v1.0.20231130 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/swaggest/swgui v1.8.0 // indirect
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
 	github.com/ugent-library/crypt v0.0.0-20230630063634-8c02106fd40e // indirect
 	github.com/vearutop/statigz v1.4.0 // indirect
@@ -120,14 +124,10 @@ require (
 	github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	github.com/zclconf/go-cty v1.14.0 // indirect
-	go.opentelemetry.io/otel v1.21.0 // indirect
-	go.opentelemetry.io/otel/metric v1.21.0 // indirect
-	go.opentelemetry.io/otel/trace v1.21.0 // indirect
 	golang.org/x/exp v0.0.0-20231206192017-f3f8817b8deb // indirect
-	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.19.0 // indirect
-	golang.org/x/sync v0.5.0 // indirect
-	mvdan.cc/xurls/v2 v2.5.0 // indirect
+	golang.org/x/mod v0.15.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
 )
 
 require (
@@ -185,11 +185,11 @@ require (
 	github.com/ugent-library/okay v0.0.0-20231205122923-396c4d3a29f2
 	github.com/ugent-library/zaphttp v0.0.0-20231026141151-4cbb4e2eb87a
 	go.etcd.io/bbolt v1.3.7 // indirect
-	go.uber.org/multierr v1.11.0 // indirect
+	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.26.0
-	golang.org/x/crypto v0.17.0 // indirect
+	golang.org/x/crypto v0.19.0 // indirect
 	golang.org/x/oauth2 v0.13.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
