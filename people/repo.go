@@ -53,6 +53,40 @@ type AddPersonParams struct {
 	Attributes          []Attribute
 }
 
+func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
+	rows, err := r.conn.Query(ctx, getAllPeopleQuery)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var r personRow
+		if err := rows.Scan(
+			&r.ID,
+			&r.Identifiers,
+			&r.Name,
+			&r.PreferredName,
+			&r.GivenName,
+			&r.PreferredGivenName,
+			&r.FamilyName,
+			&r.PreferredFamilyName,
+			&r.HonorificPrefix,
+			&r.Email,
+			&r.Attributes,
+			&r.CreatedAt,
+			&r.UpdatedAt,
+		); err != nil {
+			return err
+		}
+		if ok := fn(r.toPerson()); !ok {
+			break
+		}
+	}
+
+	return rows.Err()
+}
+
 func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
@@ -60,7 +94,7 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 	}
 	defer tx.Rollback(ctx)
 
-	var rows []*getPersonRow
+	var rows []*personRow
 
 	for _, id := range params.Identifiers {
 		row, err := getPersonByIdentifier(ctx, tx, id.Kind, id.Value)
@@ -71,12 +105,12 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 			continue
 		}
 
-		if !slices.ContainsFunc(rows, func(r *getPersonRow) bool { return r.ID == row.ID }) {
+		if !slices.ContainsFunc(rows, func(r *personRow) bool { return r.ID == row.ID }) {
 			rows = append(rows, row)
 		}
 	}
 
-	slices.SortFunc(rows, func(a, b *getPersonRow) int {
+	slices.SortFunc(rows, func(a, b *personRow) int {
 		if a.UpdatedAt.Before(b.UpdatedAt) {
 			return 1
 		}
@@ -116,7 +150,7 @@ func newID() Identifier {
 	return Identifier{Kind: idKind, Value: uuid.NewString()}
 }
 
-func transferValues(rows []*getPersonRow, params AddPersonParams) AddPersonParams {
+func transferValues(rows []*personRow, params AddPersonParams) AddPersonParams {
 	for _, row := range rows {
 		for _, rowID := range row.Identifiers {
 			if rowID.Kind != idKind {
