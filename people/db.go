@@ -16,6 +16,39 @@ type Conn interface {
 	Begin(context.Context) (pgx.Tx, error)
 }
 
+type personRow struct {
+	ID                  int64
+	Identifiers         []Identifier
+	Name                string
+	PreferredName       pgtype.Text
+	GivenName           pgtype.Text
+	PreferredGivenName  pgtype.Text
+	FamilyName          pgtype.Text
+	PreferredFamilyName pgtype.Text
+	HonorificPrefix     pgtype.Text
+	Email               pgtype.Text
+	Attributes          []Attribute
+	CreatedAt           time.Time
+	UpdatedAt           time.Time
+}
+
+func (row *personRow) toPerson() *Person {
+	return &Person{
+		Identifiers:         row.Identifiers,
+		Name:                row.Name,
+		PreferredName:       row.PreferredName.String,
+		GivenName:           row.GivenName.String,
+		PreferredGivenName:  row.PreferredGivenName.String,
+		FamilyName:          row.FamilyName.String,
+		PreferredFamilyName: row.PreferredFamilyName.String,
+		HonorificPrefix:     row.HonorificPrefix.String,
+		Email:               row.Email.String,
+		Attributes:          row.Attributes,
+		CreatedAt:           row.CreatedAt,
+		UpdatedAt:           row.UpdatedAt,
+	}
+}
+
 const getPersonByIdentifierQuery = `
 WITH ids AS (
 	SELECT ids1.*
@@ -40,62 +73,48 @@ FROM people p, ids WHERE p.id = ids.person_id
 GROUP BY p.id;
 `
 
-type getPersonRow struct {
-	ID                  int64
-	Identifiers         []Identifier
-	Name                string
-	PreferredName       pgtype.Text
-	GivenName           pgtype.Text
-	PreferredGivenName  pgtype.Text
-	FamilyName          pgtype.Text
-	PreferredFamilyName pgtype.Text
-	HonorificPrefix     pgtype.Text
-	Email               pgtype.Text
-	Attributes          []Attribute
-	CreatedAt           time.Time
-	UpdatedAt           time.Time
-}
-
-func (row *getPersonRow) toPerson() *Person {
-	return &Person{
-		Identifiers:         row.Identifiers,
-		Name:                row.Name,
-		PreferredName:       row.PreferredName.String,
-		GivenName:           row.GivenName.String,
-		PreferredGivenName:  row.PreferredGivenName.String,
-		FamilyName:          row.FamilyName.String,
-		PreferredFamilyName: row.PreferredFamilyName.String,
-		HonorificPrefix:     row.HonorificPrefix.String,
-		Email:               row.Email.String,
-		Attributes:          row.Attributes,
-		CreatedAt:           row.CreatedAt,
-		UpdatedAt:           row.UpdatedAt,
-	}
-}
-
-func getPersonByIdentifier(ctx context.Context, conn Conn, kind, value string) (*getPersonRow, error) {
-	var row getPersonRow
+func getPersonByIdentifier(ctx context.Context, conn Conn, kind, value string) (*personRow, error) {
+	var r personRow
 
 	err := conn.QueryRow(ctx, getPersonByIdentifierQuery, kind, value).Scan(
-		&row.ID,
-		&row.Identifiers,
-		&row.Name,
-		&row.PreferredName,
-		&row.GivenName,
-		&row.PreferredGivenName,
-		&row.FamilyName,
-		&row.PreferredFamilyName,
-		&row.HonorificPrefix,
-		&row.Email,
-		&row.Attributes,
-		&row.CreatedAt,
-		&row.UpdatedAt,
+		&r.ID,
+		&r.Identifiers,
+		&r.Name,
+		&r.PreferredName,
+		&r.GivenName,
+		&r.PreferredGivenName,
+		&r.FamilyName,
+		&r.PreferredFamilyName,
+		&r.HonorificPrefix,
+		&r.Email,
+		&r.Attributes,
+		&r.CreatedAt,
+		&r.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &row, nil
+	return &r, nil
 }
+
+const getAllPeopleQuery = `
+SELECT id,
+	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+	   name,
+       preferred_name,
+	   given_name,
+	   preferred_given_name,
+	   family_name,
+	   preferred_family_name,
+	   honorific_prefix,
+	   email,
+	   attributes,
+	   created_at,
+	   updated_at
+FROM people p
+LEFT JOIN person_identifiers ids ON p.id = ids.person_id
+GROUP BY p.id;
+`
 
 const insertPersonQuery = `
 INSERT INTO people (
