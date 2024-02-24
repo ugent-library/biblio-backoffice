@@ -1,7 +1,6 @@
 CREATE TABLE people (
   id BIGSERIAL PRIMARY KEY,
   replaced_by_id BIGINT REFERENCES people (id) ON DELETE CASCADE,
-  identifiers JSONB NOT NULL,
   name TEXT NOT NULL CHECK (name <> ''),
   preferred_name TEXT CHECK (preferred_name <> ''),
   given_name TEXT CHECK (given_name <> ''),
@@ -18,8 +17,18 @@ CREATE TABLE people (
 );
 
 CREATE INDEX people_updated_at_idx on people (updated_at);
-CREATE INDEX people_identifiers_gin_idx on people using gin (identifiers);
+
+CREATE TABLE person_identifiers (
+  person_id BIGINT NOT NULL REFERENCES people ON DELETE CASCADE,
+  kind TEXT NOT NULL CHECK (kind <> ''),
+  value TEXT NOT NULL CHECK (value <> ''),
+  UNIQUE (person_id, kind, value)
+);
+
+CREATE INDEX person_identifiers_person_id_fkey ON person_identifiers (person_id);
+CREATE INDEX person_identifiers_kind_value_idx ON person_identifiers (kind, value);
 
 ---- create above / drop below ----
 
-DROP TABLE PEOPLE CASCADE;
+DROP TABLE person_identifiers CASCADE;
+DROP TABLE people CASCADE;

@@ -9,6 +9,8 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+const idKind = "id"
+
 var ErrNotFound = errors.New("not found")
 
 type Repo struct {
@@ -33,7 +35,7 @@ func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*
 	if err != nil {
 		return nil, err
 	}
-	return &row.Person, nil
+	return row.toPerson(), nil
 }
 
 type AddPersonParams struct {
@@ -58,7 +60,7 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 	}
 	defer tx.Rollback(ctx)
 
-	var rows []*personRow
+	var rows []*getPersonRow
 
 	for _, id := range params.Identifiers {
 		row, err := getPersonByIdentifier(ctx, tx, id.Kind, id.Value)
@@ -69,12 +71,12 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 			continue
 		}
 
-		if !slices.ContainsFunc(rows, func(r *personRow) bool { return r.ID == row.ID }) {
+		if !slices.ContainsFunc(rows, func(r *getPersonRow) bool { return r.ID == row.ID }) {
 			rows = append(rows, row)
 		}
 	}
 
-	slices.SortFunc(rows, func(a, b *personRow) int {
+	slices.SortFunc(rows, func(a, b *getPersonRow) int {
 		if a.UpdatedAt.Before(b.UpdatedAt) {
 			return 1
 		}
@@ -83,10 +85,10 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 
 	switch len(rows) {
 	case 0:
-		if !slices.ContainsFunc(params.Identifiers, func(id Identifier) bool { return id.Kind == "id" }) {
+		if !slices.ContainsFunc(params.Identifiers, func(id Identifier) bool { return id.Kind == idKind }) {
 			params.Identifiers = append(params.Identifiers, newID())
 		}
-		if _, err := insertPerson(ctx, tx, params); err != nil {
+		if _, err := createPerson(ctx, tx, params); err != nil {
 			return err
 		}
 	case 1:
@@ -96,7 +98,7 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 		}
 	default:
 		params = transferValues(rows, params)
-		id, err := insertPerson(ctx, tx, params)
+		id, err := createPerson(ctx, tx, params)
 		if err != nil {
 			return err
 		}
@@ -111,13 +113,13 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 }
 
 func newID() Identifier {
-	return Identifier{Kind: "id", Value: uuid.NewString()}
+	return Identifier{Kind: idKind, Value: uuid.NewString()}
 }
 
-func transferValues(rows []*personRow, params AddPersonParams) AddPersonParams {
+func transferValues(rows []*getPersonRow, params AddPersonParams) AddPersonParams {
 	for _, row := range rows {
 		for _, rowID := range row.Identifiers {
-			if rowID.Kind != "id" {
+			if rowID.Kind != idKind {
 				continue
 			}
 			if !slices.Contains(params.Identifiers, rowID) {
@@ -126,13 +128,13 @@ func transferValues(rows []*personRow, params AddPersonParams) AddPersonParams {
 		}
 
 		if params.PreferredName == "" {
-			params.PreferredName = row.PreferredName
+			params.PreferredName = row.PreferredName.String
 		}
 		if params.PreferredGivenName == "" {
-			params.PreferredGivenName = row.PreferredGivenName
+			params.PreferredGivenName = row.PreferredGivenName.String
 		}
 		if params.PreferredFamilyName == "" {
-			params.PreferredFamilyName = row.PreferredFamilyName
+			params.PreferredFamilyName = row.PreferredFamilyName.String
 		}
 
 		var attrs []Attribute
