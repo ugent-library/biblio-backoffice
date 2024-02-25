@@ -1,6 +1,7 @@
 package people
 
 import (
+	"context"
 	"fmt"
 	"time"
 )
@@ -41,3 +42,5 @@ type Text struct {
 	Lang  string `json:"lang"`
 	Value string `json:"value"`
 }
+
+type PersonIter func(context.Context, func(*Person) bool) error

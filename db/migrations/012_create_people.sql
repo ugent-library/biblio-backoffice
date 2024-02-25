@@ -16,6 +16,7 @@ CREATE TABLE people (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE INDEX people_replaced_by_id_fkey on people (replaced_by_id);
 CREATE INDEX people_updated_at_idx on people (updated_at);
 
 CREATE TABLE person_identifiers (

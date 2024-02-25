@@ -50,12 +50,6 @@ func (row *personRow) toPerson() *Person {
 }
 
 const getPersonByIdentifierQuery = `
-WITH ids AS (
-	SELECT ids1.*
-	FROM person_identifiers ids1
-	LEFT JOIN person_identifiers ids2 ON ids1.person_id = ids2.person_id
-	WHERE ids2.kind = $1 AND ids2.value = $2	
-)
 SELECT id,
 	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
 	   name,
@@ -69,7 +63,10 @@ SELECT id,
 	   attributes,
 	   created_at,
 	   updated_at
-FROM people p, ids WHERE p.id = ids.person_id
+FROM people p
+JOIN person_identifiers pi ON p.id = pi.person_id AND pi.kind = $1 and pi.value = $2
+LEFT JOIN person_identifiers ids ON p.id = ids.person_id
+WHERE p.replaced_by_id IS NULL
 GROUP BY p.id;
 `
 
@@ -113,6 +110,7 @@ SELECT id,
 	   updated_at
 FROM people p
 LEFT JOIN person_identifiers ids ON p.id = ids.person_id
+WHERE p.replaced_by_id IS NULL
 GROUP BY p.id;
 `
 
