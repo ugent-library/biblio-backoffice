@@ -47,13 +47,14 @@ func initLogger() {
 		l, err := zap.NewDevelopment()
 		cobra.CheckErr(err)
 		zapLogger = l.Sugar()
+		logger = slog.New(slogzap.Option{Level: slog.LevelDebug, Logger: l}.NewZapHandler())
 	} else {
 		l, err := zap.NewProduction()
 		cobra.CheckErr(err)
 		zapLogger = l.Sugar()
+		logger = slog.New(slogzap.Option{Level: slog.LevelInfo, Logger: l}.NewZapHandler())
 	}
 
-	logger = slog.New(slogzap.Option{Level: slog.LevelDebug, Logger: zapLogger.Desugar()}.NewZapHandler())
 }
 
 func Run() {
