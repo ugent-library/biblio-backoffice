@@ -162,6 +162,9 @@ func (idx *Index) ReindexPeople(ctx context.Context, iter PersonIter) error {
 	}
 
 	indexer, err := index.NewIndexer(idx.client, switcher.Name(), index.IndexerConfig{
+		OnIndexSuccess: func(docID string) {
+			// nothing
+		},
 		OnError: func(err error) {
 			idx.logger.ErrorContext(ctx, "index error", slog.Any("error", err))
 		},
