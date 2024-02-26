@@ -10,6 +10,7 @@ import (
 	"io"
 	"log/slog"
 	"strings"
+	"text/template"
 
 	"github.com/elastic/go-elasticsearch/v6"
 	index "github.com/ugent-library/index/es6"
@@ -50,8 +51,8 @@ func NewIndex(c IndexConfig) (*Index, error) {
 
 type responseBody[T any] struct {
 	Hits struct {
-		Total int `json:"total"`
-		Hits  []struct {
+		// Total int `json:"total"`
+		Hits []struct {
 			ID     string `json:"_id"`
 			Source struct {
 				Record T
@@ -60,53 +61,65 @@ type responseBody[T any] struct {
 	} `json:"hits"`
 }
 
-var boosts = map[string]string{
-	"identifiers":  "100",
-	"phrase_ngram": "0.05",
-	"ngram":        "0.01",
-}
+const searchBody = `{
+	"query": {{template "query" .}},
+	"size": 20
+}`
 
-func (idx *Index) SearchPeople(ctx context.Context, q string) ([]*Person, error) {
-	query := map[string]any{
-		"match_all": map[string]any{},
-	}
+const matchAllQuery = `{{define "query"}}{"match_all": {}}{{end}}`
 
-	if q = strings.TrimSpace(q); q != "" {
-		dismaxQueries := make([]map[string]any, 0, len(boosts))
-		for field, boost := range boosts {
-			dismaxQuery := map[string]any{
-				"match": map[string]any{
-					field: map[string]any{
-						"query":    q,
-						"operator": "AND",
-						"boost":    boost,
-					},
+const queryStringQuery = `{{define "query"}}{
+	"dis_max": {
+		"queries": {
+			"match": {
+				"identifiers": {
+					"query": {{.QueryString}},
+					"operator": "AND",
+					"boost": "100"
 				},
+				"phrase_ngram": {
+					"query": {{.QueryString}},
+					"operator": "AND",
+					"boost": "0.05"
+				},
+				"ngram": {
+					"query": {{.QueryString}},
+					"operator": "AND",
+					"boost": "0.01"
+				}
 			}
-			dismaxQueries = append(dismaxQueries, dismaxQuery)
-		}
-		query = map[string]any{
-			"dis_max": map[string]any{
-				"queries": dismaxQueries,
-			},
 		}
 	}
+}{{end}}`
 
-	reqBody := map[string]any{
-		"query": query,
-		"size":  20,
+var (
+	matchAllTmpl    = template.Must(template.New("").Parse(matchAllQuery + searchBody))
+	queryStringTmpl = template.Must(template.New("").Parse(queryStringQuery + searchBody))
+)
+
+func (idx *Index) SearchPeople(ctx context.Context, qs string) ([]*Person, error) {
+	qs = strings.TrimSpace(qs)
+	b := bytes.Buffer{}
+	tmpl := matchAllTmpl
+
+	if qs != "" {
+		tmpl = queryStringTmpl
 	}
 
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(reqBody); err != nil {
+	err := tmpl.Execute(&b, struct {
+		QueryString string
+	}{
+		QueryString: qs,
+	})
+	if err != nil {
 		return nil, err
 	}
 
 	res, err := idx.client.Search(
 		idx.client.Search.WithContext(ctx),
 		idx.client.Search.WithIndex(idx.alias),
-		idx.client.Search.WithTrackTotalHits(true),
-		idx.client.Search.WithBody(&buf),
+		// idx.client.Search.WithTrackTotalHits(true),
+		idx.client.Search.WithBody(strings.NewReader(b.String())),
 		idx.client.Search.WithSort("_score:desc"),
 	)
 	if err != nil {
