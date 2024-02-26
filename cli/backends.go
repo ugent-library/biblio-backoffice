@@ -54,14 +54,14 @@ func newServices() *backends.Services {
 	}
 	defer tx.Rollback(ctx)
 	migrator := rivermigrate.New(riverpgxv5.New(pool), nil)
+	// TODO ignore already migrated errors
 	_, err = migrator.MigrateTx(ctx, tx, rivermigrate.DirectionUp, &rivermigrate.MigrateOpts{
 		TargetVersion: 3,
 	})
-	if err != nil {
-		panic(err)
-	}
-	if err := tx.Commit(ctx); err != nil {
-		panic(err)
+	if err == nil {
+		if err := tx.Commit(ctx); err != nil {
+			panic(err)
+		}
 	}
 
 	peopleRepo, err := people.NewRepo(people.RepoConfig{
