@@ -1,20 +1,22 @@
 package cli
 
 import (
+	"log/slog"
 	_ "time/tzdata"
 
 	"github.com/caarlos0/env/v10"
 	_ "github.com/joho/godotenv/autoload"
+	slogzap "github.com/samber/slog-zap/v2"
 	"github.com/spf13/cobra"
-	"go.uber.org/zap"
-
 	_ "github.com/ugent-library/biblio-backoffice/snapstore"
+	"go.uber.org/zap"
 )
 
 var (
-	version Version
-	config  Config
-	logger  *zap.SugaredLogger
+	version   Version
+	config    Config
+	zapLogger *zap.SugaredLogger
+	logger    *slog.Logger
 
 	rootCmd = &cobra.Command{
 		Use:   "biblio-backoffice",
@@ -25,7 +27,7 @@ var (
 func init() {
 	cobra.OnInitialize(initVersion, initConfig, initLogger)
 	cobra.OnFinalize(func() {
-		logger.Sync()
+		zapLogger.Sync()
 	})
 }
 
@@ -39,16 +41,19 @@ func initConfig() {
 	}))
 }
 
+// TODO completely switch to slog logger
 func initLogger() {
 	if config.Env == "local" {
 		l, err := zap.NewDevelopment()
 		cobra.CheckErr(err)
-		logger = l.Sugar()
+		zapLogger = l.Sugar()
 	} else {
 		l, err := zap.NewProduction()
 		cobra.CheckErr(err)
-		logger = l.Sugar()
+		zapLogger = l.Sugar()
 	}
+
+	logger = slog.New(slogzap.Option{Level: slog.LevelDebug, Logger: zapLogger.Desugar()}.NewZapHandler())
 }
 
 func Run() {

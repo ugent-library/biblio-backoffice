@@ -15,6 +15,8 @@ import (
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/ory/graceful"
+	"github.com/riverqueue/river"
+	"github.com/riverqueue/river/riverdriver/riverpgxv5"
 	"github.com/spf13/cobra"
 	ffclient "github.com/thomaspoignant/go-feature-flag"
 	"github.com/thomaspoignant/go-feature-flag/retriever/fileretriever"
@@ -22,6 +24,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/api/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
+	"github.com/ugent-library/biblio-backoffice/jobs"
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -82,6 +85,41 @@ var serverStartCmd = &cobra.Command{
 			defer ffclient.Close()
 		}
 
+		// start job server
+		riverWorkers := river.NewWorkers()
+		// river.AddWorker(riverWorkers, jobs.NewDeactivatePeopleWorker(repo))
+		river.AddWorker(riverWorkers, jobs.NewReindexPeopleWorker(services.PeopleRepo, services.PeopleIndex))
+		riverClient, err := river.NewClient(riverpgxv5.New(services.PgxPool), &river.Config{
+			Logger:  logger,
+			Workers: riverWorkers,
+			Queues: map[string]river.QueueConfig{
+				river.QueueDefault: {MaxWorkers: 100},
+			},
+			PeriodicJobs: []*river.PeriodicJob{
+				// river.NewPeriodicJob(
+				// 	river.PeriodicInterval(10*time.Minute),
+				// 	func() (river.JobArgs, *river.InsertOpts) {
+				// 		return jobs.DeactivatePeopleArgs{}, nil
+				// 	},
+				// 	&river.PeriodicJobOpts{RunOnStart: true},
+				// ),
+				river.NewPeriodicJob(
+					river.PeriodicInterval(30*time.Minute),
+					func() (river.JobArgs, *river.InsertOpts) {
+						return jobs.ReindexPeopleArgs{}, nil
+					},
+					&river.PeriodicJobOpts{RunOnStart: true},
+				),
+			},
+		})
+		if err != nil {
+			return err
+		}
+		if err := riverClient.Start(context.TODO()); err != nil {
+			return err
+		}
+		defer riverClient.Stop(context.TODO())
+
 		// setup router
 		router, err := buildRouter(services)
 		if err != nil {
@@ -96,11 +134,11 @@ var serverStartCmd = &cobra.Command{
 			ReadTimeout:  5 * time.Minute,
 			WriteTimeout: 5 * time.Minute,
 		})
-		logger.Infof("starting server at %s", addr)
+		zapLogger.Infof("starting server at %s", addr)
 		if err := graceful.Graceful(server.ListenAndServe, server.Shutdown); err != nil {
 			return err
 		}
-		logger.Info("gracefully stopped server")
+		zapLogger.Info("gracefully stopped server")
 
 		return nil
 	},
@@ -241,7 +279,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		SessionName:      sessionName,
 		Timezone:         timezone,
 		Loc:              loc,
-		Logger:           logger,
+		Logger:           zapLogger,
 		OIDCAuth:         oidcAuth,
 		FrontendURL:      config.Frontend.URL,
 		FrontendUsername: config.Frontend.Username,

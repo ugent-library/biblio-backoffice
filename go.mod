@@ -23,13 +23,14 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/iancoleman/strcase v0.3.0
 	github.com/jackc/pgtype v1.14.0
-	github.com/jackc/pgx/v5 v5.5.0
+	github.com/jackc/pgx/v5 v5.5.3
 	github.com/joho/godotenv v1.5.1
 	github.com/jpillora/ipfilter v1.2.9
 	github.com/leonelquinteros/gotext v1.5.2
 	github.com/ogen-go/ogen v0.82.0
 	github.com/ory/graceful v0.1.3
 	github.com/pkg/errors v0.9.1
+	github.com/riverqueue/river/riverdriver/riverpgxv5 v0.0.22
 	github.com/rvflash/elapsed v0.3.0
 	github.com/samber/lo v1.39.0
 	github.com/spf13/cobra v1.8.0
@@ -98,7 +99,6 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.6 // indirect
-	github.com/lib/pq v1.10.6 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
@@ -112,6 +112,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
+	github.com/riverqueue/river/riverdriver v0.0.22 // indirect
+	github.com/samber/slog-common v0.14.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
@@ -167,6 +169,8 @@ require (
 	github.com/nics/ich v0.0.0-20231128155525-f5704f956383
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
+	github.com/riverqueue/river v0.0.22
+	github.com/samber/slog-zap/v2 v2.3.0
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
