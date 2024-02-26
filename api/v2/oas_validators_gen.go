@@ -277,6 +277,32 @@ func (s *AddPersonRequestPerson) Validate() error {
 		})
 	}
 	if err := func() error {
+		if value, ok := s.Username.Get(); ok {
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(value)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "username",
+			Error: err,
+		})
+	}
+	if err := func() error {
 		var failures []validate.FieldError
 		for i, elem := range s.Attributes {
 			if err := func() error {

@@ -38,6 +38,8 @@ type AddPersonRequestPerson struct {
 	PreferredFamilyName OptString          `json:"preferredFamilyName"`
 	HonorificPrefix     OptString          `json:"honorificPrefix"`
 	Email               OptString          `json:"email"`
+	Username            OptString          `json:"username"`
+	Active              OptBool            `json:"active"`
 	Attributes          []PersonAttribute  `json:"attributes"`
 }
 
@@ -84,6 +86,16 @@ func (s *AddPersonRequestPerson) GetHonorificPrefix() OptString {
 // GetEmail returns the value of Email.
 func (s *AddPersonRequestPerson) GetEmail() OptString {
 	return s.Email
+}
+
+// GetUsername returns the value of Username.
+func (s *AddPersonRequestPerson) GetUsername() OptString {
+	return s.Username
+}
+
+// GetActive returns the value of Active.
+func (s *AddPersonRequestPerson) GetActive() OptBool {
+	return s.Active
 }
 
 // GetAttributes returns the value of Attributes.
@@ -134,6 +146,16 @@ func (s *AddPersonRequestPerson) SetHonorificPrefix(val OptString) {
 // SetEmail sets the value of Email.
 func (s *AddPersonRequestPerson) SetEmail(val OptString) {
 	s.Email = val
+}
+
+// SetUsername sets the value of Username.
+func (s *AddPersonRequestPerson) SetUsername(val OptString) {
+	s.Username = val
+}
+
+// SetActive sets the value of Active.
+func (s *AddPersonRequestPerson) SetActive(val OptBool) {
+	s.Active = val
 }
 
 // SetAttributes sets the value of Attributes.
@@ -271,6 +293,52 @@ func (s *Identifier) SetType(val string) {
 // SetValue sets the value of Value.
 func (s *Identifier) SetValue(val string) {
 	s.Value = val
+}
+
+// NewOptBool returns new OptBool with value set to v.
+func NewOptBool(v bool) OptBool {
+	return OptBool{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptBool is optional bool.
+type OptBool struct {
+	Value bool
+	Set   bool
+}
+
+// IsSet returns true if OptBool was set.
+func (o OptBool) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptBool) Reset() {
+	var v bool
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptBool) SetTo(v bool) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptBool) Get() (v bool, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptBool) Or(d bool) bool {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
 }
 
 // NewOptString returns new OptString with value set to v.

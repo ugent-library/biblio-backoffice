@@ -16,11 +16,11 @@ type Person struct {
 	PreferredFamilyName string       `json:"preferredFamilyName,omitempty"`
 	HonorificPrefix     string       `json:"honorificPrefix,omitempty"`
 	Email               string       `json:"email,omitempty"`
-	// Active              bool         `json:"active"`
-	// Username    string       `json:"username,omitempty"`
-	Attributes []Attribute `json:"attributes"`
-	CreatedAt  time.Time   `json:"createdAt"`
-	UpdatedAt  time.Time   `json:"updatedAt"`
+	Active              bool         `json:"active"`
+	Username            string       `json:"username,omitempty"`
+	Attributes          []Attribute  `json:"attributes"`
+	CreatedAt           time.Time    `json:"createdAt"`
+	UpdatedAt           time.Time    `json:"updatedAt"`
 }
 
 func (p *Person) ID() string {
