@@ -176,6 +176,7 @@ func newServices() *backends.Services {
 		},
 		HandleService: handleService,
 		// TODO references temporarily put here
+		PgxPool:      pool,
 		PeopleRepo:   peopleRepo,
 		PeopleIndex:  peopleIndex,
 		ProjectsRepo: projectsRepo,
