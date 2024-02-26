@@ -13,6 +13,7 @@ import (
 	"text/template"
 
 	"github.com/elastic/go-elasticsearch/v6"
+	"github.com/elastic/go-elasticsearch/v6/esutil"
 	index "github.com/ugent-library/index/es6"
 )
 
@@ -161,21 +162,18 @@ func (idx *Index) ReindexPeople(ctx context.Context, iter PersonIter) error {
 		return err
 	}
 
-	indexer, err := index.NewIndexer(idx.client, switcher.Name(), index.IndexerConfig{
-		OnIndexSuccess: func(docID string) {
-			// nothing
-		},
-		OnError: func(err error) {
+	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
+		Client:  idx.client,
+		Index:   switcher.Name(),
+		Refresh: "true",
+		OnError: func(ctx context.Context, err error) {
 			idx.logger.ErrorContext(ctx, "index error", slog.Any("error", err))
-		},
-		OnIndexFailure: func(docID string, err error) {
-			idx.logger.ErrorContext(ctx, "index failure", slog.String("doc_id", docID), slog.Any("error", err))
 		},
 	})
 	if err != nil {
 		return err
 	}
-	defer indexer.Close(ctx)
+	defer bi.Close(ctx)
 
 	var indexErr error
 	err = iter(ctx, func(p *Person) bool {
@@ -184,7 +182,23 @@ func (idx *Index) ReindexPeople(ctx context.Context, iter PersonIter) error {
 			indexErr = err
 			return false
 		}
-		indexErr = indexer.Index(ctx, p.Identifiers[0].String(), doc)
+		indexErr = bi.Add(
+			ctx,
+			esutil.BulkIndexerItem{
+				Action:       "index",
+				DocumentID:   p.Identifiers[0].String(),
+				DocumentType: "_doc",
+				Body:         bytes.NewReader(doc),
+				OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
+					if err != nil {
+						err = fmt.Errorf("index error: %v", err)
+					} else {
+						err = fmt.Errorf("index error: %s: %s", res.Error.Type, res.Error.Reason)
+					}
+					idx.logger.ErrorContext(ctx, "index failure", slog.String("doc_id", item.DocumentID), slog.Any("error", err))
+				},
+			},
+		)
 		return indexErr == nil
 	})
 	if err != nil {
