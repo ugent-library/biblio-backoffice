@@ -13,6 +13,7 @@ import (
 	"text/template"
 
 	"github.com/elastic/go-elasticsearch/v6"
+	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/elastic/go-elasticsearch/v6/esutil"
 	index "github.com/ugent-library/index/es6"
 )
@@ -50,16 +51,40 @@ func NewIndex(c IndexConfig) (*Index, error) {
 	}, nil
 }
 
-type responseBody[T any] struct {
+type getResponseBody[T any] struct {
+	Source struct {
+		Record T `json:"record"`
+	} `json:"_source"`
+}
+
+type searchResponseBody[T any] struct {
 	Hits struct {
 		// Total int `json:"total"`
 		Hits []struct {
 			ID     string `json:"_id"`
 			Source struct {
-				Record T
+				Record T `json:"record"`
 			} `json:"_source"`
 		} `json:"hits"`
 	} `json:"hits"`
+}
+
+func decodeResponseBody[T any](res *esapi.Response, resBody T) error {
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("elasticsearch: error response: " + buf.String())
+	}
+
+	if err := json.NewDecoder(res.Body).Decode(resBody); err != nil {
+		return fmt.Errorf("elasticsearch: error parsing response body: %w", err)
+	}
+
+	return nil
 }
 
 const searchBody = `{
@@ -98,11 +123,25 @@ var (
 	queryStringTmpl = template.Must(template.New("").Parse(queryStringQuery + searchBody))
 )
 
+func (idx *Index) GetPerson(ctx context.Context, id string) (*Person, error) {
+	res, err := idx.client.Get(idx.alias, id,
+		idx.client.Get.WithSource("record"),
+	)
+	if err != nil {
+		return nil, err
+	}
+	resBody := getResponseBody[*Person]{}
+	if err := decodeResponseBody(res, &resBody); err != nil {
+		return nil, err
+	}
+	return resBody.Source.Record, nil
+}
+
 func (idx *Index) SearchPeople(ctx context.Context, qs string) ([]*Person, error) {
 	qs = strings.TrimSpace(qs)
+
 	b := bytes.Buffer{}
 	tmpl := matchAllTmpl
-
 	if qs != "" {
 		tmpl = queryStringTmpl
 	}
@@ -122,24 +161,15 @@ func (idx *Index) SearchPeople(ctx context.Context, qs string) ([]*Person, error
 		// idx.client.Search.WithTrackTotalHits(true),
 		idx.client.Search.WithBody(strings.NewReader(b.String())),
 		idx.client.Search.WithSort("_score:desc"),
+		idx.client.Search.WithSource("record"),
 	)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
 
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return nil, err
-		}
-		return nil, errors.New("elasticsearch: error response: " + buf.String())
-	}
-
-	resBody := &responseBody[*Person]{}
-
-	if err := json.NewDecoder(res.Body).Decode(resBody); err != nil {
-		return nil, fmt.Errorf("elasticsearch: error parsing response body: %w", err)
+	resBody := searchResponseBody[*Person]{}
+	if err := decodeResponseBody(res, &resBody); err != nil {
+		return nil, err
 	}
 
 	recs := make([]*Person, len(resBody.Hits.Hits))
