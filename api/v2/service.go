@@ -45,9 +45,9 @@ func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
 		PreferredFamilyName: p.PreferredFamilyName.Value,
 		HonorificPrefix:     p.HonorificPrefix.Value,
 		Email:               p.Email.Value,
-		// Active:              p.Active.Value,
-		// Username:            p.Username.Value,
-		Attributes: attributes,
+		Active:              p.Active.Value,
+		Username:            p.Username.Value,
+		Attributes:          attributes,
 	})
 }
 

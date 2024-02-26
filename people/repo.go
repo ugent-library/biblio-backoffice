@@ -77,6 +77,8 @@ func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 			&r.PreferredFamilyName,
 			&r.HonorificPrefix,
 			&r.Email,
+			&r.Active,
+			&r.Username,
 			&r.Attributes,
 			&r.CreatedAt,
 			&r.UpdatedAt,
