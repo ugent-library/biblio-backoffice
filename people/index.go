@@ -186,7 +186,7 @@ func (idx *Index) ReindexPeople(ctx context.Context, iter PersonIter) error {
 			ctx,
 			esutil.BulkIndexerItem{
 				Action:       "index",
-				DocumentID:   p.Identifiers[0].String(),
+				DocumentID:   p.ID(),
 				DocumentType: "_doc",
 				Body:         bytes.NewReader(doc),
 				OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
@@ -195,7 +195,7 @@ func (idx *Index) ReindexPeople(ctx context.Context, iter PersonIter) error {
 					} else {
 						err = fmt.Errorf("index error: %s: %s", res.Error.Type, res.Error.Reason)
 					}
-					idx.logger.ErrorContext(ctx, "index failure", slog.String("doc_id", item.DocumentID), slog.Any("error", err))
+					idx.logger.ErrorContext(ctx, "index failure", slog.String("id", item.DocumentID), slog.Any("error", err))
 				},
 			},
 		)
