@@ -50,6 +50,16 @@ func newServices() *backends.Services {
 		panic(err)
 	}
 
+	peopleIndex, err := people.NewIndex(people.IndexConfig{
+		Conn:      config.Es6URL,
+		Name:      "biblio_backoffice_people", // TODO make configurable
+		Retention: config.IndexRetention,
+		Logger:    logger,
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	projectsRepo, err := projects.NewRepo(projects.RepoConfig{
 		Conn: pool,
 	})
@@ -167,6 +177,7 @@ func newServices() *backends.Services {
 		HandleService: handleService,
 		// TODO references temporarily put here
 		PeopleRepo:   peopleRepo,
+		PeopleIndex:  peopleIndex,
 		ProjectsRepo: projectsRepo,
 	}
 }
