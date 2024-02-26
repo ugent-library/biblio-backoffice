@@ -220,7 +220,7 @@ type indexPerson struct {
 func newIndexPerson(p *Person) *indexPerson {
 	ip := &indexPerson{
 		Names:       []string{p.Name},
-		Identifiers: make([]string, len(p.Identifiers)),
+		Identifiers: make([]string, 0, len(p.Identifiers)*2),
 		Record:      p,
 	}
 
@@ -230,8 +230,8 @@ func newIndexPerson(p *Person) *indexPerson {
 		}
 	}
 
-	for i, id := range p.Identifiers {
-		ip.Identifiers[i] = id.String()
+	for _, id := range p.Identifiers {
+		ip.Identifiers = append(ip.Identifiers, id.String(), id.Value)
 	}
 
 	return ip
