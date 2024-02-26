@@ -7,6 +7,8 @@ import (
 	"path"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/riverqueue/river/riverdriver/riverpgxv5"
+	"github.com/riverqueue/river/rivermigrate"
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/backends/arxiv"
@@ -38,8 +40,27 @@ import (
 )
 
 func newServices() *backends.Services {
-	pool, err := pgxpool.New(context.Background(), config.PgConn)
+	ctx := context.Background()
+
+	pool, err := pgxpool.New(ctx, config.PgConn)
 	if err != nil {
+		panic(err)
+	}
+
+	// TODO move to migrations after switch to goose
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		panic(err)
+	}
+	defer tx.Rollback(ctx)
+	migrator := rivermigrate.New(riverpgxv5.New(pool), nil)
+	_, err = migrator.MigrateTx(ctx, tx, rivermigrate.DirectionUp, &rivermigrate.MigrateOpts{
+		TargetVersion: 3,
+	})
+	if err != nil {
+		panic(err)
+	}
+	if err := tx.Commit(ctx); err != nil {
 		panic(err)
 	}
 
