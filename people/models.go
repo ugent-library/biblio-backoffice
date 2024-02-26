@@ -23,6 +23,15 @@ type Person struct {
 	UpdatedAt  time.Time   `json:"updatedAt"`
 }
 
+func (p *Person) ID() string {
+	for _, id := range p.Identifiers {
+		if id.Kind == idKind {
+			return id.Value
+		}
+	}
+	return ""
+}
+
 type Identifier struct {
 	Kind  string `json:"kind"`
 	Value string `json:"value"`
