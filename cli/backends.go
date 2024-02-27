@@ -88,6 +88,16 @@ func newServices() *backends.Services {
 		panic(err)
 	}
 
+	projectsIndex, err := projects.NewIndex(projects.IndexConfig{
+		Conn:      config.Es6URL,
+		Name:      "biblio_backoffice_projects", // TODO make configurable
+		Retention: config.IndexRetention,
+		Logger:    logger,
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	peopleServiceClient, err := peopleservice.New(peopleservice.Config{
 		APIUrl: config.People.APIURL,
 		APIKey: config.People.APIKey,
@@ -197,10 +207,11 @@ func newServices() *backends.Services {
 		},
 		HandleService: handleService,
 		// TODO references temporarily put here
-		PgxPool:      pool,
-		PeopleRepo:   peopleRepo,
-		PeopleIndex:  peopleIndex,
-		ProjectsRepo: projectsRepo,
+		PgxPool:       pool,
+		PeopleRepo:    peopleRepo,
+		PeopleIndex:   peopleIndex,
+		ProjectsRepo:  projectsRepo,
+		ProjectsIndex: projectsIndex,
 	}
 }
 

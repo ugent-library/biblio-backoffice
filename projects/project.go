@@ -1,7 +1,7 @@
 package projects
 
 import (
-	"fmt"
+	"context"
 	"time"
 )
 
@@ -17,13 +17,18 @@ type Project struct {
 	UpdatedAt       time.Time    `json:"updated_at,omitempty"`
 }
 
+func (p *Project) ID() string {
+	for _, id := range p.Identifiers {
+		if id.Kind == idKind {
+			return id.Value
+		}
+	}
+	return ""
+}
+
 type Identifier struct {
 	Kind  string `json:"kind,omitempty"`
 	Value string `json:"value,omitempty"`
-}
-
-func (i *Identifier) String() string {
-	return fmt.Sprintf("%s:%s", i.Kind, i.Value)
 }
 
 type Attribute struct {
@@ -36,3 +41,5 @@ type Text struct {
 	Lang  string `json:"lang,omitempty"`
 	Value string `json:"value,omitempty"`
 }
+
+type ProjectIter func(context.Context, func(*Project) bool) error

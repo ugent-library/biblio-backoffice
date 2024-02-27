@@ -38,10 +38,11 @@ type Services struct {
 	DatasetListExporters      map[string]DatasetListExporterFactory
 	HandleService             HandleService
 	// TODO references temporarily put here
-	PgxPool      *pgxpool.Pool
-	PeopleRepo   *people.Repo
-	PeopleIndex  *people.Index
-	ProjectsRepo *projects.Repo
+	PgxPool       *pgxpool.Pool
+	PeopleRepo    *people.Repo
+	PeopleIndex   *people.Index
+	ProjectsRepo  *projects.Repo
+	ProjectsIndex *projects.Index
 }
 
 type PublicationEncoder func(*models.Publication) ([]byte, error)
