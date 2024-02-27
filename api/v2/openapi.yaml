@@ -34,7 +34,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Project'
+              $ref: '#/components/schemas/AddProjectRequest'
         required: true
       responses:
         '200':
@@ -146,31 +146,36 @@ components:
           minLength: 1
       required: [scope, key, value]
 
-    Project:
+    AddProjectRequest:
       type: object
       properties:
-        name:
-          type: array
-          items:
-            $ref: "#/components/schemas/Translation"
-        description:
-          type: array
-          items:
-            $ref: "#/components/schemas/Translation"
-        foundingDate:
-          type: string
-        dissolutionDate:
-          type: string
-        attributes:
-          type: array
-          items:
-            $ref: "#/components/schemas/Attribute"
-        identifiers:
-          type: array
-          items:
-            $ref: "#/components/schemas/Identifier"
-  
-    Attribute:
+        project:
+          type: object
+          properties:
+            identifiers:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProjectIdentifier"
+            names:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProjectText"
+            descriptions:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProjectText"
+            foundingDate:
+              type: string
+            dissolutionDate:
+              type: string
+            attributes:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProjectAttribute"
+          required: [identifiers]
+      required: [project]
+
+    ProjectAttribute:
       type: object
       properties:
         scope:
@@ -184,18 +189,18 @@ components:
           minLength: 1
       required: [scope, key, value]
 
-    Identifier:
+    ProjectIdentifier:
       type: object
       properties:
-        type:
+        kind:
           type: string
           minLength: 1
         value:
           type: string
           minLength: 1
-      required: [type, value]
+      required: [kind, value]
     
-    Translation:
+    ProjectText:
       type: object
       properties:
         lang:
@@ -205,34 +210,3 @@ components:
           type: string
           minLength: 1
       required: [lang, value]
-
-    ProjectRecord:
-      type: object
-      properties:
-        name:
-          type: array
-          items:
-            $ref: "#/components/schemas/Translation"
-        description:
-          type: array
-          items:
-            $ref: "#/components/schemas/Translation"
-        foundingDate:
-          type: string
-        dissolutionDate:
-          type: string
-        attributes:
-          type: array
-          items:
-            $ref: "#/components/schemas/Attribute"
-        identifiers:
-          type: array
-          items:
-            $ref: "#/components/schemas/Identifier"
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-      required: [name, identifiers, createdAt, updatedAt]

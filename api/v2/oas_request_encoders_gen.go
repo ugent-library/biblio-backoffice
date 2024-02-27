@@ -26,7 +26,7 @@ func encodeAddPersonRequest(
 }
 
 func encodeAddProjectRequest(
-	req *Project,
+	req *AddProjectRequest,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"

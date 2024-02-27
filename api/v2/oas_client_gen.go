@@ -34,7 +34,7 @@ type Invoker interface {
 	// Upsert a project.
 	//
 	// POST /add-project
-	AddProject(ctx context.Context, request *Project) error
+	AddProject(ctx context.Context, request *AddProjectRequest) error
 }
 
 // Client implements OAS client.
@@ -204,12 +204,12 @@ func (c *Client) sendAddPerson(ctx context.Context, request *AddPersonRequest) (
 // Upsert a project.
 //
 // POST /add-project
-func (c *Client) AddProject(ctx context.Context, request *Project) error {
+func (c *Client) AddProject(ctx context.Context, request *AddProjectRequest) error {
 	_, err := c.sendAddProject(ctx, request)
 	return err
 }
 
-func (c *Client) sendAddProject(ctx context.Context, request *Project) (res *AddProjectOK, err error) {
+func (c *Client) sendAddProject(ctx context.Context, request *AddProjectRequest) (res *AddProjectOK, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("addProject"),
 		semconv.HTTPMethodKey.String("POST"),

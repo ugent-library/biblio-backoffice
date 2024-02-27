@@ -144,6 +144,90 @@ func (s *AddPersonRequestPerson) SetAttributes(val []PersonAttribute) {
 // AddProjectOK is response for AddProject operation.
 type AddProjectOK struct{}
 
+// Ref: #/components/schemas/AddProjectRequest
+type AddProjectRequest struct {
+	Project AddProjectRequestProject `json:"project"`
+}
+
+// GetProject returns the value of Project.
+func (s *AddProjectRequest) GetProject() AddProjectRequestProject {
+	return s.Project
+}
+
+// SetProject sets the value of Project.
+func (s *AddProjectRequest) SetProject(val AddProjectRequestProject) {
+	s.Project = val
+}
+
+type AddProjectRequestProject struct {
+	Identifiers     []ProjectIdentifier `json:"identifiers"`
+	Names           []ProjectText       `json:"names"`
+	Descriptions    []ProjectText       `json:"descriptions"`
+	FoundingDate    OptString           `json:"foundingDate"`
+	DissolutionDate OptString           `json:"dissolutionDate"`
+	Attributes      []ProjectAttribute  `json:"attributes"`
+}
+
+// GetIdentifiers returns the value of Identifiers.
+func (s *AddProjectRequestProject) GetIdentifiers() []ProjectIdentifier {
+	return s.Identifiers
+}
+
+// GetNames returns the value of Names.
+func (s *AddProjectRequestProject) GetNames() []ProjectText {
+	return s.Names
+}
+
+// GetDescriptions returns the value of Descriptions.
+func (s *AddProjectRequestProject) GetDescriptions() []ProjectText {
+	return s.Descriptions
+}
+
+// GetFoundingDate returns the value of FoundingDate.
+func (s *AddProjectRequestProject) GetFoundingDate() OptString {
+	return s.FoundingDate
+}
+
+// GetDissolutionDate returns the value of DissolutionDate.
+func (s *AddProjectRequestProject) GetDissolutionDate() OptString {
+	return s.DissolutionDate
+}
+
+// GetAttributes returns the value of Attributes.
+func (s *AddProjectRequestProject) GetAttributes() []ProjectAttribute {
+	return s.Attributes
+}
+
+// SetIdentifiers sets the value of Identifiers.
+func (s *AddProjectRequestProject) SetIdentifiers(val []ProjectIdentifier) {
+	s.Identifiers = val
+}
+
+// SetNames sets the value of Names.
+func (s *AddProjectRequestProject) SetNames(val []ProjectText) {
+	s.Names = val
+}
+
+// SetDescriptions sets the value of Descriptions.
+func (s *AddProjectRequestProject) SetDescriptions(val []ProjectText) {
+	s.Descriptions = val
+}
+
+// SetFoundingDate sets the value of FoundingDate.
+func (s *AddProjectRequestProject) SetFoundingDate(val OptString) {
+	s.FoundingDate = val
+}
+
+// SetDissolutionDate sets the value of DissolutionDate.
+func (s *AddProjectRequestProject) SetDissolutionDate(val OptString) {
+	s.DissolutionDate = val
+}
+
+// SetAttributes sets the value of Attributes.
+func (s *AddProjectRequestProject) SetAttributes(val []ProjectAttribute) {
+	s.Attributes = val
+}
+
 type ApiKey struct {
 	APIKey string
 }
@@ -156,43 +240,6 @@ func (s *ApiKey) GetAPIKey() string {
 // SetAPIKey sets the value of APIKey.
 func (s *ApiKey) SetAPIKey(val string) {
 	s.APIKey = val
-}
-
-// Ref: #/components/schemas/Attribute
-type Attribute struct {
-	Scope string `json:"scope"`
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-// GetScope returns the value of Scope.
-func (s *Attribute) GetScope() string {
-	return s.Scope
-}
-
-// GetKey returns the value of Key.
-func (s *Attribute) GetKey() string {
-	return s.Key
-}
-
-// GetValue returns the value of Value.
-func (s *Attribute) GetValue() string {
-	return s.Value
-}
-
-// SetScope sets the value of Scope.
-func (s *Attribute) SetScope(val string) {
-	s.Scope = val
-}
-
-// SetKey sets the value of Key.
-func (s *Attribute) SetKey(val string) {
-	s.Key = val
-}
-
-// SetValue sets the value of Value.
-func (s *Attribute) SetValue(val string) {
-	s.Value = val
 }
 
 // Ref: #/components/schemas/Error
@@ -245,32 +292,6 @@ func (s *ErrorStatusCode) SetStatusCode(val int) {
 // SetResponse sets the value of Response.
 func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
-}
-
-// Ref: #/components/schemas/Identifier
-type Identifier struct {
-	Type  string `json:"type"`
-	Value string `json:"value"`
-}
-
-// GetType returns the value of Type.
-func (s *Identifier) GetType() string {
-	return s.Type
-}
-
-// GetValue returns the value of Value.
-func (s *Identifier) GetValue() string {
-	return s.Value
-}
-
-// SetType sets the value of Type.
-func (s *Identifier) SetType(val string) {
-	s.Type = val
-}
-
-// SetValue sets the value of Value.
-func (s *Identifier) SetValue(val string) {
-	s.Value = val
 }
 
 // NewOptString returns new OptString with value set to v.
@@ -382,98 +403,91 @@ func (s *PersonIdentifier) SetValue(val string) {
 	s.Value = val
 }
 
-// Ref: #/components/schemas/Project
-type Project struct {
-	Name            []Translation `json:"name"`
-	Description     []Translation `json:"description"`
-	FoundingDate    OptString     `json:"foundingDate"`
-	DissolutionDate OptString     `json:"dissolutionDate"`
-	Attributes      []Attribute   `json:"attributes"`
-	Identifiers     []Identifier  `json:"identifiers"`
+// Ref: #/components/schemas/ProjectAttribute
+type ProjectAttribute struct {
+	Scope string `json:"scope"`
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
-// GetName returns the value of Name.
-func (s *Project) GetName() []Translation {
-	return s.Name
+// GetScope returns the value of Scope.
+func (s *ProjectAttribute) GetScope() string {
+	return s.Scope
 }
 
-// GetDescription returns the value of Description.
-func (s *Project) GetDescription() []Translation {
-	return s.Description
+// GetKey returns the value of Key.
+func (s *ProjectAttribute) GetKey() string {
+	return s.Key
 }
 
-// GetFoundingDate returns the value of FoundingDate.
-func (s *Project) GetFoundingDate() OptString {
-	return s.FoundingDate
+// GetValue returns the value of Value.
+func (s *ProjectAttribute) GetValue() string {
+	return s.Value
 }
 
-// GetDissolutionDate returns the value of DissolutionDate.
-func (s *Project) GetDissolutionDate() OptString {
-	return s.DissolutionDate
+// SetScope sets the value of Scope.
+func (s *ProjectAttribute) SetScope(val string) {
+	s.Scope = val
 }
 
-// GetAttributes returns the value of Attributes.
-func (s *Project) GetAttributes() []Attribute {
-	return s.Attributes
+// SetKey sets the value of Key.
+func (s *ProjectAttribute) SetKey(val string) {
+	s.Key = val
 }
 
-// GetIdentifiers returns the value of Identifiers.
-func (s *Project) GetIdentifiers() []Identifier {
-	return s.Identifiers
+// SetValue sets the value of Value.
+func (s *ProjectAttribute) SetValue(val string) {
+	s.Value = val
 }
 
-// SetName sets the value of Name.
-func (s *Project) SetName(val []Translation) {
-	s.Name = val
+// Ref: #/components/schemas/ProjectIdentifier
+type ProjectIdentifier struct {
+	Kind  string `json:"kind"`
+	Value string `json:"value"`
 }
 
-// SetDescription sets the value of Description.
-func (s *Project) SetDescription(val []Translation) {
-	s.Description = val
+// GetKind returns the value of Kind.
+func (s *ProjectIdentifier) GetKind() string {
+	return s.Kind
 }
 
-// SetFoundingDate sets the value of FoundingDate.
-func (s *Project) SetFoundingDate(val OptString) {
-	s.FoundingDate = val
+// GetValue returns the value of Value.
+func (s *ProjectIdentifier) GetValue() string {
+	return s.Value
 }
 
-// SetDissolutionDate sets the value of DissolutionDate.
-func (s *Project) SetDissolutionDate(val OptString) {
-	s.DissolutionDate = val
+// SetKind sets the value of Kind.
+func (s *ProjectIdentifier) SetKind(val string) {
+	s.Kind = val
 }
 
-// SetAttributes sets the value of Attributes.
-func (s *Project) SetAttributes(val []Attribute) {
-	s.Attributes = val
+// SetValue sets the value of Value.
+func (s *ProjectIdentifier) SetValue(val string) {
+	s.Value = val
 }
 
-// SetIdentifiers sets the value of Identifiers.
-func (s *Project) SetIdentifiers(val []Identifier) {
-	s.Identifiers = val
-}
-
-// Ref: #/components/schemas/Translation
-type Translation struct {
+// Ref: #/components/schemas/ProjectText
+type ProjectText struct {
 	Lang  string `json:"lang"`
 	Value string `json:"value"`
 }
 
 // GetLang returns the value of Lang.
-func (s *Translation) GetLang() string {
+func (s *ProjectText) GetLang() string {
 	return s.Lang
 }
 
 // GetValue returns the value of Value.
-func (s *Translation) GetValue() string {
+func (s *ProjectText) GetValue() string {
 	return s.Value
 }
 
 // SetLang sets the value of Lang.
-func (s *Translation) SetLang(val string) {
+func (s *ProjectText) SetLang(val string) {
 	s.Lang = val
 }
 
 // SetValue sets the value of Value.
-func (s *Translation) SetValue(val string) {
+func (s *ProjectText) SetValue(val string) {
 	s.Value = val
 }
