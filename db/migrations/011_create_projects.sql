@@ -5,6 +5,7 @@ create table projects (
   descriptions jsonb null,
   founding_date text null,
   dissolution_date text null,
+  deleted boolean not null default false,
   attributes jsonb,
   created_at timestamptz default current_timestamp,
   updated_at timestamptz default current_timestamp

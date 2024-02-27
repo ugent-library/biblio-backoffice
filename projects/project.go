@@ -12,6 +12,7 @@ type Project struct {
 	FoundingDate    string       `json:"founding_date,omitempty"`
 	DissolutionDate string       `json:"dissolution_date,omitempty"`
 	Attributes      []Attribute  `json:"attributes,omitempty"`
+	Deleted         bool         `json:"deleted,omitempty"`
 	CreatedAt       time.Time    `json:"created_at,omitempty"`
 	UpdatedAt       time.Time    `json:"updated_at,omitempty"`
 }

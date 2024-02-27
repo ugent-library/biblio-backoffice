@@ -555,6 +555,12 @@ func (s *AddProjectRequestProject) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.Deleted.Set {
+			e.FieldStart("deleted")
+			s.Deleted.Encode(e)
+		}
+	}
+	{
 		if s.Attributes != nil {
 			e.FieldStart("attributes")
 			e.ArrStart()
@@ -566,13 +572,14 @@ func (s *AddProjectRequestProject) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfAddProjectRequestProject = [6]string{
+var jsonFieldsNameOfAddProjectRequestProject = [7]string{
 	0: "identifiers",
 	1: "names",
 	2: "descriptions",
 	3: "foundingDate",
 	4: "dissolutionDate",
-	5: "attributes",
+	5: "deleted",
+	6: "attributes",
 }
 
 // Decode decodes AddProjectRequestProject from json.
@@ -655,6 +662,16 @@ func (s *AddProjectRequestProject) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"dissolutionDate\"")
+			}
+		case "deleted":
+			if err := func() error {
+				s.Deleted.Reset()
+				if err := s.Deleted.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"deleted\"")
 			}
 		case "attributes":
 			if err := func() error {

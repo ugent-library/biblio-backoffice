@@ -187,6 +187,7 @@ type AddProjectRequestProject struct {
 	Descriptions    []ProjectText       `json:"descriptions"`
 	FoundingDate    OptString           `json:"foundingDate"`
 	DissolutionDate OptString           `json:"dissolutionDate"`
+	Deleted         OptBool             `json:"deleted"`
 	Attributes      []ProjectAttribute  `json:"attributes"`
 }
 
@@ -213,6 +214,11 @@ func (s *AddProjectRequestProject) GetFoundingDate() OptString {
 // GetDissolutionDate returns the value of DissolutionDate.
 func (s *AddProjectRequestProject) GetDissolutionDate() OptString {
 	return s.DissolutionDate
+}
+
+// GetDeleted returns the value of Deleted.
+func (s *AddProjectRequestProject) GetDeleted() OptBool {
+	return s.Deleted
 }
 
 // GetAttributes returns the value of Attributes.
@@ -243,6 +249,11 @@ func (s *AddProjectRequestProject) SetFoundingDate(val OptString) {
 // SetDissolutionDate sets the value of DissolutionDate.
 func (s *AddProjectRequestProject) SetDissolutionDate(val OptString) {
 	s.DissolutionDate = val
+}
+
+// SetDeleted sets the value of Deleted.
+func (s *AddProjectRequestProject) SetDeleted(val OptBool) {
+	s.Deleted = val
 }
 
 // SetAttributes sets the value of Attributes.
