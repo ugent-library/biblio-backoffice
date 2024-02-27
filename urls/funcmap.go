@@ -1,14 +1,20 @@
 package urls
 
 import (
+	"html"
 	"html/template"
 	"net/url"
+	"strings"
 
 	"github.com/go-playground/form/v4"
 	"github.com/nics/ich"
+	"mvdan.cc/xurls/v2"
 )
 
-var queryEncoder = form.NewEncoder()
+var (
+	queryEncoder = form.NewEncoder()
+	reURL, _     = xurls.StrictMatchingScheme("https")
+)
 
 func init() {
 	queryEncoder.SetTagName("query")
@@ -25,6 +31,7 @@ func FuncMap(r *ich.Mux, scheme, host string) template.FuncMap {
 		"queryAdd":   queryAdd,
 		"queryDel":   queryDel,
 		"queryClear": queryClear,
+		"linkify":    linkify,
 	}
 }
 
@@ -85,4 +92,34 @@ func queryClear(u *url.URL) (*url.URL, error) {
 	newU.RawQuery = ""
 
 	return &newU, nil
+}
+
+func linkify(text string) template.HTML {
+	text = html.EscapeString(text)
+
+	matches := reURL.FindAllStringIndex(text, -1)
+
+	b := strings.Builder{}
+	pos := 0
+	for _, match := range matches {
+		before := text[pos:match[0]]
+		if len(before) > 0 {
+			b.WriteString(before)
+		}
+
+		link := text[match[0]:match[1]]
+		b.WriteString(`<a href="`)
+		b.WriteString(link)
+		b.WriteString(`" target="_blank">`)
+		b.WriteString(link)
+		b.WriteString(`</a>`)
+		pos = match[1]
+	}
+
+	after := text[pos:]
+	if len(after) > 0 {
+		b.WriteString(after)
+	}
+
+	return template.HTML(b.String())
 }

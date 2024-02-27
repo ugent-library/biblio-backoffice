@@ -29,6 +29,7 @@ type Repo struct {
 	opts             snapstore.Options
 	// sqlc
 	queries *db.Queries
+	conn    *pgxpool.Pool
 }
 
 type Config struct {
@@ -66,6 +67,7 @@ func New(c Config) (*Repo, error) {
 		publicationStore: client.Store("publications"),
 		datasetStore:     client.Store("datasets"),
 		queries:          db.New(conn),
+		conn:             conn,
 	}, nil
 }
 
@@ -89,6 +91,7 @@ func (s *Repo) tx(ctx context.Context, fn func(*Repo) error) error {
 			publicationStore: s.publicationStore,
 			datasetStore:     s.datasetStore,
 			opts:             opts,
+			queries:          db.New(s.conn),
 		})
 	})
 }
