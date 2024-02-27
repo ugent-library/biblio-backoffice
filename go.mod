@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3
-	github.com/a-h/templ v0.2.432
+	github.com/a-h/templ v0.2.543
 	github.com/alexliesenfeld/health v0.7.0
 	github.com/alitto/pond v1.8.3
 	github.com/aws/aws-sdk-go-v2 v1.21.2
@@ -124,6 +124,7 @@ require (
 	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
+	mvdan.cc/xurls/v2 v2.5.0 // indirect
 )
 
 require (
