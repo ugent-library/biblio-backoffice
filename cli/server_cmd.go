@@ -89,6 +89,7 @@ var serverStartCmd = &cobra.Command{
 		riverWorkers := river.NewWorkers()
 		// river.AddWorker(riverWorkers, jobs.NewDeactivatePeopleWorker(repo))
 		river.AddWorker(riverWorkers, jobs.NewReindexPeopleWorker(services.PeopleRepo, services.PeopleIndex))
+		river.AddWorker(riverWorkers, jobs.NewReindexProjectsWorker(services.ProjectsRepo, services.ProjectsIndex))
 		riverClient, err := river.NewClient(riverpgxv5.New(services.PgxPool), &river.Config{
 			Logger:  logger,
 			Workers: riverWorkers,
@@ -107,6 +108,13 @@ var serverStartCmd = &cobra.Command{
 					river.PeriodicInterval(30*time.Minute),
 					func() (river.JobArgs, *river.InsertOpts) {
 						return jobs.ReindexPeopleArgs{}, nil
+					},
+					&river.PeriodicJobOpts{RunOnStart: true},
+				),
+				river.NewPeriodicJob(
+					river.PeriodicInterval(1*time.Second),
+					func() (river.JobArgs, *river.InsertOpts) {
+						return jobs.ReindexProjectsArgs{}, nil
 					},
 					&river.PeriodicJobOpts{RunOnStart: true},
 				),

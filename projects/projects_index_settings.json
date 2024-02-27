@@ -1,0 +1,126 @@
+{
+    "settings": {
+      "index": {
+        "number_of_shards": "1",
+        "number_of_replicas": "0",
+        "analysis": {
+          "filter": {
+            "phrase_edge_ngram": {
+              "type": "edge_ngram",
+              "min_gram": "2",
+              "max_gram": "50"
+            },
+            "token_edge_ngram": {
+              "type": "edge_ngram",
+              "min_gram": "2",
+              "max_gram": "20"
+            }
+          },
+          "analyzer": {
+            "phrase_edge_ngram": {
+              "filter": [
+                "lowercase",
+                "trim",
+                "icu_folding",
+                "phrase_edge_ngram"
+              ],
+              "char_filter": [
+                "remove_punctuation",
+                "equalize_whitespace"
+              ],
+              "type": "custom",
+              "tokenizer": "keyword"
+            },
+            "tag": {
+              "filter": [
+                "lowercase"
+              ],
+              "type": "custom",
+              "tokenizer": "keyword"
+            },
+            "token_edge_ngram": {
+              "filter": [
+                "lowercase",
+                "icu_folding",
+                "token_edge_ngram"
+              ],
+              "type": "custom",
+              "tokenizer": "standard"
+            },
+            "phrase_edge_ngram_search": {
+              "filter": [
+                "lowercase",
+                "trim",
+                "icu_folding"
+              ],
+              "char_filter": [
+                "remove_punctuation",
+                "equalize_whitespace"
+              ],
+              "type": "custom",
+              "tokenizer": "keyword"
+            },
+            "token_edge_ngram_search": {
+              "filter": [
+                "lowercase",
+                "icu_folding"
+              ],
+              "type": "custom",
+              "tokenizer": "standard"
+            }
+          },
+          "char_filter": {
+            "equalize_whitespace": {
+              "pattern": "(\\s{2,})",
+              "type": "pattern_replace",
+              "replacement": " "
+            },
+            "remove_punctuation": {
+              "pattern": "\\p{Punct}",
+              "type": "pattern_replace",
+              "replacement": " "
+            }
+          }
+        }
+      }
+    },
+    "mappings": {
+      "project": {
+        "dynamic": "false",
+        "properties": {
+          "names": {
+            "type": "text",
+            "copy_to": [
+              "ngram",
+              "phrase_ngram"
+            ]
+          },
+          "descriptions": {
+            "type": "text",
+            "copy_to": [
+              "ngram",
+              "phrase_ngram"
+            ]
+          },
+          "identifiers": {
+            "type": "text",
+            "analyzer": "tag"
+          },
+          "record": {
+            "type": "object",
+            "enabled": "false"
+          },
+          "ngram": {
+            "type": "text",
+            "analyzer": "token_edge_ngram",
+            "search_analyzer": "token_edge_ngram_search"
+          },
+          "phrase_ngram": {
+            "type": "text",
+            "analyzer": "phrase_edge_ngram",
+            "search_analyzer": "phrase_edge_ngram_search"
+          }
+        }
+      }
+    }
+}
