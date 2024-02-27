@@ -170,6 +170,18 @@ func (s *AddPersonRequestPerson) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.Username.Set {
+			e.FieldStart("username")
+			s.Username.Encode(e)
+		}
+	}
+	{
+		if s.Active.Set {
+			e.FieldStart("active")
+			s.Active.Encode(e)
+		}
+	}
+	{
 		if s.Attributes != nil {
 			e.FieldStart("attributes")
 			e.ArrStart()
@@ -181,17 +193,19 @@ func (s *AddPersonRequestPerson) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfAddPersonRequestPerson = [10]string{
-	0: "identifiers",
-	1: "name",
-	2: "preferredName",
-	3: "givenName",
-	4: "preferredGivenName",
-	5: "familyName",
-	6: "preferredFamilyName",
-	7: "honorificPrefix",
-	8: "email",
-	9: "attributes",
+var jsonFieldsNameOfAddPersonRequestPerson = [12]string{
+	0:  "identifiers",
+	1:  "name",
+	2:  "preferredName",
+	3:  "givenName",
+	4:  "preferredGivenName",
+	5:  "familyName",
+	6:  "preferredFamilyName",
+	7:  "honorificPrefix",
+	8:  "email",
+	9:  "username",
+	10: "active",
+	11: "attributes",
 }
 
 // Decode decodes AddPersonRequestPerson from json.
@@ -302,6 +316,26 @@ func (s *AddPersonRequestPerson) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"email\"")
+			}
+		case "username":
+			if err := func() error {
+				s.Username.Reset()
+				if err := s.Username.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"username\"")
+			}
+		case "active":
+			if err := func() error {
+				s.Active.Reset()
+				if err := s.Active.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"active\"")
 			}
 		case "attributes":
 			if err := func() error {
@@ -804,6 +838,41 @@ func (s *Error) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *Error) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes bool as json.
+func (o OptBool) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Bool(bool(o.Value))
+}
+
+// Decode decodes bool from json.
+func (o *OptBool) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptBool to nil")
+	}
+	o.Set = true
+	v, err := d.Bool()
+	if err != nil {
+		return err
+	}
+	o.Value = bool(v)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptBool) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptBool) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

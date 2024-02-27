@@ -9,15 +9,17 @@ CREATE TABLE people (
   preferred_family_name TEXT CHECK (preferred_family_name <> ''),
   honorific_prefix TEXT CHECK (honorific_prefix <> ''),
   email TEXT CHECK (email <> ''),
---   active BOOLEAN DEFAULT false NOT NULL,
---   username TEXT CHECK (username <> ''),
+  active BOOLEAN NOT NULL DEFAULT false,
+  username TEXT CHECK (username <> ''),
   attributes JSONB,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX people_replaced_by_id_fkey on people (replaced_by_id);
-CREATE INDEX people_updated_at_idx on people (updated_at);
+CREATE INDEX people_active_idx ON people (active) WHERE (replaced_by_id IS NULL);
+CREATE INDEX people_username_idx ON people (username) WHERE (replaced_by_id IS NULL);
+CREATE INDEX people_updated_at_idx on people (updated_at) WHERE (replaced_by_id IS NULL);
 
 CREATE TABLE person_identifiers (
   person_id BIGINT NOT NULL REFERENCES people ON DELETE CASCADE,
