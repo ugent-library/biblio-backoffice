@@ -13,6 +13,8 @@ import (
 	"text/template"
 
 	"github.com/elastic/go-elasticsearch/v6"
+	"github.com/elastic/go-elasticsearch/v6/esapi"
+	"github.com/elastic/go-elasticsearch/v6/esutil"
 	index "github.com/ugent-library/index/es6"
 )
 
@@ -49,16 +51,40 @@ func NewIndex(c IndexConfig) (*Index, error) {
 	}, nil
 }
 
-type responseBody[T any] struct {
+type getResponseBody[T any] struct {
+	Source struct {
+		Record T `json:"record"`
+	} `json:"_source"`
+}
+
+type searchResponseBody[T any] struct {
 	Hits struct {
 		// Total int `json:"total"`
 		Hits []struct {
 			ID     string `json:"_id"`
 			Source struct {
-				Record T
+				Record T `json:"record"`
 			} `json:"_source"`
 		} `json:"hits"`
 	} `json:"hits"`
+}
+
+func decodeResponseBody[T any](res *esapi.Response, resBody T) error {
+	defer res.Body.Close()
+
+	if res.IsError() {
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, res.Body); err != nil {
+			return err
+		}
+		return errors.New("elasticsearch: error response: " + buf.String())
+	}
+
+	if err := json.NewDecoder(res.Body).Decode(resBody); err != nil {
+		return fmt.Errorf("elasticsearch: error parsing response body: %w", err)
+	}
+
+	return nil
 }
 
 const searchBody = `{
@@ -97,11 +123,25 @@ var (
 	queryStringTmpl = template.Must(template.New("").Parse(queryStringQuery + searchBody))
 )
 
+func (idx *Index) GetPerson(ctx context.Context, id string) (*Person, error) {
+	res, err := idx.client.Get(idx.alias, id,
+		idx.client.Get.WithSource("record"),
+	)
+	if err != nil {
+		return nil, err
+	}
+	resBody := getResponseBody[*Person]{}
+	if err := decodeResponseBody(res, &resBody); err != nil {
+		return nil, err
+	}
+	return resBody.Source.Record, nil
+}
+
 func (idx *Index) SearchPeople(ctx context.Context, qs string) ([]*Person, error) {
 	qs = strings.TrimSpace(qs)
+
 	b := bytes.Buffer{}
 	tmpl := matchAllTmpl
-
 	if qs != "" {
 		tmpl = queryStringTmpl
 	}
@@ -121,24 +161,15 @@ func (idx *Index) SearchPeople(ctx context.Context, qs string) ([]*Person, error
 		// idx.client.Search.WithTrackTotalHits(true),
 		idx.client.Search.WithBody(strings.NewReader(b.String())),
 		idx.client.Search.WithSort("_score:desc"),
+		idx.client.Search.WithSource("record"),
 	)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
 
-	if res.IsError() {
-		buf := &bytes.Buffer{}
-		if _, err := io.Copy(buf, res.Body); err != nil {
-			return nil, err
-		}
-		return nil, errors.New("elasticsearch: error response: " + buf.String())
-	}
-
-	resBody := &responseBody[*Person]{}
-
-	if err := json.NewDecoder(res.Body).Decode(resBody); err != nil {
-		return nil, fmt.Errorf("elasticsearch: error parsing response body: %w", err)
+	resBody := searchResponseBody[*Person]{}
+	if err := decodeResponseBody(res, &resBody); err != nil {
+		return nil, err
 	}
 
 	recs := make([]*Person, len(resBody.Hits.Hits))
@@ -161,21 +192,18 @@ func (idx *Index) ReindexPeople(ctx context.Context, iter PersonIter) error {
 		return err
 	}
 
-	indexer, err := index.NewIndexer(idx.client, switcher.Name(), index.IndexerConfig{
-		OnIndexSuccess: func(docID string) {
-			// nothing
-		},
-		OnError: func(err error) {
+	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
+		Client:  idx.client,
+		Index:   switcher.Name(),
+		Refresh: "true",
+		OnError: func(ctx context.Context, err error) {
 			idx.logger.ErrorContext(ctx, "index error", slog.Any("error", err))
-		},
-		OnIndexFailure: func(docID string, err error) {
-			idx.logger.ErrorContext(ctx, "index failure", slog.String("doc_id", docID), slog.Any("error", err))
 		},
 	})
 	if err != nil {
 		return err
 	}
-	defer indexer.Close(ctx)
+	defer bi.Close(ctx)
 
 	var indexErr error
 	err = iter(ctx, func(p *Person) bool {
@@ -184,7 +212,23 @@ func (idx *Index) ReindexPeople(ctx context.Context, iter PersonIter) error {
 			indexErr = err
 			return false
 		}
-		indexErr = indexer.Index(ctx, p.Identifiers[0].String(), doc)
+		indexErr = bi.Add(
+			ctx,
+			esutil.BulkIndexerItem{
+				Action:       "index",
+				DocumentID:   p.ID(),
+				DocumentType: "_doc",
+				Body:         bytes.NewReader(doc),
+				OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
+					if err != nil {
+						err = fmt.Errorf("index error: %v", err)
+					} else {
+						err = fmt.Errorf("index error: %s: %s", res.Error.Type, res.Error.Reason)
+					}
+					idx.logger.ErrorContext(ctx, "index failure", slog.String("id", item.DocumentID), slog.Any("error", err))
+				},
+			},
+		)
 		return indexErr == nil
 	})
 	if err != nil {
@@ -206,7 +250,7 @@ type indexPerson struct {
 func newIndexPerson(p *Person) *indexPerson {
 	ip := &indexPerson{
 		Names:       []string{p.Name},
-		Identifiers: make([]string, len(p.Identifiers)),
+		Identifiers: make([]string, 0, len(p.Identifiers)*2),
 		Record:      p,
 	}
 
@@ -216,8 +260,8 @@ func newIndexPerson(p *Person) *indexPerson {
 		}
 	}
 
-	for i, id := range p.Identifiers {
-		ip.Identifiers[i] = id.String()
+	for _, id := range p.Identifiers {
+		ip.Identifiers = append(ip.Identifiers, id.String(), id.Value)
 	}
 
 	return ip

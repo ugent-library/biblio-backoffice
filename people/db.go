@@ -27,6 +27,8 @@ type personRow struct {
 	PreferredFamilyName pgtype.Text
 	HonorificPrefix     pgtype.Text
 	Email               pgtype.Text
+	Active              bool
+	Username            pgtype.Text
 	Attributes          []Attribute
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
@@ -43,6 +45,8 @@ func (row *personRow) toPerson() *Person {
 		PreferredFamilyName: row.PreferredFamilyName.String,
 		HonorificPrefix:     row.HonorificPrefix.String,
 		Email:               row.Email.String,
+		Active:              row.Active,
+		Username:            row.Username.String,
 		Attributes:          row.Attributes,
 		CreatedAt:           row.CreatedAt,
 		UpdatedAt:           row.UpdatedAt,
@@ -60,6 +64,8 @@ SELECT id,
 	   preferred_family_name,
 	   honorific_prefix,
 	   email,
+	   active,
+	   username,
 	   attributes,
 	   created_at,
 	   updated_at
@@ -84,6 +90,8 @@ func getPersonByIdentifier(ctx context.Context, conn Conn, kind, value string) (
 		&r.PreferredFamilyName,
 		&r.HonorificPrefix,
 		&r.Email,
+		&r.Active,
+		&r.Username,
 		&r.Attributes,
 		&r.CreatedAt,
 		&r.UpdatedAt,
@@ -105,6 +113,8 @@ SELECT id,
 	   preferred_family_name,
 	   honorific_prefix,
 	   email,
+	   active,
+	   username,
 	   attributes,
 	   created_at,
 	   updated_at
@@ -124,9 +134,11 @@ INSERT INTO people (
 	preferred_family_name,
 	honorific_prefix,
 	email,
+	active,
+	username,
 	attributes
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 RETURNING id;
 `
 
@@ -141,6 +153,8 @@ func createPerson(ctx context.Context, conn Conn, params AddPersonParams) (int64
 		pgtype.Text{Valid: params.PreferredFamilyName != "", String: params.PreferredFamilyName},
 		pgtype.Text{Valid: params.HonorificPrefix != "", String: params.HonorificPrefix},
 		pgtype.Text{Valid: params.Email != "", String: params.Email},
+		params.Active,
+		pgtype.Text{Valid: params.Username != "", String: params.Username},
 		params.Attributes,
 	).Scan(&id)
 	if err != nil {
@@ -159,7 +173,9 @@ UPDATE people SET
 	preferred_family_name = $7,
 	honorific_prefix = $8,
 	email = $9,
-	attributes = $10,
+	active = $10,
+	username = $11,
+	attributes = $12,
 	updated_at = CURRENT_TIMESTAMP
 WHERE id = $1;
 `
@@ -175,6 +191,8 @@ func updatePerson(ctx context.Context, conn Conn, id int64, params AddPersonPara
 		pgtype.Text{Valid: params.PreferredFamilyName != "", String: params.PreferredFamilyName},
 		pgtype.Text{Valid: params.HonorificPrefix != "", String: params.HonorificPrefix},
 		pgtype.Text{Valid: params.Email != "", String: params.Email},
+		params.Active,
+		pgtype.Text{Valid: params.Username != "", String: params.Username},
 		params.Attributes,
 	)
 	if err != nil {
@@ -210,7 +228,7 @@ func replacePersonIdentifiers(ctx context.Context, conn Conn, pID int64, ids []I
 
 const setPersonReplacedByQuery = `
 UPDATE people
-SET replaced_by_id = $2
+SET replaced_by_id = $2, active = FALSE
 WHERE id = $1;
 `
 

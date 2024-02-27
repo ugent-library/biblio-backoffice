@@ -109,11 +109,11 @@ components:
             email:
               type: string
               minLength: 1
-            # username:
-            #   type: string
-            #   minLength: 1
-            # active:
-            #   type: boolean
+            username:
+              type: string
+              minLength: 1
+            active:
+              type: boolean
             attributes:
               type: array
               items:

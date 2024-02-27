@@ -27,6 +27,10 @@ func NewRepo(c RepoConfig) (*Repo, error) {
 	}, nil
 }
 
+func (r *Repo) GetPerson(ctx context.Context, id string) (*Person, error) {
+	return r.GetPersonByIdentifier(ctx, "id", id)
+}
+
 func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
 	row, err := getPersonByIdentifier(ctx, r.conn, kind, value)
 	if err == pgx.ErrNoRows {
@@ -73,6 +77,8 @@ func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 			&r.PreferredFamilyName,
 			&r.HonorificPrefix,
 			&r.Email,
+			&r.Active,
+			&r.Username,
 			&r.Attributes,
 			&r.CreatedAt,
 			&r.UpdatedAt,
