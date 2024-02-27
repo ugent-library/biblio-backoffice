@@ -2,7 +2,6 @@ package projects
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -24,6 +23,7 @@ type projectRow struct {
 	Descriptions    []Text
 	FoundingDate    pgtype.Text
 	DissolutionDate pgtype.Text
+	Deleted         bool
 	Attributes      []Attribute
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
@@ -36,6 +36,7 @@ func (row *projectRow) toProject() *Project {
 		Descriptions:    row.Descriptions,
 		FoundingDate:    row.FoundingDate.String,
 		DissolutionDate: row.DissolutionDate.String,
+		Deleted:         row.Deleted,
 		Attributes:      row.Attributes,
 		CreatedAt:       row.CreatedAt,
 		UpdatedAt:       row.UpdatedAt,
@@ -49,6 +50,7 @@ SELECT id,
 	   descriptions,
 	   founding_date,
 	   dissolution_date,
+	   deleted,
 	   attributes,
 	   created_at,
 	   updated_at
@@ -69,6 +71,7 @@ func getProjectByIdentifier(ctx context.Context, conn Conn, kind, value string) 
 		&r.Descriptions,
 		&r.FoundingDate,
 		&r.DissolutionDate,
+		&r.Deleted,
 		&r.Attributes,
 		&r.CreatedAt,
 		&r.UpdatedAt,
@@ -87,6 +90,7 @@ SELECT id,
 	   descriptions,
 	   founding_date,
 	   dissolution_date,
+	   deleted,
 	   attributes,
 	   created_at,
 	   updated_at
@@ -102,26 +106,21 @@ INSERT INTO projects (
 	descriptions,
 	founding_date,
 	dissolution_date,
+	deleted,
 	attributes
 )
-VALUES ($1, $2, $3, $4, $5)
+VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING id;
 `
 
 func createProject(ctx context.Context, conn Conn, params AddProjectParams) (int64, error) {
-
-	log.Println("PROJECT")
-	log.Println("PROJECT")
-	log.Printf("%+v", params)
-	log.Println("PROJECT")
-	log.Println("PROJECT")
-
 	var id int64
 	err := conn.QueryRow(ctx, insertProjectQuery,
 		params.Names,
 		params.Descriptions,
 		pgtype.Text{Valid: params.FoundingDate != "", String: params.FoundingDate},
 		pgtype.Text{Valid: params.DissolutionDate != "", String: params.DissolutionDate},
+		params.Deleted,
 		params.Attributes,
 	).Scan(&id)
 	if err != nil {
@@ -137,7 +136,8 @@ UPDATE projects SET
 	descriptions = $3,
 	founding_date = $4,
 	dissolution_date = $5,
-	attributes = $6,
+	deleted = $6,
+	attributes = $7,
 	updated_at = CURRENT_TIMESTAMP
 WHERE id = $1;
 `
@@ -149,6 +149,7 @@ func updateProject(ctx context.Context, conn Conn, id int64, params AddProjectPa
 		params.Descriptions,
 		pgtype.Text{Valid: params.FoundingDate != "", String: params.FoundingDate},
 		pgtype.Text{Valid: params.DissolutionDate != "", String: params.DissolutionDate},
+		params.Deleted,
 		params.Attributes,
 	)
 	if err != nil {

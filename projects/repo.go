@@ -74,6 +74,7 @@ type AddProjectParams struct {
 	Descriptions    []Text
 	FoundingDate    string
 	DissolutionDate string
+	Deleted         bool
 	Attributes      []Attribute
 }
 

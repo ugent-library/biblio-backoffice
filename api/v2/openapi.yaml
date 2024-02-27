@@ -168,6 +168,8 @@ components:
               type: string
             dissolutionDate:
               type: string
+            deleted:
+              type: boolean
             attributes:
               type: array
               items:

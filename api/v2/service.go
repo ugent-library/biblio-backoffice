@@ -90,6 +90,7 @@ func (s *Service) AddProject(ctx context.Context, req *AddProjectRequest) error 
 		FoundingDate:    foundingDate,
 		DissolutionDate: dissolutionDate,
 		Attributes:      attributes,
+		Deleted:         p.Deleted.Value,
 		Identifiers:     identifiers,
 	})
 }
