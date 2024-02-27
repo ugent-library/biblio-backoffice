@@ -51,24 +51,26 @@ func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
 	})
 }
 
-func (s *Service) AddProject(ctx context.Context, p *Project) error {
-	attributes := make([]projects.Attribute, len(p.Attributes))
-	for i, attr := range p.Attributes {
-		attributes[i] = projects.Attribute(attr)
-	}
+func (s *Service) AddProject(ctx context.Context, req *AddProjectRequest) error {
+	p := req.Project
 
 	identifiers := make([]projects.Identifier, len(p.Identifiers))
 	for i, id := range p.Identifiers {
 		identifiers[i] = projects.Identifier(id)
 	}
 
-	names := make([]projects.Text, len(p.Name))
-	for i, name := range p.Name {
+	attributes := make([]projects.Attribute, len(p.Attributes))
+	for i, attr := range p.Attributes {
+		attributes[i] = projects.Attribute(attr)
+	}
+
+	names := make([]projects.Text, len(p.Names))
+	for i, name := range p.Names {
 		names[i] = projects.Text(name)
 	}
 
-	descriptions := make([]projects.Text, len(p.Description))
-	for i, desc := range p.Description {
+	descriptions := make([]projects.Text, len(p.Descriptions))
+	for i, desc := range p.Descriptions {
 		descriptions[i] = projects.Text(desc)
 	}
 
@@ -82,7 +84,7 @@ func (s *Service) AddProject(ctx context.Context, p *Project) error {
 		dissolutionDate = v
 	}
 
-	return s.projectsRepo.AddProject(ctx, &projects.Project{
+	return s.projectsRepo.AddProject(ctx, projects.AddProjectParams{
 		Names:           names,
 		Descriptions:    descriptions,
 		FoundingDate:    foundingDate,

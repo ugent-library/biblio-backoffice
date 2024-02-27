@@ -19,7 +19,7 @@ type Handler interface {
 	// Upsert a project.
 	//
 	// POST /add-project
-	AddProject(ctx context.Context, req *Project) error
+	AddProject(ctx context.Context, req *AddProjectRequest) error
 	// NewError creates *ErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.

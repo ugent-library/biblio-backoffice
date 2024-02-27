@@ -87,7 +87,7 @@ func (s *Server) decodeAddPersonRequest(r *http.Request) (
 }
 
 func (s *Server) decodeAddProjectRequest(r *http.Request) (
-	req *Project,
+	req *AddProjectRequest,
 	close func() error,
 	rerr error,
 ) {
@@ -126,7 +126,7 @@ func (s *Server) decodeAddProjectRequest(r *http.Request) (
 
 		d := jx.DecodeBytes(buf)
 
-		var request Project
+		var request AddProjectRequest
 		if err := func() error {
 			if err := request.Decode(d); err != nil {
 				return err

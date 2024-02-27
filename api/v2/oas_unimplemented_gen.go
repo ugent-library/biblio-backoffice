@@ -27,7 +27,7 @@ func (UnimplementedHandler) AddPerson(ctx context.Context, req *AddPersonRequest
 // Upsert a project.
 //
 // POST /add-project
-func (UnimplementedHandler) AddProject(ctx context.Context, req *Project) error {
+func (UnimplementedHandler) AddProject(ctx context.Context, req *AddProjectRequest) error {
 	return ht.ErrNotImplemented
 }
 
