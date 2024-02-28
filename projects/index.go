@@ -96,25 +96,35 @@ const matchAllQuery = `{{define "query"}}{"match_all": {}}{{end}}`
 
 const queryStringQuery = `{{define "query"}}{
 	"dis_max": {
-		"queries": {
-			"match": {
-				"identifiers": {
-					"query": {{.QueryString}},
-					"operator": "AND",
-					"boost": "100"
-				},
-				"phrase_ngram": {
-					"query": {{.QueryString}},
-					"operator": "AND",
-					"boost": "0.05"
-				},
-				"ngram": {
-					"query": {{.QueryString}},
-					"operator": "AND",
-					"boost": "0.01"
+		"queries": [
+			{
+				"match": {
+					"identifiers": {
+						"query": "{{.QueryString}}",
+						"operator": "AND",
+						"boost": "100"
+					}
+				}
+			},
+			{
+				"match": {
+					"phrase_ngram": {
+						"query": "{{.QueryString}}",
+						"operator": "AND",
+						"boost": "0.05"
+					}
+				}
+			},
+			{
+				"match": {
+					"ngram": {
+						"query": "{{.QueryString}}",
+						"operator": "AND",
+						"boost": "0.01"
+					}
 				}
 			}
-		}
+		]
 	}
 }{{end}}`
 
