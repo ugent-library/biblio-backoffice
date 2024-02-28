@@ -2,6 +2,7 @@ package jobs
 
 import (
 	"context"
+	"time"
 
 	"github.com/riverqueue/river"
 	"github.com/ugent-library/biblio-backoffice/people"
@@ -14,7 +15,8 @@ func (ReindexPeopleArgs) Kind() string { return "reindexPeople" }
 func (ReindexPeopleArgs) InsertOpts() river.InsertOpts {
 	return river.InsertOpts{
 		UniqueOpts: river.UniqueOpts{
-			ByQueue: true,
+			ByArgs:   true,
+			ByPeriod: 30 * time.Minute,
 		},
 	}
 }
