@@ -22,7 +22,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/backends/fsstore"
 	"github.com/ugent-library/biblio-backoffice/backends/handle"
 	"github.com/ugent-library/biblio-backoffice/backends/peopleservice"
-	projectservice "github.com/ugent-library/biblio-backoffice/backends/projects"
 	"github.com/ugent-library/biblio-backoffice/backends/s3store"
 	"github.com/ugent-library/biblio-backoffice/caching"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -143,16 +142,19 @@ func newServices() *backends.Services {
 		OrganizationService: organizationService,
 	}
 
-	projectsClient, err := projectservice.New(projectservice.Config{
-		APIUrl: config.Projects.APIURL,
-		APIKey: config.Projects.APIKey,
-	})
-	if err != nil {
-		panic(err)
-	}
+	// projectsClient, err := projectservice.New(projectservice.Config{
+	// 	APIUrl: config.Projects.APIURL,
+	// 	APIKey: config.Projects.APIKey,
+	// })
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	projectService := caching.NewProjectService(projectsClient)
-	projectSearchService := projectsClient
+	// projectService := caching.NewProjectService(projectsClient)
+	// projectSearchService := projectsClient
+
+	projectService := projects.NewService(projectsRepo)
+	projectSearchService := projects.NewSearchService(projectsIndex)
 
 	repo := newRepo(pool, personService, organizationService, projectService)
 
