@@ -54,6 +54,7 @@ func (r *Repo) EachProject(ctx context.Context, fn func(*Project) bool) error {
 			&r.Descriptions,
 			&r.FoundingDate,
 			&r.DissolutionDate,
+			&r.Deleted,
 			&r.Attributes,
 			&r.CreatedAt,
 			&r.UpdatedAt,

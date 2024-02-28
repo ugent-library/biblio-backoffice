@@ -15,8 +15,6 @@ import (
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/ory/graceful"
-	"github.com/riverqueue/river"
-	"github.com/riverqueue/river/riverdriver/riverpgxv5"
 	"github.com/spf13/cobra"
 	ffclient "github.com/thomaspoignant/go-feature-flag"
 	"github.com/thomaspoignant/go-feature-flag/retriever/fileretriever"
@@ -24,7 +22,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/api/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
-	"github.com/ugent-library/biblio-backoffice/jobs"
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -84,49 +81,6 @@ var serverStartCmd = &cobra.Command{
 			}
 			defer ffclient.Close()
 		}
-
-		// start job server
-		riverWorkers := river.NewWorkers()
-		// river.AddWorker(riverWorkers, jobs.NewDeactivatePeopleWorker(repo))
-		river.AddWorker(riverWorkers, jobs.NewReindexPeopleWorker(services.PeopleRepo, services.PeopleIndex))
-		river.AddWorker(riverWorkers, jobs.NewReindexProjectsWorker(services.ProjectsRepo, services.ProjectsIndex))
-		riverClient, err := river.NewClient(riverpgxv5.New(services.PgxPool), &river.Config{
-			Logger:  logger,
-			Workers: riverWorkers,
-			Queues: map[string]river.QueueConfig{
-				river.QueueDefault: {MaxWorkers: 100},
-			},
-			PeriodicJobs: []*river.PeriodicJob{
-				// river.NewPeriodicJob(
-				// 	river.PeriodicInterval(10*time.Minute),
-				// 	func() (river.JobArgs, *river.InsertOpts) {
-				// 		return jobs.DeactivatePeopleArgs{}, nil
-				// 	},
-				// 	&river.PeriodicJobOpts{RunOnStart: true},
-				// ),
-				river.NewPeriodicJob(
-					river.PeriodicInterval(30*time.Minute),
-					func() (river.JobArgs, *river.InsertOpts) {
-						return jobs.ReindexPeopleArgs{}, nil
-					},
-					&river.PeriodicJobOpts{RunOnStart: true},
-				),
-				river.NewPeriodicJob(
-					river.PeriodicInterval(1*time.Second),
-					func() (river.JobArgs, *river.InsertOpts) {
-						return jobs.ReindexProjectsArgs{}, nil
-					},
-					&river.PeriodicJobOpts{RunOnStart: true},
-				),
-			},
-		})
-		if err != nil {
-			return err
-		}
-		if err := riverClient.Start(context.TODO()); err != nil {
-			return err
-		}
-		defer riverClient.Stop(context.TODO())
 
 		// setup router
 		router, err := buildRouter(services)
