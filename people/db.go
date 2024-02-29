@@ -31,7 +31,7 @@ INSERT INTO organizations (
 	created_at,
 	updated_at
 )
-VALUES ($1, $2, $3, $4, $5)
+VALUES ($1, $2, $3, COALESCE($4,CURRENT_TIMESTAMP), COALESCE($5,CURRENT_TIMESTAMP))
 RETURNING id;
 `
 
