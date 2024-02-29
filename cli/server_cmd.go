@@ -22,6 +22,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/api/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
+	"github.com/ugent-library/biblio-backoffice/jobs"
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -80,6 +81,19 @@ var serverStartCmd = &cobra.Command{
 				return err
 			}
 			defer ffclient.Close()
+		}
+
+		// start jobs
+		err := jobs.Start(context.TODO(), jobs.JobsConfig{
+			PgxPool:       services.PgxPool,
+			PeopleRepo:    services.PeopleRepo,
+			PeopleIndex:   services.PeopleIndex,
+			ProjectsRepo:  services.ProjectsRepo,
+			ProjectsIndex: services.ProjectsIndex,
+			Logger:        logger,
+		})
+		if err != nil {
+			return err
 		}
 
 		// setup router
