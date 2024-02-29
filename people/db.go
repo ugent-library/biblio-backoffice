@@ -2,6 +2,7 @@ package people
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -14,6 +15,67 @@ type Conn interface {
 	Query(context.Context, string, ...any) (pgx.Rows, error)
 	QueryRow(context.Context, string, ...any) pgx.Row
 	Begin(context.Context) (pgx.Tx, error)
+}
+
+const getOrganizationIDQuery = `
+SELECT id
+FROM organizations o
+JOIN organization_identifiers oi ON o.id = oi.organization_id AND oi.kind = $1 and oi.value = $2;
+`
+
+const insertOrganizationQuery = `
+INSERT INTO organizations (
+	parent_id, 
+	names,
+	ceased,
+	created_at,
+	updated_at
+)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id;
+`
+
+const insertOrganizationIdentifierQuery = `
+INSERT INTO organization_identifiers (
+	organization_id,
+	kind,
+	value
+) VALUES ($1, $2, $3);
+`
+
+func insertOrganization(ctx context.Context, conn Conn, o ImportOrganizationParams) error {
+	var id int64
+	var parentID pgtype.Int8
+
+	if ident := o.ParentIdentifier; ident != nil {
+		err := conn.QueryRow(ctx, getOrganizationIDQuery, ident.Kind, ident.Value).Scan(&parentID.Int64)
+		if err == pgx.ErrNoRows {
+			return fmt.Errorf("organization %s not found", ident.String())
+		}
+		if err != nil {
+			return err
+		}
+		parentID.Valid = true
+	}
+
+	err := conn.QueryRow(ctx, insertOrganizationQuery,
+		parentID,
+		o.Names,
+		o.Ceased,
+		o.CreatedAt,
+		o.UpdatedAt,
+	).Scan(&id)
+	if err != nil {
+		return err
+	}
+
+	for _, ident := range o.Identifiers {
+		if _, err := conn.Exec(ctx, insertOrganizationIdentifierQuery, id, ident.Kind, ident.Value); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 type personRow struct {

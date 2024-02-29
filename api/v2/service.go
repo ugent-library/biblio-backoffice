@@ -22,6 +22,43 @@ func NewService(
 	}
 }
 
+func (s *Service) ImportOrganizations(ctx context.Context, req ImportOrganizationsRequest) error {
+	iter := func(ctx context.Context, fn func(people.ImportOrganizationParams) bool) error {
+		for _, in := range req {
+			identifiers := make([]people.Identifier, len(in.Identifiers))
+			for i, ident := range in.Identifiers {
+				identifiers[i] = people.Identifier(ident)
+			}
+			names := make([]people.Text, len(in.Names))
+			for i, text := range in.Names {
+				names[i] = people.Text(text)
+			}
+			out := people.ImportOrganizationParams{
+				Identifiers: identifiers,
+				Names:       names,
+				Ceased:      in.Ceased.Value,
+			}
+			if in.ParentIdentifier.Set {
+				ident := people.Identifier(in.ParentIdentifier.Value)
+				out.ParentIdentifier = &ident
+			}
+			if in.CreatedAt.Set {
+				out.CreatedAt = &in.CreatedAt.Value
+			}
+			if in.UpdatedAt.Set {
+				out.UpdatedAt = &in.UpdatedAt.Value
+			}
+			if !fn(out) {
+				break
+			}
+		}
+
+		return nil
+	}
+
+	return s.peopleRepo.ImportOrganizations(ctx, iter)
+}
+
 func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
 	p := req.Person
 

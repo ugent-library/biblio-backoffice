@@ -4,6 +4,7 @@ package api
 
 import (
 	"fmt"
+	"time"
 )
 
 func (s *ErrorStatusCode) Error() string {
@@ -29,22 +30,22 @@ func (s *AddPersonRequest) SetPerson(val AddPersonRequestPerson) {
 }
 
 type AddPersonRequestPerson struct {
-	Identifiers         []PersonIdentifier `json:"identifiers"`
-	Name                string             `json:"name"`
-	PreferredName       OptString          `json:"preferredName"`
-	GivenName           OptString          `json:"givenName"`
-	PreferredGivenName  OptString          `json:"preferredGivenName"`
-	FamilyName          OptString          `json:"familyName"`
-	PreferredFamilyName OptString          `json:"preferredFamilyName"`
-	HonorificPrefix     OptString          `json:"honorificPrefix"`
-	Email               OptString          `json:"email"`
-	Username            OptString          `json:"username"`
-	Active              OptBool            `json:"active"`
-	Attributes          []PersonAttribute  `json:"attributes"`
+	Identifiers         []Identifier `json:"identifiers"`
+	Name                string       `json:"name"`
+	PreferredName       OptString    `json:"preferredName"`
+	GivenName           OptString    `json:"givenName"`
+	PreferredGivenName  OptString    `json:"preferredGivenName"`
+	FamilyName          OptString    `json:"familyName"`
+	PreferredFamilyName OptString    `json:"preferredFamilyName"`
+	HonorificPrefix     OptString    `json:"honorificPrefix"`
+	Email               OptString    `json:"email"`
+	Username            OptString    `json:"username"`
+	Active              OptBool      `json:"active"`
+	Attributes          []Attribute  `json:"attributes"`
 }
 
 // GetIdentifiers returns the value of Identifiers.
-func (s *AddPersonRequestPerson) GetIdentifiers() []PersonIdentifier {
+func (s *AddPersonRequestPerson) GetIdentifiers() []Identifier {
 	return s.Identifiers
 }
 
@@ -99,12 +100,12 @@ func (s *AddPersonRequestPerson) GetActive() OptBool {
 }
 
 // GetAttributes returns the value of Attributes.
-func (s *AddPersonRequestPerson) GetAttributes() []PersonAttribute {
+func (s *AddPersonRequestPerson) GetAttributes() []Attribute {
 	return s.Attributes
 }
 
 // SetIdentifiers sets the value of Identifiers.
-func (s *AddPersonRequestPerson) SetIdentifiers(val []PersonIdentifier) {
+func (s *AddPersonRequestPerson) SetIdentifiers(val []Identifier) {
 	s.Identifiers = val
 }
 
@@ -159,7 +160,7 @@ func (s *AddPersonRequestPerson) SetActive(val OptBool) {
 }
 
 // SetAttributes sets the value of Attributes.
-func (s *AddPersonRequestPerson) SetAttributes(val []PersonAttribute) {
+func (s *AddPersonRequestPerson) SetAttributes(val []Attribute) {
 	s.Attributes = val
 }
 
@@ -182,27 +183,27 @@ func (s *AddProjectRequest) SetProject(val AddProjectRequestProject) {
 }
 
 type AddProjectRequestProject struct {
-	Identifiers     []ProjectIdentifier `json:"identifiers"`
-	Names           []ProjectText       `json:"names"`
-	Descriptions    []ProjectText       `json:"descriptions"`
-	FoundingDate    OptString           `json:"foundingDate"`
-	DissolutionDate OptString           `json:"dissolutionDate"`
-	Deleted         OptBool             `json:"deleted"`
-	Attributes      []ProjectAttribute  `json:"attributes"`
+	Identifiers     []Identifier `json:"identifiers"`
+	Names           []Text       `json:"names"`
+	Descriptions    []Text       `json:"descriptions"`
+	FoundingDate    OptString    `json:"foundingDate"`
+	DissolutionDate OptString    `json:"dissolutionDate"`
+	Deleted         OptBool      `json:"deleted"`
+	Attributes      []Attribute  `json:"attributes"`
 }
 
 // GetIdentifiers returns the value of Identifiers.
-func (s *AddProjectRequestProject) GetIdentifiers() []ProjectIdentifier {
+func (s *AddProjectRequestProject) GetIdentifiers() []Identifier {
 	return s.Identifiers
 }
 
 // GetNames returns the value of Names.
-func (s *AddProjectRequestProject) GetNames() []ProjectText {
+func (s *AddProjectRequestProject) GetNames() []Text {
 	return s.Names
 }
 
 // GetDescriptions returns the value of Descriptions.
-func (s *AddProjectRequestProject) GetDescriptions() []ProjectText {
+func (s *AddProjectRequestProject) GetDescriptions() []Text {
 	return s.Descriptions
 }
 
@@ -222,22 +223,22 @@ func (s *AddProjectRequestProject) GetDeleted() OptBool {
 }
 
 // GetAttributes returns the value of Attributes.
-func (s *AddProjectRequestProject) GetAttributes() []ProjectAttribute {
+func (s *AddProjectRequestProject) GetAttributes() []Attribute {
 	return s.Attributes
 }
 
 // SetIdentifiers sets the value of Identifiers.
-func (s *AddProjectRequestProject) SetIdentifiers(val []ProjectIdentifier) {
+func (s *AddProjectRequestProject) SetIdentifiers(val []Identifier) {
 	s.Identifiers = val
 }
 
 // SetNames sets the value of Names.
-func (s *AddProjectRequestProject) SetNames(val []ProjectText) {
+func (s *AddProjectRequestProject) SetNames(val []Text) {
 	s.Names = val
 }
 
 // SetDescriptions sets the value of Descriptions.
-func (s *AddProjectRequestProject) SetDescriptions(val []ProjectText) {
+func (s *AddProjectRequestProject) SetDescriptions(val []Text) {
 	s.Descriptions = val
 }
 
@@ -257,7 +258,7 @@ func (s *AddProjectRequestProject) SetDeleted(val OptBool) {
 }
 
 // SetAttributes sets the value of Attributes.
-func (s *AddProjectRequestProject) SetAttributes(val []ProjectAttribute) {
+func (s *AddProjectRequestProject) SetAttributes(val []Attribute) {
 	s.Attributes = val
 }
 
@@ -273,6 +274,43 @@ func (s *ApiKey) GetAPIKey() string {
 // SetAPIKey sets the value of APIKey.
 func (s *ApiKey) SetAPIKey(val string) {
 	s.APIKey = val
+}
+
+// Ref: #/components/schemas/Attribute
+type Attribute struct {
+	Scope string `json:"scope"`
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+// GetScope returns the value of Scope.
+func (s *Attribute) GetScope() string {
+	return s.Scope
+}
+
+// GetKey returns the value of Key.
+func (s *Attribute) GetKey() string {
+	return s.Key
+}
+
+// GetValue returns the value of Value.
+func (s *Attribute) GetValue() string {
+	return s.Value
+}
+
+// SetScope sets the value of Scope.
+func (s *Attribute) SetScope(val string) {
+	s.Scope = val
+}
+
+// SetKey sets the value of Key.
+func (s *Attribute) SetKey(val string) {
+	s.Key = val
+}
+
+// SetValue sets the value of Value.
+func (s *Attribute) SetValue(val string) {
+	s.Value = val
 }
 
 // Ref: #/components/schemas/Error
@@ -327,6 +365,107 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
 }
 
+// Ref: #/components/schemas/Identifier
+type Identifier struct {
+	Kind  string `json:"kind"`
+	Value string `json:"value"`
+}
+
+// GetKind returns the value of Kind.
+func (s *Identifier) GetKind() string {
+	return s.Kind
+}
+
+// GetValue returns the value of Value.
+func (s *Identifier) GetValue() string {
+	return s.Value
+}
+
+// SetKind sets the value of Kind.
+func (s *Identifier) SetKind(val string) {
+	s.Kind = val
+}
+
+// SetValue sets the value of Value.
+func (s *Identifier) SetValue(val string) {
+	s.Value = val
+}
+
+// Ref: #/components/schemas/ImportOrganizationParams
+type ImportOrganizationParams struct {
+	Identifiers      []Identifier  `json:"identifiers"`
+	ParentIdentifier OptIdentifier `json:"parentIdentifier"`
+	Names            []Text        `json:"names"`
+	Ceased           OptBool       `json:"ceased"`
+	CreatedAt        OptDateTime   `json:"createdAt"`
+	UpdatedAt        OptDateTime   `json:"updatedAt"`
+}
+
+// GetIdentifiers returns the value of Identifiers.
+func (s *ImportOrganizationParams) GetIdentifiers() []Identifier {
+	return s.Identifiers
+}
+
+// GetParentIdentifier returns the value of ParentIdentifier.
+func (s *ImportOrganizationParams) GetParentIdentifier() OptIdentifier {
+	return s.ParentIdentifier
+}
+
+// GetNames returns the value of Names.
+func (s *ImportOrganizationParams) GetNames() []Text {
+	return s.Names
+}
+
+// GetCeased returns the value of Ceased.
+func (s *ImportOrganizationParams) GetCeased() OptBool {
+	return s.Ceased
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *ImportOrganizationParams) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *ImportOrganizationParams) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
+// SetIdentifiers sets the value of Identifiers.
+func (s *ImportOrganizationParams) SetIdentifiers(val []Identifier) {
+	s.Identifiers = val
+}
+
+// SetParentIdentifier sets the value of ParentIdentifier.
+func (s *ImportOrganizationParams) SetParentIdentifier(val OptIdentifier) {
+	s.ParentIdentifier = val
+}
+
+// SetNames sets the value of Names.
+func (s *ImportOrganizationParams) SetNames(val []Text) {
+	s.Names = val
+}
+
+// SetCeased sets the value of Ceased.
+func (s *ImportOrganizationParams) SetCeased(val OptBool) {
+	s.Ceased = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *ImportOrganizationParams) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *ImportOrganizationParams) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
+}
+
+// ImportOrganizationsOK is response for ImportOrganizations operation.
+type ImportOrganizationsOK struct{}
+
+type ImportOrganizationsRequest []ImportOrganizationParams
+
 // NewOptBool returns new OptBool with value set to v.
 func NewOptBool(v bool) OptBool {
 	return OptBool{
@@ -367,6 +506,98 @@ func (o OptBool) Get() (v bool, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptBool) Or(d bool) bool {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptDateTime returns new OptDateTime with value set to v.
+func NewOptDateTime(v time.Time) OptDateTime {
+	return OptDateTime{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDateTime is optional time.Time.
+type OptDateTime struct {
+	Value time.Time
+	Set   bool
+}
+
+// IsSet returns true if OptDateTime was set.
+func (o OptDateTime) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDateTime) Reset() {
+	var v time.Time
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDateTime) SetTo(v time.Time) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDateTime) Get() (v time.Time, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDateTime) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptIdentifier returns new OptIdentifier with value set to v.
+func NewOptIdentifier(v Identifier) OptIdentifier {
+	return OptIdentifier{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptIdentifier is optional Identifier.
+type OptIdentifier struct {
+	Value Identifier
+	Set   bool
+}
+
+// IsSet returns true if OptIdentifier was set.
+func (o OptIdentifier) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptIdentifier) Reset() {
+	var v Identifier
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptIdentifier) SetTo(v Identifier) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptIdentifier) Get() (v Identifier, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptIdentifier) Or(d Identifier) Identifier {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -419,154 +650,28 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
-// Ref: #/components/schemas/PersonAttribute
-type PersonAttribute struct {
-	Scope string `json:"scope"`
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-// GetScope returns the value of Scope.
-func (s *PersonAttribute) GetScope() string {
-	return s.Scope
-}
-
-// GetKey returns the value of Key.
-func (s *PersonAttribute) GetKey() string {
-	return s.Key
-}
-
-// GetValue returns the value of Value.
-func (s *PersonAttribute) GetValue() string {
-	return s.Value
-}
-
-// SetScope sets the value of Scope.
-func (s *PersonAttribute) SetScope(val string) {
-	s.Scope = val
-}
-
-// SetKey sets the value of Key.
-func (s *PersonAttribute) SetKey(val string) {
-	s.Key = val
-}
-
-// SetValue sets the value of Value.
-func (s *PersonAttribute) SetValue(val string) {
-	s.Value = val
-}
-
-// Ref: #/components/schemas/PersonIdentifier
-type PersonIdentifier struct {
-	Kind  string `json:"kind"`
-	Value string `json:"value"`
-}
-
-// GetKind returns the value of Kind.
-func (s *PersonIdentifier) GetKind() string {
-	return s.Kind
-}
-
-// GetValue returns the value of Value.
-func (s *PersonIdentifier) GetValue() string {
-	return s.Value
-}
-
-// SetKind sets the value of Kind.
-func (s *PersonIdentifier) SetKind(val string) {
-	s.Kind = val
-}
-
-// SetValue sets the value of Value.
-func (s *PersonIdentifier) SetValue(val string) {
-	s.Value = val
-}
-
-// Ref: #/components/schemas/ProjectAttribute
-type ProjectAttribute struct {
-	Scope string `json:"scope"`
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-// GetScope returns the value of Scope.
-func (s *ProjectAttribute) GetScope() string {
-	return s.Scope
-}
-
-// GetKey returns the value of Key.
-func (s *ProjectAttribute) GetKey() string {
-	return s.Key
-}
-
-// GetValue returns the value of Value.
-func (s *ProjectAttribute) GetValue() string {
-	return s.Value
-}
-
-// SetScope sets the value of Scope.
-func (s *ProjectAttribute) SetScope(val string) {
-	s.Scope = val
-}
-
-// SetKey sets the value of Key.
-func (s *ProjectAttribute) SetKey(val string) {
-	s.Key = val
-}
-
-// SetValue sets the value of Value.
-func (s *ProjectAttribute) SetValue(val string) {
-	s.Value = val
-}
-
-// Ref: #/components/schemas/ProjectIdentifier
-type ProjectIdentifier struct {
-	Kind  string `json:"kind"`
-	Value string `json:"value"`
-}
-
-// GetKind returns the value of Kind.
-func (s *ProjectIdentifier) GetKind() string {
-	return s.Kind
-}
-
-// GetValue returns the value of Value.
-func (s *ProjectIdentifier) GetValue() string {
-	return s.Value
-}
-
-// SetKind sets the value of Kind.
-func (s *ProjectIdentifier) SetKind(val string) {
-	s.Kind = val
-}
-
-// SetValue sets the value of Value.
-func (s *ProjectIdentifier) SetValue(val string) {
-	s.Value = val
-}
-
-// Ref: #/components/schemas/ProjectText
-type ProjectText struct {
+// Ref: #/components/schemas/Text
+type Text struct {
 	Lang  string `json:"lang"`
 	Value string `json:"value"`
 }
 
 // GetLang returns the value of Lang.
-func (s *ProjectText) GetLang() string {
+func (s *Text) GetLang() string {
 	return s.Lang
 }
 
 // GetValue returns the value of Value.
-func (s *ProjectText) GetValue() string {
+func (s *Text) GetValue() string {
 	return s.Value
 }
 
 // SetLang sets the value of Lang.
-func (s *ProjectText) SetLang(val string) {
+func (s *Text) SetLang(val string) {
 	s.Lang = val
 }
 
 // SetValue sets the value of Value.
-func (s *ProjectText) SetValue(val string) {
+func (s *Text) SetValue(val string) {
 	s.Value = val
 }

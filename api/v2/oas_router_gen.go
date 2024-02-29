@@ -48,9 +48,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/add-p"
+		case '/': // Prefix: "/"
 			origElem := elem
-			if l := len("/add-p"); len(elem) >= l && elem[0:l] == "/add-p" {
+			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 				elem = elem[l:]
 			} else {
 				break
@@ -60,30 +60,66 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
-			case 'e': // Prefix: "erson"
+			case 'a': // Prefix: "add-p"
 				origElem := elem
-				if l := len("erson"); len(elem) >= l && elem[0:l] == "erson" {
+				if l := len("add-p"); len(elem) >= l && elem[0:l] == "add-p" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
-					switch r.Method {
-					case "POST":
-						s.handleAddPersonRequest([0]string{}, elemIsEscaped, w, r)
-					default:
-						s.notAllowed(w, r, "POST")
+					break
+				}
+				switch elem[0] {
+				case 'e': // Prefix: "erson"
+					origElem := elem
+					if l := len("erson"); len(elem) >= l && elem[0:l] == "erson" {
+						elem = elem[l:]
+					} else {
+						break
 					}
 
-					return
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleAddPersonRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "POST")
+						}
+
+						return
+					}
+
+					elem = origElem
+				case 'r': // Prefix: "roject"
+					origElem := elem
+					if l := len("roject"); len(elem) >= l && elem[0:l] == "roject" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleAddProjectRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "POST")
+						}
+
+						return
+					}
+
+					elem = origElem
 				}
 
 				elem = origElem
-			case 'r': // Prefix: "roject"
+			case 'i': // Prefix: "import-organizations"
 				origElem := elem
-				if l := len("roject"); len(elem) >= l && elem[0:l] == "roject" {
+				if l := len("import-organizations"); len(elem) >= l && elem[0:l] == "import-organizations" {
 					elem = elem[l:]
 				} else {
 					break
@@ -93,7 +129,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					// Leaf node.
 					switch r.Method {
 					case "POST":
-						s.handleAddProjectRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleImportOrganizationsRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "POST")
 					}
@@ -185,9 +221,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/add-p"
+		case '/': // Prefix: "/"
 			origElem := elem
-			if l := len("/add-p"); len(elem) >= l && elem[0:l] == "/add-p" {
+			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 				elem = elem[l:]
 			} else {
 				break
@@ -197,34 +233,74 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
-			case 'e': // Prefix: "erson"
+			case 'a': // Prefix: "add-p"
 				origElem := elem
-				if l := len("erson"); len(elem) >= l && elem[0:l] == "erson" {
+				if l := len("add-p"); len(elem) >= l && elem[0:l] == "add-p" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					switch method {
-					case "POST":
-						// Leaf: AddPerson
-						r.name = "AddPerson"
-						r.summary = "Upsert a person"
-						r.operationID = "addPerson"
-						r.pathPattern = "/add-person"
-						r.args = args
-						r.count = 0
-						return r, true
-					default:
-						return
+					break
+				}
+				switch elem[0] {
+				case 'e': // Prefix: "erson"
+					origElem := elem
+					if l := len("erson"); len(elem) >= l && elem[0:l] == "erson" {
+						elem = elem[l:]
+					} else {
+						break
 					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "POST":
+							// Leaf: AddPerson
+							r.name = "AddPerson"
+							r.summary = "Upsert a person"
+							r.operationID = "addPerson"
+							r.pathPattern = "/add-person"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+					elem = origElem
+				case 'r': // Prefix: "roject"
+					origElem := elem
+					if l := len("roject"); len(elem) >= l && elem[0:l] == "roject" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "POST":
+							// Leaf: AddProject
+							r.name = "AddProject"
+							r.summary = "Upsert a project"
+							r.operationID = "addProject"
+							r.pathPattern = "/add-project"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+					elem = origElem
 				}
 
 				elem = origElem
-			case 'r': // Prefix: "roject"
+			case 'i': // Prefix: "import-organizations"
 				origElem := elem
-				if l := len("roject"); len(elem) >= l && elem[0:l] == "roject" {
+				if l := len("import-organizations"); len(elem) >= l && elem[0:l] == "import-organizations" {
 					elem = elem[l:]
 				} else {
 					break
@@ -233,11 +309,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				if len(elem) == 0 {
 					switch method {
 					case "POST":
-						// Leaf: AddProject
-						r.name = "AddProject"
-						r.summary = "Upsert a project"
-						r.operationID = "addProject"
-						r.pathPattern = "/add-project"
+						// Leaf: ImportOrganizations
+						r.name = "ImportOrganizations"
+						r.summary = "Import organization hierarchy"
+						r.operationID = "importOrganizations"
+						r.pathPattern = "/import-organizations"
 						r.args = args
 						r.count = 0
 						return r, true

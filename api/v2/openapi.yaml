@@ -8,6 +8,23 @@ info:
   version: 0.0.1
 
 paths:
+  "/import-organizations":
+    post:
+      summary: Import organization hierarchy
+      description: Import organization hierarchy
+      operationId: importOrganizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportOrganizationsRequest"
+        required: true
+      responses:
+        '200':
+          description: Success
+        default:
+          $ref: "#/components/responses/Error"
+
   "/add-person":
     post:
       summary: Upsert a person
@@ -74,6 +91,35 @@ components:
         - code
         - message
 
+    ImportOrganizationsRequest:
+      type: array
+      items:
+        $ref: "#/components/schemas/ImportOrganizationParams" 
+
+    ImportOrganizationParams:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Identifier"
+          minItems: 1
+        parentIdentifier:
+            $ref: "#/components/schemas/Identifier"
+        names:
+          type: array
+          items:
+            $ref: "#/components/schemas/Text"
+        ceased:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [identifiers]
+
     AddPersonRequest:
       type: object
       properties:
@@ -83,7 +129,7 @@ components:
             identifiers:
               type: array
               items:
-                $ref: "#/components/schemas/PersonIdentifier"
+                $ref: "#/components/schemas/Identifier"
               minItems: 1
             name:
               type: string
@@ -117,34 +163,9 @@ components:
             attributes:
               type: array
               items:
-                $ref: "#/components/schemas/PersonAttribute"
+                $ref: "#/components/schemas/Attribute"
           required: [identifiers, name]
       required: [person]
-
-    PersonIdentifier:
-      type: object
-      properties:
-        kind:
-          type: string
-          minLength: 1
-        value:
-          type: string
-          minLength: 1
-      required: [kind, value]
-
-    PersonAttribute:
-      type: object
-      properties:
-        scope:
-          type: string
-          minLength: 1
-        key:
-          type: string
-          minLength: 1
-        value:
-          type: string
-          minLength: 1
-      required: [scope, key, value]
 
     AddProjectRequest:
       type: object
@@ -155,15 +176,15 @@ components:
             identifiers:
               type: array
               items:
-                $ref: "#/components/schemas/ProjectIdentifier"
+                $ref: "#/components/schemas/Identifier"
             names:
               type: array
               items:
-                $ref: "#/components/schemas/ProjectText"
+                $ref: "#/components/schemas/Text"
             descriptions:
               type: array
               items:
-                $ref: "#/components/schemas/ProjectText"
+                $ref: "#/components/schemas/Text"
             foundingDate:
               type: string
             dissolutionDate:
@@ -173,11 +194,11 @@ components:
             attributes:
               type: array
               items:
-                $ref: "#/components/schemas/ProjectAttribute"
+                $ref: "#/components/schemas/Attribute"
           required: [identifiers]
       required: [project]
 
-    ProjectAttribute:
+    Attribute:
       type: object
       properties:
         scope:
@@ -191,7 +212,7 @@ components:
           minLength: 1
       required: [scope, key, value]
 
-    ProjectIdentifier:
+    Identifier:
       type: object
       properties:
         kind:
@@ -202,7 +223,7 @@ components:
           minLength: 1
       required: [kind, value]
     
-    ProjectText:
+    Text:
       type: object
       properties:
         lang:

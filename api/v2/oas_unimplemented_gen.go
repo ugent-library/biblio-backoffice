@@ -31,6 +31,15 @@ func (UnimplementedHandler) AddProject(ctx context.Context, req *AddProjectReque
 	return ht.ErrNotImplemented
 }
 
+// ImportOrganizations implements importOrganizations operation.
+//
+// Import organization hierarchy.
+//
+// POST /import-organizations
+func (UnimplementedHandler) ImportOrganizations(ctx context.Context, req ImportOrganizationsRequest) error {
+	return ht.ErrNotImplemented
+}
+
 // NewError creates *ErrorStatusCode from error returned by handler.
 //
 // Used for common default response.

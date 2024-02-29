@@ -181,7 +181,7 @@ func (idx *Index) SearchPeople(ctx context.Context, qs string) ([]*Person, error
 	return recs, nil
 }
 
-func (idx *Index) ReindexPeople(ctx context.Context, iter PersonIter) error {
+func (idx *Index) ReindexPeople(ctx context.Context, iter Iter[*Person]) error {
 	b, err := indexSettingsFS.ReadFile("people_index_settings.json")
 	if err != nil {
 		return err
