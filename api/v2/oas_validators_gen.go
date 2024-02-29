@@ -471,7 +471,7 @@ func (s *AddProjectRequestProject) Validate() error {
 	return nil
 }
 
-func (s *PersonAttribute) Validate() error {
+func (s *Attribute) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
 	}
@@ -540,7 +540,7 @@ func (s *PersonAttribute) Validate() error {
 	return nil
 }
 
-func (s *PersonIdentifier) Validate() error {
+func (s *Identifier) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
 	}
@@ -590,66 +590,88 @@ func (s *PersonIdentifier) Validate() error {
 	return nil
 }
 
-func (s *ProjectAttribute) Validate() error {
+func (s *ImportOrganizationParams) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
 	}
 
 	var failures []validate.FieldError
 	if err := func() error {
-		if err := (validate.String{
+		if s.Identifiers == nil {
+			return errors.New("nil is invalid value")
+		}
+		if err := (validate.Array{
 			MinLength:    1,
 			MinLengthSet: true,
 			MaxLength:    0,
 			MaxLengthSet: false,
-			Email:        false,
-			Hostname:     false,
-			Regex:        nil,
-		}).Validate(string(s.Scope)); err != nil {
-			return errors.Wrap(err, "string")
+		}).ValidateLength(len(s.Identifiers)); err != nil {
+			return errors.Wrap(err, "array")
+		}
+		var failures []validate.FieldError
+		for i, elem := range s.Identifiers {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
 		}
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
-			Name:  "scope",
+			Name:  "identifiers",
 			Error: err,
 		})
 	}
 	if err := func() error {
-		if err := (validate.String{
-			MinLength:    1,
-			MinLengthSet: true,
-			MaxLength:    0,
-			MaxLengthSet: false,
-			Email:        false,
-			Hostname:     false,
-			Regex:        nil,
-		}).Validate(string(s.Key)); err != nil {
-			return errors.Wrap(err, "string")
+		if value, ok := s.ParentIdentifier.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
 		}
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
-			Name:  "key",
+			Name:  "parentIdentifier",
 			Error: err,
 		})
 	}
 	if err := func() error {
-		if err := (validate.String{
-			MinLength:    1,
-			MinLengthSet: true,
-			MaxLength:    0,
-			MaxLengthSet: false,
-			Email:        false,
-			Hostname:     false,
-			Regex:        nil,
-		}).Validate(string(s.Value)); err != nil {
-			return errors.Wrap(err, "string")
+		var failures []validate.FieldError
+		for i, elem := range s.Names {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
 		}
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
-			Name:  "value",
+			Name:  "names",
 			Error: err,
 		})
 	}
@@ -659,49 +681,24 @@ func (s *ProjectAttribute) Validate() error {
 	return nil
 }
 
-func (s *ProjectIdentifier) Validate() error {
-	if s == nil {
-		return validate.ErrNilPointer
+func (s ImportOrganizationsRequest) Validate() error {
+	alias := ([]ImportOrganizationParams)(s)
+	if alias == nil {
+		return errors.New("nil is invalid value")
 	}
-
 	var failures []validate.FieldError
-	if err := func() error {
-		if err := (validate.String{
-			MinLength:    1,
-			MinLengthSet: true,
-			MaxLength:    0,
-			MaxLengthSet: false,
-			Email:        false,
-			Hostname:     false,
-			Regex:        nil,
-		}).Validate(string(s.Kind)); err != nil {
-			return errors.Wrap(err, "string")
+	for i, elem := range alias {
+		if err := func() error {
+			if err := elem.Validate(); err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			failures = append(failures, validate.FieldError{
+				Name:  fmt.Sprintf("[%d]", i),
+				Error: err,
+			})
 		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "kind",
-			Error: err,
-		})
-	}
-	if err := func() error {
-		if err := (validate.String{
-			MinLength:    1,
-			MinLengthSet: true,
-			MaxLength:    0,
-			MaxLengthSet: false,
-			Email:        false,
-			Hostname:     false,
-			Regex:        nil,
-		}).Validate(string(s.Value)); err != nil {
-			return errors.Wrap(err, "string")
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "value",
-			Error: err,
-		})
 	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
@@ -709,7 +706,7 @@ func (s *ProjectIdentifier) Validate() error {
 	return nil
 }
 
-func (s *ProjectText) Validate() error {
+func (s *Text) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
 	}

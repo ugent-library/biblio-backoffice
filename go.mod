@@ -13,7 +13,6 @@ require (
 	github.com/caarlos0/env/v10 v10.0.0
 	github.com/caltechlibrary/doitools v0.0.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
-	github.com/georgysavva/scany/v2 v2.1.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0

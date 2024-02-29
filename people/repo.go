@@ -27,6 +27,33 @@ func NewRepo(c RepoConfig) (*Repo, error) {
 	}, nil
 }
 
+// TODO make idempotent, do nothing if an ident exists
+func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganizationParams]) error {
+	tx, err := r.conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	var iterErr error
+	err = iter(ctx, func(o ImportOrganizationParams) bool {
+		if o.Identifiers.Get(idKind) == "" {
+			o.Identifiers = append(o.Identifiers, newID())
+		}
+
+		iterErr = insertOrganization(ctx, tx, o)
+		return iterErr == nil
+	})
+	if iterErr != nil {
+		return iterErr
+	}
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
+}
+
 func (r *Repo) GetPerson(ctx context.Context, id string) (*Person, error) {
 	return r.GetPersonByIdentifier(ctx, "id", id)
 }
