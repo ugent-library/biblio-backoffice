@@ -99,8 +99,8 @@ func toProject(rp *Project) models.Project {
 		}
 	}
 
-	p.StartDate = rp.FoundingDate
-	p.EndDate = rp.DissolutionDate
+	p.StartDate = rp.StartDate
+	p.EndDate = rp.EndDate
 
 	return p
 }

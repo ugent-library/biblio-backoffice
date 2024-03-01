@@ -277,9 +277,9 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Text"
-            foundingDate:
+            startDate:
               type: string
-            dissolutionDate:
+            endDate:
               type: string
             deleted:
               type: boolean

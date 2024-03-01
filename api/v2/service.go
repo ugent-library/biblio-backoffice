@@ -92,24 +92,24 @@ func (s *Service) AddProject(ctx context.Context, req *AddProjectRequest) error 
 		descriptions[i] = projects.Text(desc)
 	}
 
-	foundingDate := ""
-	if v, ok := p.GetFoundingDate().Get(); ok {
-		foundingDate = v
+	startDate := ""
+	if v, ok := p.GetStartDate().Get(); ok {
+		startDate = v
 	}
 
-	dissolutionDate := ""
-	if v, ok := p.GetDissolutionDate().Get(); ok {
-		dissolutionDate = v
+	endDate := ""
+	if v, ok := p.GetEndDate().Get(); ok {
+		endDate = v
 	}
 
 	return s.projectsRepo.AddProject(ctx, projects.AddProjectParams{
-		Names:           names,
-		Descriptions:    descriptions,
-		FoundingDate:    foundingDate,
-		DissolutionDate: dissolutionDate,
-		Attributes:      attributes,
-		Deleted:         p.Deleted.Value,
-		Identifiers:     identifiers,
+		Names:        names,
+		Descriptions: descriptions,
+		StartDate:    startDate,
+		EndDate:      endDate,
+		Attributes:   attributes,
+		Deleted:      p.Deleted.Value,
+		Identifiers:  identifiers,
 	})
 }
 

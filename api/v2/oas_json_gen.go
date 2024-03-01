@@ -545,15 +545,15 @@ func (s *AddProjectRequestProject) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.FoundingDate.Set {
-			e.FieldStart("foundingDate")
-			s.FoundingDate.Encode(e)
+		if s.StartDate.Set {
+			e.FieldStart("startDate")
+			s.StartDate.Encode(e)
 		}
 	}
 	{
-		if s.DissolutionDate.Set {
-			e.FieldStart("dissolutionDate")
-			s.DissolutionDate.Encode(e)
+		if s.EndDate.Set {
+			e.FieldStart("endDate")
+			s.EndDate.Encode(e)
 		}
 	}
 	{
@@ -578,8 +578,8 @@ var jsonFieldsNameOfAddProjectRequestProject = [7]string{
 	0: "identifiers",
 	1: "names",
 	2: "descriptions",
-	3: "foundingDate",
-	4: "dissolutionDate",
+	3: "startDate",
+	4: "endDate",
 	5: "deleted",
 	6: "attributes",
 }
@@ -645,25 +645,25 @@ func (s *AddProjectRequestProject) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"descriptions\"")
 			}
-		case "foundingDate":
+		case "startDate":
 			if err := func() error {
-				s.FoundingDate.Reset()
-				if err := s.FoundingDate.Decode(d); err != nil {
+				s.StartDate.Reset()
+				if err := s.StartDate.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"foundingDate\"")
+				return errors.Wrap(err, "decode field \"startDate\"")
 			}
-		case "dissolutionDate":
+		case "endDate":
 			if err := func() error {
-				s.DissolutionDate.Reset()
-				if err := s.DissolutionDate.Decode(d); err != nil {
+				s.EndDate.Reset()
+				if err := s.EndDate.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"dissolutionDate\"")
+				return errors.Wrap(err, "decode field \"endDate\"")
 			}
 		case "deleted":
 			if err := func() error {

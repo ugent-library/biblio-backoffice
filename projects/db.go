@@ -17,29 +17,29 @@ type Conn interface {
 }
 
 type projectRow struct {
-	ID              int64
-	Identifiers     []Identifier
-	Names           []Text
-	Descriptions    []Text
-	FoundingDate    pgtype.Text
-	DissolutionDate pgtype.Text
-	Deleted         bool
-	Attributes      []Attribute
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
+	ID           int64
+	Identifiers  []Identifier
+	Names        []Text
+	Descriptions []Text
+	StartDate    pgtype.Text
+	EndDate      pgtype.Text
+	Deleted      bool
+	Attributes   []Attribute
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 func (row *projectRow) toProject() *Project {
 	return &Project{
-		Identifiers:     row.Identifiers,
-		Names:           row.Names,
-		Descriptions:    row.Descriptions,
-		FoundingDate:    row.FoundingDate.String,
-		DissolutionDate: row.DissolutionDate.String,
-		Deleted:         row.Deleted,
-		Attributes:      row.Attributes,
-		CreatedAt:       row.CreatedAt,
-		UpdatedAt:       row.UpdatedAt,
+		Identifiers:  row.Identifiers,
+		Names:        row.Names,
+		Descriptions: row.Descriptions,
+		StartDate:    row.StartDate.String,
+		EndDate:      row.EndDate.String,
+		Deleted:      row.Deleted,
+		Attributes:   row.Attributes,
+		CreatedAt:    row.CreatedAt,
+		UpdatedAt:    row.UpdatedAt,
 	}
 }
 
@@ -48,8 +48,8 @@ SELECT id,
 	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
 	   names,
 	   descriptions,
-	   founding_date,
-	   dissolution_date,
+	   start_date,
+	   end_date,
 	   deleted,
 	   attributes,
 	   created_at,
@@ -69,8 +69,8 @@ func getProjectByIdentifier(ctx context.Context, conn Conn, kind, value string) 
 		&r.Identifiers,
 		&r.Names,
 		&r.Descriptions,
-		&r.FoundingDate,
-		&r.DissolutionDate,
+		&r.StartDate,
+		&r.EndDate,
 		&r.Deleted,
 		&r.Attributes,
 		&r.CreatedAt,
@@ -88,8 +88,8 @@ SELECT id,
 	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
 	   names,
 	   descriptions,
-	   founding_date,
-	   dissolution_date,
+	   start_date,
+	   end_date,
 	   deleted,
 	   attributes,
 	   created_at,
@@ -104,8 +104,8 @@ const insertProjectQuery = `
 INSERT INTO projects (
 	names,
 	descriptions,
-	founding_date,
-	dissolution_date,
+	start_date,
+	end_date,
 	deleted,
 	attributes
 )
@@ -118,8 +118,8 @@ func createProject(ctx context.Context, conn Conn, params AddProjectParams) (int
 	err := conn.QueryRow(ctx, insertProjectQuery,
 		params.Names,
 		params.Descriptions,
-		pgtype.Text{Valid: params.FoundingDate != "", String: params.FoundingDate},
-		pgtype.Text{Valid: params.DissolutionDate != "", String: params.DissolutionDate},
+		pgtype.Text{Valid: params.StartDate != "", String: params.StartDate},
+		pgtype.Text{Valid: params.EndDate != "", String: params.EndDate},
 		params.Deleted,
 		params.Attributes,
 	).Scan(&id)
@@ -134,8 +134,8 @@ const updateProjectQuery = `
 UPDATE projects SET
 	names = $2,
 	descriptions = $3,
-	founding_date = $4,
-	dissolution_date = $5,
+	start_date = $4,
+	end_date = $5,
 	deleted = $6,
 	attributes = $7,
 	updated_at = CURRENT_TIMESTAMP
@@ -147,8 +147,8 @@ func updateProject(ctx context.Context, conn Conn, id int64, params AddProjectPa
 		id,
 		params.Names,
 		params.Descriptions,
-		pgtype.Text{Valid: params.FoundingDate != "", String: params.FoundingDate},
-		pgtype.Text{Valid: params.DissolutionDate != "", String: params.DissolutionDate},
+		pgtype.Text{Valid: params.StartDate != "", String: params.StartDate},
+		pgtype.Text{Valid: params.EndDate != "", String: params.EndDate},
 		params.Deleted,
 		params.Attributes,
 	)
