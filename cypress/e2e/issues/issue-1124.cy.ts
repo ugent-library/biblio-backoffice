@@ -9,7 +9,7 @@ describe('Issue #1124:  Add friendlier consistent confirmation toaster when lock
       cy.visit('/publication')
       cy.get('input[name=q][placeholder="Search..."]').type(biblioId)
       cy.contains('.btn', 'Search').click()
-      cy.contains('Publications Showing 1').should('be.visible')
+      cy.contains('Showing 1 publications').should('be.visible')
       cy.get('.list-group-item .if.if-lock').should('not.exist')
       cy.contains('.list-group-item', 'Locked').should('not.exist')
 
@@ -32,7 +32,7 @@ describe('Issue #1124:  Add friendlier consistent confirmation toaster when lock
       cy.visit('/publication')
       cy.get('input[name=q][placeholder="Search..."]').type(biblioId)
       cy.contains('.btn', 'Search').click()
-      cy.contains('Publications Showing 1').should('be.visible')
+      cy.contains('Showing 1 publications').should('be.visible')
       cy.get('.list-group-item .if.if-lock').should('not.exist')
       cy.contains('.list-group-item', 'Locked').should('not.exist')
 
@@ -54,14 +54,14 @@ describe('Issue #1124:  Add friendlier consistent confirmation toaster when lock
 
       // Publication does have lock icon in the list view for librarians
       cy.visit('/publication', { qs: { q: biblioId } })
-      cy.contains('Publications Showing 1').should('be.visible')
+      cy.contains('Showing 1 publications').should('be.visible')
       cy.get('.list-group-item .if.if-lock').should('be.visible')
       cy.contains('.list-group-item', 'Locked').should('be.visible')
 
       // Publication does have lock icon in the list view for researcher
       cy.loginAsResearcher()
       cy.visit('/publication', { qs: { q: biblioId, 'f[scope]': 'all' } })
-      cy.contains('Publications Showing 1').should('be.visible')
+      cy.contains('Showing 1 publications').should('be.visible')
       cy.get('.list-group-item .if.if-lock').should('be.visible')
       cy.contains('.list-group-item', 'Locked').should('be.visible')
 
