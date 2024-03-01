@@ -464,7 +464,243 @@ func (s *ImportOrganizationParams) SetUpdatedAt(val OptDateTime) {
 // ImportOrganizationsOK is response for ImportOrganizations operation.
 type ImportOrganizationsOK struct{}
 
-type ImportOrganizationsRequest []ImportOrganizationParams
+// Ref: #/components/schemas/ImportOrganizationsRequest
+type ImportOrganizationsRequest struct {
+	Organizations []ImportOrganizationParams `json:"organizations"`
+}
+
+// GetOrganizations returns the value of Organizations.
+func (s *ImportOrganizationsRequest) GetOrganizations() []ImportOrganizationParams {
+	return s.Organizations
+}
+
+// SetOrganizations sets the value of Organizations.
+func (s *ImportOrganizationsRequest) SetOrganizations(val []ImportOrganizationParams) {
+	s.Organizations = val
+}
+
+// ImportPersonOK is response for ImportPerson operation.
+type ImportPersonOK struct{}
+
+// Ref: #/components/schemas/ImportPersonParams
+type ImportPersonParams struct {
+	Identifiers         []Identifier                         `json:"identifiers"`
+	Name                string                               `json:"name"`
+	PreferredName       OptString                            `json:"preferredName"`
+	GivenName           OptString                            `json:"givenName"`
+	PreferredGivenName  OptString                            `json:"preferredGivenName"`
+	FamilyName          OptString                            `json:"familyName"`
+	PreferredFamilyName OptString                            `json:"preferredFamilyName"`
+	HonorificPrefix     OptString                            `json:"honorificPrefix"`
+	Email               OptString                            `json:"email"`
+	Active              OptBool                              `json:"active"`
+	Role                OptString                            `json:"role"`
+	Username            OptString                            `json:"username"`
+	Attributes          []Attribute                          `json:"attributes"`
+	Tokens              []Token                              `json:"tokens"`
+	Affiliations        []ImportPersonParamsAffiliationsItem `json:"affiliations"`
+	CreatedAt           OptDateTime                          `json:"createdAt"`
+	UpdatedAt           OptDateTime                          `json:"updatedAt"`
+}
+
+// GetIdentifiers returns the value of Identifiers.
+func (s *ImportPersonParams) GetIdentifiers() []Identifier {
+	return s.Identifiers
+}
+
+// GetName returns the value of Name.
+func (s *ImportPersonParams) GetName() string {
+	return s.Name
+}
+
+// GetPreferredName returns the value of PreferredName.
+func (s *ImportPersonParams) GetPreferredName() OptString {
+	return s.PreferredName
+}
+
+// GetGivenName returns the value of GivenName.
+func (s *ImportPersonParams) GetGivenName() OptString {
+	return s.GivenName
+}
+
+// GetPreferredGivenName returns the value of PreferredGivenName.
+func (s *ImportPersonParams) GetPreferredGivenName() OptString {
+	return s.PreferredGivenName
+}
+
+// GetFamilyName returns the value of FamilyName.
+func (s *ImportPersonParams) GetFamilyName() OptString {
+	return s.FamilyName
+}
+
+// GetPreferredFamilyName returns the value of PreferredFamilyName.
+func (s *ImportPersonParams) GetPreferredFamilyName() OptString {
+	return s.PreferredFamilyName
+}
+
+// GetHonorificPrefix returns the value of HonorificPrefix.
+func (s *ImportPersonParams) GetHonorificPrefix() OptString {
+	return s.HonorificPrefix
+}
+
+// GetEmail returns the value of Email.
+func (s *ImportPersonParams) GetEmail() OptString {
+	return s.Email
+}
+
+// GetActive returns the value of Active.
+func (s *ImportPersonParams) GetActive() OptBool {
+	return s.Active
+}
+
+// GetRole returns the value of Role.
+func (s *ImportPersonParams) GetRole() OptString {
+	return s.Role
+}
+
+// GetUsername returns the value of Username.
+func (s *ImportPersonParams) GetUsername() OptString {
+	return s.Username
+}
+
+// GetAttributes returns the value of Attributes.
+func (s *ImportPersonParams) GetAttributes() []Attribute {
+	return s.Attributes
+}
+
+// GetTokens returns the value of Tokens.
+func (s *ImportPersonParams) GetTokens() []Token {
+	return s.Tokens
+}
+
+// GetAffiliations returns the value of Affiliations.
+func (s *ImportPersonParams) GetAffiliations() []ImportPersonParamsAffiliationsItem {
+	return s.Affiliations
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *ImportPersonParams) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *ImportPersonParams) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
+// SetIdentifiers sets the value of Identifiers.
+func (s *ImportPersonParams) SetIdentifiers(val []Identifier) {
+	s.Identifiers = val
+}
+
+// SetName sets the value of Name.
+func (s *ImportPersonParams) SetName(val string) {
+	s.Name = val
+}
+
+// SetPreferredName sets the value of PreferredName.
+func (s *ImportPersonParams) SetPreferredName(val OptString) {
+	s.PreferredName = val
+}
+
+// SetGivenName sets the value of GivenName.
+func (s *ImportPersonParams) SetGivenName(val OptString) {
+	s.GivenName = val
+}
+
+// SetPreferredGivenName sets the value of PreferredGivenName.
+func (s *ImportPersonParams) SetPreferredGivenName(val OptString) {
+	s.PreferredGivenName = val
+}
+
+// SetFamilyName sets the value of FamilyName.
+func (s *ImportPersonParams) SetFamilyName(val OptString) {
+	s.FamilyName = val
+}
+
+// SetPreferredFamilyName sets the value of PreferredFamilyName.
+func (s *ImportPersonParams) SetPreferredFamilyName(val OptString) {
+	s.PreferredFamilyName = val
+}
+
+// SetHonorificPrefix sets the value of HonorificPrefix.
+func (s *ImportPersonParams) SetHonorificPrefix(val OptString) {
+	s.HonorificPrefix = val
+}
+
+// SetEmail sets the value of Email.
+func (s *ImportPersonParams) SetEmail(val OptString) {
+	s.Email = val
+}
+
+// SetActive sets the value of Active.
+func (s *ImportPersonParams) SetActive(val OptBool) {
+	s.Active = val
+}
+
+// SetRole sets the value of Role.
+func (s *ImportPersonParams) SetRole(val OptString) {
+	s.Role = val
+}
+
+// SetUsername sets the value of Username.
+func (s *ImportPersonParams) SetUsername(val OptString) {
+	s.Username = val
+}
+
+// SetAttributes sets the value of Attributes.
+func (s *ImportPersonParams) SetAttributes(val []Attribute) {
+	s.Attributes = val
+}
+
+// SetTokens sets the value of Tokens.
+func (s *ImportPersonParams) SetTokens(val []Token) {
+	s.Tokens = val
+}
+
+// SetAffiliations sets the value of Affiliations.
+func (s *ImportPersonParams) SetAffiliations(val []ImportPersonParamsAffiliationsItem) {
+	s.Affiliations = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *ImportPersonParams) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *ImportPersonParams) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
+}
+
+type ImportPersonParamsAffiliationsItem struct {
+	OrganizationIdentifier Identifier `json:"organizationIdentifier"`
+}
+
+// GetOrganizationIdentifier returns the value of OrganizationIdentifier.
+func (s *ImportPersonParamsAffiliationsItem) GetOrganizationIdentifier() Identifier {
+	return s.OrganizationIdentifier
+}
+
+// SetOrganizationIdentifier sets the value of OrganizationIdentifier.
+func (s *ImportPersonParamsAffiliationsItem) SetOrganizationIdentifier(val Identifier) {
+	s.OrganizationIdentifier = val
+}
+
+// Ref: #/components/schemas/ImportPersonRequest
+type ImportPersonRequest struct {
+	Person OptImportPersonParams `json:"person"`
+}
+
+// GetPerson returns the value of Person.
+func (s *ImportPersonRequest) GetPerson() OptImportPersonParams {
+	return s.Person
+}
+
+// SetPerson sets the value of Person.
+func (s *ImportPersonRequest) SetPerson(val OptImportPersonParams) {
+	s.Person = val
+}
 
 // NewOptBool returns new OptBool with value set to v.
 func NewOptBool(v bool) OptBool {
@@ -604,6 +840,52 @@ func (o OptIdentifier) Or(d Identifier) Identifier {
 	return d
 }
 
+// NewOptImportPersonParams returns new OptImportPersonParams with value set to v.
+func NewOptImportPersonParams(v ImportPersonParams) OptImportPersonParams {
+	return OptImportPersonParams{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptImportPersonParams is optional ImportPersonParams.
+type OptImportPersonParams struct {
+	Value ImportPersonParams
+	Set   bool
+}
+
+// IsSet returns true if OptImportPersonParams was set.
+func (o OptImportPersonParams) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptImportPersonParams) Reset() {
+	var v ImportPersonParams
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptImportPersonParams) SetTo(v ImportPersonParams) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptImportPersonParams) Get() (v ImportPersonParams, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptImportPersonParams) Or(d ImportPersonParams) ImportPersonParams {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptString returns new OptString with value set to v.
 func NewOptString(v string) OptString {
 	return OptString{
@@ -673,5 +955,31 @@ func (s *Text) SetLang(val string) {
 
 // SetValue sets the value of Value.
 func (s *Text) SetValue(val string) {
+	s.Value = val
+}
+
+// Ref: #/components/schemas/Token
+type Token struct {
+	Kind  string `json:"kind"`
+	Value []byte `json:"value"`
+}
+
+// GetKind returns the value of Kind.
+func (s *Token) GetKind() string {
+	return s.Kind
+}
+
+// GetValue returns the value of Value.
+func (s *Token) GetValue() []byte {
+	return s.Value
+}
+
+// SetKind sets the value of Kind.
+func (s *Token) SetKind(val string) {
+	s.Kind = val
+}
+
+// SetValue sets the value of Value.
+func (s *Token) SetValue(val []byte) {
 	s.Value = val
 }

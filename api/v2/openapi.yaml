@@ -25,6 +25,23 @@ paths:
         default:
           $ref: "#/components/responses/Error"
 
+  "/import-person":
+    post:
+      summary: Import a person
+      description: Import a person
+      operationId: importPerson
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportPersonRequest"
+        required: true
+      responses:
+        '200':
+          description: Success
+        default:
+          $ref: "#/components/responses/Error"
+
   "/add-person":
     post:
       summary: Upsert a person
@@ -92,9 +109,12 @@ components:
         - message
 
     ImportOrganizationsRequest:
-      type: array
-      items:
-        $ref: "#/components/schemas/ImportOrganizationParams" 
+      type: object
+      properties:
+        organizations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ImportOrganizationParams"
 
     ImportOrganizationParams:
       type: object
@@ -105,7 +125,7 @@ components:
             $ref: "#/components/schemas/Identifier"
           minItems: 1
         parentIdentifier:
-            $ref: "#/components/schemas/Identifier"
+          $ref: "#/components/schemas/Identifier"
         names:
           type: array
           items:
@@ -119,6 +139,77 @@ components:
           type: string
           format: date-time
       required: [identifiers]
+
+    ImportPersonRequest:
+      type: object
+      properties:
+        person:
+          $ref: "#/components/schemas/ImportPersonParams" 
+
+    ImportPersonParams:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Identifier"
+          minItems: 1
+        name:
+          type: string
+          minLength: 1
+        preferredName:
+          type: string
+          minLength: 1
+        givenName:
+          type: string
+          minLength: 1
+        preferredGivenName:
+          type: string
+          minLength: 1
+        familyName:
+          type: string
+          minLength: 1
+        preferredFamilyName:
+          type: string
+          minLength: 1
+        honorificPrefix:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+          minLength: 1
+        active:
+          type: boolean
+        role:
+          type: string
+          minLength: 1
+        username:
+          type: string
+          minLength: 1
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        tokens:
+          type: array
+          items:
+            $ref: "#/components/schemas/Token"
+        affiliations:
+          type: array
+          items:
+            type: object
+            properties:
+              organizationIdentifier:
+                $ref: "#/components/schemas/Identifier"
+            required: [organizationIdentifier]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [identifiers, name]
 
     AddPersonRequest:
       type: object
@@ -154,6 +245,7 @@ components:
               minLength: 1
             email:
               type: string
+              format: email
               minLength: 1
             username:
               type: string
@@ -222,7 +314,19 @@ components:
           type: string
           minLength: 1
       required: [kind, value]
-    
+
+    Token:
+      type: object
+      properties:
+        kind:
+          type: string
+          minLength: 1
+        value:
+          type: string
+          format: byte
+          minLength: 1
+      required: [kind, value]
+
     Text:
       type: object
       properties:

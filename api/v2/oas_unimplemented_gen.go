@@ -36,7 +36,16 @@ func (UnimplementedHandler) AddProject(ctx context.Context, req *AddProjectReque
 // Import organization hierarchy.
 //
 // POST /import-organizations
-func (UnimplementedHandler) ImportOrganizations(ctx context.Context, req ImportOrganizationsRequest) error {
+func (UnimplementedHandler) ImportOrganizations(ctx context.Context, req *ImportOrganizationsRequest) error {
+	return ht.ErrNotImplemented
+}
+
+// ImportPerson implements importPerson operation.
+//
+// Import a person.
+//
+// POST /import-person
+func (UnimplementedHandler) ImportPerson(ctx context.Context, req *ImportPersonRequest) error {
 	return ht.ErrNotImplemented
 }
 

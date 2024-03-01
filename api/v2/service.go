@@ -23,9 +23,9 @@ func NewService(
 	}
 }
 
-func (s *Service) ImportOrganizations(ctx context.Context, req ImportOrganizationsRequest) error {
+func (s *Service) ImportOrganizations(ctx context.Context, req *ImportOrganizationsRequest) error {
 	iter := func(ctx context.Context, fn func(people.ImportOrganizationParams) bool) error {
-		for _, params := range req {
+		for _, params := range req.Organizations {
 			if !fn(convertImportOrganizationParams(params)) {
 				break
 			}
@@ -34,6 +34,10 @@ func (s *Service) ImportOrganizations(ctx context.Context, req ImportOrganizatio
 	}
 
 	return s.peopleRepo.ImportOrganizations(ctx, iter)
+}
+
+func (s *Service) ImportPerson(ctx context.Context, req *ImportPersonRequest) error {
+	return nil
 }
 
 func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
