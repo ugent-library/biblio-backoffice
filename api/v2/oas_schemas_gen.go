@@ -183,13 +183,13 @@ func (s *AddProjectRequest) SetProject(val AddProjectRequestProject) {
 }
 
 type AddProjectRequestProject struct {
-	Identifiers     []Identifier `json:"identifiers"`
-	Names           []Text       `json:"names"`
-	Descriptions    []Text       `json:"descriptions"`
-	FoundingDate    OptString    `json:"foundingDate"`
-	DissolutionDate OptString    `json:"dissolutionDate"`
-	Deleted         OptBool      `json:"deleted"`
-	Attributes      []Attribute  `json:"attributes"`
+	Identifiers  []Identifier `json:"identifiers"`
+	Names        []Text       `json:"names"`
+	Descriptions []Text       `json:"descriptions"`
+	StartDate    OptString    `json:"startDate"`
+	EndDate      OptString    `json:"endDate"`
+	Deleted      OptBool      `json:"deleted"`
+	Attributes   []Attribute  `json:"attributes"`
 }
 
 // GetIdentifiers returns the value of Identifiers.
@@ -207,14 +207,14 @@ func (s *AddProjectRequestProject) GetDescriptions() []Text {
 	return s.Descriptions
 }
 
-// GetFoundingDate returns the value of FoundingDate.
-func (s *AddProjectRequestProject) GetFoundingDate() OptString {
-	return s.FoundingDate
+// GetStartDate returns the value of StartDate.
+func (s *AddProjectRequestProject) GetStartDate() OptString {
+	return s.StartDate
 }
 
-// GetDissolutionDate returns the value of DissolutionDate.
-func (s *AddProjectRequestProject) GetDissolutionDate() OptString {
-	return s.DissolutionDate
+// GetEndDate returns the value of EndDate.
+func (s *AddProjectRequestProject) GetEndDate() OptString {
+	return s.EndDate
 }
 
 // GetDeleted returns the value of Deleted.
@@ -242,14 +242,14 @@ func (s *AddProjectRequestProject) SetDescriptions(val []Text) {
 	s.Descriptions = val
 }
 
-// SetFoundingDate sets the value of FoundingDate.
-func (s *AddProjectRequestProject) SetFoundingDate(val OptString) {
-	s.FoundingDate = val
+// SetStartDate sets the value of StartDate.
+func (s *AddProjectRequestProject) SetStartDate(val OptString) {
+	s.StartDate = val
 }
 
-// SetDissolutionDate sets the value of DissolutionDate.
-func (s *AddProjectRequestProject) SetDissolutionDate(val OptString) {
-	s.DissolutionDate = val
+// SetEndDate sets the value of EndDate.
+func (s *AddProjectRequestProject) SetEndDate(val OptString) {
+	s.EndDate = val
 }
 
 // SetDeleted sets the value of Deleted.
