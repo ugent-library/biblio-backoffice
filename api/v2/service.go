@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
 )
@@ -115,5 +116,16 @@ func (s *Service) NewError(ctx context.Context, err error) *ErrorStatusCode {
 			Code:    500,
 			Message: err.Error(),
 		},
+	}
+}
+
+func convertImportOrganizationParams(from ImportOrganizationParams) people.ImportOrganizationParams {
+	return people.ImportOrganizationParams{
+		Identifiers:      lo.Map(from.Identifiers, func(v Identifier, _ int) people.Identifier { return people.Identifier(v) }),
+		ParentIdentifier: lo.Ternary(from.ParentIdentifier.Set, lo.ToPtr(people.Identifier(from.ParentIdentifier.Value)), nil),
+		Names:            lo.Map(from.Names, func(v Text, _ int) people.Text { return people.Text(v) }),
+		Ceased:           from.Ceased.Value,
+		CreatedAt:        lo.Ternary(from.CreatedAt.Set, &from.CreatedAt.Value, nil),
+		UpdatedAt:        lo.Ternary(from.UpdatedAt.Set, &from.UpdatedAt.Value, nil),
 	}
 }
