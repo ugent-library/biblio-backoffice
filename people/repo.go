@@ -63,14 +63,46 @@ func (r *Repo) ImportPerson(ctx context.Context, p ImportPersonParams) error {
 }
 
 func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
-	row, err := getOrganizationByIdentifier(ctx, r.conn, kind, value)
+	tx, err := r.conn.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+
+	row, err := getOrganizationByIdentifier(ctx, tx, kind, value)
 	if err == pgx.ErrNoRows {
 		return nil, ErrNotFound
 	}
 	if err != nil {
 		return nil, err
 	}
-	return row.toOrganization(), nil
+
+	org := row.toOrganization()
+
+	if row.ParentID.Valid {
+		parentRows, err := tx.Query(ctx, getParentOrganizations, row.ParentID.Int64)
+		if err != nil {
+			return nil, err
+		}
+		defer parentRows.Close()
+		for parentRows.Next() {
+			var o organizationRow
+			if err := parentRows.Scan(
+				&o.Identifiers,
+				&o.Names,
+				&o.Ceased,
+			); err != nil {
+				return nil, err
+			}
+			org.Parents = append(org.Parents, o.toParentOrganization())
+		}
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	return org, nil
 }
 
 func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
