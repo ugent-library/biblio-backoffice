@@ -25,6 +25,7 @@ JOIN organization_identifiers oi ON o.id = oi.organization_id AND oi.kind = $1 a
 
 const getOrganizationByIdentifierQuery = `
 SELECT id,
+       parent_id,
 	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
 	   names,
 	   ceased,
@@ -34,6 +35,39 @@ FROM organizations o
 JOIN organization_identifiers oi ON o.id = oi.organization_id AND oi.kind = $1 and oi.value = $2
 LEFT JOIN organization_identifiers ids ON o.id = ids.organization_id
 GROUP BY o.id;
+`
+
+const getParentOrganizations = `
+WITH RECURSIVE orgs AS (
+	SELECT id,
+	       parent_id,
+	       names,
+	       ceased,
+	       0 AS level
+	FROM organizations
+	WHERE id = $1
+
+	UNION
+
+	SELECT o.id,
+           o.parent_id,
+	       o.names,
+	       o.ceased,
+	       orgs.level + 1
+	FROM organizations o
+	INNER JOIN orgs
+    ON o.id = orgs.parent_id 		
+)
+SELECT o.names,
+       json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+       o.ceased
+FROM orgs o
+LEFT JOIN organization_identifiers ids ON o.id = ids.organization_id
+GROUP BY o.id,
+         o.names,
+         o.ceased,
+         o.level
+ORDER BY o.level;
 `
 
 const insertOrganizationQuery = `
@@ -114,6 +148,7 @@ RETURNING id;
 
 type organizationRow struct {
 	ID          int64
+	ParentID    pgtype.Int8
 	Identifiers []Identifier
 	Names       []Text
 	Ceased      bool
@@ -128,6 +163,14 @@ func (row *organizationRow) toOrganization() *Organization {
 		Ceased:      row.Ceased,
 		CreatedAt:   row.CreatedAt,
 		UpdatedAt:   row.UpdatedAt,
+	}
+}
+
+func (row *organizationRow) toParentOrganization() ParentOrganization {
+	return ParentOrganization{
+		Identifiers: row.Identifiers,
+		Names:       row.Names,
+		Ceased:      row.Ceased,
 	}
 }
 
@@ -177,6 +220,7 @@ func getOrganizationByIdentifier(ctx context.Context, conn Conn, kind, value str
 
 	err := conn.QueryRow(ctx, getOrganizationByIdentifierQuery, kind, value).Scan(
 		&r.ID,
+		&r.ParentID,
 		&r.Identifiers,
 		&r.Names,
 		&r.Ceased,
