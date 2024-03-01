@@ -20,6 +20,12 @@ type Handler interface {
 	//
 	// POST /add-project
 	AddProject(ctx context.Context, req *AddProjectRequest) error
+	// GetOrganization implements getOrganization operation.
+	//
+	// Get organization by identifier.
+	//
+	// POST /get-organization
+	GetOrganization(ctx context.Context, req *GetOrganizationRequest) (GetOrganizationRes, error)
 	// ImportOrganizations implements importOrganizations operation.
 	//
 	// Import organization hierarchy.

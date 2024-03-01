@@ -8,6 +8,30 @@ info:
   version: 0.0.1
 
 paths:
+  "/get-organization":
+    post:
+      summary: Get organization by identifier
+      description: Get organization by identifier
+      operationId: getOrganization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetOrganizationRequest"
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetOrganization"
+        '404':
+          description: Not found
+          $ref: "#/components/responses/Error"
+        default:
+          $ref: "#/components/responses/Error"
+
   "/import-organizations":
     post:
       summary: Import organization hierarchy
@@ -107,6 +131,20 @@ components:
       required:
         - code
         - message
+
+    GetOrganizationRequest:
+      type: object
+      properties:
+        identifier:
+          $ref: "#/components/schemas/Identifier"
+      required: [identifier]
+
+    GetOrganization:
+      type: object
+      properties:
+        organization:
+          $ref: "#/components/schemas/Organization"
+      required: [organization]
 
     ImportOrganizationsRequest:
       type: object
@@ -294,6 +332,51 @@ components:
         organizationIdentifier:
           $ref: "#/components/schemas/Identifier"
       required: [organizationIdentifier]
+
+    Organization:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Identifier"
+          minItems: 1
+        names:
+          type: array
+          items:
+            $ref: "#/components/schemas/Text"
+          minItems: 1
+        ceased:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        parents:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParentOrganization"
+          minItems: 1
+      required: [identifiers, ceased, createdAt, updatedAt]
+
+    ParentOrganization:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Identifier"
+          minItems: 1
+        names:
+          type: array
+          items:
+            $ref: "#/components/schemas/Text"
+          minItems: 1
+        ceased:
+          type: boolean
+      required: [identifiers, ceased]
 
     Attribute:
       type: object

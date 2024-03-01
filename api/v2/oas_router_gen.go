@@ -117,6 +117,27 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
+			case 'g': // Prefix: "get-organization"
+				origElem := elem
+				if l := len("get-organization"); len(elem) >= l && elem[0:l] == "get-organization" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "POST":
+						s.handleGetOrganizationRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "POST")
+					}
+
+					return
+				}
+
+				elem = origElem
 			case 'i': // Prefix: "import-"
 				origElem := elem
 				if l := len("import-"); len(elem) >= l && elem[0:l] == "import-" {
@@ -331,6 +352,31 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 
 					elem = origElem
+				}
+
+				elem = origElem
+			case 'g': // Prefix: "get-organization"
+				origElem := elem
+				if l := len("get-organization"); len(elem) >= l && elem[0:l] == "get-organization" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "POST":
+						// Leaf: GetOrganization
+						r.name = "GetOrganization"
+						r.summary = "Get organization by identifier"
+						r.operationID = "getOrganization"
+						r.pathPattern = "/get-organization"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
 				}
 
 				elem = origElem

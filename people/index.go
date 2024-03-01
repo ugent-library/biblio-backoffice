@@ -216,7 +216,7 @@ func (idx *Index) ReindexPeople(ctx context.Context, iter Iter[*Person]) error {
 			ctx,
 			esutil.BulkIndexerItem{
 				Action:       "index",
-				DocumentID:   p.ID(),
+				DocumentID:   p.Identifiers.Get(idKind),
 				DocumentType: "_doc",
 				Body:         bytes.NewReader(doc),
 				OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
