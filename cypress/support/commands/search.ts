@@ -13,7 +13,7 @@ export default function search(query: string): Cypress.Chainable<number> {
     .click(NO_LOG)
 
   return cy
-    .contains('.card-header', 'Publications', NO_LOG)
+    .contains('.card-header', '.pagination', NO_LOG)
     .find('.c-body-small', NO_LOG)
     .then($el => {
       const text = $el.text().trim()
