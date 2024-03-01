@@ -10,11 +10,11 @@ type Iter[T any] func(context.Context, func(T) bool) error
 
 type ImportOrganizationParams struct {
 	Identifiers      Identifiers `json:"identifiers"`
-	ParentIdentifier *Identifier `json:"parentIdentifier"`
-	Names            []Text      `json:"names"`
+	ParentIdentifier *Identifier `json:"parentIdentifier,omitempty"`
+	Names            []Text      `json:"names,omitempty"`
 	Ceased           bool        `json:"ceased"`
-	CreatedAt        *time.Time  `json:"createdAt"`
-	UpdatedAt        *time.Time  `json:"updatedAt"`
+	CreatedAt        *time.Time  `json:"createdAt,omitempty"`
+	UpdatedAt        *time.Time  `json:"updatedAt,omitempty"`
 }
 
 type ImportPersonParams struct {
@@ -28,13 +28,13 @@ type ImportPersonParams struct {
 	HonorificPrefix     string              `json:"honorificPrefix,omitempty"`
 	Email               string              `json:"email,omitempty"`
 	Active              bool                `json:"active"`
-	Role                string              `json:"role"`
+	Role                string              `json:"role,omitempty"`
 	Username            string              `json:"username,omitempty"`
-	Attributes          []Attribute         `json:"attributes"`
-	Tokens              []Token             `json:"tokens"`
-	Affiliations        []AffiliationParams `json:"affiliations"`
-	CreatedAt           *time.Time          `json:"createdAt"`
-	UpdatedAt           *time.Time          `json:"updatedAt"`
+	Attributes          []Attribute         `json:"attributes,omitempty"`
+	Tokens              []Token             `json:"tokens,omitempty"`
+	Affiliations        []AffiliationParams `json:"affiliations,omitempty"`
+	CreatedAt           *time.Time          `json:"createdAt,omitempty"`
+	UpdatedAt           *time.Time          `json:"updatedAt,omitempty"`
 }
 
 type AffiliationParams struct {
@@ -53,7 +53,7 @@ type Person struct {
 	Email               string       `json:"email,omitempty"`
 	Active              bool         `json:"active"`
 	Username            string       `json:"username,omitempty"`
-	Attributes          []Attribute  `json:"attributes"`
+	Attributes          []Attribute  `json:"attributes,omitempty"`
 	CreatedAt           time.Time    `json:"createdAt"`
 	UpdatedAt           time.Time    `json:"updatedAt"`
 }
@@ -68,6 +68,15 @@ func (p *Person) ID() string {
 }
 
 type Identifiers []Identifier
+
+func (idents Identifiers) Has(kind string) bool {
+	for _, ident := range idents {
+		if ident.Kind == kind {
+			return true
+		}
+	}
+	return false
+}
 
 func (idents Identifiers) Get(kind string) string {
 	for _, ident := range idents {

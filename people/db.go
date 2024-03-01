@@ -43,12 +43,49 @@ INSERT INTO organization_identifiers (
 ) VALUES ($1, $2, $3);
 `
 
+const insertAffiliationQuery = `
+INSERT INTO affiliations (
+	person_id,
+	organization_id
+) VALUES ($1, $2);
+`
+
+const insertPersonQuery = `
+INSERT INTO people (
+	name,
+	preferred_name,
+	given_name,
+	preferred_given_name,
+	family_name,
+	preferred_family_name,
+	honorific_prefix,
+	email,
+	active,
+	role,
+	username,
+	attributes,
+	tokens,
+	created_at,
+	updated_at
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
+	COALESCE($14,CURRENT_TIMESTAMP),
+	COALESCE($15,CURRENT_TIMESTAMP))
+RETURNING id;
+`
+
 func insertOrganization(ctx context.Context, conn Conn, o ImportOrganizationParams) error {
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
 	var id int64
 	var parentID pgtype.Int8
 
 	if ident := o.ParentIdentifier; ident != nil {
-		err := conn.QueryRow(ctx, getOrganizationIDQuery, ident.Kind, ident.Value).Scan(&parentID.Int64)
+		err := tx.QueryRow(ctx, getOrganizationIDQuery, ident.Kind, ident.Value).Scan(&parentID.Int64)
 		if err == pgx.ErrNoRows {
 			return fmt.Errorf("organization %s not found", ident.String())
 		}
@@ -58,7 +95,7 @@ func insertOrganization(ctx context.Context, conn Conn, o ImportOrganizationPara
 		parentID.Valid = true
 	}
 
-	err := conn.QueryRow(ctx, insertOrganizationQuery,
+	err = tx.QueryRow(ctx, insertOrganizationQuery,
 		parentID,
 		o.Names,
 		o.Ceased,
@@ -70,12 +107,65 @@ func insertOrganization(ctx context.Context, conn Conn, o ImportOrganizationPara
 	}
 
 	for _, ident := range o.Identifiers {
-		if _, err := conn.Exec(ctx, insertOrganizationIdentifierQuery, id, ident.Kind, ident.Value); err != nil {
+		if _, err := tx.Exec(ctx, insertOrganizationIdentifierQuery, id, ident.Kind, ident.Value); err != nil {
 			return err
 		}
 	}
 
-	return nil
+	return tx.Commit(ctx)
+}
+
+func insertPerson(ctx context.Context, conn Conn, p ImportPersonParams) error {
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	var id int64
+
+	err = tx.QueryRow(ctx, insertPersonQuery,
+		p.Name,
+		pgtype.Text{Valid: p.PreferredName != "", String: p.PreferredName},
+		pgtype.Text{Valid: p.GivenName != "", String: p.GivenName},
+		pgtype.Text{Valid: p.PreferredGivenName != "", String: p.PreferredGivenName},
+		pgtype.Text{Valid: p.FamilyName != "", String: p.FamilyName},
+		pgtype.Text{Valid: p.PreferredFamilyName != "", String: p.PreferredFamilyName},
+		pgtype.Text{Valid: p.HonorificPrefix != "", String: p.HonorificPrefix},
+		pgtype.Text{Valid: p.Email != "", String: p.Email},
+		p.Active,
+		pgtype.Text{Valid: p.Role != "", String: p.Role},
+		pgtype.Text{Valid: p.Username != "", String: p.Username},
+		p.Attributes,
+		p.Tokens,
+		p.CreatedAt,
+		p.UpdatedAt,
+	).Scan(&id)
+	if err != nil {
+		return err
+	}
+
+	for _, ident := range p.Identifiers {
+		if _, err := tx.Exec(ctx, insertPersonIdentifierQuery, id, ident.Kind, ident.Value); err != nil {
+			return err
+		}
+	}
+
+	for _, a := range p.Affiliations {
+		var organizationID int64
+		err := tx.QueryRow(ctx, getOrganizationIDQuery, a.OrganizationIdentifier.Kind, a.OrganizationIdentifier.Value).Scan(&organizationID)
+		if err == pgx.ErrNoRows {
+			return fmt.Errorf("organization %s not found", a.OrganizationIdentifier.String())
+		}
+		if err != nil {
+			return err
+		}
+		if _, err := tx.Exec(ctx, insertAffiliationQuery, id, organizationID); err != nil {
+			return err
+		}
+	}
+
+	return tx.Commit(ctx)
 }
 
 type personRow struct {
@@ -186,7 +276,7 @@ WHERE p.replaced_by_id IS NULL
 GROUP BY p.id;
 `
 
-const insertPersonQuery = `
+const createPersonQuery = `
 INSERT INTO people (
 	name,
 	preferred_name,
@@ -206,7 +296,7 @@ RETURNING id;
 
 func createPerson(ctx context.Context, conn Conn, params AddPersonParams) (int64, error) {
 	var id int64
-	err := conn.QueryRow(ctx, insertPersonQuery,
+	err := conn.QueryRow(ctx, createPersonQuery,
 		params.Name,
 		pgtype.Text{Valid: params.PreferredName != "", String: params.PreferredName},
 		pgtype.Text{Valid: params.GivenName != "", String: params.GivenName},

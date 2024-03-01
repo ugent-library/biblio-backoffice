@@ -115,6 +115,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ImportOrganizationParams"
+      required: [organizations]
 
     ImportOrganizationParams:
       type: object
@@ -144,7 +145,8 @@ components:
       type: object
       properties:
         person:
-          $ref: "#/components/schemas/ImportPersonParams" 
+          $ref: "#/components/schemas/ImportPersonParams"
+      required: [person]
 
     ImportPersonParams:
       type: object
@@ -198,11 +200,7 @@ components:
         affiliations:
           type: array
           items:
-            type: object
-            properties:
-              organizationIdentifier:
-                $ref: "#/components/schemas/Identifier"
-            required: [organizationIdentifier]
+            $ref: "#/components/schemas/AffiliationParams"
         createdAt:
           type: string
           format: date-time
@@ -289,6 +287,13 @@ components:
                 $ref: "#/components/schemas/Attribute"
           required: [identifiers]
       required: [project]
+
+    AffiliationParams:
+      type: object
+      properties:
+        organizationIdentifier:
+          $ref: "#/components/schemas/Identifier"
+      required: [organizationIdentifier]
 
     Attribute:
       type: object

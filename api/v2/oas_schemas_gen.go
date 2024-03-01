@@ -262,6 +262,21 @@ func (s *AddProjectRequestProject) SetAttributes(val []Attribute) {
 	s.Attributes = val
 }
 
+// Ref: #/components/schemas/AffiliationParams
+type AffiliationParams struct {
+	OrganizationIdentifier Identifier `json:"organizationIdentifier"`
+}
+
+// GetOrganizationIdentifier returns the value of OrganizationIdentifier.
+func (s *AffiliationParams) GetOrganizationIdentifier() Identifier {
+	return s.OrganizationIdentifier
+}
+
+// SetOrganizationIdentifier sets the value of OrganizationIdentifier.
+func (s *AffiliationParams) SetOrganizationIdentifier(val Identifier) {
+	s.OrganizationIdentifier = val
+}
+
 type ApiKey struct {
 	APIKey string
 }
@@ -484,23 +499,23 @@ type ImportPersonOK struct{}
 
 // Ref: #/components/schemas/ImportPersonParams
 type ImportPersonParams struct {
-	Identifiers         []Identifier                         `json:"identifiers"`
-	Name                string                               `json:"name"`
-	PreferredName       OptString                            `json:"preferredName"`
-	GivenName           OptString                            `json:"givenName"`
-	PreferredGivenName  OptString                            `json:"preferredGivenName"`
-	FamilyName          OptString                            `json:"familyName"`
-	PreferredFamilyName OptString                            `json:"preferredFamilyName"`
-	HonorificPrefix     OptString                            `json:"honorificPrefix"`
-	Email               OptString                            `json:"email"`
-	Active              OptBool                              `json:"active"`
-	Role                OptString                            `json:"role"`
-	Username            OptString                            `json:"username"`
-	Attributes          []Attribute                          `json:"attributes"`
-	Tokens              []Token                              `json:"tokens"`
-	Affiliations        []ImportPersonParamsAffiliationsItem `json:"affiliations"`
-	CreatedAt           OptDateTime                          `json:"createdAt"`
-	UpdatedAt           OptDateTime                          `json:"updatedAt"`
+	Identifiers         []Identifier        `json:"identifiers"`
+	Name                string              `json:"name"`
+	PreferredName       OptString           `json:"preferredName"`
+	GivenName           OptString           `json:"givenName"`
+	PreferredGivenName  OptString           `json:"preferredGivenName"`
+	FamilyName          OptString           `json:"familyName"`
+	PreferredFamilyName OptString           `json:"preferredFamilyName"`
+	HonorificPrefix     OptString           `json:"honorificPrefix"`
+	Email               OptString           `json:"email"`
+	Active              OptBool             `json:"active"`
+	Role                OptString           `json:"role"`
+	Username            OptString           `json:"username"`
+	Attributes          []Attribute         `json:"attributes"`
+	Tokens              []Token             `json:"tokens"`
+	Affiliations        []AffiliationParams `json:"affiliations"`
+	CreatedAt           OptDateTime         `json:"createdAt"`
+	UpdatedAt           OptDateTime         `json:"updatedAt"`
 }
 
 // GetIdentifiers returns the value of Identifiers.
@@ -574,7 +589,7 @@ func (s *ImportPersonParams) GetTokens() []Token {
 }
 
 // GetAffiliations returns the value of Affiliations.
-func (s *ImportPersonParams) GetAffiliations() []ImportPersonParamsAffiliationsItem {
+func (s *ImportPersonParams) GetAffiliations() []AffiliationParams {
 	return s.Affiliations
 }
 
@@ -659,7 +674,7 @@ func (s *ImportPersonParams) SetTokens(val []Token) {
 }
 
 // SetAffiliations sets the value of Affiliations.
-func (s *ImportPersonParams) SetAffiliations(val []ImportPersonParamsAffiliationsItem) {
+func (s *ImportPersonParams) SetAffiliations(val []AffiliationParams) {
 	s.Affiliations = val
 }
 
@@ -673,32 +688,18 @@ func (s *ImportPersonParams) SetUpdatedAt(val OptDateTime) {
 	s.UpdatedAt = val
 }
 
-type ImportPersonParamsAffiliationsItem struct {
-	OrganizationIdentifier Identifier `json:"organizationIdentifier"`
-}
-
-// GetOrganizationIdentifier returns the value of OrganizationIdentifier.
-func (s *ImportPersonParamsAffiliationsItem) GetOrganizationIdentifier() Identifier {
-	return s.OrganizationIdentifier
-}
-
-// SetOrganizationIdentifier sets the value of OrganizationIdentifier.
-func (s *ImportPersonParamsAffiliationsItem) SetOrganizationIdentifier(val Identifier) {
-	s.OrganizationIdentifier = val
-}
-
 // Ref: #/components/schemas/ImportPersonRequest
 type ImportPersonRequest struct {
-	Person OptImportPersonParams `json:"person"`
+	Person ImportPersonParams `json:"person"`
 }
 
 // GetPerson returns the value of Person.
-func (s *ImportPersonRequest) GetPerson() OptImportPersonParams {
+func (s *ImportPersonRequest) GetPerson() ImportPersonParams {
 	return s.Person
 }
 
 // SetPerson sets the value of Person.
-func (s *ImportPersonRequest) SetPerson(val OptImportPersonParams) {
+func (s *ImportPersonRequest) SetPerson(val ImportPersonParams) {
 	s.Person = val
 }
 
@@ -834,52 +835,6 @@ func (o OptIdentifier) Get() (v Identifier, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptIdentifier) Or(d Identifier) Identifier {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptImportPersonParams returns new OptImportPersonParams with value set to v.
-func NewOptImportPersonParams(v ImportPersonParams) OptImportPersonParams {
-	return OptImportPersonParams{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptImportPersonParams is optional ImportPersonParams.
-type OptImportPersonParams struct {
-	Value ImportPersonParams
-	Set   bool
-}
-
-// IsSet returns true if OptImportPersonParams was set.
-func (o OptImportPersonParams) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptImportPersonParams) Reset() {
-	var v ImportPersonParams
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptImportPersonParams) SetTo(v ImportPersonParams) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptImportPersonParams) Get() (v ImportPersonParams, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptImportPersonParams) Or(d ImportPersonParams) ImportPersonParams {
 	if v, ok := o.Get(); ok {
 		return v
 	}
