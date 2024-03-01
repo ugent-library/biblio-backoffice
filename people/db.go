@@ -58,8 +58,8 @@ WITH RECURSIVE orgs AS (
 	INNER JOIN orgs
     ON o.id = orgs.parent_id 		
 )
-SELECT o.names,
-       json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+SELECT json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+       o.names,
        o.ceased
 FROM orgs o
 LEFT JOIN organization_identifiers ids ON o.id = ids.organization_id
