@@ -37,7 +37,7 @@ func (s *Service) ImportOrganizations(ctx context.Context, req *ImportOrganizati
 }
 
 func (s *Service) ImportPerson(ctx context.Context, req *ImportPersonRequest) error {
-	return nil
+	return s.peopleRepo.ImportPerson(ctx, convertImportPersonParams(req.Person))
 }
 
 func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
@@ -131,5 +131,29 @@ func convertImportOrganizationParams(from ImportOrganizationParams) people.Impor
 		Ceased:           from.Ceased.Value,
 		CreatedAt:        lo.Ternary(from.CreatedAt.Set, &from.CreatedAt.Value, nil),
 		UpdatedAt:        lo.Ternary(from.UpdatedAt.Set, &from.UpdatedAt.Value, nil),
+	}
+}
+
+func convertImportPersonParams(from ImportPersonParams) people.ImportPersonParams {
+	return people.ImportPersonParams{
+		Identifiers:         lo.Map(from.Identifiers, func(v Identifier, _ int) people.Identifier { return people.Identifier(v) }),
+		Name:                from.Name,
+		PreferredName:       from.PreferredName.Value,
+		GivenName:           from.GivenName.Value,
+		PreferredGivenName:  from.PreferredGivenName.Value,
+		FamilyName:          from.FamilyName.Value,
+		PreferredFamilyName: from.PreferredFamilyName.Value,
+		HonorificPrefix:     from.HonorificPrefix.Value,
+		Email:               from.Email.Value,
+		Active:              from.Active.Value,
+		Role:                from.Role.Value,
+		Username:            from.Username.Value,
+		Attributes:          lo.Map(from.Attributes, func(v Attribute, _ int) people.Attribute { return people.Attribute(v) }),
+		Tokens:              lo.Map(from.Tokens, func(v Token, _ int) people.Token { return people.Token(v) }),
+		Affiliations: lo.Map(from.Affiliations, func(v AffiliationParams, _ int) people.AffiliationParams {
+			return people.AffiliationParams{OrganizationIdentifier: people.Identifier(v.OrganizationIdentifier)}
+		}),
+		CreatedAt: lo.Ternary(from.CreatedAt.Set, &from.CreatedAt.Value, nil),
+		UpdatedAt: lo.Ternary(from.UpdatedAt.Set, &from.UpdatedAt.Value, nil),
 	}
 }

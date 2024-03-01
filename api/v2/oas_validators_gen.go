@@ -471,6 +471,29 @@ func (s *AddProjectRequestProject) Validate() error {
 	return nil
 }
 
+func (s *AffiliationParams) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.OrganizationIdentifier.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "organizationIdentifier",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
 func (s *Attribute) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -688,6 +711,9 @@ func (s *ImportOrganizationsRequest) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
+		if s.Organizations == nil {
+			return errors.New("nil is invalid value")
+		}
 		var failures []validate.FieldError
 		for i, elem := range s.Organizations {
 			if err := func() error {
@@ -1094,29 +1120,6 @@ func (s *ImportPersonParams) Validate() error {
 	return nil
 }
 
-func (s *ImportPersonParamsAffiliationsItem) Validate() error {
-	if s == nil {
-		return validate.ErrNilPointer
-	}
-
-	var failures []validate.FieldError
-	if err := func() error {
-		if err := s.OrganizationIdentifier.Validate(); err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "organizationIdentifier",
-			Error: err,
-		})
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-	return nil
-}
-
 func (s *ImportPersonRequest) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -1124,15 +1127,8 @@ func (s *ImportPersonRequest) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
-		if value, ok := s.Person.Get(); ok {
-			if err := func() error {
-				if err := value.Validate(); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
+		if err := s.Person.Validate(); err != nil {
+			return err
 		}
 		return nil
 	}(); err != nil {

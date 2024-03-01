@@ -749,6 +749,100 @@ func (s *AddProjectRequestProject) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
+func (s *AffiliationParams) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *AffiliationParams) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("organizationIdentifier")
+		s.OrganizationIdentifier.Encode(e)
+	}
+}
+
+var jsonFieldsNameOfAffiliationParams = [1]string{
+	0: "organizationIdentifier",
+}
+
+// Decode decodes AffiliationParams from json.
+func (s *AffiliationParams) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode AffiliationParams to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "organizationIdentifier":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				if err := s.OrganizationIdentifier.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"organizationIdentifier\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode AffiliationParams")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfAffiliationParams) {
+					name = jsonFieldsNameOfAffiliationParams[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *AffiliationParams) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *AffiliationParams) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
 func (s *Attribute) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
@@ -1316,14 +1410,12 @@ func (s *ImportOrganizationsRequest) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *ImportOrganizationsRequest) encodeFields(e *jx.Encoder) {
 	{
-		if s.Organizations != nil {
-			e.FieldStart("organizations")
-			e.ArrStart()
-			for _, elem := range s.Organizations {
-				elem.Encode(e)
-			}
-			e.ArrEnd()
+		e.FieldStart("organizations")
+		e.ArrStart()
+		for _, elem := range s.Organizations {
+			elem.Encode(e)
 		}
+		e.ArrEnd()
 	}
 }
 
@@ -1336,10 +1428,12 @@ func (s *ImportOrganizationsRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode ImportOrganizationsRequest to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "organizations":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
 				s.Organizations = make([]ImportOrganizationParams, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -1362,6 +1456,38 @@ func (s *ImportOrganizationsRequest) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode ImportOrganizationsRequest")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfImportOrganizationsRequest) {
+					name = jsonFieldsNameOfImportOrganizationsRequest[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil
@@ -1700,9 +1826,9 @@ func (s *ImportPersonParams) Decode(d *jx.Decoder) error {
 			}
 		case "affiliations":
 			if err := func() error {
-				s.Affiliations = make([]ImportPersonParamsAffiliationsItem, 0)
+				s.Affiliations = make([]AffiliationParams, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
-					var elem ImportPersonParamsAffiliationsItem
+					var elem AffiliationParams
 					if err := elem.Decode(d); err != nil {
 						return err
 					}
@@ -1794,49 +1920,49 @@ func (s *ImportPersonParams) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *ImportPersonParamsAffiliationsItem) Encode(e *jx.Encoder) {
+func (s *ImportPersonRequest) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *ImportPersonParamsAffiliationsItem) encodeFields(e *jx.Encoder) {
+func (s *ImportPersonRequest) encodeFields(e *jx.Encoder) {
 	{
-		e.FieldStart("organizationIdentifier")
-		s.OrganizationIdentifier.Encode(e)
+		e.FieldStart("person")
+		s.Person.Encode(e)
 	}
 }
 
-var jsonFieldsNameOfImportPersonParamsAffiliationsItem = [1]string{
-	0: "organizationIdentifier",
+var jsonFieldsNameOfImportPersonRequest = [1]string{
+	0: "person",
 }
 
-// Decode decodes ImportPersonParamsAffiliationsItem from json.
-func (s *ImportPersonParamsAffiliationsItem) Decode(d *jx.Decoder) error {
+// Decode decodes ImportPersonRequest from json.
+func (s *ImportPersonRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode ImportPersonParamsAffiliationsItem to nil")
+		return errors.New("invalid: unable to decode ImportPersonRequest to nil")
 	}
 	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "organizationIdentifier":
+		case "person":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				if err := s.OrganizationIdentifier.Decode(d); err != nil {
+				if err := s.Person.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"organizationIdentifier\"")
+				return errors.Wrap(err, "decode field \"person\"")
 			}
 		default:
 			return d.Skip()
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode ImportPersonParamsAffiliationsItem")
+		return errors.Wrap(err, "decode ImportPersonRequest")
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
@@ -1853,8 +1979,8 @@ func (s *ImportPersonParamsAffiliationsItem) Decode(d *jx.Decoder) error {
 				bitIdx := bits.TrailingZeros8(result)
 				fieldIdx := i*8 + bitIdx
 				var name string
-				if fieldIdx < len(jsonFieldsNameOfImportPersonParamsAffiliationsItem) {
-					name = jsonFieldsNameOfImportPersonParamsAffiliationsItem[fieldIdx]
+				if fieldIdx < len(jsonFieldsNameOfImportPersonRequest) {
+					name = jsonFieldsNameOfImportPersonRequest[fieldIdx]
 				} else {
 					name = strconv.Itoa(fieldIdx)
 				}
@@ -1869,69 +1995,6 @@ func (s *ImportPersonParamsAffiliationsItem) Decode(d *jx.Decoder) error {
 	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s *ImportPersonParamsAffiliationsItem) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *ImportPersonParamsAffiliationsItem) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode implements json.Marshaler.
-func (s *ImportPersonRequest) Encode(e *jx.Encoder) {
-	e.ObjStart()
-	s.encodeFields(e)
-	e.ObjEnd()
-}
-
-// encodeFields encodes fields.
-func (s *ImportPersonRequest) encodeFields(e *jx.Encoder) {
-	{
-		if s.Person.Set {
-			e.FieldStart("person")
-			s.Person.Encode(e)
-		}
-	}
-}
-
-var jsonFieldsNameOfImportPersonRequest = [1]string{
-	0: "person",
-}
-
-// Decode decodes ImportPersonRequest from json.
-func (s *ImportPersonRequest) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode ImportPersonRequest to nil")
-	}
-
-	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
-		switch string(k) {
-		case "person":
-			if err := func() error {
-				s.Person.Reset()
-				if err := s.Person.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"person\"")
-			}
-		default:
-			return d.Skip()
-		}
-		return nil
-	}); err != nil {
-		return errors.Wrap(err, "decode ImportPersonRequest")
 	}
 
 	return nil
@@ -2049,39 +2112,6 @@ func (s OptIdentifier) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptIdentifier) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes ImportPersonParams as json.
-func (o OptImportPersonParams) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	o.Value.Encode(e)
-}
-
-// Decode decodes ImportPersonParams from json.
-func (o *OptImportPersonParams) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptImportPersonParams to nil")
-	}
-	o.Set = true
-	if err := o.Value.Decode(d); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptImportPersonParams) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptImportPersonParams) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
