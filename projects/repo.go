@@ -52,8 +52,8 @@ func (r *Repo) EachProject(ctx context.Context, fn func(*Project) bool) error {
 			&r.Identifiers,
 			&r.Names,
 			&r.Descriptions,
-			&r.FoundingDate,
-			&r.DissolutionDate,
+			&r.StartDate,
+			&r.EndDate,
 			&r.Deleted,
 			&r.Attributes,
 			&r.CreatedAt,
@@ -70,13 +70,13 @@ func (r *Repo) EachProject(ctx context.Context, fn func(*Project) bool) error {
 }
 
 type AddProjectParams struct {
-	Identifiers     []Identifier
-	Names           []Text
-	Descriptions    []Text
-	FoundingDate    string
-	DissolutionDate string
-	Deleted         bool
-	Attributes      []Attribute
+	Identifiers  []Identifier
+	Names        []Text
+	Descriptions []Text
+	StartDate    string
+	EndDate      string
+	Deleted      bool
+	Attributes   []Attribute
 }
 
 func (r *Repo) AddProject(ctx context.Context, params AddProjectParams) error {
@@ -166,12 +166,12 @@ func transferValues(rows []*projectRow, params AddProjectParams) AddProjectParam
 			}
 		}
 
-		if params.FoundingDate == "" {
-			params.FoundingDate = row.FoundingDate.String
+		if params.StartDate == "" {
+			params.EndDate = row.StartDate.String
 		}
 
-		if params.DissolutionDate == "" {
-			params.DissolutionDate = row.DissolutionDate.String
+		if params.EndDate == "" {
+			params.EndDate = row.EndDate.String
 		}
 
 		var attrs []Attribute
