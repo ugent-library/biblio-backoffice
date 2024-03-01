@@ -6,15 +6,15 @@ import (
 )
 
 type Project struct {
-	Identifiers     []Identifier `json:"identifiers,omitempty"`
-	Names           []Text       `json:"names,omitempty"`
-	Descriptions    []Text       `json:"descriptions,omitempty"`
-	FoundingDate    string       `json:"founding_date,omitempty"`
-	DissolutionDate string       `json:"dissolution_date,omitempty"`
-	Attributes      []Attribute  `json:"attributes,omitempty"`
-	Deleted         bool         `json:"deleted,omitempty"`
-	CreatedAt       time.Time    `json:"created_at,omitempty"`
-	UpdatedAt       time.Time    `json:"updated_at,omitempty"`
+	Identifiers  []Identifier `json:"identifiers,omitempty"`
+	Names        []Text       `json:"names,omitempty"`
+	Descriptions []Text       `json:"descriptions,omitempty"`
+	StartDate    string       `json:"startDate,omitempty"`
+	EndDate      string       `json:"endDate,omitempty"`
+	Attributes   []Attribute  `json:"attributes,omitempty"`
+	Deleted      bool         `json:"deleted,omitempty"`
+	CreatedAt    time.Time    `json:"created_at,omitempty"`
+	UpdatedAt    time.Time    `json:"updated_at,omitempty"`
 }
 
 func (p *Project) ID() string {
