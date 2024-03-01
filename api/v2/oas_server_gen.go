@@ -25,7 +25,13 @@ type Handler interface {
 	// Import organization hierarchy.
 	//
 	// POST /import-organizations
-	ImportOrganizations(ctx context.Context, req ImportOrganizationsRequest) error
+	ImportOrganizations(ctx context.Context, req *ImportOrganizationsRequest) error
+	// ImportPerson implements importPerson operation.
+	//
+	// Import a person.
+	//
+	// POST /import-person
+	ImportPerson(ctx context.Context, req *ImportPersonRequest) error
 	// NewError creates *ErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.
