@@ -11,7 +11,7 @@ export default function extractBiblioId(subject: undefined | JQuery<HTMLElement>
 
     cySubject = cy.wrap(subject, { log: false })
   } else {
-    cySubject = cy.get('.list-group-item-main', { log: false })
+    cySubject = cy.get('.c-thumbnail-and-text', { log: false })
   }
 
   cySubject
