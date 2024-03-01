@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 
+	"github.com/go-faster/errors"
 	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
@@ -21,6 +22,24 @@ func NewService(
 		peopleRepo:   peopleRepo,
 		projectsRepo: projectsRepo,
 	}
+}
+
+func (s *Service) GetOrganization(ctx context.Context, req *GetOrganizationRequest) (GetOrganizationRes, error) {
+	o, err := s.peopleRepo.GetOrganizationByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
+	if errors.Is(err, people.ErrNotFound) {
+		return nil, &ErrorStatusCode{
+			StatusCode: 404,
+			Response: Error{
+				Code:    404,
+				Message: "Person not found",
+			},
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &GetOrganization{Organization: convertOrganization(o)}, nil
 }
 
 func (s *Service) ImportOrganizations(ctx context.Context, req *ImportOrganizationsRequest) error {
@@ -120,6 +139,16 @@ func (s *Service) NewError(ctx context.Context, err error) *ErrorStatusCode {
 			Code:    500,
 			Message: err.Error(),
 		},
+	}
+}
+
+func convertOrganization(from *people.Organization) Organization {
+	return Organization{
+		Identifiers: lo.Map(from.Identifiers, func(v people.Identifier, _ int) Identifier { return Identifier(v) }),
+		Names:       lo.Map(from.Names, func(v people.Text, _ int) Text { return Text(v) }),
+		Ceased:      from.Ceased,
+		CreatedAt:   from.CreatedAt,
+		UpdatedAt:   from.UpdatedAt,
 	}
 }
 

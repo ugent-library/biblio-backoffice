@@ -17,6 +17,22 @@ type ImportOrganizationParams struct {
 	UpdatedAt        *time.Time  `json:"updatedAt,omitempty"`
 }
 
+// TODO add ceasedAt
+type Organization struct {
+	Identifiers Identifiers          `json:"identifiers"`
+	Names       []Text               `json:"names,omitempty"`
+	Ceased      bool                 `json:"ceased"`
+	CreatedAt   time.Time            `json:"createdAt"`
+	UpdatedAt   time.Time            `json:"updatedAt"`
+	Parents     []ParentOrganization `json:"parents"`
+}
+
+type ParentOrganization struct {
+	Identifiers Identifiers `json:"identifiers"`
+	Names       []Text      `json:"names,omitempty"`
+	Ceased      bool        `json:"ceased"`
+}
+
 type ImportPersonParams struct {
 	Identifiers         Identifiers         `json:"identifiers"`
 	Name                string              `json:"name"`
@@ -33,7 +49,7 @@ type ImportPersonParams struct {
 	Attributes          []Attribute         `json:"attributes,omitempty"`
 	Tokens              []Token             `json:"tokens,omitempty"`
 	Affiliations        []AffiliationParams `json:"affiliations,omitempty"`
-	CreatedAt           *time.Time          `json:"createdAt,omitempty"`
+	CreatedAt           *time.Time          `json:"createdAt,omitempty"` // TODO pointers not needed
 	UpdatedAt           *time.Time          `json:"updatedAt,omitempty"`
 }
 
@@ -42,29 +58,22 @@ type AffiliationParams struct {
 }
 
 type Person struct {
-	Identifiers         []Identifier `json:"identifiers"`
-	Name                string       `json:"name"`
-	PreferredName       string       `json:"preferredName,omitempty"`
-	GivenName           string       `json:"givenName,omitempty"`
-	FamilyName          string       `json:"familyName,omitempty"`
-	PreferredGivenName  string       `json:"preferredGivenName,omitempty"`
-	PreferredFamilyName string       `json:"preferredFamilyName,omitempty"`
-	HonorificPrefix     string       `json:"honorificPrefix,omitempty"`
-	Email               string       `json:"email,omitempty"`
-	Active              bool         `json:"active"`
-	Username            string       `json:"username,omitempty"`
-	Attributes          []Attribute  `json:"attributes,omitempty"`
-	CreatedAt           time.Time    `json:"createdAt"`
-	UpdatedAt           time.Time    `json:"updatedAt"`
-}
-
-func (p *Person) ID() string {
-	for _, id := range p.Identifiers {
-		if id.Kind == idKind {
-			return id.Value
-		}
-	}
-	return ""
+	Identifiers         Identifiers `json:"identifiers"`
+	Name                string      `json:"name"`
+	PreferredName       string      `json:"preferredName,omitempty"`
+	GivenName           string      `json:"givenName,omitempty"`
+	FamilyName          string      `json:"familyName,omitempty"`
+	PreferredGivenName  string      `json:"preferredGivenName,omitempty"`
+	PreferredFamilyName string      `json:"preferredFamilyName,omitempty"`
+	HonorificPrefix     string      `json:"honorificPrefix,omitempty"`
+	Email               string      `json:"email,omitempty"`
+	Active              bool        `json:"active"`
+	Role                string      `json:"role,omitempty"`
+	Username            string      `json:"username,omitempty"`
+	Attributes          []Attribute `json:"attributes,omitempty"`
+	Tokens              []Token     `json:"tokens,omitempty"`
+	CreatedAt           time.Time   `json:"createdAt"`
+	UpdatedAt           time.Time   `json:"updatedAt"`
 }
 
 type Identifiers []Identifier

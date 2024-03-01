@@ -23,6 +23,19 @@ FROM organizations o
 JOIN organization_identifiers oi ON o.id = oi.organization_id AND oi.kind = $1 and oi.value = $2;
 `
 
+const getOrganizationByIdentifierQuery = `
+SELECT id,
+	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+	   names,
+	   ceased,
+	   created_at,
+	   updated_at
+FROM organizations o
+JOIN organization_identifiers oi ON o.id = oi.organization_id AND oi.kind = $1 and oi.value = $2
+LEFT JOIN organization_identifiers ids ON o.id = ids.organization_id
+GROUP BY o.id;
+`
+
 const insertOrganizationQuery = `
 INSERT INTO organizations (
 	parent_id, 
@@ -50,6 +63,31 @@ INSERT INTO affiliations (
 ) VALUES ($1, $2);
 `
 
+const getPersonByIdentifierQuery = `
+SELECT id,
+	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+	   name,
+       preferred_name,
+	   given_name,
+	   preferred_given_name,
+	   family_name,
+	   preferred_family_name,
+	   honorific_prefix,
+	   email,
+	   active,
+	   role,
+	   username,
+	   attributes,
+	   tokens,
+	   created_at,
+	   updated_at
+FROM people p
+JOIN person_identifiers pi ON p.id = pi.person_id AND pi.kind = $1 and pi.value = $2
+LEFT JOIN person_identifiers ids ON p.id = ids.person_id
+WHERE p.replaced_by_id IS NULL
+GROUP BY p.id;
+`
+
 const insertPersonQuery = `
 INSERT INTO people (
 	name,
@@ -73,6 +111,83 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
 	COALESCE($15,CURRENT_TIMESTAMP))
 RETURNING id;
 `
+
+type organizationRow struct {
+	ID          int64
+	Identifiers []Identifier
+	Names       []Text
+	Ceased      bool
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+func (row *organizationRow) toOrganization() *Organization {
+	return &Organization{
+		Identifiers: row.Identifiers,
+		Names:       row.Names,
+		Ceased:      row.Ceased,
+		CreatedAt:   row.CreatedAt,
+		UpdatedAt:   row.UpdatedAt,
+	}
+}
+
+type personRow struct {
+	ID                  int64
+	Identifiers         []Identifier
+	Name                string
+	PreferredName       pgtype.Text
+	GivenName           pgtype.Text
+	PreferredGivenName  pgtype.Text
+	FamilyName          pgtype.Text
+	PreferredFamilyName pgtype.Text
+	HonorificPrefix     pgtype.Text
+	Email               pgtype.Text
+	Active              bool
+	Role                pgtype.Text
+	Username            pgtype.Text
+	Attributes          []Attribute
+	Tokens              []Token
+	CreatedAt           time.Time
+	UpdatedAt           time.Time
+}
+
+func (row *personRow) toPerson() *Person {
+	return &Person{
+		Identifiers:         row.Identifiers,
+		Name:                row.Name,
+		PreferredName:       row.PreferredName.String,
+		GivenName:           row.GivenName.String,
+		PreferredGivenName:  row.PreferredGivenName.String,
+		FamilyName:          row.FamilyName.String,
+		PreferredFamilyName: row.PreferredFamilyName.String,
+		HonorificPrefix:     row.HonorificPrefix.String,
+		Email:               row.Email.String,
+		Active:              row.Active,
+		Role:                row.Role.String,
+		Username:            row.Username.String,
+		Attributes:          row.Attributes,
+		Tokens:              row.Tokens,
+		CreatedAt:           row.CreatedAt,
+		UpdatedAt:           row.UpdatedAt,
+	}
+}
+
+func getOrganizationByIdentifier(ctx context.Context, conn Conn, kind, value string) (*organizationRow, error) {
+	var r organizationRow
+
+	err := conn.QueryRow(ctx, getOrganizationByIdentifierQuery, kind, value).Scan(
+		&r.ID,
+		&r.Identifiers,
+		&r.Names,
+		&r.Ceased,
+		&r.CreatedAt,
+		&r.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &r, nil
+}
 
 func insertOrganization(ctx context.Context, conn Conn, o ImportOrganizationParams) error {
 	tx, err := conn.Begin(ctx)
@@ -168,66 +283,6 @@ func insertPerson(ctx context.Context, conn Conn, p ImportPersonParams) error {
 	return tx.Commit(ctx)
 }
 
-type personRow struct {
-	ID                  int64
-	Identifiers         []Identifier
-	Name                string
-	PreferredName       pgtype.Text
-	GivenName           pgtype.Text
-	PreferredGivenName  pgtype.Text
-	FamilyName          pgtype.Text
-	PreferredFamilyName pgtype.Text
-	HonorificPrefix     pgtype.Text
-	Email               pgtype.Text
-	Active              bool
-	Username            pgtype.Text
-	Attributes          []Attribute
-	CreatedAt           time.Time
-	UpdatedAt           time.Time
-}
-
-func (row *personRow) toPerson() *Person {
-	return &Person{
-		Identifiers:         row.Identifiers,
-		Name:                row.Name,
-		PreferredName:       row.PreferredName.String,
-		GivenName:           row.GivenName.String,
-		PreferredGivenName:  row.PreferredGivenName.String,
-		FamilyName:          row.FamilyName.String,
-		PreferredFamilyName: row.PreferredFamilyName.String,
-		HonorificPrefix:     row.HonorificPrefix.String,
-		Email:               row.Email.String,
-		Active:              row.Active,
-		Username:            row.Username.String,
-		Attributes:          row.Attributes,
-		CreatedAt:           row.CreatedAt,
-		UpdatedAt:           row.UpdatedAt,
-	}
-}
-
-const getPersonByIdentifierQuery = `
-SELECT id,
-	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
-	   name,
-       preferred_name,
-	   given_name,
-	   preferred_given_name,
-	   family_name,
-	   preferred_family_name,
-	   honorific_prefix,
-	   email,
-	   active,
-	   username,
-	   attributes,
-	   created_at,
-	   updated_at
-FROM people p
-JOIN person_identifiers pi ON p.id = pi.person_id AND pi.kind = $1 and pi.value = $2
-LEFT JOIN person_identifiers ids ON p.id = ids.person_id
-WHERE p.replaced_by_id IS NULL
-GROUP BY p.id;
-`
-
 func getPersonByIdentifier(ctx context.Context, conn Conn, kind, value string) (*personRow, error) {
 	var r personRow
 
@@ -243,8 +298,10 @@ func getPersonByIdentifier(ctx context.Context, conn Conn, kind, value string) (
 		&r.HonorificPrefix,
 		&r.Email,
 		&r.Active,
+		&r.Role,
 		&r.Username,
 		&r.Attributes,
+		&r.Tokens,
 		&r.CreatedAt,
 		&r.UpdatedAt,
 	)

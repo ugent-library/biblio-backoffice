@@ -27,6 +27,7 @@ func NewRepo(c RepoConfig) (*Repo, error) {
 	}, nil
 }
 
+// TODO token encryption
 // TODO make idempotent, do nothing if an ident exists
 func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganizationParams]) error {
 	tx, err := r.conn.Begin(ctx)
@@ -61,8 +62,15 @@ func (r *Repo) ImportPerson(ctx context.Context, p ImportPersonParams) error {
 	return insertPerson(ctx, r.conn, p)
 }
 
-func (r *Repo) GetPerson(ctx context.Context, id string) (*Person, error) {
-	return r.GetPersonByIdentifier(ctx, "id", id)
+func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
+	row, err := getOrganizationByIdentifier(ctx, r.conn, kind, value)
+	if err == pgx.ErrNoRows {
+		return nil, ErrNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	return row.toOrganization(), nil
 }
 
 func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {

@@ -380,6 +380,40 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
 }
 
+func (*ErrorStatusCode) getOrganizationRes() {}
+
+// Ref: #/components/schemas/GetOrganization
+type GetOrganization struct {
+	Organization Organization `json:"organization"`
+}
+
+// GetOrganization returns the value of Organization.
+func (s *GetOrganization) GetOrganization() Organization {
+	return s.Organization
+}
+
+// SetOrganization sets the value of Organization.
+func (s *GetOrganization) SetOrganization(val Organization) {
+	s.Organization = val
+}
+
+func (*GetOrganization) getOrganizationRes() {}
+
+// Ref: #/components/schemas/GetOrganizationRequest
+type GetOrganizationRequest struct {
+	Identifier Identifier `json:"identifier"`
+}
+
+// GetIdentifier returns the value of Identifier.
+func (s *GetOrganizationRequest) GetIdentifier() Identifier {
+	return s.Identifier
+}
+
+// SetIdentifier sets the value of Identifier.
+func (s *GetOrganizationRequest) SetIdentifier(val Identifier) {
+	s.Identifier = val
+}
+
 // Ref: #/components/schemas/Identifier
 type Identifier struct {
 	Kind  string `json:"kind"`
@@ -885,6 +919,113 @@ func (o OptString) Or(d string) string {
 		return v
 	}
 	return d
+}
+
+// Ref: #/components/schemas/Organization
+type Organization struct {
+	Identifiers []Identifier         `json:"identifiers"`
+	Names       []Text               `json:"names"`
+	Ceased      bool                 `json:"ceased"`
+	CreatedAt   time.Time            `json:"createdAt"`
+	UpdatedAt   time.Time            `json:"updatedAt"`
+	Parents     []ParentOrganization `json:"parents"`
+}
+
+// GetIdentifiers returns the value of Identifiers.
+func (s *Organization) GetIdentifiers() []Identifier {
+	return s.Identifiers
+}
+
+// GetNames returns the value of Names.
+func (s *Organization) GetNames() []Text {
+	return s.Names
+}
+
+// GetCeased returns the value of Ceased.
+func (s *Organization) GetCeased() bool {
+	return s.Ceased
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *Organization) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *Organization) GetUpdatedAt() time.Time {
+	return s.UpdatedAt
+}
+
+// GetParents returns the value of Parents.
+func (s *Organization) GetParents() []ParentOrganization {
+	return s.Parents
+}
+
+// SetIdentifiers sets the value of Identifiers.
+func (s *Organization) SetIdentifiers(val []Identifier) {
+	s.Identifiers = val
+}
+
+// SetNames sets the value of Names.
+func (s *Organization) SetNames(val []Text) {
+	s.Names = val
+}
+
+// SetCeased sets the value of Ceased.
+func (s *Organization) SetCeased(val bool) {
+	s.Ceased = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *Organization) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *Organization) SetUpdatedAt(val time.Time) {
+	s.UpdatedAt = val
+}
+
+// SetParents sets the value of Parents.
+func (s *Organization) SetParents(val []ParentOrganization) {
+	s.Parents = val
+}
+
+// Ref: #/components/schemas/ParentOrganization
+type ParentOrganization struct {
+	Identifiers []Identifier `json:"identifiers"`
+	Names       []Text       `json:"names"`
+	Ceased      bool         `json:"ceased"`
+}
+
+// GetIdentifiers returns the value of Identifiers.
+func (s *ParentOrganization) GetIdentifiers() []Identifier {
+	return s.Identifiers
+}
+
+// GetNames returns the value of Names.
+func (s *ParentOrganization) GetNames() []Text {
+	return s.Names
+}
+
+// GetCeased returns the value of Ceased.
+func (s *ParentOrganization) GetCeased() bool {
+	return s.Ceased
+}
+
+// SetIdentifiers sets the value of Identifiers.
+func (s *ParentOrganization) SetIdentifiers(val []Identifier) {
+	s.Identifiers = val
+}
+
+// SetNames sets the value of Names.
+func (s *ParentOrganization) SetNames(val []Text) {
+	s.Names = val
+}
+
+// SetCeased sets the value of Ceased.
+func (s *ParentOrganization) SetCeased(val bool) {
+	s.Ceased = val
 }
 
 // Ref: #/components/schemas/Text
