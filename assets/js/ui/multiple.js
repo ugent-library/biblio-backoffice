@@ -58,7 +58,7 @@ export default function() {
             classList = lastValue.querySelector("i.if-add").classList
             classList.remove("if-add")
             classList.add("if-delete")
-            lastValue.querySelector("div.visually-hidden").textContent = "Delete"
+            lastValue.querySelector(".form-value-delete .visually-hidden").textContent = "Delete"
             lastBtn.removeEventListener("click", addFormValue)
             lastBtn.addEventListener("click", deleteFormValue)
 
