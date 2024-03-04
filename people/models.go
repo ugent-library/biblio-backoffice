@@ -96,6 +96,15 @@ func (idents Identifiers) Get(kind string) string {
 	return ""
 }
 
+func (idents Identifiers) GetAll(kind string) (ids []string) {
+	for _, ident := range idents {
+		if ident.Kind == kind {
+			ids = append(ids, ident.Value)
+		}
+	}
+	return
+}
+
 type Identifier struct {
 	Kind  string `json:"kind"`
 	Value string `json:"value"`

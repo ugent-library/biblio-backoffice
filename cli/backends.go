@@ -142,21 +142,11 @@ func newServices() *backends.Services {
 		OrganizationService: organizationService,
 	}
 
-	// projectsClient, err := projectservice.New(projectservice.Config{
-	// 	APIUrl: config.Projects.APIURL,
-	// 	APIKey: config.Projects.APIKey,
-	// })
-	// if err != nil {
-	// 	panic(err)
-	// }
+	projectsFacade := backends.NewProjectsFacade(projectsRepo, projectsIndex)
+	projectsService := caching.NewProjectService(projectsFacade)
+	projectSearchService := projectsFacade
 
-	// projectService := caching.NewProjectService(projectsClient)
-	// projectSearchService := projectsClient
-
-	projectService := projects.NewService(projectsRepo)
-	projectSearchService := projects.NewSearchService(projectsIndex)
-
-	repo := newRepo(pool, personService, organizationService, projectService)
+	repo := newRepo(pool, personService, organizationService, projectsService)
 
 	searchService := newSearchService()
 
@@ -170,7 +160,7 @@ func newServices() *backends.Services {
 		PublicationSearchIndex:    searchService.NewPublicationIndex(repo),
 		OrganizationService:       organizationService,
 		PersonService:             personService,
-		ProjectService:            projectService,
+		ProjectService:            projectsService,
 		UserService:               userService,
 		OrganizationSearchService: peopleServiceClient,
 		PersonSearchService:       peopleServiceClient,
