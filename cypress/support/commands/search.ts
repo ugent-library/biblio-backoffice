@@ -1,39 +1,36 @@
-import { logCommand, updateLogMessage } from './helpers'
+import { logCommand, updateLogMessage } from "./helpers";
 
-const NO_LOG = { log: false }
+const NO_LOG = { log: false };
 
 export default function search(query: string): Cypress.Chainable<number> {
-  const log = logCommand('search', { query }, query)
+  const log = logCommand("search", { query }, query);
 
   cy.get('input[placeholder="Search..."]', NO_LOG)
     .clear()
     .type(query, NO_LOG)
-    .closest('.input-group', NO_LOG)
-    .contains('.btn', 'Search', NO_LOG)
-    .click(NO_LOG)
+    .closest(".input-group", NO_LOG)
+    .contains(".btn", "Search", NO_LOG)
+    .click(NO_LOG);
+
+  const REGEX = /^Showing (\d+-\d+ of )?(?<count>\d+) publications$/;
 
   return cy
-    .contains('.card-header', '.pagination', NO_LOG)
-    .find('.c-body-small', NO_LOG)
-    .then($el => {
-      const text = $el.text().trim()
-      const regex = /^Showing (?<count>\d+)/
+    .contains(".card-header .c-body-small", REGEX, NO_LOG)
+    .then(($el) => {
+      const text = $el.text().trim();
+      const count = parseInt(text.match(REGEX).groups.count);
 
-      expect(text).to.match(regex)
+      updateLogMessage(log, count);
 
-      const count = parseInt(text.match(regex).groups.count)
-
-      updateLogMessage(log, count)
-
-      return count
+      return count;
     })
-    .finishLog(log)
+    .finishLog(log);
 }
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      search(query: string): Cypress.Chainable<number>
+      search(query: string): Cypress.Chainable<number>;
     }
   }
 }
