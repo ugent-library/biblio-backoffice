@@ -37,6 +37,19 @@ LEFT JOIN organization_identifiers ids ON o.id = ids.organization_id
 GROUP BY o.id;
 `
 
+const getAllOrganizationsQuery = `
+SELECT id,
+       parent_id,
+	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+	   names,
+	   ceased,
+	   created_at,
+	   updated_at
+FROM organizations o
+LEFT JOIN organization_identifiers ids ON o.id = ids.organization_id
+GROUP BY o.id;
+`
+
 const getParentOrganizations = `
 WITH RECURSIVE orgs AS (
 	SELECT id,
@@ -144,6 +157,82 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
 	COALESCE($14,CURRENT_TIMESTAMP),
 	COALESCE($15,CURRENT_TIMESTAMP))
 RETURNING id;
+`
+
+const getAllPeopleQuery = `
+SELECT id,
+	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+	   name,
+       preferred_name,
+	   given_name,
+	   preferred_given_name,
+	   family_name,
+	   preferred_family_name,
+	   honorific_prefix,
+	   email,
+	   active,
+	   username,
+	   attributes,
+	   created_at,
+	   updated_at
+FROM people p
+LEFT JOIN person_identifiers ids ON p.id = ids.person_id
+WHERE p.replaced_by_id IS NULL
+GROUP BY p.id;
+`
+
+const createPersonQuery = `
+INSERT INTO people (
+	name,
+	preferred_name,
+	given_name,
+	preferred_given_name,
+	family_name,
+	preferred_family_name,
+	honorific_prefix,
+	email,
+	active,
+	username,
+	attributes
+)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+RETURNING id;
+`
+
+const updatePersonQuery = `
+UPDATE people SET 
+	name = $2,
+	preferred_name = $3,
+	given_name = $4,
+	preferred_given_name = $5,
+	family_name = $6,
+	preferred_family_name = $7,
+	honorific_prefix = $8,
+	email = $9,
+	active = $10,
+	username = $11,
+	attributes = $12,
+	updated_at = CURRENT_TIMESTAMP
+WHERE id = $1;
+`
+
+const deletePersonIdentifiersQuery = `
+DELETE FROM person_identifiers
+WHERE person_id = $1;
+`
+
+const insertPersonIdentifierQuery = `
+INSERT INTO person_identifiers (
+	person_id,
+	kind,
+	value
+) VALUES ($1, $2, $3);
+`
+
+const setPersonReplacedByQuery = `
+UPDATE people
+SET replaced_by_id = $2, active = FALSE
+WHERE id = $1;
 `
 
 type organizationRow struct {
@@ -355,46 +444,6 @@ func getPersonByIdentifier(ctx context.Context, conn Conn, kind, value string) (
 	return &r, nil
 }
 
-const getAllPeopleQuery = `
-SELECT id,
-	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
-	   name,
-       preferred_name,
-	   given_name,
-	   preferred_given_name,
-	   family_name,
-	   preferred_family_name,
-	   honorific_prefix,
-	   email,
-	   active,
-	   username,
-	   attributes,
-	   created_at,
-	   updated_at
-FROM people p
-LEFT JOIN person_identifiers ids ON p.id = ids.person_id
-WHERE p.replaced_by_id IS NULL
-GROUP BY p.id;
-`
-
-const createPersonQuery = `
-INSERT INTO people (
-	name,
-	preferred_name,
-	given_name,
-	preferred_given_name,
-	family_name,
-	preferred_family_name,
-	honorific_prefix,
-	email,
-	active,
-	username,
-	attributes
-)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-RETURNING id;
-`
-
 func createPerson(ctx context.Context, conn Conn, params AddPersonParams) (int64, error) {
 	var id int64
 	err := conn.QueryRow(ctx, createPersonQuery,
@@ -415,23 +464,6 @@ func createPerson(ctx context.Context, conn Conn, params AddPersonParams) (int64
 	}
 	return id, replacePersonIdentifiers(ctx, conn, id, params.Identifiers)
 }
-
-const updatePersonQuery = `
-UPDATE people SET 
-	name = $2,
-	preferred_name = $3,
-	given_name = $4,
-	preferred_given_name = $5,
-	family_name = $6,
-	preferred_family_name = $7,
-	honorific_prefix = $8,
-	email = $9,
-	active = $10,
-	username = $11,
-	attributes = $12,
-	updated_at = CURRENT_TIMESTAMP
-WHERE id = $1;
-`
 
 func updatePerson(ctx context.Context, conn Conn, id int64, params AddPersonParams) error {
 	_, err := conn.Exec(ctx, updatePersonQuery,
@@ -454,19 +486,6 @@ func updatePerson(ctx context.Context, conn Conn, id int64, params AddPersonPara
 	return replacePersonIdentifiers(ctx, conn, id, params.Identifiers)
 }
 
-const deletePersonIdentifiersQuery = `
-DELETE FROM person_identifiers
-WHERE person_id = $1;
-`
-
-const insertPersonIdentifierQuery = `
-INSERT INTO person_identifiers (
-	person_id,
-	kind,
-	value
-) VALUES ($1, $2, $3);
-`
-
 func replacePersonIdentifiers(ctx context.Context, conn Conn, pID int64, ids []Identifier) error {
 	if _, err := conn.Exec(ctx, deletePersonIdentifiersQuery, pID); err != nil {
 		return err
@@ -478,12 +497,6 @@ func replacePersonIdentifiers(ctx context.Context, conn Conn, pID int64, ids []I
 	}
 	return nil
 }
-
-const setPersonReplacedByQuery = `
-UPDATE people
-SET replaced_by_id = $2, active = FALSE
-WHERE id = $1;
-`
 
 func setPersonReplacedBy(ctx context.Context, conn Conn, id, replacedByID int64) error {
 	_, err := conn.Exec(ctx, setPersonReplacedByQuery, id, replacedByID)

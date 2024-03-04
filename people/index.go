@@ -21,16 +21,21 @@ import (
 //go:embed *.json
 var indexSettingsFS embed.FS
 
+const (
+	peopleIndexName        = "people"
+	organizationsIndexName = "organizations"
+)
+
 type IndexConfig struct {
-	Conn      string
-	Name      string
-	Retention int
-	Logger    *slog.Logger
+	Conn        string
+	IndexPrefix string
+	Retention   int
+	Logger      *slog.Logger
 }
 
 type Index struct {
 	client    *elasticsearch.Client
-	alias     string
+	prefix    string
 	retention int
 	logger    *slog.Logger
 }
@@ -45,7 +50,7 @@ func NewIndex(c IndexConfig) (*Index, error) {
 
 	return &Index{
 		client:    client,
-		alias:     c.Name,
+		prefix:    c.IndexPrefix,
 		retention: c.Retention,
 		logger:    c.Logger,
 	}, nil
@@ -123,21 +128,37 @@ var (
 	queryStringTmpl = template.Must(template.New("").Parse(queryStringQuery + searchBody))
 )
 
+func (idx *Index) GetOrganization(ctx context.Context, id string) (*Organization, error) {
+	return get[Organization](ctx, idx, organizationsIndexName, id)
+}
+
 func (idx *Index) GetPerson(ctx context.Context, id string) (*Person, error) {
-	res, err := idx.client.Get(idx.alias, id,
+	return get[Person](ctx, idx, peopleIndexName, id)
+}
+
+func get[T any](_ context.Context, idx *Index, indexName string, id string) (*T, error) {
+	res, err := idx.client.Get(idx.prefix+indexName, id,
 		idx.client.Get.WithSource("record"),
 	)
 	if err != nil {
 		return nil, err
 	}
-	resBody := getResponseBody[*Person]{}
+	resBody := getResponseBody[*T]{}
 	if err := decodeResponseBody(res, &resBody); err != nil {
 		return nil, err
 	}
 	return resBody.Source.Record, nil
 }
 
+func (idx *Index) SearchOrganizations(ctx context.Context, qs string) ([]*Organization, error) {
+	return search[Organization](ctx, idx, organizationsIndexName, qs)
+}
+
 func (idx *Index) SearchPeople(ctx context.Context, qs string) ([]*Person, error) {
+	return search[Person](ctx, idx, peopleIndexName, qs)
+}
+
+func search[T any](ctx context.Context, idx *Index, indexName string, qs string) ([]*T, error) {
 	qs = strings.TrimSpace(qs)
 
 	b := bytes.Buffer{}
@@ -157,7 +178,7 @@ func (idx *Index) SearchPeople(ctx context.Context, qs string) ([]*Person, error
 
 	res, err := idx.client.Search(
 		idx.client.Search.WithContext(ctx),
-		idx.client.Search.WithIndex(idx.alias),
+		idx.client.Search.WithIndex(idx.prefix+indexName),
 		// idx.client.Search.WithTrackTotalHits(true),
 		idx.client.Search.WithBody(strings.NewReader(b.String())),
 		idx.client.Search.WithSort("_score:desc"),
@@ -167,12 +188,12 @@ func (idx *Index) SearchPeople(ctx context.Context, qs string) ([]*Person, error
 		return nil, err
 	}
 
-	resBody := searchResponseBody[*Person]{}
+	resBody := searchResponseBody[*T]{}
 	if err := decodeResponseBody(res, &resBody); err != nil {
 		return nil, err
 	}
 
-	recs := make([]*Person, len(resBody.Hits.Hits))
+	recs := make([]*T, len(resBody.Hits.Hits))
 
 	for i, hit := range resBody.Hits.Hits {
 		recs[i] = hit.Source.Record
@@ -181,13 +202,21 @@ func (idx *Index) SearchPeople(ctx context.Context, qs string) ([]*Person, error
 	return recs, nil
 }
 
+func (idx *Index) ReindexOrganizations(ctx context.Context, iter Iter[*Organization]) error {
+	return reindex(ctx, idx, organizationsIndexName, iter, toOrganizationDoc)
+}
+
 func (idx *Index) ReindexPeople(ctx context.Context, iter Iter[*Person]) error {
-	b, err := indexSettingsFS.ReadFile("people_index_settings.json")
+	return reindex(ctx, idx, peopleIndexName, iter, toPersonDoc)
+}
+
+func reindex[T any](ctx context.Context, idx *Index, indexName string, iter Iter[T], docFn func(T) (string, []byte, error)) error {
+	b, err := indexSettingsFS.ReadFile(indexName + "_index_settings.json")
 	if err != nil {
 		return err
 	}
 
-	switcher, err := index.NewSwitcher(idx.client, idx.alias, string(b))
+	switcher, err := index.NewSwitcher(idx.client, idx.prefix+indexName, string(b))
 	if err != nil {
 		return err
 	}
@@ -206,8 +235,8 @@ func (idx *Index) ReindexPeople(ctx context.Context, iter Iter[*Person]) error {
 	defer bi.Close(ctx)
 
 	var indexErr error
-	err = iter(ctx, func(p *Person) bool {
-		doc, err := json.Marshal(newIndexPerson(p))
+	err = iter(ctx, func(p T) bool {
+		docID, doc, err := docFn(p)
 		if err != nil {
 			indexErr = err
 			return false
@@ -216,7 +245,7 @@ func (idx *Index) ReindexPeople(ctx context.Context, iter Iter[*Person]) error {
 			ctx,
 			esutil.BulkIndexerItem{
 				Action:       "index",
-				DocumentID:   p.Identifiers.Get(idKind),
+				DocumentID:   docID,
 				DocumentType: "_doc",
 				Body:         bytes.NewReader(doc),
 				OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
@@ -241,14 +270,43 @@ func (idx *Index) ReindexPeople(ctx context.Context, iter Iter[*Person]) error {
 	return switcher.Switch(ctx, idx.retention)
 }
 
-type indexPerson struct {
+type organizationDoc struct {
+	Names       []string      `json:"names"`
+	Identifiers []string      `json:"identifiers"`
+	Record      *Organization `json:"record"`
+}
+
+func toOrganizationDoc(o *Organization) (string, []byte, error) {
+	od := &organizationDoc{
+		Names:       make([]string, 0, len(o.Names)),
+		Identifiers: make([]string, 0, len(o.Identifiers)*2),
+		Record:      o,
+	}
+
+	for _, text := range o.Names {
+		od.Names = append(od.Names, text.Value)
+	}
+
+	for _, id := range o.Identifiers {
+		od.Identifiers = append(od.Identifiers, id.String(), id.Value)
+	}
+
+	doc, err := json.Marshal(od)
+	if err != nil {
+		return "", nil, err
+	}
+
+	return o.Identifiers.Get(idKind), doc, nil
+}
+
+type personDoc struct {
 	Names       []string `json:"names"`
 	Identifiers []string `json:"identifiers"`
 	Record      *Person  `json:"record"`
 }
 
-func newIndexPerson(p *Person) *indexPerson {
-	ip := &indexPerson{
+func toPersonDoc(p *Person) (string, []byte, error) {
+	pd := &personDoc{
 		Names:       []string{p.Name},
 		Identifiers: make([]string, 0, len(p.Identifiers)*2),
 		Record:      p,
@@ -256,13 +314,18 @@ func newIndexPerson(p *Person) *indexPerson {
 
 	for _, name := range []string{p.PreferredName, p.GivenName, p.PreferredGivenName, p.FamilyName, p.PreferredFamilyName} {
 		if name != "" {
-			ip.Names = append(ip.Names, name)
+			pd.Names = append(pd.Names, name)
 		}
 	}
 
 	for _, id := range p.Identifiers {
-		ip.Identifiers = append(ip.Identifiers, id.String(), id.Value)
+		pd.Identifiers = append(pd.Identifiers, id.String(), id.Value)
 	}
 
-	return ip
+	doc, err := json.Marshal(pd)
+	if err != nil {
+		return "", nil, err
+	}
+
+	return p.Identifiers.Get(idKind), doc, nil
 }
