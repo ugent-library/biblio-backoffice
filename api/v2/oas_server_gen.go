@@ -22,10 +22,16 @@ type Handler interface {
 	AddProject(ctx context.Context, req *AddProjectRequest) error
 	// GetOrganization implements getOrganization operation.
 	//
-	// Get organization by identifier.
+	// Get organization.
 	//
 	// POST /get-organization
 	GetOrganization(ctx context.Context, req *GetOrganizationRequest) (GetOrganizationRes, error)
+	// GetPerson implements getPerson operation.
+	//
+	// Get person.
+	//
+	// POST /get-person
+	GetPerson(ctx context.Context, req *GetPersonRequest) (GetPersonRes, error)
 	// ImportOrganizations implements importOrganizations operation.
 	//
 	// Import organization hierarchy.
@@ -38,6 +44,18 @@ type Handler interface {
 	//
 	// POST /import-person
 	ImportPerson(ctx context.Context, req *ImportPersonRequest) error
+	// SearchOrganizations implements searchOrganizations operation.
+	//
+	// Search organizations.
+	//
+	// POST /search-organizations
+	SearchOrganizations(ctx context.Context, req *SearchOrganizationsRequest) (*SearchOrganizations, error)
+	// SearchPeople implements searchPeople operation.
+	//
+	// Search people.
+	//
+	// POST /search-people
+	SearchPeople(ctx context.Context, req *SearchPeopleRequest) (*SearchPeople, error)
 	// NewError creates *ErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.

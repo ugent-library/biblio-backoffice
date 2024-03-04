@@ -105,6 +105,7 @@ func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value stri
 	return org, nil
 }
 
+// TODO add affiliations (also index)
 func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
 	row, err := getPersonByIdentifier(ctx, r.conn, kind, value)
 	if err == pgx.ErrNoRows {
@@ -116,6 +117,7 @@ func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*
 	return row.toPerson(), nil
 }
 
+// TODO fix adding parents
 func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
@@ -145,26 +147,26 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 
 		org := row.toOrganization()
 
-		if row.ParentID.Valid {
-			parentRows, err := tx.Query(ctx, getParentOrganizations, row.ParentID.Int64)
-			if err != nil {
-				return err
-			}
-			defer parentRows.Close()
-			for parentRows.Next() {
-				var o organizationRow
-				if err := parentRows.Scan(
-					&o.Identifiers,
-					&o.Names,
-					&o.Ceased,
-				); err != nil {
-					return err
-				}
-				org.Parents = append(org.Parents, o.toParentOrganization())
-			}
-		}
+		// if row.ParentID.Valid {
+		// 	parentRows, err := tx.Query(ctx, getParentOrganizations, row.ParentID.Int64)
+		// 	if err != nil {
+		// 		return err
+		// 	}
+		// 	defer parentRows.Close()
+		// 	for parentRows.Next() {
+		// 		var o organizationRow
+		// 		if err := parentRows.Scan(
+		// 			&o.Identifiers,
+		// 			&o.Names,
+		// 			&o.Ceased,
+		// 		); err != nil {
+		// 			return err
+		// 		}
+		// 		org.Parents = append(org.Parents, o.toParentOrganization())
+		// 	}
+		// }
 
-		if ok := fn(row.toOrganization()); !ok {
+		if ok := fn(org); !ok {
 			break
 		}
 	}
