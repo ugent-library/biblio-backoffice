@@ -11,7 +11,6 @@ import (
 	"github.com/Masterminds/sprig/v3"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/sessions"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/ory/graceful"
@@ -23,8 +22,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
 	"github.com/ugent-library/biblio-backoffice/jobs"
-	"github.com/ugent-library/biblio-backoffice/people"
-	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/routes"
 	"github.com/ugent-library/biblio-backoffice/urls"
@@ -212,28 +209,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	}
 
 	// api server
-	ctx := context.Background()
-
-	pool, err := pgxpool.New(ctx, config.PgConn)
-	if err != nil {
-		return nil, err
-	}
-
-	peopleRepo, err := people.NewRepo(people.RepoConfig{
-		Conn: pool,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	projectsRepo, err := projects.NewRepo(projects.RepoConfig{
-		Conn: pool,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	apiService := api.NewService(peopleRepo, projectsRepo)
+	apiService := api.NewService(services.PeopleRepo, services.PeopleIndex, services.ProjectsRepo)
 	apiServer, err := api.NewServer(apiService, &api.ApiSecurityHandler{APIKey: config.APIKey})
 	if err != nil {
 		return nil, err

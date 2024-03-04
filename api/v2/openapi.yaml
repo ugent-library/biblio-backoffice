@@ -10,8 +10,8 @@ info:
 paths:
   "/get-organization":
     post:
-      summary: Get organization by identifier
-      description: Get organization by identifier
+      summary: Get organization
+      description: Get organization
       operationId: getOrganization
       requestBody:
         content:
@@ -29,6 +29,72 @@ paths:
         '404':
           description: Not found
           $ref: "#/components/responses/Error"
+        default:
+          $ref: "#/components/responses/Error"
+
+  "/get-person":
+    post:
+      summary: Get person
+      description: Get person
+      operationId: getPerson
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetPersonRequest"
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetPerson"
+        '404':
+          description: Not found
+          $ref: "#/components/responses/Error"
+        default:
+          $ref: "#/components/responses/Error"
+  
+  "/search-organizations":
+    post:
+      summary: Search organizations
+      description: Search organizations
+      operationId: searchOrganizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchOrganizationsRequest"
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchOrganizations"
+        default:
+          $ref: "#/components/responses/Error"
+  
+  "/search-people":
+    post:
+      summary: Search people
+      description: Search people
+      operationId: searchPeople
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchPeopleRequest"
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchPeople"
         default:
           $ref: "#/components/responses/Error"
 
@@ -103,7 +169,6 @@ paths:
 security:
   - apiKey: []
 
-
 components:
   securitySchemes:
     apiKey:
@@ -145,6 +210,50 @@ components:
         organization:
           $ref: "#/components/schemas/Organization"
       required: [organization]
+
+    GetPersonRequest:
+      type: object
+      properties:
+        identifier:
+          $ref: "#/components/schemas/Identifier"
+      required: [identifier]
+
+    GetPerson:
+      type: object
+      properties:
+        person:
+          $ref: "#/components/schemas/Person"
+      required: [person]
+
+    SearchOrganizationsRequest:
+      type: object
+      properties:
+        query:
+          type: string
+
+    SearchOrganizations:
+      type: object
+      properties:
+        hits:
+          type: array
+          items:
+            $ref: "#/components/schemas/Organization"
+      required: [hits]
+
+    SearchPeopleRequest:
+      type: object
+      properties:
+        query:
+          type: string
+
+    SearchPeople:
+      type: object
+      properties:
+        hits:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+      required: [hits]
 
     ImportOrganizationsRequest:
       type: object
@@ -332,6 +441,63 @@ components:
         organizationIdentifier:
           $ref: "#/components/schemas/Identifier"
       required: [organizationIdentifier]
+ 
+    Person:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Identifier"
+          minItems: 1
+        name:
+          type: string
+          minLength: 1
+        preferredName:
+          type: string
+          minLength: 1
+        givenName:
+          type: string
+          minLength: 1
+        preferredGivenName:
+          type: string
+          minLength: 1
+        familyName:
+          type: string
+          minLength: 1
+        preferredFamilyName:
+          type: string
+          minLength: 1
+        honorificPrefix:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+          minLength: 1
+        username:
+          type: string
+          minLength: 1
+        active:
+          type: boolean
+        role:
+          type: string
+          minLength: 1
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        tokens:
+          type: array
+          items:
+            $ref: "#/components/schemas/Token"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [identifiers, name, active, createdAt, updatedAt]
 
     Organization:
       type: object

@@ -33,10 +33,19 @@ func (UnimplementedHandler) AddProject(ctx context.Context, req *AddProjectReque
 
 // GetOrganization implements getOrganization operation.
 //
-// Get organization by identifier.
+// Get organization.
 //
 // POST /get-organization
 func (UnimplementedHandler) GetOrganization(ctx context.Context, req *GetOrganizationRequest) (r GetOrganizationRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetPerson implements getPerson operation.
+//
+// Get person.
+//
+// POST /get-person
+func (UnimplementedHandler) GetPerson(ctx context.Context, req *GetPersonRequest) (r GetPersonRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -56,6 +65,24 @@ func (UnimplementedHandler) ImportOrganizations(ctx context.Context, req *Import
 // POST /import-person
 func (UnimplementedHandler) ImportPerson(ctx context.Context, req *ImportPersonRequest) error {
 	return ht.ErrNotImplemented
+}
+
+// SearchOrganizations implements searchOrganizations operation.
+//
+// Search organizations.
+//
+// POST /search-organizations
+func (UnimplementedHandler) SearchOrganizations(ctx context.Context, req *SearchOrganizationsRequest) (r *SearchOrganizations, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// SearchPeople implements searchPeople operation.
+//
+// Search people.
+//
+// POST /search-people
+func (UnimplementedHandler) SearchPeople(ctx context.Context, req *SearchPeopleRequest) (r *SearchPeople, _ error) {
+	return r, ht.ErrNotImplemented
 }
 
 // NewError creates *ErrorStatusCode from error returned by handler.

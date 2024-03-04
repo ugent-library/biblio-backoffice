@@ -37,10 +37,16 @@ type Invoker interface {
 	AddProject(ctx context.Context, request *AddProjectRequest) error
 	// GetOrganization invokes getOrganization operation.
 	//
-	// Get organization by identifier.
+	// Get organization.
 	//
 	// POST /get-organization
 	GetOrganization(ctx context.Context, request *GetOrganizationRequest) (GetOrganizationRes, error)
+	// GetPerson invokes getPerson operation.
+	//
+	// Get person.
+	//
+	// POST /get-person
+	GetPerson(ctx context.Context, request *GetPersonRequest) (GetPersonRes, error)
 	// ImportOrganizations invokes importOrganizations operation.
 	//
 	// Import organization hierarchy.
@@ -53,6 +59,18 @@ type Invoker interface {
 	//
 	// POST /import-person
 	ImportPerson(ctx context.Context, request *ImportPersonRequest) error
+	// SearchOrganizations invokes searchOrganizations operation.
+	//
+	// Search organizations.
+	//
+	// POST /search-organizations
+	SearchOrganizations(ctx context.Context, request *SearchOrganizationsRequest) (*SearchOrganizations, error)
+	// SearchPeople invokes searchPeople operation.
+	//
+	// Search people.
+	//
+	// POST /search-people
+	SearchPeople(ctx context.Context, request *SearchPeopleRequest) (*SearchPeople, error)
 }
 
 // Client implements OAS client.
@@ -327,7 +345,7 @@ func (c *Client) sendAddProject(ctx context.Context, request *AddProjectRequest)
 
 // GetOrganization invokes getOrganization operation.
 //
-// Get organization by identifier.
+// Get organization.
 //
 // POST /get-organization
 func (c *Client) GetOrganization(ctx context.Context, request *GetOrganizationRequest) (GetOrganizationRes, error) {
@@ -426,6 +444,114 @@ func (c *Client) sendGetOrganization(ctx context.Context, request *GetOrganizati
 
 	stage = "DecodeResponse"
 	result, err := decodeGetOrganizationResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetPerson invokes getPerson operation.
+//
+// Get person.
+//
+// POST /get-person
+func (c *Client) GetPerson(ctx context.Context, request *GetPersonRequest) (GetPersonRes, error) {
+	res, err := c.sendGetPerson(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendGetPerson(ctx context.Context, request *GetPersonRequest) (res GetPersonRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getPerson"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/get-person"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "GetPerson",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/get-person"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeGetPersonRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:ApiKey"
+			switch err := c.securityApiKey(ctx, "GetPerson", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"ApiKey\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetPersonResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -642,6 +768,222 @@ func (c *Client) sendImportPerson(ctx context.Context, request *ImportPersonRequ
 
 	stage = "DecodeResponse"
 	result, err := decodeImportPersonResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// SearchOrganizations invokes searchOrganizations operation.
+//
+// Search organizations.
+//
+// POST /search-organizations
+func (c *Client) SearchOrganizations(ctx context.Context, request *SearchOrganizationsRequest) (*SearchOrganizations, error) {
+	res, err := c.sendSearchOrganizations(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendSearchOrganizations(ctx context.Context, request *SearchOrganizationsRequest) (res *SearchOrganizations, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("searchOrganizations"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/search-organizations"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "SearchOrganizations",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/search-organizations"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeSearchOrganizationsRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:ApiKey"
+			switch err := c.securityApiKey(ctx, "SearchOrganizations", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"ApiKey\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeSearchOrganizationsResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// SearchPeople invokes searchPeople operation.
+//
+// Search people.
+//
+// POST /search-people
+func (c *Client) SearchPeople(ctx context.Context, request *SearchPeopleRequest) (*SearchPeople, error) {
+	res, err := c.sendSearchPeople(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendSearchPeople(ctx context.Context, request *SearchPeopleRequest) (res *SearchPeople, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("searchPeople"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/search-people"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "SearchPeople",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/search-people"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeSearchPeopleRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:ApiKey"
+			switch err := c.securityApiKey(ctx, "SearchPeople", r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"ApiKey\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeSearchPeopleResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
