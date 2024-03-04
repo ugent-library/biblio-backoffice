@@ -116,19 +116,64 @@ func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*
 	return row.toPerson(), nil
 }
 
-type AddPersonParams struct {
-	Identifiers         []Identifier
-	Name                string
-	PreferredName       string
-	GivenName           string
-	FamilyName          string
-	PreferredGivenName  string
-	PreferredFamilyName string
-	HonorificPrefix     string
-	Email               string
-	Active              bool
-	Username            string
-	Attributes          []Attribute
+func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool) error {
+	tx, err := r.conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	rows, err := tx.Query(ctx, getAllOrganizationsQuery)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var row organizationRow
+		if err := rows.Scan(
+			&row.ID,
+			&row.ParentID,
+			&row.Identifiers,
+			&row.Names,
+			&row.Ceased,
+			&row.CreatedAt,
+			&row.UpdatedAt,
+		); err != nil {
+			return err
+		}
+
+		org := row.toOrganization()
+
+		if row.ParentID.Valid {
+			parentRows, err := tx.Query(ctx, getParentOrganizations, row.ParentID.Int64)
+			if err != nil {
+				return err
+			}
+			defer parentRows.Close()
+			for parentRows.Next() {
+				var o organizationRow
+				if err := parentRows.Scan(
+					&o.Identifiers,
+					&o.Names,
+					&o.Ceased,
+				); err != nil {
+					return err
+				}
+				org.Parents = append(org.Parents, o.toParentOrganization())
+			}
+		}
+
+		if ok := fn(row.toOrganization()); !ok {
+			break
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
 
 func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
@@ -165,6 +210,21 @@ func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 	}
 
 	return rows.Err()
+}
+
+type AddPersonParams struct {
+	Identifiers         []Identifier
+	Name                string
+	PreferredName       string
+	GivenName           string
+	FamilyName          string
+	PreferredGivenName  string
+	PreferredFamilyName string
+	HonorificPrefix     string
+	Email               string
+	Active              bool
+	Username            string
+	Attributes          []Attribute
 }
 
 func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {

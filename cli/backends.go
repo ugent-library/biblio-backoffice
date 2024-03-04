@@ -71,10 +71,10 @@ func newServices() *backends.Services {
 	}
 
 	peopleIndex, err := people.NewIndex(people.IndexConfig{
-		Conn:      config.Es6URL,
-		Name:      "biblio_backoffice_people", // TODO make configurable
-		Retention: config.IndexRetention,
-		Logger:    logger,
+		Conn:        config.Es6URL,
+		IndexPrefix: "biblio_backoffice_", // TODO make configurable
+		Retention:   config.IndexRetention,
+		Logger:      logger,
 	})
 	if err != nil {
 		panic(err)
