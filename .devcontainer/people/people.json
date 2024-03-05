@@ -1,18 +1,29 @@
 [
-    {
-        "active": true,
-        "name": "biblio",
-        "given_name": "biblio",
-        "family_name": "biblio",
-        "email": "biblio@ugent.be",
-        "identifier": [
-            {
-                "value": "biblio",
-                "namespace": "ugent_username"
-            }
-        ],
-        "role": [
-            "biblio-admin"
-        ]
-    }
+  {
+    "active": true,
+    "name": "Biblio Librarian",
+    "given_name": "biblio",
+    "family_name": "librarian",
+    "email": "biblio-librarian@ugent.be",
+    "identifier": [
+      {
+        "value": "biblio-librarian",
+        "namespace": "ugent_username"
+      }
+    ],
+    "role": ["biblio-admin"]
+  },
+  {
+    "active": true,
+    "name": "Biblio Researcher",
+    "given_name": "biblio",
+    "family_name": "researcher",
+    "email": "biblio-researcher@ugent.be",
+    "identifier": [
+      {
+        "value": "biblio-researcher",
+        "namespace": "ugent_username"
+      }
+    ]
+  }
 ]
