@@ -117,24 +117,60 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
-			case 'g': // Prefix: "get-organization"
+			case 'g': // Prefix: "get-"
 				origElem := elem
-				if l := len("get-organization"); len(elem) >= l && elem[0:l] == "get-organization" {
+				if l := len("get-"); len(elem) >= l && elem[0:l] == "get-" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
-					switch r.Method {
-					case "POST":
-						s.handleGetOrganizationRequest([0]string{}, elemIsEscaped, w, r)
-					default:
-						s.notAllowed(w, r, "POST")
+					break
+				}
+				switch elem[0] {
+				case 'o': // Prefix: "organization"
+					origElem := elem
+					if l := len("organization"); len(elem) >= l && elem[0:l] == "organization" {
+						elem = elem[l:]
+					} else {
+						break
 					}
 
-					return
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleGetOrganizationRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "POST")
+						}
+
+						return
+					}
+
+					elem = origElem
+				case 'p': // Prefix: "person"
+					origElem := elem
+					if l := len("person"); len(elem) >= l && elem[0:l] == "person" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleGetPersonRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "POST")
+						}
+
+						return
+					}
+
+					elem = origElem
 				}
 
 				elem = origElem
@@ -225,6 +261,63 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						elem = origElem
+					}
+
+					elem = origElem
+				}
+
+				elem = origElem
+			case 's': // Prefix: "search-"
+				origElem := elem
+				if l := len("search-"); len(elem) >= l && elem[0:l] == "search-" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case 'o': // Prefix: "organizations"
+					origElem := elem
+					if l := len("organizations"); len(elem) >= l && elem[0:l] == "organizations" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleSearchOrganizationsRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "POST")
+						}
+
+						return
+					}
+
+					elem = origElem
+				case 'p': // Prefix: "people"
+					origElem := elem
+					if l := len("people"); len(elem) >= l && elem[0:l] == "people" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleSearchPeopleRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "POST")
+						}
+
+						return
 					}
 
 					elem = origElem
@@ -391,28 +484,68 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 
 				elem = origElem
-			case 'g': // Prefix: "get-organization"
+			case 'g': // Prefix: "get-"
 				origElem := elem
-				if l := len("get-organization"); len(elem) >= l && elem[0:l] == "get-organization" {
+				if l := len("get-"); len(elem) >= l && elem[0:l] == "get-" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					switch method {
-					case "POST":
-						// Leaf: GetOrganization
-						r.name = "GetOrganization"
-						r.summary = "Get organization by identifier"
-						r.operationID = "getOrganization"
-						r.pathPattern = "/get-organization"
-						r.args = args
-						r.count = 0
-						return r, true
-					default:
-						return
+					break
+				}
+				switch elem[0] {
+				case 'o': // Prefix: "organization"
+					origElem := elem
+					if l := len("organization"); len(elem) >= l && elem[0:l] == "organization" {
+						elem = elem[l:]
+					} else {
+						break
 					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "POST":
+							// Leaf: GetOrganization
+							r.name = "GetOrganization"
+							r.summary = "Get organization"
+							r.operationID = "getOrganization"
+							r.pathPattern = "/get-organization"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+					elem = origElem
+				case 'p': // Prefix: "person"
+					origElem := elem
+					if l := len("person"); len(elem) >= l && elem[0:l] == "person" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "POST":
+							// Leaf: GetPerson
+							r.name = "GetPerson"
+							r.summary = "Get person"
+							r.operationID = "getPerson"
+							r.pathPattern = "/get-person"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+					elem = origElem
 				}
 
 				elem = origElem
@@ -515,6 +648,71 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						elem = origElem
+					}
+
+					elem = origElem
+				}
+
+				elem = origElem
+			case 's': // Prefix: "search-"
+				origElem := elem
+				if l := len("search-"); len(elem) >= l && elem[0:l] == "search-" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case 'o': // Prefix: "organizations"
+					origElem := elem
+					if l := len("organizations"); len(elem) >= l && elem[0:l] == "organizations" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "POST":
+							// Leaf: SearchOrganizations
+							r.name = "SearchOrganizations"
+							r.summary = "Search organizations"
+							r.operationID = "searchOrganizations"
+							r.pathPattern = "/search-organizations"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+					elem = origElem
+				case 'p': // Prefix: "people"
+					origElem := elem
+					if l := len("people"); len(elem) >= l && elem[0:l] == "people" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "POST":
+							// Leaf: SearchPeople
+							r.name = "SearchPeople"
+							r.summary = "Search people"
+							r.operationID = "searchPeople"
+							r.pathPattern = "/search-people"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
 					}
 
 					elem = origElem

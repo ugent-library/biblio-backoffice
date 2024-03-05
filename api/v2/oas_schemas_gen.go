@@ -262,6 +262,21 @@ func (s *AddProjectRequestProject) SetAttributes(val []Attribute) {
 	s.Attributes = val
 }
 
+// Ref: #/components/schemas/Affiliation
+type Affiliation struct {
+	Organization Organization `json:"organization"`
+}
+
+// GetOrganization returns the value of Organization.
+func (s *Affiliation) GetOrganization() Organization {
+	return s.Organization
+}
+
+// SetOrganization sets the value of Organization.
+func (s *Affiliation) SetOrganization(val Organization) {
+	s.Organization = val
+}
+
 // Ref: #/components/schemas/AffiliationParams
 type AffiliationParams struct {
 	OrganizationIdentifier Identifier `json:"organizationIdentifier"`
@@ -381,6 +396,7 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 }
 
 func (*ErrorStatusCode) getOrganizationRes() {}
+func (*ErrorStatusCode) getPersonRes()       {}
 func (*ErrorStatusCode) importProjectRes()   {}
 
 // Ref: #/components/schemas/GetOrganization
@@ -412,6 +428,38 @@ func (s *GetOrganizationRequest) GetIdentifier() Identifier {
 
 // SetIdentifier sets the value of Identifier.
 func (s *GetOrganizationRequest) SetIdentifier(val Identifier) {
+	s.Identifier = val
+}
+
+// Ref: #/components/schemas/GetPerson
+type GetPerson struct {
+	Person Person `json:"person"`
+}
+
+// GetPerson returns the value of Person.
+func (s *GetPerson) GetPerson() Person {
+	return s.Person
+}
+
+// SetPerson sets the value of Person.
+func (s *GetPerson) SetPerson(val Person) {
+	s.Person = val
+}
+
+func (*GetPerson) getPersonRes() {}
+
+// Ref: #/components/schemas/GetPersonRequest
+type GetPersonRequest struct {
+	Identifier Identifier `json:"identifier"`
+}
+
+// GetIdentifier returns the value of Identifier.
+func (s *GetPersonRequest) GetIdentifier() Identifier {
+	return s.Identifier
+}
+
+// SetIdentifier sets the value of Identifier.
+func (s *GetPersonRequest) SetIdentifier(val Identifier) {
 	s.Identifier = val
 }
 
@@ -1150,6 +1198,257 @@ func (s *ParentOrganization) SetNames(val []Text) {
 // SetCeased sets the value of Ceased.
 func (s *ParentOrganization) SetCeased(val bool) {
 	s.Ceased = val
+}
+
+// Ref: #/components/schemas/Person
+type Person struct {
+	Identifiers         []Identifier  `json:"identifiers"`
+	Name                string        `json:"name"`
+	PreferredName       OptString     `json:"preferredName"`
+	GivenName           OptString     `json:"givenName"`
+	PreferredGivenName  OptString     `json:"preferredGivenName"`
+	FamilyName          OptString     `json:"familyName"`
+	PreferredFamilyName OptString     `json:"preferredFamilyName"`
+	HonorificPrefix     OptString     `json:"honorificPrefix"`
+	Email               OptString     `json:"email"`
+	Username            OptString     `json:"username"`
+	Active              bool          `json:"active"`
+	Role                OptString     `json:"role"`
+	Attributes          []Attribute   `json:"attributes"`
+	Tokens              []Token       `json:"tokens"`
+	Affiliations        []Affiliation `json:"affiliations"`
+	CreatedAt           time.Time     `json:"createdAt"`
+	UpdatedAt           time.Time     `json:"updatedAt"`
+}
+
+// GetIdentifiers returns the value of Identifiers.
+func (s *Person) GetIdentifiers() []Identifier {
+	return s.Identifiers
+}
+
+// GetName returns the value of Name.
+func (s *Person) GetName() string {
+	return s.Name
+}
+
+// GetPreferredName returns the value of PreferredName.
+func (s *Person) GetPreferredName() OptString {
+	return s.PreferredName
+}
+
+// GetGivenName returns the value of GivenName.
+func (s *Person) GetGivenName() OptString {
+	return s.GivenName
+}
+
+// GetPreferredGivenName returns the value of PreferredGivenName.
+func (s *Person) GetPreferredGivenName() OptString {
+	return s.PreferredGivenName
+}
+
+// GetFamilyName returns the value of FamilyName.
+func (s *Person) GetFamilyName() OptString {
+	return s.FamilyName
+}
+
+// GetPreferredFamilyName returns the value of PreferredFamilyName.
+func (s *Person) GetPreferredFamilyName() OptString {
+	return s.PreferredFamilyName
+}
+
+// GetHonorificPrefix returns the value of HonorificPrefix.
+func (s *Person) GetHonorificPrefix() OptString {
+	return s.HonorificPrefix
+}
+
+// GetEmail returns the value of Email.
+func (s *Person) GetEmail() OptString {
+	return s.Email
+}
+
+// GetUsername returns the value of Username.
+func (s *Person) GetUsername() OptString {
+	return s.Username
+}
+
+// GetActive returns the value of Active.
+func (s *Person) GetActive() bool {
+	return s.Active
+}
+
+// GetRole returns the value of Role.
+func (s *Person) GetRole() OptString {
+	return s.Role
+}
+
+// GetAttributes returns the value of Attributes.
+func (s *Person) GetAttributes() []Attribute {
+	return s.Attributes
+}
+
+// GetTokens returns the value of Tokens.
+func (s *Person) GetTokens() []Token {
+	return s.Tokens
+}
+
+// GetAffiliations returns the value of Affiliations.
+func (s *Person) GetAffiliations() []Affiliation {
+	return s.Affiliations
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *Person) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *Person) GetUpdatedAt() time.Time {
+	return s.UpdatedAt
+}
+
+// SetIdentifiers sets the value of Identifiers.
+func (s *Person) SetIdentifiers(val []Identifier) {
+	s.Identifiers = val
+}
+
+// SetName sets the value of Name.
+func (s *Person) SetName(val string) {
+	s.Name = val
+}
+
+// SetPreferredName sets the value of PreferredName.
+func (s *Person) SetPreferredName(val OptString) {
+	s.PreferredName = val
+}
+
+// SetGivenName sets the value of GivenName.
+func (s *Person) SetGivenName(val OptString) {
+	s.GivenName = val
+}
+
+// SetPreferredGivenName sets the value of PreferredGivenName.
+func (s *Person) SetPreferredGivenName(val OptString) {
+	s.PreferredGivenName = val
+}
+
+// SetFamilyName sets the value of FamilyName.
+func (s *Person) SetFamilyName(val OptString) {
+	s.FamilyName = val
+}
+
+// SetPreferredFamilyName sets the value of PreferredFamilyName.
+func (s *Person) SetPreferredFamilyName(val OptString) {
+	s.PreferredFamilyName = val
+}
+
+// SetHonorificPrefix sets the value of HonorificPrefix.
+func (s *Person) SetHonorificPrefix(val OptString) {
+	s.HonorificPrefix = val
+}
+
+// SetEmail sets the value of Email.
+func (s *Person) SetEmail(val OptString) {
+	s.Email = val
+}
+
+// SetUsername sets the value of Username.
+func (s *Person) SetUsername(val OptString) {
+	s.Username = val
+}
+
+// SetActive sets the value of Active.
+func (s *Person) SetActive(val bool) {
+	s.Active = val
+}
+
+// SetRole sets the value of Role.
+func (s *Person) SetRole(val OptString) {
+	s.Role = val
+}
+
+// SetAttributes sets the value of Attributes.
+func (s *Person) SetAttributes(val []Attribute) {
+	s.Attributes = val
+}
+
+// SetTokens sets the value of Tokens.
+func (s *Person) SetTokens(val []Token) {
+	s.Tokens = val
+}
+
+// SetAffiliations sets the value of Affiliations.
+func (s *Person) SetAffiliations(val []Affiliation) {
+	s.Affiliations = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *Person) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *Person) SetUpdatedAt(val time.Time) {
+	s.UpdatedAt = val
+}
+
+// Ref: #/components/schemas/SearchOrganizations
+type SearchOrganizations struct {
+	Hits []Organization `json:"hits"`
+}
+
+// GetHits returns the value of Hits.
+func (s *SearchOrganizations) GetHits() []Organization {
+	return s.Hits
+}
+
+// SetHits sets the value of Hits.
+func (s *SearchOrganizations) SetHits(val []Organization) {
+	s.Hits = val
+}
+
+// Ref: #/components/schemas/SearchOrganizationsRequest
+type SearchOrganizationsRequest struct {
+	Query OptString `json:"query"`
+}
+
+// GetQuery returns the value of Query.
+func (s *SearchOrganizationsRequest) GetQuery() OptString {
+	return s.Query
+}
+
+// SetQuery sets the value of Query.
+func (s *SearchOrganizationsRequest) SetQuery(val OptString) {
+	s.Query = val
+}
+
+// Ref: #/components/schemas/SearchPeople
+type SearchPeople struct {
+	Hits []Person `json:"hits"`
+}
+
+// GetHits returns the value of Hits.
+func (s *SearchPeople) GetHits() []Person {
+	return s.Hits
+}
+
+// SetHits sets the value of Hits.
+func (s *SearchPeople) SetHits(val []Person) {
+	s.Hits = val
+}
+
+// Ref: #/components/schemas/SearchPeopleRequest
+type SearchPeopleRequest struct {
+	Query OptString `json:"query"`
+}
+
+// GetQuery returns the value of Query.
+func (s *SearchPeopleRequest) GetQuery() OptString {
+	return s.Query
+}
+
+// SetQuery sets the value of Query.
+func (s *SearchPeopleRequest) SetQuery(val OptString) {
+	s.Query = val
 }
 
 // Ref: #/components/schemas/Text

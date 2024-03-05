@@ -5,6 +5,10 @@ type GetOrganizationRes interface {
 	getOrganizationRes()
 }
 
+type GetPersonRes interface {
+	getPersonRes()
+}
+
 type ImportProjectRes interface {
 	importProjectRes()
 }

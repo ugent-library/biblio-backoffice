@@ -29,6 +29,7 @@ func Start(ctx context.Context, c JobsConfig) error {
 	// start job server
 	riverWorkers := river.NewWorkers()
 	// river.AddWorker(riverWorkers, NewDeactivatePeopleWorker(repo))
+	river.AddWorker(riverWorkers, NewReindexOrganizationsWorker(c.PeopleRepo, c.PeopleIndex))
 	river.AddWorker(riverWorkers, NewReindexPeopleWorker(c.PeopleRepo, c.PeopleIndex))
 	river.AddWorker(riverWorkers, NewReindexProjectsWorker(c.ProjectsRepo, c.ProjectsIndex))
 	riverClient, err := river.NewClient(riverpgxv5.New(c.PgxPool), &river.Config{
@@ -45,6 +46,13 @@ func Start(ctx context.Context, c JobsConfig) error {
 			// 	},
 			// 	&river.PeriodicJobOpts{RunOnStart: true},
 			// ),
+			river.NewPeriodicJob(
+				river.PeriodicInterval(30*time.Minute),
+				func() (river.JobArgs, *river.InsertOpts) {
+					return ReindexOrganizationsArgs{}, nil
+				},
+				&river.PeriodicJobOpts{RunOnStart: true},
+			),
 			river.NewPeriodicJob(
 				river.PeriodicInterval(30*time.Minute),
 				func() (river.JobArgs, *river.InsertOpts) {
