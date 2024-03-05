@@ -67,6 +67,15 @@ func (UnimplementedHandler) ImportPerson(ctx context.Context, req *ImportPersonR
 	return ht.ErrNotImplemented
 }
 
+// ImportProject implements importProject operation.
+//
+// Import a project.
+//
+// POST /import-project
+func (UnimplementedHandler) ImportProject(ctx context.Context, req *ImportProjectRequest) (r ImportProjectRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // SearchOrganizations implements searchOrganizations operation.
 //
 // Search organizations.

@@ -3,7 +3,9 @@ package projects
 import (
 	"context"
 	"errors"
+	"fmt"
 	"slices"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -12,6 +14,16 @@ import (
 const idKind = "id"
 
 var ErrNotFound = errors.New("not found")
+var ErrDuplicate = errors.New("project with id already exists")
+
+type DuplicateProjectError struct {
+	ID   string
+	Kind string
+}
+
+func (e *DuplicateProjectError) Error() string {
+	return fmt.Sprintf("duplicate project detected: %s:%s already exists", e.Kind, e.ID)
+}
 
 type Repo struct {
 	conn Conn
@@ -67,6 +79,55 @@ func (r *Repo) EachProject(ctx context.Context, fn func(*Project) bool) error {
 	}
 
 	return rows.Err()
+}
+
+type ImportProjectParams struct {
+	Identifiers  []Identifier
+	Names        []Text
+	Descriptions []Text
+	StartDate    string
+	EndDate      string
+	Deleted      bool
+	Attributes   []Attribute
+	CreatedAt    *time.Time
+	UpdatedAt    *time.Time
+}
+
+func (r *Repo) ImportProject(ctx context.Context, params ImportProjectParams) error {
+	tx, err := r.conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	// Find if it has a project identifier
+
+	for _, id := range params.Identifiers {
+		_, err := getProjectByIdentifier(ctx, tx, id.Kind, id.Value)
+		if err != nil && err != pgx.ErrNoRows {
+			return err
+		}
+
+		if err == pgx.ErrNoRows {
+			continue
+		}
+
+		return &DuplicateProjectError{
+			ID:   id.Value,
+			Kind: id.Kind,
+		}
+	}
+
+	if !slices.ContainsFunc(params.Identifiers, func(id Identifier) bool { return id.Kind == idKind }) {
+		params.Identifiers = append(params.Identifiers, newID())
+	}
+
+	err = insertProject(ctx, tx, params)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
 
 type AddProjectParams struct {

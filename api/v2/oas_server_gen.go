@@ -44,6 +44,12 @@ type Handler interface {
 	//
 	// POST /import-person
 	ImportPerson(ctx context.Context, req *ImportPersonRequest) error
+	// ImportProject implements importProject operation.
+	//
+	// Import a project.
+	//
+	// POST /import-project
+	ImportProject(ctx context.Context, req *ImportProjectRequest) (ImportProjectRes, error)
 	// SearchOrganizations implements searchOrganizations operation.
 	//
 	// Search organizations.
