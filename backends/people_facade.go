@@ -20,8 +20,7 @@ func NewPeopleFacade(repo *people.Repo, index *people.Index) *PeopleFacade {
 }
 
 func (f *PeopleFacade) GetPerson(id string) (*models.Person, error) {
-	ctx := context.TODO()
-	p, err := f.repo.GetPersonByIdentifier(ctx, "id", id)
+	p, err := f.repo.GetPersonByIdentifier(context.TODO(), "id", id)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +28,45 @@ func (f *PeopleFacade) GetPerson(id string) (*models.Person, error) {
 	return toPerson(p), nil
 }
 
-// TODO affiliations
+func (f *PeopleFacade) GetOrganization(id string) (*models.Organization, error) {
+	o, err := f.repo.GetOrganizationByIdentifier(context.TODO(), "biblio", id)
+	if err != nil {
+		return nil, err
+	}
+	return toOrganization(o), nil
+}
+
+func (f *PeopleFacade) SuggestPeople(qs string) ([]*models.Person, error) {
+	hits, err := f.index.SearchPeople(context.TODO(), qs)
+	if err != nil {
+		return nil, err
+	}
+
+	people := make([]*models.Person, len(hits))
+	for i, p := range hits {
+		people[i] = toPerson(p)
+	}
+
+	return people, nil
+}
+
+func (f *PeopleFacade) SuggestOrganizations(qs string) ([]models.Completion, error) {
+	hits, err := f.index.SearchOrganizations(context.TODO(), qs)
+	if err != nil {
+		return nil, err
+	}
+
+	orgs := make([]models.Completion, len(hits))
+	for i, o := range hits {
+		orgs[i] = models.Completion{
+			ID:      o.Identifiers.Get("biblio"),
+			Heading: o.Names.Get("eng"),
+		}
+	}
+
+	return orgs, nil
+}
+
 func toPerson(p *people.Person) *models.Person {
 	mp := &models.Person{
 		ID:          p.Identifiers.Get("id"),
@@ -45,6 +82,7 @@ func toPerson(p *people.Person) *models.Person {
 		Username:    p.Username,
 		Role:        p.Role,
 	}
+
 	if p.PreferredName != "" {
 		mp.FullName = p.PreferredName
 	}
@@ -54,11 +92,33 @@ func toPerson(p *people.Person) *models.Person {
 	if p.PreferredFamilyName != "" {
 		mp.LastName = p.PreferredFamilyName
 	}
+
 	for _, token := range p.Tokens {
 		if token.Kind == "orcid" {
 			mp.ORCIDToken = string(token.Value)
 		}
 	}
 
+	for _, a := range p.Affiliations {
+		mo := toOrganization(a.Organization)
+		mp.Affiliations = append(mp.Affiliations, &models.Affiliation{
+			OrganizationID: mo.ID,
+			Organization:   mo,
+		})
+	}
+
 	return mp
+}
+
+func toOrganization(o *people.Organization) *models.Organization {
+	id := o.Identifiers.Get("biblio")
+	tree := []models.OrganizationTreeElement{{ID: id}}
+	for _, po := range o.Parents {
+		tree = append(tree, models.OrganizationTreeElement{ID: po.Identifiers.Get("biblio")})
+	}
+	return &models.Organization{
+		ID:   id,
+		Name: o.Names.Get("eng"),
+		Tree: tree,
+	}
 }
