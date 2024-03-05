@@ -3,11 +3,13 @@ package people
 import (
 	"context"
 	"errors"
+	"fmt"
 	"slices"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/ugent-library/crypt"
 )
 
 const idKind = "id"
@@ -15,20 +17,22 @@ const idKind = "id"
 var ErrNotFound = errors.New("not found")
 
 type Repo struct {
-	conn Conn
+	conn        Conn
+	tokenSecret []byte
 }
 
 type RepoConfig struct {
-	Conn *pgxpool.Pool
+	Conn        *pgxpool.Pool
+	TokenSecret []byte
 }
 
 func NewRepo(c RepoConfig) (*Repo, error) {
 	return &Repo{
-		conn: c.Conn,
+		conn:        c.Conn,
+		tokenSecret: c.TokenSecret,
 	}, nil
 }
 
-// TODO token encryption
 // TODO make idempotent, do nothing if an ident exists
 func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganizationParams]) error {
 	tx, err := r.conn.Begin(ctx)
@@ -65,6 +69,14 @@ func (r *Repo) ImportPerson(ctx context.Context, p ImportPersonParams) error {
 
 	if !p.Identifiers.Has(idKind) {
 		p.Identifiers = append(p.Identifiers, newID())
+	}
+
+	for i, t := range p.Tokens {
+		v, err := crypt.Encrypt(r.tokenSecret, t.Value)
+		if err != nil {
+			return fmt.Errorf("can't encrypt %s token: %w", t.Kind, err)
+		}
+		p.Tokens[i] = Token{Kind: t.Kind, Value: v}
 	}
 
 	if err := insertPerson(ctx, tx, p); err != nil {
@@ -127,7 +139,7 @@ func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*
 	if err != nil {
 		return nil, err
 	}
-	return row.toPerson(), nil
+	return row.toPerson(r.tokenSecret)
 }
 
 func (r *Repo) GetActivePersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
@@ -138,7 +150,7 @@ func (r *Repo) GetActivePersonByIdentifier(ctx context.Context, kind, value stri
 	if err != nil {
 		return nil, err
 	}
-	return row.toPerson(), nil
+	return row.toPerson(r.tokenSecret)
 }
 
 func (r *Repo) GetActivePersonByUsername(ctx context.Context, username string) (*Person, error) {
@@ -149,7 +161,7 @@ func (r *Repo) GetActivePersonByUsername(ctx context.Context, username string) (
 	if err != nil {
 		return nil, err
 	}
-	return row.toPerson(), nil
+	return row.toPerson(r.tokenSecret)
 }
 
 // TODO get "conn busy" error when wrapping in tx
@@ -269,7 +281,12 @@ func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 			pr.Affiliations = append(pr.Affiliations, Affiliation{Organization: org})
 		}
 
-		if ok := fn(pr.toPerson()); !ok {
+		p, err := pr.toPerson(r.tokenSecret)
+		if err != nil {
+			return err
+		}
+
+		if ok := fn(p); !ok {
 			break
 		}
 	}
@@ -355,6 +372,7 @@ func newID() Identifier {
 	return Identifier{Kind: idKind, Value: uuid.NewString()}
 }
 
+// TODO transfer tokens?
 func transferValues(rows []*personRow, params AddPersonParams) AddPersonParams {
 	for _, row := range rows {
 		for _, rowID := range row.Identifiers {
