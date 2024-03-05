@@ -26,7 +26,7 @@ JOIN organization_identifiers oi ON o.id = oi.organization_id AND oi.kind = $1 a
 const getOrganizationByIdentifierQuery = `
 SELECT id,
        parent_id,
-	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.organization_id IS NOT NULL) AS identifiers,
 	   names,
 	   ceased,
 	   created_at,
@@ -40,7 +40,7 @@ GROUP BY o.id;
 const getAllOrganizationsQuery = `
 SELECT id,
        parent_id,
-	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.organization_id IS NOT NULL) AS identifiers,
 	   names,
 	   ceased,
 	   created_at,
@@ -75,7 +75,7 @@ WITH RECURSIVE orgs AS (
 	INNER JOIN orgs
     ON o.id = orgs.parent_id 		
 )
-SELECT json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+SELECT json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.organization_id IS NOT NULL) AS identifiers,
        o.names,
        o.ceased,
 	   o.created_at,
@@ -151,8 +151,8 @@ INSERT INTO affiliations (
 
 const getPersonByIdentifierQuery = `
 SELECT p.id,
-	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
-  	   array_agg(DISTINCT a.organization_id) AS affiliations,
+	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.person_id IS NOT NULL) AS identifiers,
+	   array_agg(DISTINCT a.organization_id) FILTER (WHERE a.person_id IS NOT NULL) AS affiliations,
        p.name,
        p.preferred_name,
 	   p.given_name,
@@ -178,8 +178,8 @@ GROUP BY p.id;
 
 const getAllPeopleQuery = `
 SELECT id,
-	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
-  	   array_agg(DISTINCT a.organization_id) AS affiliations,
+	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.person_id IS NOT NULL) AS identifiers,
+  	   array_agg(DISTINCT a.organization_id) FILTER (WHERE a.person_id IS NOT NULL) AS affiliations,
 	   name,
        preferred_name,
 	   given_name,
