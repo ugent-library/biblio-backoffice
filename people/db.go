@@ -176,6 +176,30 @@ WHERE p.replaced_by_id IS NULL
 GROUP BY p.id;
 `
 
+const getAllPeopleQuery = `
+SELECT id,
+	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+  	   array_agg(DISTINCT a.organization_id) AS affiliations,
+	   name,
+       preferred_name,
+	   given_name,
+	   preferred_given_name,
+	   family_name,
+	   preferred_family_name,
+	   honorific_prefix,
+	   email,
+	   active,
+	   username,
+	   attributes,
+	   created_at,
+	   updated_at
+FROM people p
+LEFT JOIN person_identifiers ids ON p.id = ids.person_id
+LEFT JOIN affiliations a ON p.id = a.person_id
+WHERE p.replaced_by_id IS NULL
+GROUP BY p.id;
+`
+
 const insertPersonQuery = `
 INSERT INTO people (
 	name,
@@ -198,28 +222,6 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
 	COALESCE($14,CURRENT_TIMESTAMP),
 	COALESCE($15,CURRENT_TIMESTAMP))
 RETURNING id;
-`
-
-const getAllPeopleQuery = `
-SELECT id,
-	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
-	   name,
-       preferred_name,
-	   given_name,
-	   preferred_given_name,
-	   family_name,
-	   preferred_family_name,
-	   honorific_prefix,
-	   email,
-	   active,
-	   username,
-	   attributes,
-	   created_at,
-	   updated_at
-FROM people p
-LEFT JOIN person_identifiers ids ON p.id = ids.person_id
-WHERE p.replaced_by_id IS NULL
-GROUP BY p.id;
 `
 
 const createPersonQuery = `

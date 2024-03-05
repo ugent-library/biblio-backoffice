@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const idKind = "id"
@@ -18,7 +19,7 @@ type Repo struct {
 }
 
 type RepoConfig struct {
-	Conn Conn
+	Conn *pgxpool.Pool
 }
 
 func NewRepo(c RepoConfig) (*Repo, error) {
@@ -118,7 +119,6 @@ func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value stri
 	return org, nil
 }
 
-// TODO add affiliations (also index)
 func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
 	row, err := getPersonByIdentifier(ctx, r.conn, kind, value)
 	if err == pgx.ErrNoRows {
@@ -130,15 +130,9 @@ func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*
 	return row.toPerson(), nil
 }
 
-// TODO fix adding parents
+// TODO get "conn busy" error when wrapping in tx
 func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool) error {
-	tx, err := r.conn.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
-
-	rows, err := tx.Query(ctx, getAllOrganizationsQuery)
+	rows, err := r.conn.Query(ctx, getAllOrganizationsQuery)
 	if err != nil {
 		return err
 	}
@@ -160,24 +154,26 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 
 		org := row.toOrganization()
 
-		// if row.ParentID.Valid {
-		// 	parentRows, err := tx.Query(ctx, getParentOrganizations, row.ParentID.Int64)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// 	defer parentRows.Close()
-		// 	for parentRows.Next() {
-		// 		var o organizationRow
-		// 		if err := parentRows.Scan(
-		// 			&o.Identifiers,
-		// 			&o.Names,
-		// 			&o.Ceased,
-		// 		); err != nil {
-		// 			return err
-		// 		}
-		// 		org.Parents = append(org.Parents, o.toParentOrganization())
-		// 	}
-		// }
+		if row.ParentID.Valid {
+			parentRows, err := r.conn.Query(ctx, getParentOrganizations, row.ParentID.Int64)
+			if err != nil {
+				return err
+			}
+			defer parentRows.Close()
+			for parentRows.Next() {
+				var o organizationRow
+				if err := parentRows.Scan(
+					&o.Identifiers,
+					&o.Names,
+					&o.Ceased,
+					&o.CreatedAt,
+					&o.UpdatedAt,
+				); err != nil {
+					return err
+				}
+				org.Parents = append(org.Parents, o.toParentOrganization())
+			}
+		}
 
 		if ok := fn(org); !ok {
 			break
@@ -188,9 +184,10 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 		return err
 	}
 
-	return tx.Commit(ctx)
+	return nil
 }
 
+// TODO see comment about tx in EachOrganization
 func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 	rows, err := r.conn.Query(ctx, getAllPeopleQuery)
 	if err != nil {
@@ -199,27 +196,58 @@ func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 	defer rows.Close()
 
 	for rows.Next() {
-		var r personRow
+		var pr personRow
+		var orgIDs []int64
 		if err := rows.Scan(
-			&r.ID,
-			&r.Identifiers,
-			&r.Name,
-			&r.PreferredName,
-			&r.GivenName,
-			&r.PreferredGivenName,
-			&r.FamilyName,
-			&r.PreferredFamilyName,
-			&r.HonorificPrefix,
-			&r.Email,
-			&r.Active,
-			&r.Username,
-			&r.Attributes,
-			&r.CreatedAt,
-			&r.UpdatedAt,
+			&pr.ID,
+			&pr.Identifiers,
+			&orgIDs,
+			&pr.Name,
+			&pr.PreferredName,
+			&pr.GivenName,
+			&pr.PreferredGivenName,
+			&pr.FamilyName,
+			&pr.PreferredFamilyName,
+			&pr.HonorificPrefix,
+			&pr.Email,
+			&pr.Active,
+			&pr.Username,
+			&pr.Attributes,
+			&pr.CreatedAt,
+			&pr.UpdatedAt,
 		); err != nil {
 			return err
 		}
-		if ok := fn(r.toPerson()); !ok {
+
+		for _, orgID := range orgIDs {
+			var org *Organization
+			rows, err := r.conn.Query(ctx, getParentOrganizations, orgID)
+			if err != nil {
+				return err
+			}
+			defer rows.Close()
+			for rows.Next() {
+				var o organizationRow
+				if err := rows.Scan(
+					&o.Identifiers,
+					&o.Names,
+					&o.Ceased,
+					&o.CreatedAt,
+					&o.UpdatedAt,
+				); err != nil {
+					return err
+				}
+				if org == nil {
+					org = o.toOrganization()
+				} else {
+					org.Parents = append(org.Parents, o.toParentOrganization())
+				}
+			}
+
+			pr.Affiliations = append(pr.Affiliations, Affiliation{Organization: org})
+		}
+
+		if ok := fn(pr.toPerson()); !ok {
 			break
 		}
 	}
