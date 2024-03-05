@@ -24,7 +24,7 @@ type Organization struct {
 	Ceased      bool                 `json:"ceased"`
 	CreatedAt   time.Time            `json:"createdAt"`
 	UpdatedAt   time.Time            `json:"updatedAt"`
-	Parents     []ParentOrganization `json:"parents"`
+	Parents     []ParentOrganization `json:"parents"` // TODO just use *Organization?
 }
 
 type ParentOrganization struct {
@@ -49,7 +49,7 @@ type ImportPersonParams struct {
 	Attributes          []Attribute         `json:"attributes,omitempty"`
 	Tokens              []Token             `json:"tokens,omitempty"`
 	Affiliations        []AffiliationParams `json:"affiliations,omitempty"`
-	CreatedAt           *time.Time          `json:"createdAt,omitempty"` // TODO pointers not needed
+	CreatedAt           *time.Time          `json:"createdAt,omitempty"` // TODO pointers not needed, use IsZero
 	UpdatedAt           *time.Time          `json:"updatedAt,omitempty"`
 }
 
@@ -58,22 +58,27 @@ type AffiliationParams struct {
 }
 
 type Person struct {
-	Identifiers         Identifiers `json:"identifiers"`
-	Name                string      `json:"name"`
-	PreferredName       string      `json:"preferredName,omitempty"`
-	GivenName           string      `json:"givenName,omitempty"`
-	FamilyName          string      `json:"familyName,omitempty"`
-	PreferredGivenName  string      `json:"preferredGivenName,omitempty"`
-	PreferredFamilyName string      `json:"preferredFamilyName,omitempty"`
-	HonorificPrefix     string      `json:"honorificPrefix,omitempty"`
-	Email               string      `json:"email,omitempty"`
-	Active              bool        `json:"active"`
-	Role                string      `json:"role,omitempty"`
-	Username            string      `json:"username,omitempty"`
-	Attributes          []Attribute `json:"attributes,omitempty"`
-	Tokens              []Token     `json:"tokens,omitempty"`
-	CreatedAt           time.Time   `json:"createdAt"`
-	UpdatedAt           time.Time   `json:"updatedAt"`
+	Identifiers         Identifiers   `json:"identifiers"`
+	Name                string        `json:"name"`
+	PreferredName       string        `json:"preferredName,omitempty"`
+	GivenName           string        `json:"givenName,omitempty"`
+	FamilyName          string        `json:"familyName,omitempty"`
+	PreferredGivenName  string        `json:"preferredGivenName,omitempty"`
+	PreferredFamilyName string        `json:"preferredFamilyName,omitempty"`
+	HonorificPrefix     string        `json:"honorificPrefix,omitempty"`
+	Email               string        `json:"email,omitempty"`
+	Active              bool          `json:"active"`
+	Role                string        `json:"role,omitempty"`
+	Username            string        `json:"username,omitempty"`
+	Attributes          []Attribute   `json:"attributes,omitempty"`
+	Tokens              []Token       `json:"tokens,omitempty"`
+	Affiliations        []Affiliation `json:"affiliations,omitempty"`
+	CreatedAt           time.Time     `json:"createdAt"`
+	UpdatedAt           time.Time     `json:"updatedAt"`
+}
+
+type Affiliation struct {
+	Organization *Organization
 }
 
 type Identifiers []Identifier
