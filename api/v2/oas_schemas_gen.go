@@ -262,6 +262,21 @@ func (s *AddProjectRequestProject) SetAttributes(val []Attribute) {
 	s.Attributes = val
 }
 
+// Ref: #/components/schemas/Affiliation
+type Affiliation struct {
+	Organization Organization `json:"organization"`
+}
+
+// GetOrganization returns the value of Organization.
+func (s *Affiliation) GetOrganization() Organization {
+	return s.Organization
+}
+
+// SetOrganization sets the value of Organization.
+func (s *Affiliation) SetOrganization(val Organization) {
+	s.Organization = val
+}
+
 // Ref: #/components/schemas/AffiliationParams
 type AffiliationParams struct {
 	OrganizationIdentifier Identifier `json:"organizationIdentifier"`
@@ -1063,22 +1078,23 @@ func (s *ParentOrganization) SetCeased(val bool) {
 
 // Ref: #/components/schemas/Person
 type Person struct {
-	Identifiers         []Identifier `json:"identifiers"`
-	Name                string       `json:"name"`
-	PreferredName       OptString    `json:"preferredName"`
-	GivenName           OptString    `json:"givenName"`
-	PreferredGivenName  OptString    `json:"preferredGivenName"`
-	FamilyName          OptString    `json:"familyName"`
-	PreferredFamilyName OptString    `json:"preferredFamilyName"`
-	HonorificPrefix     OptString    `json:"honorificPrefix"`
-	Email               OptString    `json:"email"`
-	Username            OptString    `json:"username"`
-	Active              bool         `json:"active"`
-	Role                OptString    `json:"role"`
-	Attributes          []Attribute  `json:"attributes"`
-	Tokens              []Token      `json:"tokens"`
-	CreatedAt           time.Time    `json:"createdAt"`
-	UpdatedAt           time.Time    `json:"updatedAt"`
+	Identifiers         []Identifier  `json:"identifiers"`
+	Name                string        `json:"name"`
+	PreferredName       OptString     `json:"preferredName"`
+	GivenName           OptString     `json:"givenName"`
+	PreferredGivenName  OptString     `json:"preferredGivenName"`
+	FamilyName          OptString     `json:"familyName"`
+	PreferredFamilyName OptString     `json:"preferredFamilyName"`
+	HonorificPrefix     OptString     `json:"honorificPrefix"`
+	Email               OptString     `json:"email"`
+	Username            OptString     `json:"username"`
+	Active              bool          `json:"active"`
+	Role                OptString     `json:"role"`
+	Attributes          []Attribute   `json:"attributes"`
+	Tokens              []Token       `json:"tokens"`
+	Affiliations        []Affiliation `json:"affiliations"`
+	CreatedAt           time.Time     `json:"createdAt"`
+	UpdatedAt           time.Time     `json:"updatedAt"`
 }
 
 // GetIdentifiers returns the value of Identifiers.
@@ -1149,6 +1165,11 @@ func (s *Person) GetAttributes() []Attribute {
 // GetTokens returns the value of Tokens.
 func (s *Person) GetTokens() []Token {
 	return s.Tokens
+}
+
+// GetAffiliations returns the value of Affiliations.
+func (s *Person) GetAffiliations() []Affiliation {
+	return s.Affiliations
 }
 
 // GetCreatedAt returns the value of CreatedAt.
@@ -1229,6 +1250,11 @@ func (s *Person) SetAttributes(val []Attribute) {
 // SetTokens sets the value of Tokens.
 func (s *Person) SetTokens(val []Token) {
 	s.Tokens = val
+}
+
+// SetAffiliations sets the value of Affiliations.
+func (s *Person) SetAffiliations(val []Affiliation) {
+	s.Affiliations = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.

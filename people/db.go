@@ -56,7 +56,9 @@ WITH RECURSIVE orgs AS (
 	       parent_id,
 	       names,
 	       ceased,
-	       0 AS level
+		   created_at,
+		   updated_at,
+		   0 AS level
 	FROM organizations
 	WHERE id = $1
 
@@ -66,20 +68,26 @@ WITH RECURSIVE orgs AS (
            o.parent_id,
 	       o.names,
 	       o.ceased,
-	       orgs.level + 1
+		   o.created_at,
+		   o.updated_at,	
+		   orgs.level + 1
 	FROM organizations o
 	INNER JOIN orgs
     ON o.id = orgs.parent_id 		
 )
 SELECT json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
        o.names,
-       o.ceased
+       o.ceased,
+	   o.created_at,
+	   o.updated_at
 FROM orgs o
 LEFT JOIN organization_identifiers ids ON o.id = ids.organization_id
 GROUP BY o.id,
          o.names,
          o.ceased,
-         o.level
+		 o.created_at,
+		 o.updated_at,
+		 o.level
 ORDER BY o.level;
 `
 
@@ -110,27 +118,60 @@ INSERT INTO affiliations (
 ) VALUES ($1, $2);
 `
 
+// SELECT p.id,
+// 	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+//   	   json_agg(DISTINCT jsonb_build_object('organization_id', a.organization_id, 'organization', a.organization)) FILTER (WHERE a.person_id IS NOT NULL) as affiliations,
+//        p.name,
+//        p.preferred_name,
+// 	   p.given_name,
+// 	   p.preferred_given_name,
+// 	   p.family_name,
+// 	   p.preferred_family_name,
+// 	   p.honorific_prefix,
+// 	   p.email,
+// 	   p.active,
+// 	   p.role,
+// 	   p.username,
+// 	   p.attributes,
+// 	   p.tokens,
+// 	   p.created_at,
+// 	   p.updated_at
+// FROM people p
+// JOIN person_identifiers pi ON p.id = pi.person_id AND pi.kind = 'ugentID' and pi.value = '801001590251'
+// LEFT JOIN person_identifiers ids ON p.id = ids.person_id
+// LEFT JOIN (
+//   SELECT a.person_id, o.id as organization_id, json_build_object('identifiers', json_agg(jsonb_build_object('kind', oi.kind, 'value', oi.value)), 'names', o.names, 'ceased', o.ceased, 'createdAt', o.created_at, 'updatedAt', o.updated_at) as organization
+//   FROM affiliations a
+//   INNER JOIN organizations o ON a.organization_id = o.id
+//   LEFT JOIN organization_identifiers oi ON o.id = oi.organization_id
+//   GROUP BY a.person_id, a.organization_id, o.id, o.names, o.ceased, o.created_at, o.updated_at
+// ) a on p.id = a.person_id
+// WHERE p.replaced_by_id IS NULL
+// GROUP BY p.id;
+
 const getPersonByIdentifierQuery = `
-SELECT id,
-	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
-	   name,
-       preferred_name,
-	   given_name,
-	   preferred_given_name,
-	   family_name,
-	   preferred_family_name,
-	   honorific_prefix,
-	   email,
-	   active,
-	   role,
-	   username,
-	   attributes,
-	   tokens,
-	   created_at,
-	   updated_at
+SELECT p.id,
+	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
+  	   array_agg(DISTINCT a.organization_id) AS affiliations,
+       p.name,
+       p.preferred_name,
+	   p.given_name,
+	   p.preferred_given_name,
+	   p.family_name,
+	   p.preferred_family_name,
+	   p.honorific_prefix,
+	   p.email,
+	   p.active,
+	   p.role,
+	   p.username,
+	   p.attributes,
+	   p.tokens,
+	   p.created_at,
+	   p.updated_at
 FROM people p
 JOIN person_identifiers pi ON p.id = pi.person_id AND pi.kind = $1 and pi.value = $2
 LEFT JOIN person_identifiers ids ON p.id = ids.person_id
+LEFT JOIN affiliations a ON p.id = a.person_id
 WHERE p.replaced_by_id IS NULL
 GROUP BY p.id;
 `
@@ -279,6 +320,7 @@ type personRow struct {
 	Username            pgtype.Text
 	Attributes          []Attribute
 	Tokens              []Token
+	Affiliations        []Affiliation
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
 }
@@ -299,6 +341,7 @@ func (row *personRow) toPerson() *Person {
 		Username:            row.Username.String,
 		Attributes:          row.Attributes,
 		Tokens:              row.Tokens,
+		Affiliations:        row.Affiliations,
 		CreatedAt:           row.CreatedAt,
 		UpdatedAt:           row.UpdatedAt,
 	}
@@ -364,15 +407,9 @@ func insertOrganization(ctx context.Context, conn Conn, o ImportOrganizationPara
 }
 
 func insertPerson(ctx context.Context, conn Conn, p ImportPersonParams) error {
-	tx, err := conn.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
-
 	var id int64
 
-	err = tx.QueryRow(ctx, insertPersonQuery,
+	err := conn.QueryRow(ctx, insertPersonQuery,
 		p.Name,
 		pgtype.Text{Valid: p.PreferredName != "", String: p.PreferredName},
 		pgtype.Text{Valid: p.GivenName != "", String: p.GivenName},
@@ -394,34 +431,37 @@ func insertPerson(ctx context.Context, conn Conn, p ImportPersonParams) error {
 	}
 
 	for _, ident := range p.Identifiers {
-		if _, err := tx.Exec(ctx, insertPersonIdentifierQuery, id, ident.Kind, ident.Value); err != nil {
+		if _, err := conn.Exec(ctx, insertPersonIdentifierQuery, id, ident.Kind, ident.Value); err != nil {
 			return err
 		}
 	}
 
 	for _, a := range p.Affiliations {
 		var organizationID int64
-		err := tx.QueryRow(ctx, getOrganizationIDQuery, a.OrganizationIdentifier.Kind, a.OrganizationIdentifier.Value).Scan(&organizationID)
+		err := conn.QueryRow(ctx, getOrganizationIDQuery, a.OrganizationIdentifier.Kind, a.OrganizationIdentifier.Value).Scan(&organizationID)
 		if err == pgx.ErrNoRows {
 			return fmt.Errorf("organization %s not found", a.OrganizationIdentifier.String())
 		}
 		if err != nil {
 			return err
 		}
-		if _, err := tx.Exec(ctx, insertAffiliationQuery, id, organizationID); err != nil {
+		if _, err := conn.Exec(ctx, insertAffiliationQuery, id, organizationID); err != nil {
 			return err
 		}
 	}
 
-	return tx.Commit(ctx)
+	return nil
 }
 
 func getPersonByIdentifier(ctx context.Context, conn Conn, kind, value string) (*personRow, error) {
 	var r personRow
 
+	var orgIDs []int64
+
 	err := conn.QueryRow(ctx, getPersonByIdentifierQuery, kind, value).Scan(
 		&r.ID,
 		&r.Identifiers,
+		&orgIDs,
 		&r.Name,
 		&r.PreferredName,
 		&r.GivenName,
@@ -441,6 +481,35 @@ func getPersonByIdentifier(ctx context.Context, conn Conn, kind, value string) (
 	if err != nil {
 		return nil, err
 	}
+
+	for _, orgID := range orgIDs {
+		var org *Organization
+		rows, err := conn.Query(ctx, getParentOrganizations, orgID)
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var o organizationRow
+			if err := rows.Scan(
+				&o.Identifiers,
+				&o.Names,
+				&o.Ceased,
+				&o.CreatedAt,
+				&o.UpdatedAt,
+			); err != nil {
+				return nil, err
+			}
+			if org == nil {
+				org = o.toOrganization()
+			} else {
+				org.Parents = append(org.Parents, o.toParentOrganization())
+			}
+		}
+
+		r.Affiliations = append(r.Affiliations, Affiliation{Organization: org})
+	}
+
 	return &r, nil
 }
 

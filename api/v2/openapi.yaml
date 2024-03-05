@@ -491,6 +491,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Token"
+        affiliations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Affiliation"
         createdAt:
           type: string
           format: date-time
@@ -543,6 +547,13 @@ components:
         ceased:
           type: boolean
       required: [identifiers, ceased]
+
+    Affiliation:
+      type: object
+      properties:
+        organization:
+          $ref: "#/components/schemas/Organization"
+      required: [organization]
 
     Attribute:
       type: object

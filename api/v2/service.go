@@ -45,6 +45,7 @@ func (s *Service) GetOrganization(ctx context.Context, req *GetOrganizationReque
 	return &GetOrganization{Organization: convertOrganization(o)}, nil
 }
 
+// TODO use index
 func (s *Service) GetPerson(ctx context.Context, req *GetPersonRequest) (GetPersonRes, error) {
 	p, err := s.peopleRepo.GetPersonByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
 	if errors.Is(err, people.ErrNotFound) {
@@ -212,8 +213,11 @@ func convertPerson(from *people.Person) Person {
 		Username:            OptString{Set: from.Username != "", Value: from.Username},
 		Attributes:          lo.Map(from.Attributes, func(v people.Attribute, _ int) Attribute { return Attribute(v) }),
 		Tokens:              lo.Map(from.Tokens, func(v people.Token, _ int) Token { return Token(v) }),
-		CreatedAt:           from.CreatedAt,
-		UpdatedAt:           from.UpdatedAt,
+		Affiliations: lo.Map(from.Affiliations, func(a people.Affiliation, _ int) Affiliation {
+			return Affiliation{Organization: convertOrganization(a.Organization)}
+		}),
+		CreatedAt: from.CreatedAt,
+		UpdatedAt: from.UpdatedAt,
 	}
 }
 

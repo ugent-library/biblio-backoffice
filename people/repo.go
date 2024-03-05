@@ -56,10 +56,21 @@ func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganiza
 
 // TODO make idempotent, do nothing if an ident exists
 func (r *Repo) ImportPerson(ctx context.Context, p ImportPersonParams) error {
+	tx, err := r.conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
 	if !p.Identifiers.Has(idKind) {
 		p.Identifiers = append(p.Identifiers, newID())
 	}
-	return insertPerson(ctx, r.conn, p)
+
+	if err := insertPerson(ctx, tx, p); err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
 
 func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
@@ -91,6 +102,8 @@ func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value stri
 				&o.Identifiers,
 				&o.Names,
 				&o.Ceased,
+				&o.CreatedAt,
+				&o.UpdatedAt,
 			); err != nil {
 				return nil, err
 			}
