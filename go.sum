@@ -610,8 +610,6 @@ github.com/ugent-library/okay v0.0.0-20231205122923-396c4d3a29f2 h1:p0a4ziTOupWF
 github.com/ugent-library/okay v0.0.0-20231205122923-396c4d3a29f2/go.mod h1:zF9L8aA06ik8U87qGR1GEhuLbxSZh+HmSEOfF3Z0Mrw=
 github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c h1:NRpS8TkbFjDJ9vM8oXDHr8noK66LgnZBoarpMt6+H7M=
 github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c/go.mod h1:g5C6oHMPfeceP48vaQLY24pFWtfKKi6mFni+tWbpgvU=
-github.com/ugent-library/people-service v0.0.0-20231208220140-811a1ba9f2b3 h1:5hDdjuiG5mSF3A9FT7p1SirvVTfcrvxSHgFO0oH8z64=
-github.com/ugent-library/people-service v0.0.0-20231208220140-811a1ba9f2b3/go.mod h1:Swn/plRrula6yiyfxFLemWQDRis3SFNE3k85CiKIHtI=
 github.com/ugent-library/projects-service v0.0.0-20231124152414-66adc1aa8935 h1:21qrDm0ouDWj9f+rby8nwlacRARhfk+20icIFnquzo4=
 github.com/ugent-library/projects-service v0.0.0-20231124152414-66adc1aa8935/go.mod h1:XzQqAWstbANgm+UVOcZYikYVaOT4EnBhNakxTNFlKR0=
 github.com/ugent-library/zaphttp v0.0.0-20231026141151-4cbb4e2eb87a h1:ksvBW/lgNQfvPALgAWgh9wJ0d90Q412pfH4oRx1MixA=

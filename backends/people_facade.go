@@ -28,6 +28,24 @@ func (f *PeopleFacade) GetPerson(id string) (*models.Person, error) {
 	return toPerson(p), nil
 }
 
+func (f *PeopleFacade) GetUserByUsername(username string) (*models.Person, error) {
+	p, err := f.repo.GetActivePersonByUsername(context.TODO(), username)
+	if err != nil {
+		return nil, err
+	}
+
+	return toPerson(p), nil
+}
+
+func (f *PeopleFacade) GetUser(id string) (*models.Person, error) {
+	p, err := f.repo.GetActivePersonByIdentifier(context.TODO(), "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	return toPerson(p), nil
+}
+
 func (f *PeopleFacade) GetOrganization(id string) (*models.Organization, error) {
 	o, err := f.repo.GetOrganizationByIdentifier(context.TODO(), "biblio", id)
 	if err != nil {
@@ -45,6 +63,23 @@ func (f *PeopleFacade) SuggestPeople(qs string) ([]*models.Person, error) {
 	people := make([]*models.Person, len(hits))
 	for i, p := range hits {
 		people[i] = toPerson(p)
+	}
+
+	return people, nil
+}
+
+// TODO filter out inactive people in the index
+func (f *PeopleFacade) SuggestUsers(qs string) ([]*models.Person, error) {
+	hits, err := f.index.SearchPeople(context.TODO(), qs)
+	if err != nil {
+		return nil, err
+	}
+
+	people := make([]*models.Person, 0, len(hits))
+	for _, p := range hits {
+		if p.Active {
+			people = append(people, toPerson(p))
+		}
 	}
 
 	return people, nil
