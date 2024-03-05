@@ -1,11 +1,11 @@
-import { defineConfig } from 'cypress'
-import * as dotenvPlugin from 'cypress-dotenv'
+import { defineConfig } from "cypress";
+import * as dotenvPlugin from "cypress-dotenv";
 
 export default defineConfig({
-  projectId: 'mjg74d',
+  projectId: "mjg74d",
 
   e2e: {
-    baseUrl: 'https://backoffice.bibliodev.ugent.be',
+    baseUrl: "https://backoffice.bibliodev.ugent.be",
     experimentalStudio: true,
     experimentalRunAllSpecs: true,
 
@@ -14,9 +14,9 @@ export default defineConfig({
     viewportWidth: 1200,
 
     setupNodeEvents(_on, config) {
-      config = dotenvPlugin(config)
+      config = dotenvPlugin(config);
 
-      return config
+      return config;
     },
   },
-})
+});

@@ -1,4 +1,4 @@
-import { logCommand } from './helpers'
+import { logCommand } from "./helpers";
 
 export default function login(username, password): void {
   // WARNING: Whenever you change the code of the session setup, Cypress will throw an error:
@@ -9,20 +9,20 @@ export default function login(username, password): void {
   // Temporarily uncomment the following line to clear the sessions if this happens
   // Cypress.session.clearAllSavedSessions()
 
-  logCommand('login', { username }, username)
+  logCommand("login", { username }, username);
 
   cy.session(
     username,
     () => {
-      cy.request('/login', { log: false })
-        .then(response => {
-          const action = response.body.match(/action\=\"(.*)\" /)[1]
+      cy.request("/login", { log: false })
+        .then((response) => {
+          const action = response.body.match(/action\=\"(.*)\" /)[1];
 
-          return action.replace(/&amp;/g, '&')
+          return action.replace(/&amp;/g, "&");
         })
-        .then(actionUrl =>
+        .then((actionUrl) =>
           cy.request({
-            method: 'POST',
+            method: "POST",
             url: actionUrl,
             form: true,
 
@@ -36,19 +36,19 @@ export default function login(username, password): void {
 
             // Make sure we don't leak passwords in the Cypress log
             log: false,
-          })
-        )
+          }),
+        );
     },
     {
       cacheAcrossSpecs: true,
-    }
-  )
+    },
+  );
 }
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      login(username: string, password: string): Chainable<void>
+      login(username: string, password: string): Chainable<void>;
     }
   }
 }
