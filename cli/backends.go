@@ -21,7 +21,6 @@ import (
 	excel_publication "github.com/ugent-library/biblio-backoffice/backends/excel/publication"
 	"github.com/ugent-library/biblio-backoffice/backends/fsstore"
 	"github.com/ugent-library/biblio-backoffice/backends/handle"
-	"github.com/ugent-library/biblio-backoffice/backends/peopleservice"
 	"github.com/ugent-library/biblio-backoffice/backends/s3store"
 	"github.com/ugent-library/biblio-backoffice/caching"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -97,14 +96,6 @@ func newServices() *backends.Services {
 		panic(err)
 	}
 
-	peopleServiceClient, err := peopleservice.New(peopleservice.Config{
-		APIUrl: config.People.APIURL,
-		APIKey: config.People.APIKey,
-	})
-	if err != nil {
-		panic(err)
-	}
-
 	orcidConfig := orcid.Config{
 		ClientID:     config.ORCID.ClientID,
 		ClientSecret: config.ORCID.ClientSecret,
@@ -128,23 +119,24 @@ func newServices() *backends.Services {
 		)
 	}
 
-	organizationService := caching.NewOrganizationService(peopleServiceClient)
+	peopleFacade := backends.NewPeopleFacade(peopleRepo, peopleIndex)
+
+	organizationService := caching.NewOrganizationService(peopleFacade)
 
 	// always add organization info to user affiliations
 	userService := &backends.UserWithOrganizationsService{
-		UserService:         caching.NewUserService(peopleServiceClient),
+		UserService:         caching.NewUserService(peopleFacade),
 		OrganizationService: organizationService,
 	}
 
 	// always add organization info to person affiliations
 	personService := &backends.PersonWithOrganizationsService{
-		PersonService:       caching.NewPersonService(peopleServiceClient),
+		PersonService:       caching.NewPersonService(peopleFacade),
 		OrganizationService: organizationService,
 	}
 
 	projectsFacade := backends.NewProjectsFacade(projectsRepo, projectsIndex)
 	projectsService := caching.NewProjectService(projectsFacade)
-	projectSearchService := projectsFacade
 
 	repo := newRepo(pool, personService, organizationService, projectsService)
 
@@ -162,10 +154,10 @@ func newServices() *backends.Services {
 		PersonService:             personService,
 		ProjectService:            projectsService,
 		UserService:               userService,
-		OrganizationSearchService: peopleServiceClient,
-		PersonSearchService:       peopleServiceClient,
-		ProjectSearchService:      projectSearchService,
-		UserSearchService:         peopleServiceClient,
+		OrganizationSearchService: peopleFacade,
+		PersonSearchService:       peopleFacade,
+		ProjectSearchService:      projectsFacade,
+		UserSearchService:         peopleFacade,
 		LicenseSearchService:      spdxlicenses.New(),
 		MediaTypeSearchService:    ianamedia.New(),
 		DatasetSources: map[string]backends.DatasetGetter{
