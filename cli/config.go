@@ -14,8 +14,9 @@ type Config struct {
 	Env              string `env:"MODE" envDefault:"production"`
 	BaseURL          string `env:"BASE_URL"`
 	Timezone         string `env:"TIMEZONE" envDefault:"Europe/Brussels"`
+	TokenSecret      string `env:"TOKEN_SECRET,notEmpty"`
 	IndexRetention   int    `env:"INDEX_RETENTION" envDefault:"2"`
-	PgConn           string `env:"PG_CONN"`
+	PgConn           string `env:"PG_CONN,notEmpty"`
 	Es6URL           string `env:"ES6_URL"`
 	PublicationIndex string `env:"PUBLICATION_INDEX"`
 	DatasetIndex     string `env:"DATASET_INDEX"`

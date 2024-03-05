@@ -37,6 +37,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/swaggest/swgui v1.8.0
 	github.com/tidwall/gjson v1.17.0
+	github.com/ugent-library/crypt v0.0.0-20230630063634-8c02106fd40e
 	github.com/ugent-library/oai-service v0.0.0-20230922094424-2e5e8941ea8a
 	github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c
 	github.com/ugent-library/projects-service v0.0.0-20231124152414-66adc1aa8935
@@ -115,7 +116,6 @@ require (
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
-	github.com/ugent-library/crypt v0.0.0-20230630063634-8c02106fd40e // indirect
 	github.com/vearutop/statigz v1.4.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect

@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/ugent-library/crypt"
 )
 
 type Conn interface {
@@ -380,8 +381,8 @@ type personRow struct {
 	UpdatedAt           time.Time
 }
 
-func (row *personRow) toPerson() *Person {
-	return &Person{
+func (row *personRow) toPerson(tokenSecret []byte) (*Person, error) {
+	p := &Person{
 		Identifiers:         row.Identifiers,
 		Name:                row.Name,
 		PreferredName:       row.PreferredName.String,
@@ -400,6 +401,14 @@ func (row *personRow) toPerson() *Person {
 		CreatedAt:           row.CreatedAt,
 		UpdatedAt:           row.UpdatedAt,
 	}
+	for i, t := range p.Tokens {
+		v, err := crypt.Decrypt(tokenSecret, t.Value)
+		if err != nil {
+			return nil, err
+		}
+		p.Tokens[i] = Token{Kind: t.Kind, Value: v}
+	}
+	return p, nil
 }
 
 func getOrganizationByIdentifier(ctx context.Context, conn Conn, kind, value string) (*organizationRow, error) {
