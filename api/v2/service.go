@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-faster/errors"
 	"github.com/samber/lo"
@@ -88,6 +89,27 @@ func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
 	})
 }
 
+func (s *Service) ImportProject(ctx context.Context, req *ImportProjectRequest) (ImportProjectRes, error) {
+	// If error return 429 conflict
+	err := s.projectsRepo.ImportProject(ctx, convertImportProjectParams(req.Project))
+
+	var duplicateError *projects.DuplicateProjectError
+	if errors.As(err, &duplicateError) {
+		return nil, &ErrorStatusCode{
+			StatusCode: 409,
+			Response: Error{
+				Code:    409,
+				Message: fmt.Sprintf("%s", duplicateError),
+			},
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &ImportProjectOK{}, nil
+}
+
 func (s *Service) AddProject(ctx context.Context, req *AddProjectRequest) error {
 	p := req.Project
 
@@ -122,13 +144,13 @@ func (s *Service) AddProject(ctx context.Context, req *AddProjectRequest) error 
 	}
 
 	return s.projectsRepo.AddProject(ctx, projects.AddProjectParams{
+		Identifiers:  identifiers,
 		Names:        names,
 		Descriptions: descriptions,
 		StartDate:    startDate,
 		EndDate:      endDate,
-		Attributes:   attributes,
 		Deleted:      p.Deleted.Value,
-		Identifiers:  identifiers,
+		Attributes:   attributes,
 	})
 }
 
@@ -169,6 +191,20 @@ func convertImportOrganizationParams(from ImportOrganizationParams) people.Impor
 		Ceased:           from.Ceased.Value,
 		CreatedAt:        lo.Ternary(from.CreatedAt.Set, &from.CreatedAt.Value, nil),
 		UpdatedAt:        lo.Ternary(from.UpdatedAt.Set, &from.UpdatedAt.Value, nil),
+	}
+}
+
+func convertImportProjectParams(from ImportProjectParams) projects.ImportProjectParams {
+	return projects.ImportProjectParams{
+		Identifiers:  lo.Map(from.Identifiers, func(v Identifier, _ int) projects.Identifier { return projects.Identifier(v) }),
+		Names:        lo.Map(from.Names, func(v Text, _ int) projects.Text { return projects.Text(v) }),
+		Descriptions: lo.Map(from.Descriptions, func(v Text, _ int) projects.Text { return projects.Text(v) }),
+		StartDate:    lo.Ternary(from.StartDate.Set, from.StartDate.Value, ""),
+		EndDate:      lo.Ternary(from.EndDate.Set, from.EndDate.Value, ""),
+		Deleted:      lo.Ternary(from.Deleted.Set, from.Deleted.Value, false),
+		Attributes:   lo.Map(from.Attributes, func(v Attribute, _ int) projects.Attribute { return projects.Attribute(v) }),
+		CreatedAt:    lo.Ternary(from.CreatedAt.Set, &from.CreatedAt.Value, nil),
+		UpdatedAt:    lo.Ternary(from.UpdatedAt.Set, &from.UpdatedAt.Value, nil),
 	}
 }
 

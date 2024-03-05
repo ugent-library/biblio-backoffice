@@ -4,3 +4,7 @@ package api
 type GetOrganizationRes interface {
 	getOrganizationRes()
 }
+
+type ImportProjectRes interface {
+	importProjectRes()
+}
