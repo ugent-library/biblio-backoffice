@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const idKind = "id"
@@ -18,7 +19,7 @@ type Repo struct {
 }
 
 type RepoConfig struct {
-	Conn Conn
+	Conn *pgxpool.Pool
 }
 
 func NewRepo(c RepoConfig) (*Repo, error) {
@@ -56,10 +57,21 @@ func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganiza
 
 // TODO make idempotent, do nothing if an ident exists
 func (r *Repo) ImportPerson(ctx context.Context, p ImportPersonParams) error {
+	tx, err := r.conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
 	if !p.Identifiers.Has(idKind) {
 		p.Identifiers = append(p.Identifiers, newID())
 	}
-	return insertPerson(ctx, r.conn, p)
+
+	if err := insertPerson(ctx, tx, p); err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }
 
 func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
@@ -91,6 +103,8 @@ func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value stri
 				&o.Identifiers,
 				&o.Names,
 				&o.Ceased,
+				&o.CreatedAt,
+				&o.UpdatedAt,
 			); err != nil {
 				return nil, err
 			}
@@ -116,14 +130,9 @@ func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*
 	return row.toPerson(), nil
 }
 
+// TODO get "conn busy" error when wrapping in tx
 func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool) error {
-	tx, err := r.conn.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
-
-	rows, err := tx.Query(ctx, getAllOrganizationsQuery)
+	rows, err := r.conn.Query(ctx, getAllOrganizationsQuery)
 	if err != nil {
 		return err
 	}
@@ -146,7 +155,7 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 		org := row.toOrganization()
 
 		if row.ParentID.Valid {
-			parentRows, err := tx.Query(ctx, getParentOrganizations, row.ParentID.Int64)
+			parentRows, err := r.conn.Query(ctx, getParentOrganizations, row.ParentID.Int64)
 			if err != nil {
 				return err
 			}
@@ -157,6 +166,8 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 					&o.Identifiers,
 					&o.Names,
 					&o.Ceased,
+					&o.CreatedAt,
+					&o.UpdatedAt,
 				); err != nil {
 					return err
 				}
@@ -164,7 +175,7 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 			}
 		}
 
-		if ok := fn(row.toOrganization()); !ok {
+		if ok := fn(org); !ok {
 			break
 		}
 	}
@@ -173,9 +184,10 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 		return err
 	}
 
-	return tx.Commit(ctx)
+	return nil
 }
 
+// TODO see comment about tx in EachOrganization
 func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 	rows, err := r.conn.Query(ctx, getAllPeopleQuery)
 	if err != nil {
@@ -184,27 +196,58 @@ func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 	defer rows.Close()
 
 	for rows.Next() {
-		var r personRow
+		var pr personRow
+		var orgIDs []int64
 		if err := rows.Scan(
-			&r.ID,
-			&r.Identifiers,
-			&r.Name,
-			&r.PreferredName,
-			&r.GivenName,
-			&r.PreferredGivenName,
-			&r.FamilyName,
-			&r.PreferredFamilyName,
-			&r.HonorificPrefix,
-			&r.Email,
-			&r.Active,
-			&r.Username,
-			&r.Attributes,
-			&r.CreatedAt,
-			&r.UpdatedAt,
+			&pr.ID,
+			&pr.Identifiers,
+			&orgIDs,
+			&pr.Name,
+			&pr.PreferredName,
+			&pr.GivenName,
+			&pr.PreferredGivenName,
+			&pr.FamilyName,
+			&pr.PreferredFamilyName,
+			&pr.HonorificPrefix,
+			&pr.Email,
+			&pr.Active,
+			&pr.Username,
+			&pr.Attributes,
+			&pr.CreatedAt,
+			&pr.UpdatedAt,
 		); err != nil {
 			return err
 		}
-		if ok := fn(r.toPerson()); !ok {
+
+		for _, orgID := range orgIDs {
+			var org *Organization
+			rows, err := r.conn.Query(ctx, getParentOrganizations, orgID)
+			if err != nil {
+				return err
+			}
+			defer rows.Close()
+			for rows.Next() {
+				var o organizationRow
+				if err := rows.Scan(
+					&o.Identifiers,
+					&o.Names,
+					&o.Ceased,
+					&o.CreatedAt,
+					&o.UpdatedAt,
+				); err != nil {
+					return err
+				}
+				if org == nil {
+					org = o.toOrganization()
+				} else {
+					org.Parents = append(org.Parents, o.toParentOrganization())
+				}
+			}
+
+			pr.Affiliations = append(pr.Affiliations, Affiliation{Organization: org})
+		}
+
+		if ok := fn(pr.toPerson()); !ok {
 			break
 		}
 	}

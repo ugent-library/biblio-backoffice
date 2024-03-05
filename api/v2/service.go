@@ -12,21 +12,43 @@ import (
 
 type Service struct {
 	peopleRepo   *people.Repo
+	peopleIndex  *people.Index
 	projectsRepo *projects.Repo
 }
 
 func NewService(
 	peopleRepo *people.Repo,
+	peopleIndex *people.Index,
 	projectsRepo *projects.Repo,
 ) *Service {
 	return &Service{
 		peopleRepo:   peopleRepo,
+		peopleIndex:  peopleIndex,
 		projectsRepo: projectsRepo,
 	}
 }
 
 func (s *Service) GetOrganization(ctx context.Context, req *GetOrganizationRequest) (GetOrganizationRes, error) {
 	o, err := s.peopleRepo.GetOrganizationByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
+	if errors.Is(err, people.ErrNotFound) {
+		return nil, &ErrorStatusCode{
+			StatusCode: 404,
+			Response: Error{
+				Code:    404,
+				Message: "Organization not found",
+			},
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &GetOrganization{Organization: convertOrganization(o)}, nil
+}
+
+// TODO use index
+func (s *Service) GetPerson(ctx context.Context, req *GetPersonRequest) (GetPersonRes, error) {
+	p, err := s.peopleRepo.GetPersonByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
 	if errors.Is(err, people.ErrNotFound) {
 		return nil, &ErrorStatusCode{
 			StatusCode: 404,
@@ -40,7 +62,29 @@ func (s *Service) GetOrganization(ctx context.Context, req *GetOrganizationReque
 		return nil, err
 	}
 
-	return &GetOrganization{Organization: convertOrganization(o)}, nil
+	return &GetPerson{Person: convertPerson(p)}, nil
+}
+
+func (s *Service) SearchOrganizations(ctx context.Context, req *SearchOrganizationsRequest) (*SearchOrganizations, error) {
+	hits, err := s.peopleIndex.SearchOrganizations(ctx, req.Query.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SearchOrganizations{
+		Hits: lo.Map(hits, func(v *people.Organization, _ int) Organization { return convertOrganization(v) }),
+	}, nil
+}
+
+func (s *Service) SearchPeople(ctx context.Context, req *SearchPeopleRequest) (*SearchPeople, error) {
+	hits, err := s.peopleIndex.SearchPeople(ctx, req.Query.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SearchPeople{
+		Hits: lo.Map(hits, func(v *people.Person, _ int) Person { return convertPerson(v) }),
+	}, nil
 }
 
 func (s *Service) ImportOrganizations(ctx context.Context, req *ImportOrganizationsRequest) error {
@@ -172,6 +216,30 @@ func convertOrganization(from *people.Organization) Organization {
 		Parents:     lo.Map(from.Parents, func(v people.ParentOrganization, _ int) ParentOrganization { return convertParentOrganization(v) }),
 		CreatedAt:   from.CreatedAt,
 		UpdatedAt:   from.UpdatedAt,
+	}
+}
+
+func convertPerson(from *people.Person) Person {
+	return Person{
+		Identifiers:         lo.Map(from.Identifiers, func(v people.Identifier, _ int) Identifier { return Identifier(v) }),
+		Name:                from.Name,
+		PreferredName:       OptString{Set: from.PreferredName != "", Value: from.PreferredName},
+		GivenName:           OptString{Set: from.GivenName != "", Value: from.GivenName},
+		PreferredGivenName:  OptString{Set: from.PreferredGivenName != "", Value: from.PreferredGivenName},
+		FamilyName:          OptString{Set: from.FamilyName != "", Value: from.FamilyName},
+		PreferredFamilyName: OptString{Set: from.PreferredFamilyName != "", Value: from.PreferredFamilyName},
+		HonorificPrefix:     OptString{Set: from.HonorificPrefix != "", Value: from.HonorificPrefix},
+		Email:               OptString{Set: from.Email != "", Value: from.Email},
+		Active:              from.Active,
+		Role:                OptString{Set: from.Role != "", Value: from.Role},
+		Username:            OptString{Set: from.Username != "", Value: from.Username},
+		Attributes:          lo.Map(from.Attributes, func(v people.Attribute, _ int) Attribute { return Attribute(v) }),
+		Tokens:              lo.Map(from.Tokens, func(v people.Token, _ int) Token { return Token(v) }),
+		Affiliations: lo.Map(from.Affiliations, func(a people.Affiliation, _ int) Affiliation {
+			return Affiliation{Organization: convertOrganization(a.Organization)}
+		}),
+		CreatedAt: from.CreatedAt,
+		UpdatedAt: from.UpdatedAt,
 	}
 }
 
