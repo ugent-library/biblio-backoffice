@@ -11,7 +11,7 @@ type Iter[T any] func(context.Context, func(T) bool) error
 type ImportOrganizationParams struct {
 	Identifiers      Identifiers `json:"identifiers"`
 	ParentIdentifier *Identifier `json:"parentIdentifier,omitempty"`
-	Names            []Text      `json:"names,omitempty"`
+	Names            Texts       `json:"names,omitempty"`
 	Ceased           bool        `json:"ceased"`
 	CreatedAt        *time.Time  `json:"createdAt,omitempty"`
 	UpdatedAt        *time.Time  `json:"updatedAt,omitempty"`
@@ -20,7 +20,7 @@ type ImportOrganizationParams struct {
 // TODO add ceasedAt
 type Organization struct {
 	Identifiers Identifiers          `json:"identifiers"`
-	Names       []Text               `json:"names,omitempty"`
+	Names       Texts                `json:"names,omitempty"`
 	Ceased      bool                 `json:"ceased"`
 	CreatedAt   time.Time            `json:"createdAt"`
 	UpdatedAt   time.Time            `json:"updatedAt"`
@@ -29,7 +29,7 @@ type Organization struct {
 
 type ParentOrganization struct {
 	Identifiers Identifiers `json:"identifiers"`
-	Names       []Text      `json:"names,omitempty"`
+	Names       Texts       `json:"names,omitempty"`
 	Ceased      bool        `json:"ceased"`
 }
 
@@ -46,8 +46,8 @@ type ImportPersonParams struct {
 	Active              bool                `json:"active"`
 	Role                string              `json:"role,omitempty"`
 	Username            string              `json:"username,omitempty"`
-	Attributes          []Attribute         `json:"attributes,omitempty"`
-	Tokens              []Token             `json:"tokens,omitempty"`
+	Attributes          Attributes          `json:"attributes,omitempty"`
+	Tokens              Tokens              `json:"tokens,omitempty"`
 	Affiliations        []AffiliationParams `json:"affiliations,omitempty"`
 	CreatedAt           *time.Time          `json:"createdAt,omitempty"` // TODO pointers not needed, use IsZero
 	UpdatedAt           *time.Time          `json:"updatedAt,omitempty"`
@@ -70,8 +70,8 @@ type Person struct {
 	Active              bool          `json:"active"`
 	Role                string        `json:"role,omitempty"`
 	Username            string        `json:"username,omitempty"`
-	Attributes          []Attribute   `json:"attributes,omitempty"`
-	Tokens              []Token       `json:"tokens,omitempty"`
+	Attributes          Attributes    `json:"attributes,omitempty"`
+	Tokens              Tokens        `json:"tokens,omitempty"`
 	Affiliations        []Affiliation `json:"affiliations,omitempty"`
 	CreatedAt           time.Time     `json:"createdAt"`
 	UpdatedAt           time.Time     `json:"updatedAt"`
@@ -119,15 +119,48 @@ func (i Identifier) String() string {
 	return fmt.Sprintf("%s:%s", i.Kind, i.Value)
 }
 
+type Attributes []Attribute
+
+func (a Attributes) Get(scope, key string) string {
+	for _, attr := range a {
+		if attr.Scope == scope && attr.Key == key {
+			return attr.Value
+		}
+	}
+	return ""
+}
+
 type Attribute struct {
 	Scope string `json:"scope"`
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }
 
+type Texts []Text
+
+func (t Texts) Get(lang string) string {
+	for _, text := range t {
+		if text.Lang == lang {
+			return text.Value
+		}
+	}
+	return ""
+}
+
 type Text struct {
 	Lang  string `json:"lang"`
 	Value string `json:"value"`
+}
+
+type Tokens []Token
+
+func (t Tokens) Get(kind string) []byte {
+	for _, token := range t {
+		if token.Kind == kind {
+			return token.Value
+		}
+	}
+	return nil
 }
 
 type Token struct {
