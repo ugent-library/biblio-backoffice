@@ -37,8 +37,8 @@ describe("The home page", () => {
           .map((url) => new URL(url));
 
         expect(redirects[0]).to.have.property(
-          "hostname",
-          "test.liblogin.ugent.be",
+          "origin",
+          Cypress.env("OIDC_ORIGIN"),
         );
       });
     };

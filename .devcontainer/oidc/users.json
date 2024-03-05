@@ -1,27 +1,52 @@
 [
-    {
-        "id": "biblio",
-        "claims": [
-            {
-                    "name":  "name",
-                    "value": "biblio"
-            },
-            {
-                    "name":  "given_name",
-                    "value": "biblio"
-            },
-            {
-                    "name":  "family_name",
-                    "value": "biblio"
-            },
-            {
-                    "name":  "preferred_username",
-                    "value": "biblio"
-            },
-            {
-                    "name":  "email",
-                    "value": "biblio@example.com"
-            }
-        ]
-    }
-  ]
+  {
+    "id": "biblio-librarian",
+    "claims": [
+      {
+        "name": "name",
+        "value": "Biblio Librarian"
+      },
+      {
+        "name": "given_name",
+        "value": "biblio"
+      },
+      {
+        "name": "family_name",
+        "value": "librarian"
+      },
+      {
+        "name": "preferred_username",
+        "value": "biblio-librarian"
+      },
+      {
+        "name": "email",
+        "value": "biblio-librarian@ugent.be"
+      }
+    ]
+  },
+  {
+    "id": "biblio-researcher",
+    "claims": [
+      {
+        "name": "name",
+        "value": "Biblio Researcher"
+      },
+      {
+        "name": "given_name",
+        "value": "biblio"
+      },
+      {
+        "name": "family_name",
+        "value": "researcher"
+      },
+      {
+        "name": "preferred_username",
+        "value": "biblio-researcher"
+      },
+      {
+        "name": "email",
+        "value": "biblio-researcher@ugent.be"
+      }
+    ]
+  }
+]
