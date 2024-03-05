@@ -381,6 +381,7 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 }
 
 func (*ErrorStatusCode) getOrganizationRes() {}
+func (*ErrorStatusCode) importProjectRes()   {}
 
 // Ref: #/components/schemas/GetOrganization
 type GetOrganization struct {
@@ -735,6 +736,129 @@ func (s *ImportPersonRequest) GetPerson() ImportPersonParams {
 // SetPerson sets the value of Person.
 func (s *ImportPersonRequest) SetPerson(val ImportPersonParams) {
 	s.Person = val
+}
+
+// ImportProjectOK is response for ImportProject operation.
+type ImportProjectOK struct{}
+
+func (*ImportProjectOK) importProjectRes() {}
+
+// Ref: #/components/schemas/ImportProjectParams
+type ImportProjectParams struct {
+	Identifiers  []Identifier `json:"identifiers"`
+	Names        []Text       `json:"names"`
+	Descriptions []Text       `json:"descriptions"`
+	StartDate    OptString    `json:"startDate"`
+	EndDate      OptString    `json:"endDate"`
+	Deleted      OptBool      `json:"deleted"`
+	Attributes   []Attribute  `json:"attributes"`
+	CreatedAt    OptDateTime  `json:"createdAt"`
+	UpdatedAt    OptDateTime  `json:"updatedAt"`
+}
+
+// GetIdentifiers returns the value of Identifiers.
+func (s *ImportProjectParams) GetIdentifiers() []Identifier {
+	return s.Identifiers
+}
+
+// GetNames returns the value of Names.
+func (s *ImportProjectParams) GetNames() []Text {
+	return s.Names
+}
+
+// GetDescriptions returns the value of Descriptions.
+func (s *ImportProjectParams) GetDescriptions() []Text {
+	return s.Descriptions
+}
+
+// GetStartDate returns the value of StartDate.
+func (s *ImportProjectParams) GetStartDate() OptString {
+	return s.StartDate
+}
+
+// GetEndDate returns the value of EndDate.
+func (s *ImportProjectParams) GetEndDate() OptString {
+	return s.EndDate
+}
+
+// GetDeleted returns the value of Deleted.
+func (s *ImportProjectParams) GetDeleted() OptBool {
+	return s.Deleted
+}
+
+// GetAttributes returns the value of Attributes.
+func (s *ImportProjectParams) GetAttributes() []Attribute {
+	return s.Attributes
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *ImportProjectParams) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *ImportProjectParams) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
+// SetIdentifiers sets the value of Identifiers.
+func (s *ImportProjectParams) SetIdentifiers(val []Identifier) {
+	s.Identifiers = val
+}
+
+// SetNames sets the value of Names.
+func (s *ImportProjectParams) SetNames(val []Text) {
+	s.Names = val
+}
+
+// SetDescriptions sets the value of Descriptions.
+func (s *ImportProjectParams) SetDescriptions(val []Text) {
+	s.Descriptions = val
+}
+
+// SetStartDate sets the value of StartDate.
+func (s *ImportProjectParams) SetStartDate(val OptString) {
+	s.StartDate = val
+}
+
+// SetEndDate sets the value of EndDate.
+func (s *ImportProjectParams) SetEndDate(val OptString) {
+	s.EndDate = val
+}
+
+// SetDeleted sets the value of Deleted.
+func (s *ImportProjectParams) SetDeleted(val OptBool) {
+	s.Deleted = val
+}
+
+// SetAttributes sets the value of Attributes.
+func (s *ImportProjectParams) SetAttributes(val []Attribute) {
+	s.Attributes = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *ImportProjectParams) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *ImportProjectParams) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
+}
+
+// Ref: #/components/schemas/ImportProjectRequest
+type ImportProjectRequest struct {
+	Project ImportProjectParams `json:"project"`
+}
+
+// GetProject returns the value of Project.
+func (s *ImportProjectRequest) GetProject() ImportProjectParams {
+	return s.Project
+}
+
+// SetProject sets the value of Project.
+func (s *ImportProjectRequest) SetProject(val ImportProjectParams) {
+	s.Project = val
 }
 
 // NewOptBool returns new OptBool with value set to v.

@@ -83,6 +83,26 @@ paths:
         default:
           $ref: "#/components/responses/Error"
 
+  "/import-project":
+    post:
+      summary: Import a project
+      description: Import a project
+      operationId: importProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImportProjectRequest"
+        required: true
+      responses:
+        '200':
+          description: Success
+        '409':
+          description: Duplicate error
+          $ref: "#/components/responses/Error"
+        default:
+          $ref: "#/components/responses/Error"
+
   "/add-project":
     post:
       summary: Upsert a project
@@ -294,6 +314,46 @@ components:
                 $ref: "#/components/schemas/Attribute"
           required: [identifiers, name]
       required: [person]
+
+    ImportProjectRequest:
+      type: object
+      properties:
+        project:
+          $ref: "#/components/schemas/ImportProjectParams" 
+      required: [project]
+
+    ImportProjectParams:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Identifier"
+        names:
+          type: array
+          items:
+            $ref: "#/components/schemas/Text"
+        descriptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Text"
+        startDate:
+          type: string
+        endDate:
+          type: string
+        deleted:
+          type: boolean
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [identifiers]
 
     AddProjectRequest:
       type: object
