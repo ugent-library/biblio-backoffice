@@ -100,7 +100,7 @@ WHERE p.replaced_by_id IS NULL
 GROUP BY p.id;
 `
 
-const insertProjectQuery = `
+const createProjectQuery = `
 INSERT INTO projects (
 	names,
 	descriptions,
@@ -115,7 +115,7 @@ RETURNING id;
 
 func createProject(ctx context.Context, conn Conn, params AddProjectParams) (int64, error) {
 	var id int64
-	err := conn.QueryRow(ctx, insertProjectQuery,
+	err := conn.QueryRow(ctx, createProjectQuery,
 		params.Names,
 		params.Descriptions,
 		pgtype.Text{Valid: params.StartDate != "", String: params.StartDate},
@@ -128,6 +128,48 @@ func createProject(ctx context.Context, conn Conn, params AddProjectParams) (int
 	}
 
 	return id, replaceProjectIdentifiers(ctx, conn, id, params.Identifiers)
+}
+
+const insertProjectQuery = `
+INSERT INTO projects (
+	names,
+	descriptions,
+	start_date,
+	end_date,
+	deleted,
+	attributes,
+	created_at,
+	updated_at
+)
+VALUES ($1, $2, $3, $4, $5, $6,
+	COALESCE($7,CURRENT_TIMESTAMP),
+	COALESCE($8,CURRENT_TIMESTAMP))
+RETURNING id;
+`
+
+func insertProject(ctx context.Context, conn Conn, params ImportProjectParams) error {
+	var id int64
+	err := conn.QueryRow(ctx, insertProjectQuery,
+		params.Names,
+		params.Descriptions,
+		pgtype.Text{Valid: params.StartDate != "", String: params.StartDate},
+		pgtype.Text{Valid: params.EndDate != "", String: params.EndDate},
+		params.Deleted,
+		params.Attributes,
+		params.CreatedAt,
+		params.UpdatedAt,
+	).Scan(&id)
+	if err != nil {
+		return err
+	}
+
+	for _, ident := range params.Identifiers {
+		if _, err := conn.Exec(ctx, insertProjectIdentifierQuery, id, ident.Kind, ident.Value); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 const updateProjectQuery = `
