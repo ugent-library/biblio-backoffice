@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "dev": "reflex -d none -c reflex.docker.conf",
     "test": "cypress run --config-file cypress/cypress.config.ts",
     "test:local": "cypress run --config-file cypress/cypress.config.ts --config baseUrl=http://localhost:3001",
     "cypress:open": "cypress open --config-file cypress/cypress.config.ts --browser chrome --e2e",
