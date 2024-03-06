@@ -14,6 +14,7 @@ import search from "./search";
 import updateFields from "./update-fields";
 import setUpPublication from "./set-up-publication";
 import setUpDataset from "./set-up-dataset";
+import clocked from "./clocked";
 
 // Child commands
 import finishLog from "./finish-log";
@@ -55,6 +56,8 @@ Cypress.Commands.addAll({
   setUpPublication,
 
   setUpDataset,
+
+  clocked,
 });
 
 // Child commands
@@ -66,7 +69,7 @@ Cypress.Commands.addAll(
     closeToast,
 
     setField,
-  },
+  }
 );
 
 // Dual commands
@@ -78,5 +81,5 @@ Cypress.Commands.addAll(
     extractBiblioId,
 
     closeModal,
-  },
+  }
 );
