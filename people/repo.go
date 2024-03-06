@@ -16,6 +16,14 @@ const idKind = "id"
 
 var ErrNotFound = errors.New("not found")
 
+type DuplicateError struct {
+	Identifier Identifier
+}
+
+func (e *DuplicateError) Error() string {
+	return fmt.Sprintf("%s already exists", e.Identifier.String())
+}
+
 type Repo struct {
 	conn        Conn
 	tokenSecret []byte
@@ -33,7 +41,6 @@ func NewRepo(c RepoConfig) (*Repo, error) {
 	}, nil
 }
 
-// TODO make idempotent, do nothing if an ident exists
 func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganizationParams]) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
@@ -43,9 +50,24 @@ func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganiza
 
 	var iterErr error
 	err = iter(ctx, func(o ImportOrganizationParams) bool {
+		// return error if identifier is already known
+		for _, ident := range o.Identifiers {
+			_, err := getOrganizationByIdentifier(ctx, tx, ident.Kind, ident.Value)
+			if err == pgx.ErrNoRows {
+				continue
+			}
+			if err != nil {
+				iterErr = err
+				return false
+			}
+			iterErr = &DuplicateError{ident}
+			return false
+		}
+
 		if !o.Identifiers.Has(idKind) {
 			o.Identifiers = append(o.Identifiers, newID())
 		}
+
 		iterErr = insertOrganization(ctx, tx, o)
 		return iterErr == nil
 	})
@@ -59,13 +81,24 @@ func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganiza
 	return tx.Commit(ctx)
 }
 
-// TODO make idempotent, do nothing if an ident exists
 func (r *Repo) ImportPerson(ctx context.Context, p ImportPersonParams) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback(ctx)
+
+	// return error if identifier is already known
+	for _, ident := range p.Identifiers {
+		_, err := getPersonByIdentifier(ctx, tx, ident.Kind, ident.Value, false)
+		if err == pgx.ErrNoRows {
+			continue
+		}
+		if err != nil {
+			return err
+		}
+		return &DuplicateError{ident}
+	}
 
 	if !p.Identifiers.Has(idKind) {
 		p.Identifiers = append(p.Identifiers, newID())

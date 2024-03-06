@@ -776,7 +776,7 @@ func (s *Server) handleImportOrganizationsRequest(args [0]string, argsEscaped bo
 		}
 	}()
 
-	var response *ImportOrganizationsOK
+	var response ImportOrganizationsRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -791,7 +791,7 @@ func (s *Server) handleImportOrganizationsRequest(args [0]string, argsEscaped bo
 		type (
 			Request  = *ImportOrganizationsRequest
 			Params   = struct{}
-			Response = *ImportOrganizationsOK
+			Response = ImportOrganizationsRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -802,12 +802,12 @@ func (s *Server) handleImportOrganizationsRequest(args [0]string, argsEscaped bo
 			mreq,
 			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				err = s.h.ImportOrganizations(ctx, request)
+				response, err = s.h.ImportOrganizations(ctx, request)
 				return response, err
 			},
 		)
 	} else {
-		err = s.h.ImportOrganizations(ctx, request)
+		response, err = s.h.ImportOrganizations(ctx, request)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
@@ -939,7 +939,7 @@ func (s *Server) handleImportPersonRequest(args [0]string, argsEscaped bool, w h
 		}
 	}()
 
-	var response *ImportPersonOK
+	var response ImportPersonRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -954,7 +954,7 @@ func (s *Server) handleImportPersonRequest(args [0]string, argsEscaped bool, w h
 		type (
 			Request  = *ImportPersonRequest
 			Params   = struct{}
-			Response = *ImportPersonOK
+			Response = ImportPersonRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -965,12 +965,12 @@ func (s *Server) handleImportPersonRequest(args [0]string, argsEscaped bool, w h
 			mreq,
 			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				err = s.h.ImportPerson(ctx, request)
+				response, err = s.h.ImportPerson(ctx, request)
 				return response, err
 			},
 		)
 	} else {
-		err = s.h.ImportPerson(ctx, request)
+		response, err = s.h.ImportPerson(ctx, request)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {

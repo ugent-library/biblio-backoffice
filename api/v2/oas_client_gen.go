@@ -52,13 +52,13 @@ type Invoker interface {
 	// Import organization hierarchy.
 	//
 	// POST /import-organizations
-	ImportOrganizations(ctx context.Context, request *ImportOrganizationsRequest) error
+	ImportOrganizations(ctx context.Context, request *ImportOrganizationsRequest) (ImportOrganizationsRes, error)
 	// ImportPerson invokes importPerson operation.
 	//
 	// Import a person.
 	//
 	// POST /import-person
-	ImportPerson(ctx context.Context, request *ImportPersonRequest) error
+	ImportPerson(ctx context.Context, request *ImportPersonRequest) (ImportPersonRes, error)
 	// ImportProject invokes importProject operation.
 	//
 	// Import a project.
@@ -570,12 +570,12 @@ func (c *Client) sendGetPerson(ctx context.Context, request *GetPersonRequest) (
 // Import organization hierarchy.
 //
 // POST /import-organizations
-func (c *Client) ImportOrganizations(ctx context.Context, request *ImportOrganizationsRequest) error {
-	_, err := c.sendImportOrganizations(ctx, request)
-	return err
+func (c *Client) ImportOrganizations(ctx context.Context, request *ImportOrganizationsRequest) (ImportOrganizationsRes, error) {
+	res, err := c.sendImportOrganizations(ctx, request)
+	return res, err
 }
 
-func (c *Client) sendImportOrganizations(ctx context.Context, request *ImportOrganizationsRequest) (res *ImportOrganizationsOK, err error) {
+func (c *Client) sendImportOrganizations(ctx context.Context, request *ImportOrganizationsRequest) (res ImportOrganizationsRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("importOrganizations"),
 		semconv.HTTPMethodKey.String("POST"),
@@ -678,12 +678,12 @@ func (c *Client) sendImportOrganizations(ctx context.Context, request *ImportOrg
 // Import a person.
 //
 // POST /import-person
-func (c *Client) ImportPerson(ctx context.Context, request *ImportPersonRequest) error {
-	_, err := c.sendImportPerson(ctx, request)
-	return err
+func (c *Client) ImportPerson(ctx context.Context, request *ImportPersonRequest) (ImportPersonRes, error) {
+	res, err := c.sendImportPerson(ctx, request)
+	return res, err
 }
 
-func (c *Client) sendImportPerson(ctx context.Context, request *ImportPersonRequest) (res *ImportPersonOK, err error) {
+func (c *Client) sendImportPerson(ctx context.Context, request *ImportPersonRequest) (res ImportPersonRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("importPerson"),
 		semconv.HTTPMethodKey.String("POST"),
