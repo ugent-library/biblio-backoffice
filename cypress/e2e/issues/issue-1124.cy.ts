@@ -37,14 +37,18 @@ describe("Issue #1124:  Add friendlier consistent confirmation toaster when lock
       cy.contains(".list-group-item", "Locked").should("not.exist");
 
       cy.visitPublication();
-      cy.contains(".btn", "Lock record").should("be.visible").click();
+      cy.clocked(() => {
+        cy.contains(".btn", "Lock record").should("be.visible").click();
 
-      // Confirmation toast is displayed upon locking (and hidden after 5s)
-      cy.contains(".toast", "Publication was successfully locked.")
-        .as("lockedToast")
-        .should("be.visible");
-      cy.wait(5000);
-      cy.get("@lockedToast").should("not.exist");
+        // Confirmation toast is displayed upon locking (and hidden after 5s)
+        cy.contains(".toast", "Publication was successfully locked.")
+          .as("lockedToast")
+          .should("be.visible");
+
+        cy.tick(5000);
+
+        cy.get("@lockedToast").should("not.exist");
+      });
 
       // Publication now has lock icon in the detail view
       cy.get(".c-subline .if.if-lock").should("be.visible");
@@ -82,14 +86,19 @@ describe("Issue #1124:  Add friendlier consistent confirmation toaster when lock
       cy.switchMode("Librarian");
 
       cy.visitPublication();
-      cy.contains(".btn", "Unlock record").should("be.visible").click();
 
-      // Confirmation toast is displayed upon locking (and hidden after 5s)
-      cy.contains(".toast", "Publication was successfully unlocked.")
-        .as("unlockedToast")
-        .should("be.visible");
-      cy.wait(5000);
-      cy.get("@unlockedToast").should("not.exist");
+      cy.clocked(() => {
+        cy.contains(".btn", "Unlock record").should("be.visible").click();
+
+        // Confirmation toast is displayed upon locking (and hidden after 5s)
+        cy.contains(".toast", "Publication was successfully unlocked.")
+          .as("unlockedToast")
+          .should("be.visible");
+
+        cy.tick(5000);
+
+        cy.get("@unlockedToast").should("not.exist");
+      });
 
       // Lock icon is removed again
       cy.get(".c-subline .if.if-lock").should("not.exist");
