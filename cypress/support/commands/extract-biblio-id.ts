@@ -11,15 +11,15 @@ export default function extractBiblioId(subject: undefined | JQuery<HTMLElement>
 
     cySubject = cy.wrap(subject, { log: false })
   } else {
-    cySubject = cy.get('.list-group-item-main', { log: false })
+    cySubject = cy.get('.card > .card-body > .list-group > .list-group-item', { log: false })
   }
 
   cySubject
     .then(el => {
       updateConsoleProps(log, cp => (cp.subject = el))
     })
-    .contains('Biblio ID:', { log: false })
-    .find('.c-code', { log: false })
+    .contains('Biblio ID', { log: false })
+    .next('.c-code', { log: false })
     .invoke({ log: false }, 'text')
     .as('biblioId', { type: 'static' })
     .finishLog(log, true)
