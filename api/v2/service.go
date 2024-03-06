@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-faster/errors"
 	"github.com/samber/lo"
@@ -87,7 +86,7 @@ func (s *Service) SearchPeople(ctx context.Context, req *SearchPeopleRequest) (*
 	}, nil
 }
 
-func (s *Service) ImportOrganizations(ctx context.Context, req *ImportOrganizationsRequest) error {
+func (s *Service) ImportOrganizations(ctx context.Context, req *ImportOrganizationsRequest) (ImportOrganizationsRes, error) {
 	iter := func(ctx context.Context, fn func(people.ImportOrganizationParams) bool) error {
 		for _, params := range req.Organizations {
 			if !fn(convertImportOrganizationParams(params)) {
@@ -97,11 +96,45 @@ func (s *Service) ImportOrganizations(ctx context.Context, req *ImportOrganizati
 		return nil
 	}
 
-	return s.peopleRepo.ImportOrganizations(ctx, iter)
+	err := s.peopleRepo.ImportOrganizations(ctx, iter)
+
+	var dupErr *people.DuplicateError
+	if errors.As(err, &dupErr) {
+		return nil, &ErrorStatusCode{
+			StatusCode: 409,
+			Response: Error{
+				Code:    409,
+				Message: dupErr.Error(),
+			},
+		}
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &ImportOrganizationsOK{}, nil
 }
 
-func (s *Service) ImportPerson(ctx context.Context, req *ImportPersonRequest) error {
-	return s.peopleRepo.ImportPerson(ctx, convertImportPersonParams(req.Person))
+func (s *Service) ImportPerson(ctx context.Context, req *ImportPersonRequest) (ImportPersonRes, error) {
+	err := s.peopleRepo.ImportPerson(ctx, convertImportPersonParams(req.Person))
+
+	var dupErr *people.DuplicateError
+	if errors.As(err, &dupErr) {
+		return nil, &ErrorStatusCode{
+			StatusCode: 409,
+			Response: Error{
+				Code:    409,
+				Message: dupErr.Error(),
+			},
+		}
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &ImportPersonOK{}, nil
 }
 
 func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
@@ -134,19 +167,19 @@ func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
 }
 
 func (s *Service) ImportProject(ctx context.Context, req *ImportProjectRequest) (ImportProjectRes, error) {
-	// If error return 429 conflict
 	err := s.projectsRepo.ImportProject(ctx, convertImportProjectParams(req.Project))
 
-	var duplicateError *projects.DuplicateProjectError
-	if errors.As(err, &duplicateError) {
+	var dupErr *projects.DuplicateProjectError
+	if errors.As(err, &dupErr) {
 		return nil, &ErrorStatusCode{
 			StatusCode: 409,
 			Response: Error{
 				Code:    409,
-				Message: fmt.Sprintf("%s", duplicateError),
+				Message: dupErr.Error(),
 			},
 		}
 	}
+
 	if err != nil {
 		return nil, err
 	}

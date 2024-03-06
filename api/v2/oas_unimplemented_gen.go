@@ -54,8 +54,8 @@ func (UnimplementedHandler) GetPerson(ctx context.Context, req *GetPersonRequest
 // Import organization hierarchy.
 //
 // POST /import-organizations
-func (UnimplementedHandler) ImportOrganizations(ctx context.Context, req *ImportOrganizationsRequest) error {
-	return ht.ErrNotImplemented
+func (UnimplementedHandler) ImportOrganizations(ctx context.Context, req *ImportOrganizationsRequest) (r ImportOrganizationsRes, _ error) {
+	return r, ht.ErrNotImplemented
 }
 
 // ImportPerson implements importPerson operation.
@@ -63,8 +63,8 @@ func (UnimplementedHandler) ImportOrganizations(ctx context.Context, req *Import
 // Import a person.
 //
 // POST /import-person
-func (UnimplementedHandler) ImportPerson(ctx context.Context, req *ImportPersonRequest) error {
-	return ht.ErrNotImplemented
+func (UnimplementedHandler) ImportPerson(ctx context.Context, req *ImportPersonRequest) (r ImportPersonRes, _ error) {
+	return r, ht.ErrNotImplemented
 }
 
 // ImportProject implements importProject operation.

@@ -112,6 +112,9 @@ paths:
       responses:
         '200':
           description: Success
+        '409':
+          description: Duplicate error
+          $ref: "#/components/responses/Error"
         default:
           $ref: "#/components/responses/Error"
 
@@ -129,6 +132,9 @@ paths:
       responses:
         '200':
           description: Success
+        '409':
+          description: Duplicate error
+          $ref: "#/components/responses/Error"
         default:
           $ref: "#/components/responses/Error"
 

@@ -9,6 +9,14 @@ type GetPersonRes interface {
 	getPersonRes()
 }
 
+type ImportOrganizationsRes interface {
+	importOrganizationsRes()
+}
+
+type ImportPersonRes interface {
+	importPersonRes()
+}
+
 type ImportProjectRes interface {
 	importProjectRes()
 }

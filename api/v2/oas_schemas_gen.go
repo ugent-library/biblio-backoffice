@@ -395,9 +395,11 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
 }
 
-func (*ErrorStatusCode) getOrganizationRes() {}
-func (*ErrorStatusCode) getPersonRes()       {}
-func (*ErrorStatusCode) importProjectRes()   {}
+func (*ErrorStatusCode) getOrganizationRes()     {}
+func (*ErrorStatusCode) getPersonRes()           {}
+func (*ErrorStatusCode) importOrganizationsRes() {}
+func (*ErrorStatusCode) importPersonRes()        {}
+func (*ErrorStatusCode) importProjectRes()       {}
 
 // Ref: #/components/schemas/GetOrganization
 type GetOrganization struct {
@@ -562,6 +564,8 @@ func (s *ImportOrganizationParams) SetUpdatedAt(val OptDateTime) {
 // ImportOrganizationsOK is response for ImportOrganizations operation.
 type ImportOrganizationsOK struct{}
 
+func (*ImportOrganizationsOK) importOrganizationsRes() {}
+
 // Ref: #/components/schemas/ImportOrganizationsRequest
 type ImportOrganizationsRequest struct {
 	Organizations []ImportOrganizationParams `json:"organizations"`
@@ -579,6 +583,8 @@ func (s *ImportOrganizationsRequest) SetOrganizations(val []ImportOrganizationPa
 
 // ImportPersonOK is response for ImportPerson operation.
 type ImportPersonOK struct{}
+
+func (*ImportPersonOK) importPersonRes() {}
 
 // Ref: #/components/schemas/ImportPersonParams
 type ImportPersonParams struct {

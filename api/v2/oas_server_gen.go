@@ -37,13 +37,13 @@ type Handler interface {
 	// Import organization hierarchy.
 	//
 	// POST /import-organizations
-	ImportOrganizations(ctx context.Context, req *ImportOrganizationsRequest) error
+	ImportOrganizations(ctx context.Context, req *ImportOrganizationsRequest) (ImportOrganizationsRes, error)
 	// ImportPerson implements importPerson operation.
 	//
 	// Import a person.
 	//
 	// POST /import-person
-	ImportPerson(ctx context.Context, req *ImportPersonRequest) error
+	ImportPerson(ctx context.Context, req *ImportPersonRequest) (ImportPersonRes, error)
 	// ImportProject implements importProject operation.
 	//
 	// Import a project.

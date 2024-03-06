@@ -14,7 +14,6 @@ import (
 const idKind = "id"
 
 var ErrNotFound = errors.New("not found")
-var ErrDuplicate = errors.New("project with id already exists")
 
 type DuplicateProjectError struct {
 	ID   string
