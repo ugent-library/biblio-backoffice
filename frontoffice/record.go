@@ -924,6 +924,10 @@ func MapDataset(d *models.Dataset, repo *repositories.Repo) *Record {
 	}
 
 	for typ, values := range d.Identifiers {
+		// already in attribute DOI
+		if typ == "DOI" {
+			continue
+		}
 		for _, value := range values {
 			rec.Identifier = append(rec.Identifier, Identifier{
 				Type:  typ,
