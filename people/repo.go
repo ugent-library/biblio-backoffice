@@ -90,7 +90,7 @@ func (r *Repo) ImportPerson(ctx context.Context, p ImportPersonParams) error {
 
 	// return error if identifier is already known
 	for _, ident := range p.Identifiers {
-		_, err := getPersonByIdentifier(ctx, tx, ident.Kind, ident.Value, false)
+		_, err := getPersonByIdentifier(ctx, tx, ident.Kind, ident.Value)
 		if err == pgx.ErrNoRows {
 			continue
 		}
@@ -165,29 +165,7 @@ func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value stri
 }
 
 func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
-	row, err := getPersonByIdentifier(ctx, r.conn, kind, value, false)
-	if err == pgx.ErrNoRows {
-		return nil, ErrNotFound
-	}
-	if err != nil {
-		return nil, err
-	}
-	return row.toPerson(r.tokenSecret)
-}
-
-func (r *Repo) GetActivePersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
-	row, err := getPersonByIdentifier(ctx, r.conn, kind, value, true)
-	if err == pgx.ErrNoRows {
-		return nil, ErrNotFound
-	}
-	if err != nil {
-		return nil, err
-	}
-	return row.toPerson(r.tokenSecret)
-}
-
-func (r *Repo) GetActivePersonByUsername(ctx context.Context, username string) (*Person, error) {
-	row, err := getActivePersonByUsername(ctx, r.conn, username)
+	row, err := getPersonByIdentifier(ctx, r.conn, kind, value)
 	if err == pgx.ErrNoRows {
 		return nil, ErrNotFound
 	}
@@ -352,7 +330,7 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 	var rows []*personRow
 
 	for _, id := range params.Identifiers {
-		row, err := getPersonByIdentifier(ctx, tx, id.Kind, id.Value, false)
+		row, err := getPersonByIdentifier(ctx, tx, id.Kind, id.Value)
 		if err != nil && err != pgx.ErrNoRows {
 			return err
 		}

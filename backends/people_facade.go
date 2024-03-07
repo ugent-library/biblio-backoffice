@@ -8,19 +8,17 @@ import (
 )
 
 type PeopleFacade struct {
-	repo  *people.Repo
 	index *people.Index
 }
 
-func NewPeopleFacade(repo *people.Repo, index *people.Index) *PeopleFacade {
+func NewPeopleFacade(index *people.Index) *PeopleFacade {
 	return &PeopleFacade{
-		repo:  repo,
 		index: index,
 	}
 }
 
 func (f *PeopleFacade) GetPerson(id string) (*models.Person, error) {
-	p, err := f.repo.GetPersonByIdentifier(context.TODO(), "id", id)
+	p, err := f.index.GetPersonByIdentifier(context.TODO(), "id", id)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +27,7 @@ func (f *PeopleFacade) GetPerson(id string) (*models.Person, error) {
 }
 
 func (f *PeopleFacade) GetUserByUsername(username string) (*models.Person, error) {
-	p, err := f.repo.GetActivePersonByUsername(context.TODO(), username)
+	p, err := f.index.GetActivePersonByUsername(context.TODO(), username)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +36,7 @@ func (f *PeopleFacade) GetUserByUsername(username string) (*models.Person, error
 }
 
 func (f *PeopleFacade) GetUser(id string) (*models.Person, error) {
-	p, err := f.repo.GetActivePersonByIdentifier(context.TODO(), "id", id)
+	p, err := f.index.GetActivePersonByIdentifier(context.TODO(), "id", id)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +45,7 @@ func (f *PeopleFacade) GetUser(id string) (*models.Person, error) {
 }
 
 func (f *PeopleFacade) GetOrganization(id string) (*models.Organization, error) {
-	o, err := f.repo.GetOrganizationByIdentifier(context.TODO(), "biblio", id)
+	o, err := f.index.GetOrganizationByIdentifier(context.TODO(), "biblio", id)
 	if err != nil {
 		return nil, err
 	}
