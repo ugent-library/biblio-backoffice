@@ -4,6 +4,13 @@
         "number_of_shards": "1",
         "number_of_replicas": "0",
         "analysis": {
+          "normalizer": {
+            "tag": {
+              "type": "custom",
+              "char_filter": [],
+              "filter": ["lowercase"]
+            }
+          },
           "filter": {
             "phrase_edge_ngram": {
               "type": "edge_ngram",
@@ -27,13 +34,6 @@
               "char_filter": [
                 "remove_punctuation",
                 "equalize_whitespace"
-              ],
-              "type": "custom",
-              "tokenizer": "keyword"
-            },
-            "tag": {
-              "filter": [
-                "lowercase"
               ],
               "type": "custom",
               "tokenizer": "keyword"
@@ -103,8 +103,8 @@
             ]
           },
           "identifiers": {
-            "type": "text",
-            "analyzer": "tag"
+            "type": "keyword",
+            "normalizer": "tag"
           },
           "record": {
             "type": "object",

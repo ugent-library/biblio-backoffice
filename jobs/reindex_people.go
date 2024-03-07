@@ -34,3 +34,7 @@ func NewReindexPeopleWorker(repo *people.Repo, index *people.Index) *ReindexPeop
 func (w *ReindexPeopleWorker) Work(ctx context.Context, job *river.Job[ReindexPeopleArgs]) error {
 	return w.index.ReindexPeople(ctx, w.repo.EachPerson)
 }
+
+func (w *ReindexPeopleWorker) Timeout(*river.Job[ReindexPeopleArgs]) time.Duration {
+	return 5 * time.Minute
+}

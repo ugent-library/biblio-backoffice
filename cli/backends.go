@@ -120,7 +120,7 @@ func newServices() *backends.Services {
 		)
 	}
 
-	peopleFacade := backends.NewPeopleFacade(peopleRepo, peopleIndex)
+	peopleFacade := backends.NewPeopleFacade(peopleIndex)
 
 	organizationService := caching.NewOrganizationService(peopleFacade)
 

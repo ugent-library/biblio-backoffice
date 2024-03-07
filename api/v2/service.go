@@ -28,7 +28,7 @@ func NewService(
 }
 
 func (s *Service) GetOrganization(ctx context.Context, req *GetOrganizationRequest) (GetOrganizationRes, error) {
-	o, err := s.peopleRepo.GetOrganizationByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
+	o, err := s.peopleIndex.GetOrganizationByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
 	if errors.Is(err, people.ErrNotFound) {
 		return nil, &ErrorStatusCode{
 			StatusCode: 404,
@@ -47,7 +47,7 @@ func (s *Service) GetOrganization(ctx context.Context, req *GetOrganizationReque
 
 // TODO use index
 func (s *Service) GetPerson(ctx context.Context, req *GetPersonRequest) (GetPersonRes, error) {
-	p, err := s.peopleRepo.GetPersonByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
+	p, err := s.peopleIndex.GetPersonByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
 	if errors.Is(err, people.ErrNotFound) {
 		return nil, &ErrorStatusCode{
 			StatusCode: 404,
