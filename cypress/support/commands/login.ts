@@ -1,7 +1,5 @@
 import { logCommand } from "./helpers";
 
-const NO_LOG = { log: false };
-
 export default function login(username, password): void {
   // WARNING: Whenever you change the code of the session setup, Cypress will throw an error:
   //   This session already exists. You may not create a new session with a previously used identifier.
@@ -16,21 +14,32 @@ export default function login(username, password): void {
   cy.session(
     username,
     () => {
-      cy.visit("/", NO_LOG);
+      cy.request({ url: "/login", log: false }).then((response) => {
+        const form = new DOMParser()
+          .parseFromString(response.body, "text/html")
+          .querySelector("form");
 
-      cy.contains(".btn", "Log in", NO_LOG).click(NO_LOG);
+        const body = Object.fromEntries(new FormData(form));
+        if ("username" in body) {
+          body.username = username;
+        }
+        if ("password" in body) {
+          body.password = password;
+        }
 
-      cy.get('input[name="username"]', NO_LOG).invoke(NO_LOG, "val", username);
+        cy.request({
+          method: "POST",
+          url: form.action,
+          form: true,
+          body,
 
-      if (password) {
-        cy.get('input[name="password"]', NO_LOG).invoke(
-          NO_LOG,
-          "val",
-          password,
-        );
-      }
+          // Make sure we redirect back and get the cookie we need
+          followRedirect: true,
 
-      cy.get("form", NO_LOG).submit(NO_LOG);
+          // Make sure we don't leak passwords in the Cypress log
+          log: false,
+        });
+      });
     },
     {
       cacheAcrossSpecs: true,
