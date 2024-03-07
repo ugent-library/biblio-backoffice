@@ -4,7 +4,7 @@
     "module": "ES2015",
     "moduleResolution": "node",
     "target": "es5",
-    "lib": ["es5", "dom"],
+    "lib": ["es5", "dom", "DOM.Iterable"],
     "types": ["cypress", "node"],
     "noEmit": true
   },
