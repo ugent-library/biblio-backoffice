@@ -92,24 +92,24 @@ describe("Publication import", () => {
       cy.intercept({
         pathname: `/publication/${this.biblioId}/contributors/author/suggestions`,
         query: {
-          first_name: "Griet",
-          last_name: /^(|Alleman)$/, // This forces an exact string match. Just '' matches any string.
+          first_name: "Dries",
+          last_name: /^(|Moreels)$/, // This forces an exact string match. Just '' matches any string.
         },
       }).as("user-search");
 
       cy.contains("Search author").should("be.visible");
 
-      cy.setFieldByLabel("First name", "Griet");
+      cy.setFieldByLabel("First name", "Dries");
       cy.wait("@user-search");
 
-      cy.setFieldByLabel("Last name", "Alleman");
+      cy.setFieldByLabel("Last name", "Moreels");
       cy.wait("@user-search");
 
       cy.contains(".badge", "Active UGent member")
         .closest(".list-group-item")
         // Make sure the right author is selected
-        .should("contain.text", "Griet Alleman")
-        .should("contain.text", "002004596441")
+        .should("contain.text", "Dries Moreels")
+        .should("contain.text", "802001088860")
         .contains(".btn", "Add author")
         .click();
     });
@@ -120,7 +120,7 @@ describe("Publication import", () => {
 
         cy.get(".list-group-item")
           .should("have.length", 1)
-          .should("contain.text", "Griet Alleman");
+          .should("contain.text", "Dries Moreels");
       })
       .closeModal(/^Save$/);
 
