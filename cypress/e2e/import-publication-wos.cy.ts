@@ -105,11 +105,11 @@ describe("Publication import", () => {
       cy.setFieldByLabel("Last name", "Moreels");
       cy.wait("@user-search");
 
-      cy.contains(".badge", "Active UGent member")
-        .closest(".list-group-item")
+      cy.contains(".list-group-item", "802001088860")
         // Make sure the right author is selected
         .should("contain.text", "Dries Moreels")
-        .should("contain.text", "802001088860")
+        .should("contain.text", "Active UGent member")
+        .should("contain.text", "0000-0002-5297-1074") // ORCID
         .contains(".btn", "Add author")
         .click();
     });
