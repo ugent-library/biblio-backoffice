@@ -7,8 +7,8 @@
     "email": "biblio-librarian@ugent.be",
     "identifier": [
       {
-        "value": "biblio-librarian",
-        "namespace": "ugent_username"
+        "namespace": "ugent_username",
+        "value": "biblio-librarian"
       }
     ],
     "role": ["biblio-admin"]
@@ -21,8 +21,33 @@
     "email": "biblio-researcher@ugent.be",
     "identifier": [
       {
-        "value": "biblio-researcher",
-        "namespace": "ugent_username"
+        "namespace": "ugent_username",
+        "value": "biblio-researcher"
+      }
+    ]
+  },
+  {
+    "active": true,
+    "name": "Dries Moreels",
+    "given_name": "Dries",
+    "family_name": "Moreels",
+    "email": "dries.moreels@ugent.be",
+    "identifier": [
+      {
+        "namespace": "historic_ugent_id",
+        "value": "802001088860"
+      },
+      {
+        "namespace": "ugent_username",
+        "value": "drmoreel"
+      },
+      {
+        "namespace": "orcid",
+        "value": "0000-0002-5297-1074"
+      },
+      {
+        "namespace": "organization",
+        "value": "CA20"
       }
     ]
   }

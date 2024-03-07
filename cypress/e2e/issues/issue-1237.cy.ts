@@ -764,13 +764,13 @@ describe("Issue #1237: Accessibility and mark-up: make sure labels are clickable
     autoFocus = false,
   ) {
     cy.getLabel(labelText)
-      .as("theLabel", { type: "static" })
+      .as("theLabel")
       .should("have.length", 1)
       .parent({ log: false })
       .find(fieldSelector)
       .should("have.length", 1)
       .first({ log: false })
-      .as("theField", { type: "static" })
+      .as("theField")
       .should(autoFocus ? "be.focused" : "not.be.focused");
 
     if (autoFocus) {
@@ -843,8 +843,8 @@ describe("Issue #1237: Accessibility and mark-up: make sure labels are clickable
       testFocusForLabel("First name", 'input[name="first_name"]', true);
       testFocusForLabel("Last name", 'input[name="last_name"]');
 
-      cy.setFieldByLabel("First name", "Griet");
-      cy.setFieldByLabel("Last name", "Alleman");
+      cy.setFieldByLabel("First name", "Dries");
+      cy.setFieldByLabel("Last name", "Moreels");
 
       cy.contains(".btn", "Add author").click();
 
