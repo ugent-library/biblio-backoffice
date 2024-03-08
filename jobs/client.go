@@ -28,7 +28,7 @@ type JobsConfig struct {
 func Start(ctx context.Context, c JobsConfig) error {
 	// start job server
 	riverWorkers := river.NewWorkers()
-	// river.AddWorker(riverWorkers, NewDeactivatePeopleWorker(repo))
+	river.AddWorker(riverWorkers, NewDeactivatePeopleWorker(c.PeopleRepo))
 	river.AddWorker(riverWorkers, NewReindexOrganizationsWorker(c.PeopleRepo, c.PeopleIndex))
 	river.AddWorker(riverWorkers, NewReindexPeopleWorker(c.PeopleRepo, c.PeopleIndex))
 	river.AddWorker(riverWorkers, NewReindexProjectsWorker(c.ProjectsRepo, c.ProjectsIndex))
@@ -39,13 +39,13 @@ func Start(ctx context.Context, c JobsConfig) error {
 			river.QueueDefault: {MaxWorkers: 100},
 		},
 		PeriodicJobs: []*river.PeriodicJob{
-			// river.NewPeriodicJob(
-			// 	river.PeriodicInterval(10*time.Minute),
-			// 	func() (river.JobArgs, *river.InsertOpts) {
-			// 		return DeactivatePeopleArgs{}, nil
-			// 	},
-			// 	&river.PeriodicJobOpts{RunOnStart: true},
-			// ),
+			river.NewPeriodicJob(
+				river.PeriodicInterval(10*time.Minute),
+				func() (river.JobArgs, *river.InsertOpts) {
+					return DeactivatePeopleArgs{}, nil
+				},
+				&river.PeriodicJobOpts{RunOnStart: true},
+			),
 			river.NewPeriodicJob(
 				river.PeriodicInterval(30*time.Minute),
 				func() (river.JobArgs, *river.InsertOpts) {

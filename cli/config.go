@@ -1,5 +1,7 @@
 package cli
 
+import "time"
+
 // Version info
 type Version struct {
 	Branch string `env:"SOURCE_BRANCH"`
@@ -88,4 +90,7 @@ type Config struct {
 		GitHubBranch string `env:"GITHUB_BRANCH" envDefault:"main"`
 		GitHubPath   string `env:"GITHUB_PATH"`
 	} `envPrefix:"FF_"`
+	People struct {
+		DeactivationPeriod time.Duration `env:"DEACTIVATION_PERIOD"`
+	} `envPrefix:"PEOPLE_"`
 }
