@@ -63,8 +63,9 @@ func newServices() *backends.Services {
 	}
 
 	peopleRepo, err := people.NewRepo(people.RepoConfig{
-		Conn:        pool,
-		TokenSecret: []byte(config.TokenSecret),
+		Conn:               pool,
+		TokenSecret:        []byte(config.TokenSecret),
+		DeactivationPeriod: config.People.DeactivationPeriod,
 	})
 	if err != nil {
 		panic(err)
