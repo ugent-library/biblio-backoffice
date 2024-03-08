@@ -2,7 +2,6 @@ package people
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"slices"
 	"time"
@@ -14,16 +13,6 @@ import (
 )
 
 const idKind = "id"
-
-var ErrNotFound = errors.New("not found")
-
-type DuplicateError struct {
-	Identifier Identifier
-}
-
-func (e *DuplicateError) Error() string {
-	return fmt.Sprintf("%s already exists", e.Identifier.String())
-}
 
 type Repo struct {
 	conn               Conn
@@ -64,7 +53,7 @@ func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganiza
 				iterErr = err
 				return false
 			}
-			iterErr = &DuplicateError{ident}
+			iterErr = &DuplicateError{ident.String()}
 			return false
 		}
 
@@ -101,7 +90,7 @@ func (r *Repo) ImportPerson(ctx context.Context, p ImportPersonParams) error {
 		if err != nil {
 			return err
 		}
-		return &DuplicateError{ident}
+		return &DuplicateError{ident.String()}
 	}
 
 	if !p.Identifiers.Has(idKind) {

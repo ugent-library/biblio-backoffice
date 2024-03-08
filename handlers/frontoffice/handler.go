@@ -16,6 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/frontoffice"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
@@ -26,6 +27,7 @@ type Handler struct {
 	handlers.BaseHandler
 	Repo             *repositories.Repo
 	FileStore        backends.FileStore
+	PeopleIndex      *people.Index
 	IPRanges         string
 	IPFilter         *ipfilter.IPFilter
 	FrontendUsername string
@@ -93,6 +95,75 @@ func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	j, err := json.Marshal(frontoffice.MapDataset(p, h.Repo))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(j)
+}
+
+func (h *Handler) GetPerson(w http.ResponseWriter, r *http.Request) {
+	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	p, err := h.PeopleIndex.GetPersonByIdentifier(r.Context(), ident.Kind, ident.Value)
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+	j, err := json.Marshal(p)
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(j)
+}
+
+func (h *Handler) GetActivePerson(w http.ResponseWriter, r *http.Request) {
+	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	p, err := h.PeopleIndex.GetActivePersonByIdentifier(r.Context(), ident.Kind, ident.Value)
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+	j, err := json.Marshal(p)
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(j)
+}
+
+func (h *Handler) GetActivePersonByUsername(w http.ResponseWriter, r *http.Request) {
+	p, err := h.PeopleIndex.GetActivePersonByUsername(r.Context(), bind.PathValue(r, "username"))
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+	j, err := json.Marshal(p)
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return

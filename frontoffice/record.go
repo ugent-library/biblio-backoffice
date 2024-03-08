@@ -55,7 +55,7 @@ type Affiliation struct {
 	UGentID string            `json:"ugent_id,omitempty"`
 }
 
-type Person struct {
+type Contributor struct {
 	ID            string        `json:"_id,omitempty"`
 	BiblioID      string        `json:"biblio_id,omitempty"`
 	CreditRole    []string      `json:"credit_role,omitempty"`
@@ -190,13 +190,13 @@ type Record struct {
 	ArticleNumber       string               `json:"article_number,omitempty"`
 	ArticleType         string               `json:"article_type,omitempty"`
 	ArxivID             string               `json:"arxiv_id,omitempty"`
-	Author              []Person             `json:"author,omitempty"`
+	Author              []Contributor        `json:"author,omitempty"`
 	AuthorSort          string               `json:"author_sort,omitempty"`
 	Classification      string               `json:"classification,omitempty"`
 	Conference          *Conference          `json:"conference,omitempty"`
 	ConferenceType      string               `json:"conference_type,omitempty"`
 	CopyrightStatement  string               `json:"copyright_statement,omitempty"`
-	CreatedBy           *Person              `json:"created_by,omitempty"`
+	CreatedBy           *Contributor         `json:"created_by,omitempty"`
 	DateFrom            string               `json:"date_from"`
 	DateCreated         string               `json:"date_created"`
 	DateUpdated         string               `json:"date_updated"`
@@ -204,13 +204,13 @@ type Record struct {
 	DOI                 []string             `json:"doi,omitempty"`
 	ECOOM               map[string]ECOOMFund `json:"ecoom,omitempty"`
 	Edition             string               `json:"edition,omitempty"`
-	Editor              []Person             `json:"editor,omitempty"`
+	Editor              []Contributor        `json:"editor,omitempty"`
 	ESCIID              string               `json:"esci_id,omitempty"`
 	Embargo             string               `json:"embargo,omitempty"`
 	EmbargoTo           string               `json:"embargo_to,omitempty"`
 	External            int                  `json:"external"`
 	File                []File               `json:"file,omitempty"`
-	FirstAuthor         []Person             `json:"first_author,omitempty"`
+	FirstAuthor         []Contributor        `json:"first_author,omitempty"`
 	Format              []string             `json:"format,omitempty"`
 	Handle              string               `json:"handle,omitempty"`
 	Identifier          []Identifier         `json:"identifier,omitempty"`
@@ -221,19 +221,19 @@ type Record struct {
 	JCR                 *JCR                 `json:"jcr,omitempty"`
 	Keyword             []string             `json:"keyword,omitempty"`
 	Language            []string             `json:"language,omitempty"`
-	LastAuthor          []Person             `json:"last_author,omitempty"`
+	LastAuthor          []Contributor        `json:"last_author,omitempty"`
 	License             string               `json:"license,omitempty"`
 	MiscType            string               `json:"misc_type,omitempty"`
 	OtherLicense        string               `json:"other_license,omitempty"`
 	Page                *Page                `json:"page,omitempty"`
 	Parent              *Parent              `json:"parent,omitempty"`
 	Project             []Project            `json:"project,omitempty"`
-	Promoter            []Person             `json:"promoter,omitempty"`
+	Promoter            []Contributor        `json:"promoter,omitempty"`
 	PublicationStatus   string               `json:"publication_status,omitempty"`
 	Publisher           *Publisher           `json:"publisher,omitempty"`
 	PubMedID            string               `json:"pubmed_id,omitempty"`
 	SeriesTitle         string               `json:"series_title,omitempty"`
-	SoleAuthor          *Person              `json:"sole_author,omitempty"`
+	SoleAuthor          *Contributor         `json:"sole_author,omitempty"`
 	Source              *Source              `json:"source,omitempty"`
 	Status              string               `json:"status,omitempty"`
 	Subject             []string             `json:"subject,omitempty"`
@@ -296,8 +296,8 @@ type Hits struct {
 	Hits   []*Record `json:"hits"`
 }
 
-func mapContributor(c *models.Contributor) *Person {
-	p := &Person{
+func mapContributor(c *models.Contributor) *Contributor {
+	p := &Contributor{
 		ID:        c.PersonID,
 		BiblioID:  c.PersonID,
 		FirstName: c.FirstName(),
@@ -430,8 +430,8 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 	if len(rec.Author) == 1 {
 		rec.SoleAuthor = &rec.Author[0]
 	} else if len(rec.Author) > 1 {
-		firstAuthor := make([]Person, 0)
-		lastAuthor := make([]Person, 0)
+		firstAuthor := make([]Contributor, 0)
+		lastAuthor := make([]Contributor, 0)
 		for _, person := range rec.Author {
 			if slices.Contains(person.CreditRole, "first_author") {
 				firstAuthor = append(firstAuthor, person)
