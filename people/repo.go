@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -25,19 +26,22 @@ func (e *DuplicateError) Error() string {
 }
 
 type Repo struct {
-	conn        Conn
-	tokenSecret []byte
+	conn               Conn
+	tokenSecret        []byte
+	deactivationPeriod time.Duration
 }
 
 type RepoConfig struct {
-	Conn        *pgxpool.Pool
-	TokenSecret []byte
+	Conn               *pgxpool.Pool
+	TokenSecret        []byte
+	DeactivationPeriod time.Duration
 }
 
 func NewRepo(c RepoConfig) (*Repo, error) {
 	return &Repo{
-		conn:        c.Conn,
-		tokenSecret: c.TokenSecret,
+		conn:               c.Conn,
+		tokenSecret:        c.TokenSecret,
+		deactivationPeriod: c.DeactivationPeriod,
 	}, nil
 }
 
@@ -377,6 +381,15 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 	}
 
 	return tx.Commit(ctx)
+}
+
+func (r *Repo) DeactivatePeople(ctx context.Context) error {
+	if r.deactivationPeriod == 0 {
+		return nil
+	}
+	t := time.Now().Add(-r.deactivationPeriod)
+	_, err := r.conn.Exec(ctx, deactivatePeopleQuery, t)
+	return err
 }
 
 func newID() Identifier {

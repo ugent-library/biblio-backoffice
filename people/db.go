@@ -279,6 +279,11 @@ SET replaced_by_id = $2, active = FALSE
 WHERE id = $1;
 `
 
+const deactivatePeopleQuery = `
+UPDATE people SET active = FALSE
+WHERE updated_at < $1;
+`
+
 type organizationRow struct {
 	ID          int64
 	ParentID    pgtype.Int8
