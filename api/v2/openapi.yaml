@@ -192,6 +192,27 @@ paths:
         default:
           $ref: "#/components/responses/Error"
 
+  "/search-projects":
+    post:
+      summary: Search projects
+      description: Search projects
+      operationId: searchProjects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchProjectsRequest"
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchProjects"
+        default:
+          $ref: "#/components/responses/Error"
+
 security:
   - apiKey: []
 
@@ -279,6 +300,21 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Person"
+      required: [hits]
+
+    SearchProjectsRequest:
+      type: object
+      properties:
+        query:
+          type: string
+
+    SearchProjects:
+      type: object
+      properties:
+        hits:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
       required: [hits]
 
     ImportOrganizationsRequest:
@@ -501,13 +537,46 @@ components:
           required: [identifiers]
       required: [project]
 
+    Project:
+      type: object
+      properties:
+        identifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Identifier"
+        names:
+          type: array
+          items:
+            $ref: "#/components/schemas/Text"
+        descriptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Text"
+        startDate:
+          type: string
+        endDate:
+          type: string
+        deleted:
+          type: boolean
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [identifiers, deleted, createdAt, updatedAt]
+
     AffiliationParams:
       type: object
       properties:
         organizationIdentifier:
           $ref: "#/components/schemas/Identifier"
       required: [organizationIdentifier]
- 
+
     Person:
       type: object
       properties:

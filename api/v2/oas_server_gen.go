@@ -62,6 +62,12 @@ type Handler interface {
 	//
 	// POST /search-people
 	SearchPeople(ctx context.Context, req *SearchPeopleRequest) (*SearchPeople, error)
+	// SearchProjects implements searchProjects operation.
+	//
+	// Search projects.
+	//
+	// POST /search-projects
+	SearchProjects(ctx context.Context, req *SearchProjectsRequest) (*SearchProjects, error)
 	// NewError creates *ErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.

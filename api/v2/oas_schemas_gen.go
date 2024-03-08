@@ -1397,6 +1397,109 @@ func (s *Person) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
+// Ref: #/components/schemas/Project
+type Project struct {
+	Identifiers  []Identifier `json:"identifiers"`
+	Names        []Text       `json:"names"`
+	Descriptions []Text       `json:"descriptions"`
+	StartDate    OptString    `json:"startDate"`
+	EndDate      OptString    `json:"endDate"`
+	Deleted      bool         `json:"deleted"`
+	Attributes   []Attribute  `json:"attributes"`
+	CreatedAt    time.Time    `json:"createdAt"`
+	UpdatedAt    time.Time    `json:"updatedAt"`
+}
+
+// GetIdentifiers returns the value of Identifiers.
+func (s *Project) GetIdentifiers() []Identifier {
+	return s.Identifiers
+}
+
+// GetNames returns the value of Names.
+func (s *Project) GetNames() []Text {
+	return s.Names
+}
+
+// GetDescriptions returns the value of Descriptions.
+func (s *Project) GetDescriptions() []Text {
+	return s.Descriptions
+}
+
+// GetStartDate returns the value of StartDate.
+func (s *Project) GetStartDate() OptString {
+	return s.StartDate
+}
+
+// GetEndDate returns the value of EndDate.
+func (s *Project) GetEndDate() OptString {
+	return s.EndDate
+}
+
+// GetDeleted returns the value of Deleted.
+func (s *Project) GetDeleted() bool {
+	return s.Deleted
+}
+
+// GetAttributes returns the value of Attributes.
+func (s *Project) GetAttributes() []Attribute {
+	return s.Attributes
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *Project) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *Project) GetUpdatedAt() time.Time {
+	return s.UpdatedAt
+}
+
+// SetIdentifiers sets the value of Identifiers.
+func (s *Project) SetIdentifiers(val []Identifier) {
+	s.Identifiers = val
+}
+
+// SetNames sets the value of Names.
+func (s *Project) SetNames(val []Text) {
+	s.Names = val
+}
+
+// SetDescriptions sets the value of Descriptions.
+func (s *Project) SetDescriptions(val []Text) {
+	s.Descriptions = val
+}
+
+// SetStartDate sets the value of StartDate.
+func (s *Project) SetStartDate(val OptString) {
+	s.StartDate = val
+}
+
+// SetEndDate sets the value of EndDate.
+func (s *Project) SetEndDate(val OptString) {
+	s.EndDate = val
+}
+
+// SetDeleted sets the value of Deleted.
+func (s *Project) SetDeleted(val bool) {
+	s.Deleted = val
+}
+
+// SetAttributes sets the value of Attributes.
+func (s *Project) SetAttributes(val []Attribute) {
+	s.Attributes = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *Project) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *Project) SetUpdatedAt(val time.Time) {
+	s.UpdatedAt = val
+}
+
 // Ref: #/components/schemas/SearchOrganizations
 type SearchOrganizations struct {
 	Hits []Organization `json:"hits"`
@@ -1454,6 +1557,36 @@ func (s *SearchPeopleRequest) GetQuery() OptString {
 
 // SetQuery sets the value of Query.
 func (s *SearchPeopleRequest) SetQuery(val OptString) {
+	s.Query = val
+}
+
+// Ref: #/components/schemas/SearchProjects
+type SearchProjects struct {
+	Hits []Project `json:"hits"`
+}
+
+// GetHits returns the value of Hits.
+func (s *SearchProjects) GetHits() []Project {
+	return s.Hits
+}
+
+// SetHits sets the value of Hits.
+func (s *SearchProjects) SetHits(val []Project) {
+	s.Hits = val
+}
+
+// Ref: #/components/schemas/SearchProjectsRequest
+type SearchProjectsRequest struct {
+	Query OptString `json:"query"`
+}
+
+// GetQuery returns the value of Query.
+func (s *SearchProjectsRequest) GetQuery() OptString {
+	return s.Query
+}
+
+// SetQuery sets the value of Query.
+func (s *SearchProjectsRequest) SetQuery(val OptString) {
 	s.Query = val
 }
 
