@@ -209,7 +209,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	}
 
 	// api server
-	apiService := api.NewService(services.PeopleRepo, services.PeopleIndex, services.ProjectsRepo)
+	apiService := api.NewService(services.PeopleRepo, services.PeopleIndex, services.ProjectsRepo, services.ProjectsIndex)
 	apiServer, err := api.NewServer(apiService, &api.ApiSecurityHandler{APIKey: config.APIKey})
 	if err != nil {
 		return nil, err

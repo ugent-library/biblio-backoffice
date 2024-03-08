@@ -300,24 +300,60 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					elem = origElem
-				case 'p': // Prefix: "people"
+				case 'p': // Prefix: "p"
 					origElem := elem
-					if l := len("people"); len(elem) >= l && elem[0:l] == "people" {
+					if l := len("p"); len(elem) >= l && elem[0:l] == "p" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						// Leaf node.
-						switch r.Method {
-						case "POST":
-							s.handleSearchPeopleRequest([0]string{}, elemIsEscaped, w, r)
-						default:
-							s.notAllowed(w, r, "POST")
+						break
+					}
+					switch elem[0] {
+					case 'e': // Prefix: "eople"
+						origElem := elem
+						if l := len("eople"); len(elem) >= l && elem[0:l] == "eople" {
+							elem = elem[l:]
+						} else {
+							break
 						}
 
-						return
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "POST":
+								s.handleSearchPeopleRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "POST")
+							}
+
+							return
+						}
+
+						elem = origElem
+					case 'r': // Prefix: "rojects"
+						origElem := elem
+						if l := len("rojects"); len(elem) >= l && elem[0:l] == "rojects" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "POST":
+								s.handleSearchProjectsRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "POST")
+							}
+
+							return
+						}
+
+						elem = origElem
 					}
 
 					elem = origElem
@@ -691,28 +727,68 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 
 					elem = origElem
-				case 'p': // Prefix: "people"
+				case 'p': // Prefix: "p"
 					origElem := elem
-					if l := len("people"); len(elem) >= l && elem[0:l] == "people" {
+					if l := len("p"); len(elem) >= l && elem[0:l] == "p" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						switch method {
-						case "POST":
-							// Leaf: SearchPeople
-							r.name = "SearchPeople"
-							r.summary = "Search people"
-							r.operationID = "searchPeople"
-							r.pathPattern = "/search-people"
-							r.args = args
-							r.count = 0
-							return r, true
-						default:
-							return
+						break
+					}
+					switch elem[0] {
+					case 'e': // Prefix: "eople"
+						origElem := elem
+						if l := len("eople"); len(elem) >= l && elem[0:l] == "eople" {
+							elem = elem[l:]
+						} else {
+							break
 						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "POST":
+								// Leaf: SearchPeople
+								r.name = "SearchPeople"
+								r.summary = "Search people"
+								r.operationID = "searchPeople"
+								r.pathPattern = "/search-people"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
+					case 'r': // Prefix: "rojects"
+						origElem := elem
+						if l := len("rojects"); len(elem) >= l && elem[0:l] == "rojects" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "POST":
+								// Leaf: SearchProjects
+								r.name = "SearchProjects"
+								r.summary = "Search projects"
+								r.operationID = "searchProjects"
+								r.pathPattern = "/search-projects"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
 					}
 
 					elem = origElem

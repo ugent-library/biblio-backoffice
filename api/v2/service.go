@@ -10,20 +10,23 @@ import (
 )
 
 type Service struct {
-	peopleRepo   *people.Repo
-	peopleIndex  *people.Index
-	projectsRepo *projects.Repo
+	peopleRepo    *people.Repo
+	peopleIndex   *people.Index
+	projectsRepo  *projects.Repo
+	projectsIndex *projects.Index
 }
 
 func NewService(
 	peopleRepo *people.Repo,
 	peopleIndex *people.Index,
 	projectsRepo *projects.Repo,
+	projectsIndex *projects.Index,
 ) *Service {
 	return &Service{
-		peopleRepo:   peopleRepo,
-		peopleIndex:  peopleIndex,
-		projectsRepo: projectsRepo,
+		peopleRepo:    peopleRepo,
+		peopleIndex:   peopleIndex,
+		projectsRepo:  projectsRepo,
+		projectsIndex: projectsIndex,
 	}
 }
 
@@ -231,6 +234,17 @@ func (s *Service) AddProject(ctx context.Context, req *AddProjectRequest) error 
 	})
 }
 
+func (s *Service) SearchProjects(ctx context.Context, req *SearchProjectsRequest) (*SearchProjects, error) {
+	hits, err := s.projectsIndex.SearchProjects(ctx, req.Query.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SearchProjects{
+		Hits: lo.Map(hits, func(v *projects.Project, _ int) Project { return convertProject(v) }),
+	}, nil
+}
+
 func (s *Service) NewError(ctx context.Context, err error) *ErrorStatusCode {
 	return &ErrorStatusCode{
 		StatusCode: 500,
@@ -238,6 +252,20 @@ func (s *Service) NewError(ctx context.Context, err error) *ErrorStatusCode {
 			Code:    500,
 			Message: err.Error(),
 		},
+	}
+}
+
+func convertProject(from *projects.Project) Project {
+	return Project{
+		Identifiers:  lo.Map(from.Identifiers, func(v projects.Identifier, _ int) Identifier { return Identifier(v) }),
+		Names:        lo.Map(from.Names, func(v projects.Text, _ int) Text { return Text(v) }),
+		Descriptions: lo.Map(from.Descriptions, func(v projects.Text, _ int) Text { return Text(v) }),
+		StartDate:    OptString{Set: from.StartDate != "", Value: from.StartDate},
+		EndDate:      OptString{Set: from.EndDate != "", Value: from.EndDate},
+		Deleted:      from.Deleted,
+		Attributes:   lo.Map(from.Attributes, func(v projects.Attribute, _ int) Attribute { return Attribute(v) }),
+		CreatedAt:    from.CreatedAt,
+		UpdatedAt:    from.UpdatedAt,
 	}
 }
 
