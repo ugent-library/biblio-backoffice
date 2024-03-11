@@ -197,15 +197,15 @@ type Token struct {
 }
 
 type SearchParams struct {
-	Query  string
-	Limit  int
-	Offset int
+	Query  string `json:"query"`
+	Limit  int    `json:"limit"`
+	Offset int    `json:"offset"`
 }
 
 type SearchResults[T any] struct {
-	Query  string
-	Limit  int
-	Offset int
-	Total  int
-	Hits   []T
+	Query  string `json:"query"`
+	Limit  int    `json:"limit"`
+	Offset int    `json:"offset"`
+	Total  int    `json:"total"`
+	Hits   []T    `json:"hits"`
 }
