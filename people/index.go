@@ -58,8 +58,8 @@ func NewIndex(c IndexConfig) (*Index, error) {
 
 type searchResponseBody[T any] struct {
 	Hits struct {
-		// Total int `json:"total"`
-		Hits []struct {
+		Total int `json:"total"`
+		Hits  []struct {
 			// ID     string `json:"_id"`
 			Source struct {
 				Record T `json:"record"`
@@ -88,11 +88,10 @@ func decodeResponseBody[T any](res *esapi.Response, resBody T) error {
 
 const searchBody = `{
 	"query": {{template "query" .}},
-	"size": {{.Size}},
+	"size": {{.Limit}},
+	"from": {{.Offset}},
 	"_source": ["record"]
 }`
-
-const matchAllQuery = `{{define "query"}}{"match_all": {}}{{end}}`
 
 // TODO split into versions for organizations and people, active is only relevant for people
 const identifierQuery = `{{define "query"}}{
@@ -116,12 +115,13 @@ const usernameQuery = `{{define "query"}}{
 }{{end}}`
 
 const queryStringQuery = `{{define "query"}}{
+	{{if .Query}}
 	"dis_max": {
 		"queries": [
 			{
 				"match": {
 					"identifiers": {
-						"query": "{{.QueryString}}",
+						"query": "{{.Query}}",
 						"operator": "AND",
 						"boost": "100"
 					}
@@ -130,7 +130,7 @@ const queryStringQuery = `{{define "query"}}{
 			{
 				"match": {
 					"phrase_ngram": {
-						"query": "{{.QueryString}}",
+						"query": "{{.Query}}",
 						"operator": "AND",
 						"boost": "0.05"
 					}
@@ -139,7 +139,7 @@ const queryStringQuery = `{{define "query"}}{
 			{
 				"match": {
 					"ngram": {
-						"query": "{{.QueryString}}",
+						"query": "{{.Query}}",
 						"operator": "AND",
 						"boost": "0.01"
 					}
@@ -147,13 +147,20 @@ const queryStringQuery = `{{define "query"}}{
 			}
 		]
 	}
+	{{else}}
+	{"match_all": {}}
+	{{end}}
+}{{end}}`
+
+const browseNameQuery = `{{define "query"}}{
+	"prefix": {"sort_name": {{.Query}}}
 }{{end}}`
 
 var (
-	matchAllTmpl    = template.Must(template.New("").Parse(matchAllQuery + searchBody))
 	identifierTmpl  = template.Must(template.New("").Parse(identifierQuery + searchBody))
 	usernameTmpl    = template.Must(template.New("").Parse(usernameQuery + searchBody))
 	queryStringTmpl = template.Must(template.New("").Parse(queryStringQuery + searchBody))
+	browseNameTmpl  = template.Must(template.New("").Parse(browseNameQuery + searchBody))
 )
 
 func (idx *Index) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
@@ -171,12 +178,13 @@ func (idx *Index) GetActivePersonByIdentifier(ctx context.Context, kind, value s
 func getByIdentifier[T any](ctx context.Context, idx *Index, indexName string, ident Identifier, onlyActive bool) (*T, error) {
 	b := bytes.Buffer{}
 	err := identifierTmpl.Execute(&b, struct {
+		Limit      int
+		Offset     int
 		Identifier Identifier
-		Size       int
 		OnlyActive bool
 	}{
+		Limit:      1,
 		Identifier: ident,
-		Size:       1,
 		OnlyActive: onlyActive,
 	})
 	if err != nil {
@@ -208,11 +216,12 @@ func getByIdentifier[T any](ctx context.Context, idx *Index, indexName string, i
 func (idx *Index) GetActivePersonByUsername(ctx context.Context, username string) (*Person, error) {
 	b := bytes.Buffer{}
 	err := usernameTmpl.Execute(&b, struct {
+		Limit    int
+		Offset   int
 		Username string
-		Size     int
 	}{
+		Limit:    1,
 		Username: username,
-		Size:     1,
 	})
 	if err != nil {
 		return nil, err
@@ -240,30 +249,21 @@ func (idx *Index) GetActivePersonByUsername(ctx context.Context, username string
 	return resBody.Hits.Hits[0].Source.Record, nil
 }
 
-func (idx *Index) SearchOrganizations(ctx context.Context, qs string) ([]*Organization, error) {
-	return search[Organization](ctx, idx, organizationsIndexName, qs)
+func (idx *Index) SearchOrganizations(ctx context.Context, params SearchParams) (*SearchResults[*Organization], error) {
+	return search[Organization](ctx, idx, organizationsIndexName, queryStringTmpl, params)
 }
 
-func (idx *Index) SearchPeople(ctx context.Context, qs string) ([]*Person, error) {
-	return search[Person](ctx, idx, peopleIndexName, qs)
+func (idx *Index) SearchPeople(ctx context.Context, params SearchParams) (*SearchResults[*Person], error) {
+	return search[Person](ctx, idx, peopleIndexName, queryStringTmpl, params)
 }
 
-func search[T any](ctx context.Context, idx *Index, indexName string, qs string) ([]*T, error) {
-	qs = strings.TrimSpace(qs)
+func (idx *Index) BrowsePeople(ctx context.Context, params SearchParams) (*SearchResults[*Person], error) {
+	return search[Person](ctx, idx, peopleIndexName, browseNameTmpl, params)
+}
 
+func search[T any](ctx context.Context, idx *Index, indexName string, tmpl *template.Template, params SearchParams) (*SearchResults[*T], error) {
 	b := bytes.Buffer{}
-	tmpl := matchAllTmpl
-	if qs != "" {
-		tmpl = queryStringTmpl
-	}
-
-	err := tmpl.Execute(&b, struct {
-		QueryString string
-		Size        int
-	}{
-		QueryString: qs,
-		Size:        20,
-	})
+	err := tmpl.Execute(&b, params)
 	if err != nil {
 		return nil, err
 	}
@@ -271,7 +271,7 @@ func search[T any](ctx context.Context, idx *Index, indexName string, qs string)
 	res, err := idx.client.Search(
 		idx.client.Search.WithContext(ctx),
 		idx.client.Search.WithIndex(idx.prefix+indexName),
-		idx.client.Search.WithTrackTotalHits(false),
+		idx.client.Search.WithTrackTotalHits(true),
 		idx.client.Search.WithBody(strings.NewReader(b.String())),
 		idx.client.Search.WithSort("_score:desc"),
 	)
@@ -284,13 +284,18 @@ func search[T any](ctx context.Context, idx *Index, indexName string, qs string)
 		return nil, err
 	}
 
-	recs := make([]*T, len(resBody.Hits.Hits))
-
-	for i, hit := range resBody.Hits.Hits {
-		recs[i] = hit.Source.Record
+	results := SearchResults[*T]{
+		Limit:  params.Limit,
+		Offset: params.Offset,
+		Total:  resBody.Hits.Total,
+		Hits:   make([]*T, len(resBody.Hits.Hits)),
 	}
 
-	return recs, nil
+	for i, hit := range resBody.Hits.Hits {
+		results.Hits[i] = hit.Source.Record
+	}
+
+	return &results, nil
 }
 
 func (idx *Index) ReindexOrganizations(ctx context.Context, iter Iter[*Organization]) error {
@@ -392,6 +397,7 @@ func toOrganizationDoc(o *Organization) (string, []byte, error) {
 }
 
 type personDoc struct {
+	SortName    string   `json:"sort_name"`
 	Names       []string `json:"names"`
 	Identifiers []string `json:"identifiers"`
 	Active      bool     `json:"active"`
@@ -406,6 +412,13 @@ func toPersonDoc(p *Person) (string, []byte, error) {
 		Active:      p.Active,
 		Username:    p.Username,
 		Record:      p,
+	}
+
+	if p.FamilyName != "" {
+		pd.SortName = p.FamilyName[0:1]
+	}
+	if p.PreferredFamilyName != "" {
+		pd.SortName = p.PreferredFamilyName[0:1]
 	}
 
 	for _, name := range []string{p.PreferredName, p.GivenName, p.PreferredGivenName, p.FamilyName, p.PreferredFamilyName} {

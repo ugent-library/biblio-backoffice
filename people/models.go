@@ -195,3 +195,17 @@ type Token struct {
 	Kind  string `json:"kind"`
 	Value []byte `json:"value"`
 }
+
+type SearchParams struct {
+	Query  string
+	Limit  int
+	Offset int
+}
+
+type SearchResults[T any] struct {
+	Query  string
+	Limit  int
+	Offset int
+	Total  int
+	Hits   []T
+}
