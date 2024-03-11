@@ -166,6 +166,9 @@ export default function updateFields(
     .closeModal(save, NO_LOG);
 
   cy.ensureNoModal(NO_LOG).then(() => log.snapshot("after").finish());
+
+  // Give elastic some extra time to index changes
+  cy.wait(200, NO_LOG);
 }
 
 declare global {

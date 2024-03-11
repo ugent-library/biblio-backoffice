@@ -7,7 +7,7 @@ export default function search(query: string): Cypress.Chainable<number> {
 
   cy.get('input[placeholder="Search..."]', NO_LOG)
     .clear()
-    .type(query, NO_LOG)
+    .type(query)
     .closest(".input-group", NO_LOG)
     .contains(".btn", "Search", NO_LOG)
     .click(NO_LOG);

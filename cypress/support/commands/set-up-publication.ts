@@ -14,12 +14,16 @@ const NO_LOG = { log: false };
 export default function setUpPublication(
   publicationType: PublicationType,
   prepareForPublishing = false,
+  title?: string,
 ): void {
+  title ??= `The ${publicationType} title`;
+
   logCommand(
     "setUpPublication",
     {
       "Publication type": publicationType,
       "Prepare for publishing": prepareForPublishing,
+      title,
     },
     publicationType,
   );
@@ -57,7 +61,7 @@ export default function setUpPublication(
   cy.updateFields(
     "Publication details",
     () => {
-      cy.setFieldByLabel("Title", `The ${publicationType} title [CYPRESSTEST]`);
+      cy.setFieldByLabel("Title", `${title} [CYPRESSTEST]`);
 
       if (prepareForPublishing) {
         cy.setFieldByLabel(
@@ -91,6 +95,7 @@ declare global {
       setUpPublication(
         publicationType: PublicationType,
         prepareForPublishing?: boolean,
+        title?: string,
       ): Chainable<void>;
     }
   }
