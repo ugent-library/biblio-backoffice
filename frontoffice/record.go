@@ -1013,7 +1013,8 @@ type Person struct {
 	OrcidToken         string         `json:"orcid_token,omitempty"`
 	OrcidBio           string         `json:"orcid_bio,omitempty"`
 	OrcidSettings      map[string]any `json:"orcid_settings,omitempty"`
-	UGentDepartmentID  []string       `json:"ugent_department_id"`
+	UGentDepartmentID  []string       `json:"ugent_department_id,omitempty"`
+	UGentMemorialisID  string         `json:"ugent_memorialis_id,omitempty"`
 }
 
 func MapPerson(p *people.Person) *Person {
@@ -1041,6 +1042,8 @@ func MapPerson(p *people.Person) *Person {
 			rec.UGentID = append(rec.UGentID, ident.Value)
 		case "orcid":
 			rec.OrcidID = ident.Value
+		case "ugentMemorialisID":
+			rec.UGentMemorialisID = ident.Value
 		}
 	}
 	for _, token := range p.Tokens {
