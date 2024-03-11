@@ -153,7 +153,11 @@ const queryStringQuery = `{{define "query"}}{
 }{{end}}`
 
 const browseNameQuery = `{{define "query"}}{
-	"prefix": {"sort_name": {{.Query}}}
+	"bool": {
+		"filter": [
+			{"term": {"nameKey": "{{.Query}}"}}
+		]
+	}
 }{{end}}`
 
 var (
@@ -258,7 +262,7 @@ func (idx *Index) SearchPeople(ctx context.Context, params SearchParams) (*Searc
 }
 
 func (idx *Index) BrowsePeople(ctx context.Context, params SearchParams) (*SearchResults[*Person], error) {
-	return search[Person](ctx, idx, peopleIndexName, browseNameTmpl, params, "sort_name:asc")
+	return search[Person](ctx, idx, peopleIndexName, browseNameTmpl, params, "sortName:asc")
 }
 
 func search[T any](ctx context.Context, idx *Index, indexName string, tmpl *template.Template, params SearchParams, sort string) (*SearchResults[*T], error) {
@@ -397,7 +401,8 @@ func toOrganizationDoc(o *Organization) (string, []byte, error) {
 }
 
 type personDoc struct {
-	SortName    string   `json:"sort_name"`
+	NameKey     string   `json:"nameKey"`
+	SortName    string   `json:"sortName"`
 	Names       []string `json:"names"`
 	Identifiers []string `json:"identifiers"`
 	Active      bool     `json:"active"`
@@ -415,10 +420,18 @@ func toPersonDoc(p *Person) (string, []byte, error) {
 	}
 
 	if p.FamilyName != "" {
-		pd.SortName = p.FamilyName[0:1]
+		pd.NameKey = p.FamilyName[0:1]
+		pd.SortName = p.FamilyName
 	}
 	if p.PreferredFamilyName != "" {
-		pd.SortName = p.PreferredFamilyName[0:1]
+		pd.NameKey = p.PreferredFamilyName[0:1]
+		pd.SortName = p.PreferredFamilyName
+	}
+	if p.GivenName != "" {
+		pd.SortName += p.GivenName
+	}
+	if p.PreferredGivenName != "" {
+		pd.SortName += p.PreferredGivenName
 	}
 
 	for _, name := range []string{p.PreferredName, p.GivenName, p.PreferredGivenName, p.FamilyName, p.PreferredFamilyName} {

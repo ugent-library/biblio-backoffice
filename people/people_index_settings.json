@@ -88,8 +88,13 @@
       "person": {
         "dynamic": "false",
         "properties": {
-          "sort_name": {
-            "type": "text"
+          "nameKey": {
+            "type": "keyword",
+            "normalizer": "tag"
+          },
+          "sortName": {
+            "type": "keyword",
+            "normalizer": "tag"
           },
           "names": {
             "type": "text",
