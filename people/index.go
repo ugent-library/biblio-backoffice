@@ -250,18 +250,18 @@ func (idx *Index) GetActivePersonByUsername(ctx context.Context, username string
 }
 
 func (idx *Index) SearchOrganizations(ctx context.Context, params SearchParams) (*SearchResults[*Organization], error) {
-	return search[Organization](ctx, idx, organizationsIndexName, queryStringTmpl, params)
+	return search[Organization](ctx, idx, organizationsIndexName, queryStringTmpl, params, "_score:desc")
 }
 
 func (idx *Index) SearchPeople(ctx context.Context, params SearchParams) (*SearchResults[*Person], error) {
-	return search[Person](ctx, idx, peopleIndexName, queryStringTmpl, params)
+	return search[Person](ctx, idx, peopleIndexName, queryStringTmpl, params, "_score:desc")
 }
 
 func (idx *Index) BrowsePeople(ctx context.Context, params SearchParams) (*SearchResults[*Person], error) {
-	return search[Person](ctx, idx, peopleIndexName, browseNameTmpl, params)
+	return search[Person](ctx, idx, peopleIndexName, browseNameTmpl, params, "sort_name:asc")
 }
 
-func search[T any](ctx context.Context, idx *Index, indexName string, tmpl *template.Template, params SearchParams) (*SearchResults[*T], error) {
+func search[T any](ctx context.Context, idx *Index, indexName string, tmpl *template.Template, params SearchParams, sort string) (*SearchResults[*T], error) {
 	b := bytes.Buffer{}
 	err := tmpl.Execute(&b, params)
 	if err != nil {
@@ -273,7 +273,7 @@ func search[T any](ctx context.Context, idx *Index, indexName string, tmpl *temp
 		idx.client.Search.WithIndex(idx.prefix+indexName),
 		idx.client.Search.WithTrackTotalHits(true),
 		idx.client.Search.WithBody(strings.NewReader(b.String())),
-		idx.client.Search.WithSort("_score:desc"),
+		idx.client.Search.WithSort(sort),
 	)
 	if err != nil {
 		return nil, err
