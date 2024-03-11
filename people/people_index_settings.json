@@ -88,6 +88,9 @@
       "person": {
         "dynamic": "false",
         "properties": {
+          "sort_name": {
+            "type": "text"
+          },
           "names": {
             "type": "text",
             "copy_to": [
