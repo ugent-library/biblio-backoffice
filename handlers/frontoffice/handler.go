@@ -8,8 +8,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"slices"
-	"strings"
 	"time"
 
 	"github.com/jpillora/ipfilter"
@@ -110,18 +108,6 @@ func (h *Handler) GetAllOrganizations(w http.ResponseWriter, r *http.Request) {
 	for i, o := range results.Hits {
 		recs[i] = frontoffice.MapOrganization(o)
 	}
-
-	slices.SortFunc(recs, func(a, b *frontoffice.Organization) int {
-		var aPath string
-		var bPath string
-		for _, t := range a.Tree[1:] {
-			aPath = t.ID + aPath
-		}
-		for _, t := range b.Tree[1:] {
-			bPath = t.ID + bPath
-		}
-		return strings.Compare(aPath, bPath)
-	})
 
 	httpx.RenderJSON(w, 200, recs)
 }
