@@ -10,6 +10,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/biblio-backoffice/util"
 )
@@ -297,7 +298,7 @@ type Hits struct {
 }
 
 func mapContributor(c *models.Contributor) *Contributor {
-	p := &Contributor{
+	rec := &Contributor{
 		ID:        c.PersonID,
 		BiblioID:  c.PersonID,
 		FirstName: c.FirstName(),
@@ -305,11 +306,11 @@ func mapContributor(c *models.Contributor) *Contributor {
 		Name:      c.Name(),
 		ORCID:     c.ORCID(),
 	}
-	if p.LastName != "" && p.FirstName != "" {
-		p.NameLastFirst = fmt.Sprintf("%s, %s", p.LastName, p.FirstName)
+	if rec.LastName != "" && rec.FirstName != "" {
+		rec.NameLastFirst = fmt.Sprintf("%s, %s", rec.LastName, rec.FirstName)
 	}
 	if c.Person != nil {
-		p.UGentID = c.Person.UGentID
+		rec.UGentID = c.Person.UGentID
 		for _, a := range c.Person.Affiliations {
 			aff := Affiliation{
 				UGentID: a.OrganizationID,
@@ -319,10 +320,10 @@ func mapContributor(c *models.Contributor) *Contributor {
 			for i, t := range a.Organization.Tree {
 				aff.Path[i].UGentID = t.ID
 			}
-			p.Affiliation = append(p.Affiliation, aff)
+			rec.Affiliation = append(rec.Affiliation, aff)
 		}
 	}
-	return p
+	return rec
 }
 
 func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
@@ -993,5 +994,75 @@ func MapDataset(d *models.Dataset, repo *repositories.Repo) *Record {
 		rec.Status = d.Status
 	}
 
+	return rec
+}
+
+type Person struct {
+	ID                 string         `json:"_id"`
+	IDs                []string       `json:"ids"`
+	UGentID            []string       `json:"ugent_id,omitempty"`
+	Active             int            `json:"active"`
+	FullName           string         `json:"full_name,omitempty"`
+	FirstName          string         `json:"first_name,omitempty"`
+	PreferredFirstName string         `json:"preferred_first_name,omitempty"`
+	LastName           string         `json:"last_name,omitempty"`
+	PreferredLastName  string         `json:"preferred_last_name,omitempty"`
+	Email              string         `json:"email,omitempty"`
+	Title              string         `json:"title,omitempty"`
+	OrcidID            string         `json:"orcid_id,omitempty"`
+	OrcidToken         string         `json:"orcid_token,omitempty"`
+	OrcidBio           string         `json:"orcid_bio,omitempty"`
+	OrcidSettings      map[string]any `json:"orcid_settings,omitempty"`
+	UGentDepartmentID  []string       `json:"ugent_department_id"`
+}
+
+func MapPerson(p *people.Person) *Person {
+	rec := &Person{
+		FullName:           p.Name,
+		FirstName:          p.GivenName,
+		PreferredFirstName: p.PreferredGivenName,
+		LastName:           p.FamilyName,
+		PreferredLastName:  p.PreferredFamilyName,
+		Email:              p.Email,
+		Title:              p.HonorificPrefix,
+	}
+	if p.Active {
+		rec.Active = 1
+	}
+	if p.PreferredName != "" {
+		rec.FullName = p.PreferredName
+	}
+	for _, ident := range p.Identifiers {
+		switch ident.Kind {
+		case "id":
+			rec.ID = ident.Value
+			rec.IDs = append(rec.IDs, ident.Value)
+		case "ugentID", "ugentHistoricID":
+			rec.UGentID = append(rec.UGentID, ident.Value)
+		case "orcid":
+			rec.OrcidID = ident.Value
+		}
+	}
+	for _, token := range p.Tokens {
+		switch token.Kind {
+		case "orcid":
+			rec.OrcidToken = string(token.Value)
+		}
+	}
+	for _, attr := range p.Attributes {
+		if attr.Scope == "orcid" && attr.Key == "bio" {
+			rec.OrcidBio = attr.Value
+		} else if attr.Scope == "orcid" && attr.Key == "sendEmails" {
+			rec.OrcidSettings = map[string]any{"send-emails": 1}
+		}
+	}
+	for _, a := range p.Affiliations {
+		for _, ident := range a.Organization.Identifiers {
+			switch ident.Kind {
+			case "biblio":
+				rec.UGentDepartmentID = append(rec.UGentDepartmentID, ident.Value)
+			}
+		}
+	}
 	return rec
 }
