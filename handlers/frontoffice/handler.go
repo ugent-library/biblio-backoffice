@@ -8,6 +8,8 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"slices"
+	"strings"
 	"time"
 
 	"github.com/jpillora/ipfilter"
@@ -93,6 +95,37 @@ func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
 	httpx.RenderJSON(w, 200, frontoffice.MapDataset(p, h.Repo))
 }
 
+// TODO this gets way too many data
+// TODO materialize sort order
+// TODO constrain to those with publications
+// TODO a-z sorting by id isn't the best order
+func (h *Handler) GetAllOrganizations(w http.ResponseWriter, r *http.Request) {
+	results, err := h.PeopleIndex.SearchOrganizations(r.Context(), people.SearchParams{Limit: 1000})
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	recs := make([]*frontoffice.Organization, len(results.Hits))
+	for i, o := range results.Hits {
+		recs[i] = frontoffice.MapOrganization(o)
+	}
+
+	slices.SortFunc(recs, func(a, b *frontoffice.Organization) int {
+		var aPath string
+		var bPath string
+		for _, t := range a.Tree[1:] {
+			aPath = t.ID + aPath
+		}
+		for _, t := range b.Tree[1:] {
+			bPath = t.ID + bPath
+		}
+		return strings.Compare(aPath, bPath)
+	})
+
+	httpx.RenderJSON(w, 200, recs)
+}
+
 func (h *Handler) GetOrganization(w http.ResponseWriter, r *http.Request) {
 	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
 	if err != nil {
@@ -173,7 +206,7 @@ type BindQuery struct {
 	Query  string `query:"query"`
 }
 
-// TODO constrain people to those with publications
+// TODO constrain to those with publications
 func (h *Handler) BrowsePeople(w http.ResponseWriter, r *http.Request) {
 	b := BindQuery{}
 	if err := bind.Query(r, &b); err != nil {

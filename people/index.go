@@ -60,7 +60,6 @@ type searchResponseBody[T any] struct {
 	Hits struct {
 		Total int `json:"total"`
 		Hits  []struct {
-			// ID     string `json:"_id"`
 			Source struct {
 				Record T `json:"record"`
 			} `json:"_source"`
@@ -148,7 +147,7 @@ const queryStringQuery = `{{define "query"}}{
 		]
 	}
 	{{else}}
-	{"match_all": {}}
+	"match_all": {}
 	{{end}}
 }{{end}}`
 
