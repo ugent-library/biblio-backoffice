@@ -119,7 +119,7 @@ func (h *Handler) GetPerson(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, err)
 		return
 	}
-	j, err := json.Marshal(p)
+	j, err := json.Marshal(frontoffice.MapPerson(p))
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
@@ -144,7 +144,7 @@ func (h *Handler) GetActivePerson(w http.ResponseWriter, r *http.Request) {
 		render.InternalServerError(w, r, err)
 		return
 	}
-	j, err := json.Marshal(p)
+	j, err := json.Marshal(frontoffice.MapPerson(p))
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
@@ -163,7 +163,7 @@ func (h *Handler) GetActivePersonByUsername(w http.ResponseWriter, r *http.Reque
 		render.InternalServerError(w, r, err)
 		return
 	}
-	j, err := json.Marshal(p)
+	j, err := json.Marshal(frontoffice.MapPerson(p))
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
