@@ -173,6 +173,7 @@ type BindQuery struct {
 	Query  string `query:"query"`
 }
 
+// TODO constrain people to those with publications
 func (h *Handler) BrowsePeople(w http.ResponseWriter, r *http.Request) {
 	b := BindQuery{}
 	if err := bind.Query(r, &b); err != nil {
