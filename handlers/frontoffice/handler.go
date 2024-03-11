@@ -103,6 +103,31 @@ func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
 	w.Write(j)
 }
 
+func (h *Handler) GetOrganization(w http.ResponseWriter, r *http.Request) {
+	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	o, err := h.PeopleIndex.GetOrganizationByIdentifier(r.Context(), ident.Kind, ident.Value)
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+	j, err := json.Marshal(frontoffice.MapOrganization(o))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(j)
+}
+
 func (h *Handler) GetPerson(w http.ResponseWriter, r *http.Request) {
 	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
 	if err != nil {

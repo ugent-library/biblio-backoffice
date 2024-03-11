@@ -1066,3 +1066,26 @@ func MapPerson(p *people.Person) *Person {
 	}
 	return rec
 }
+
+type ParentOrganization struct {
+	ID string `json:"id"`
+}
+
+type Organization struct {
+	ID   string               `json:"id"`
+	Name string               `json:"name"`
+	Tree []ParentOrganization `json:"tree"`
+}
+
+func MapOrganization(o *people.Organization) *Organization {
+	id := o.Identifiers.Get("biblio")
+	rec := &Organization{
+		ID:   id,
+		Name: o.Names.Get("eng"),
+		Tree: []ParentOrganization{{ID: id}},
+	}
+	for _, po := range o.Parents {
+		rec.Tree = append(rec.Tree, ParentOrganization{ID: po.Identifiers.Get("biblio")})
+	}
+	return rec
+}
