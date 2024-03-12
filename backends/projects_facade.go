@@ -41,24 +41,18 @@ func (f *ProjectsFacade) SuggestProjects(q string) ([]*models.Project, error) {
 }
 
 func toProject(p *projects.Project) *models.Project {
-	mp := &models.Project{}
+	mp := &models.Project{
+		ID:      p.Identifiers.Get("iweto"),
+		IWETOID: p.Identifiers.Get("iweto"),
+		Acronym: p.Identifiers.Get("iweto"),
+		GISMOID: p.Attributes.Get("gismo", "gismo_id"),
+	}
 
-	mp.EUProject = &models.EUProject{}
-
-	for _, id := range p.Identifiers {
-		if id.Kind == "iweto" {
-			mp.ID = id.Value
-			mp.IWETOID = id.Value
-			mp.Acronym = id.Value
-		}
-
-		if id.Kind == "gismo" {
-			mp.GISMOID = id.Value
-		}
-
-		if id.Kind == "cordis" {
-			mp.EUProject.ID = id.Value
-		}
+	mp.EUProject = &models.EUProject{
+		ID:                 p.Attributes.Get("cordis", "eu_id"),
+		CallID:             p.Attributes.Get("cordis", "eu_call_id"),
+		Acronym:            p.Attributes.Get("cordis", "eu_acronym"),
+		FrameworkProgramme: p.Attributes.Get("cordis", "eu_framework_programme"),
 	}
 
 	if len(p.Names) > 0 {
@@ -67,18 +61,6 @@ func toProject(p *projects.Project) *models.Project {
 
 	if len(p.Descriptions) > 0 {
 		mp.Description = p.Descriptions[0].Value
-	}
-
-	for _, attr := range p.Attributes {
-		if attr.Scope == "gismo" {
-			if attr.Key == "eu_call_id" {
-				mp.EUProject.CallID = attr.Value
-			}
-
-			if attr.Key == "eu_acronym" {
-				mp.EUProject.Acronym = attr.Value
-			}
-		}
 	}
 
 	mp.StartDate = p.StartDate
