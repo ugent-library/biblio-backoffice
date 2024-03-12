@@ -366,12 +366,13 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		defer reader.Close()
 	}
 
-	responseHeaders := [][]string{}
-	responseHeaders = append(responseHeaders, []string{"Content-Type", f.ContentType})
-	responseHeaders = append(responseHeaders, []string{"Content-Length", fmt.Sprintf("%d", f.Size)})
-	responseHeaders = append(responseHeaders, []string{"Last-Modified", f.DateUpdated.UTC().Format(http.TimeFormat)})
-	responseHeaders = append(responseHeaders, []string{"ETag", f.SHA256})
-	responseHeaders = append(responseHeaders, []string{"Content-Disposition", fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name))})
+	responseHeaders := [][]string{
+		{"Content-Type", f.ContentType},
+		{"Content-Length", fmt.Sprintf("%d", f.Size)},
+		{"Last-Modified", f.DateUpdated.UTC().Format(http.TimeFormat)},
+		{"ETag", f.SHA256},
+		{"Content-Disposition", fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name))},
+	}
 
 	/*
 		Important: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/304 dictates that all
