@@ -11,6 +11,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/people"
+	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/biblio-backoffice/util"
 )
@@ -122,6 +123,31 @@ type Project struct {
 	GISMOID              string `json:"gismo_id,omitempty"`
 	IWETOID              string `json:"iweto_id,omitempty"`
 	Abstract             string `json:"abstract,omitempty"`
+}
+
+func MapProject(p *projects.Project) *Project {
+	rec := &Project{
+		ID:                   p.Identifiers.Get("iweto"),
+		IWETOID:              p.Identifiers.Get("iweto"),
+		GISMOID:              p.Attributes.Get("gismo", "gismo_id"),
+		EUID:                 p.Attributes.Get("cordis", "eu_id"),
+		EUCallID:             p.Attributes.Get("cordis", "eu_call_id"),
+		EUAcronym:            p.Attributes.Get("cordis", "eu_acronym"),
+		EUFrameworkProgramme: p.Attributes.Get("cordis", "eu_framework_programme"),
+	}
+
+	if len(p.Names) > 0 {
+		rec.Title = p.Names[0].Value
+	}
+
+	if len(p.Descriptions) > 0 {
+		rec.Abstract = p.Descriptions[0].Value
+	}
+
+	rec.StartDate = p.StartDate
+	rec.EndDate = p.EndDate
+
+	return rec
 }
 
 type Publisher struct {
