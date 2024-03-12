@@ -133,6 +133,7 @@ func Register(c Config) {
 		Repo:             c.Services.Repo,
 		FileStore:        c.Services.FileStore,
 		PeopleIndex:      c.Services.PeopleIndex,
+		ProjectsIndex:    c.Services.ProjectsIndex,
 		FrontendUsername: c.FrontendUsername,
 		FrontendPassword: c.FrontendPassword,
 		IPRanges:         c.IPRanges,
