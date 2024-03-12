@@ -225,6 +225,26 @@ func (h *Handler) BrowsePeople(w http.ResponseWriter, r *http.Request) {
 	httpx.RenderJSON(w, 200, hits)
 }
 
+func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
+	ident, err := people.NewIdentifier(bind.PathValue(r, "id")) // TODO don't use function from people ns
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	p, err := h.ProjectsIndex.GetProjectByIdentifier(r.Context(), ident.Kind, ident.Value)
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	httpx.RenderJSON(w, 200, frontoffice.MapProject(p))
+}
+
 type BindGetAll struct {
 	Limit        int    `query:"limit"`
 	Offset       int    `query:"offset"`
