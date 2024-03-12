@@ -42,6 +42,7 @@ type Organization struct {
 	Identifiers Identifiers          `json:"identifiers"`
 	Names       Texts                `json:"names,omitempty"`
 	Ceased      bool                 `json:"ceased"`
+	Position    int                  `json:"position"`
 	CreatedAt   time.Time            `json:"createdAt"`
 	UpdatedAt   time.Time            `json:"updatedAt"`
 	Parents     []ParentOrganization `json:"parents"` // TODO just use *Organization?

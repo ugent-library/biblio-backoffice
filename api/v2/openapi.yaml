@@ -587,6 +587,8 @@ components:
         createdAt:
           type: string
           format: date-time
+        position:
+          type: integer 
         updatedAt:
           type: string
           format: date-time

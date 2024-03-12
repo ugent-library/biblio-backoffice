@@ -1053,6 +1053,52 @@ func (o OptIdentifier) Or(d Identifier) Identifier {
 	return d
 }
 
+// NewOptInt returns new OptInt with value set to v.
+func NewOptInt(v int) OptInt {
+	return OptInt{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptInt is optional int.
+type OptInt struct {
+	Value int
+	Set   bool
+}
+
+// IsSet returns true if OptInt was set.
+func (o OptInt) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptInt) Reset() {
+	var v int
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptInt) SetTo(v int) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptInt) Get() (v int, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptInt) Or(d int) int {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptString returns new OptString with value set to v.
 func NewOptString(v string) OptString {
 	return OptString{
@@ -1105,6 +1151,7 @@ type Organization struct {
 	Names       []Text               `json:"names"`
 	Ceased      bool                 `json:"ceased"`
 	CreatedAt   time.Time            `json:"createdAt"`
+	Position    OptInt               `json:"position"`
 	UpdatedAt   time.Time            `json:"updatedAt"`
 	Parents     []ParentOrganization `json:"parents"`
 }
@@ -1127,6 +1174,11 @@ func (s *Organization) GetCeased() bool {
 // GetCreatedAt returns the value of CreatedAt.
 func (s *Organization) GetCreatedAt() time.Time {
 	return s.CreatedAt
+}
+
+// GetPosition returns the value of Position.
+func (s *Organization) GetPosition() OptInt {
+	return s.Position
 }
 
 // GetUpdatedAt returns the value of UpdatedAt.
@@ -1157,6 +1209,11 @@ func (s *Organization) SetCeased(val bool) {
 // SetCreatedAt sets the value of CreatedAt.
 func (s *Organization) SetCreatedAt(val time.Time) {
 	s.CreatedAt = val
+}
+
+// SetPosition sets the value of Position.
+func (s *Organization) SetPosition(val OptInt) {
+	s.Position = val
 }
 
 // SetUpdatedAt sets the value of UpdatedAt.
