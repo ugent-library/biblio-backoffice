@@ -1075,17 +1075,19 @@ type ParentOrganization struct {
 }
 
 type Organization struct {
-	ID   string               `json:"id"`
-	Name string               `json:"name"`
-	Tree []ParentOrganization `json:"tree"`
+	ID       string               `json:"id"`
+	Name     string               `json:"name"`
+	Tree     []ParentOrganization `json:"tree"`
+	Position int                  `json:"position"`
 }
 
 func MapOrganization(o *people.Organization) *Organization {
 	id := o.Identifiers.Get("biblio")
 	rec := &Organization{
-		ID:   id,
-		Name: o.Names.Get("eng"),
-		Tree: []ParentOrganization{{ID: id}},
+		ID:       id,
+		Name:     o.Names.Get("eng"),
+		Tree:     []ParentOrganization{{ID: id}},
+		Position: o.Position,
 	}
 	for _, po := range o.Parents {
 		rec.Tree = append(rec.Tree, ParentOrganization{ID: po.Identifiers.Get("biblio")})
