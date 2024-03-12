@@ -52,14 +52,14 @@ func (f *PeopleFacade) GetOrganization(id string) (*models.Organization, error) 
 	return toOrganization(o), nil
 }
 
-func (f *PeopleFacade) SuggestPeople(qs string) ([]*models.Person, error) {
-	hits, err := f.index.SearchPeople(context.TODO(), qs)
+func (f *PeopleFacade) SuggestPeople(q string) ([]*models.Person, error) {
+	results, err := f.index.SearchPeople(context.TODO(), people.SearchParams{Limit: 20, Query: q})
 	if err != nil {
 		return nil, err
 	}
 
-	people := make([]*models.Person, len(hits))
-	for i, p := range hits {
+	people := make([]*models.Person, len(results.Hits))
+	for i, p := range results.Hits {
 		people[i] = toPerson(p)
 	}
 
@@ -67,14 +67,14 @@ func (f *PeopleFacade) SuggestPeople(qs string) ([]*models.Person, error) {
 }
 
 // TODO filter out inactive people in the index
-func (f *PeopleFacade) SuggestUsers(qs string) ([]*models.Person, error) {
-	hits, err := f.index.SearchPeople(context.TODO(), qs)
+func (f *PeopleFacade) SuggestUsers(q string) ([]*models.Person, error) {
+	results, err := f.index.SearchPeople(context.TODO(), people.SearchParams{Limit: 20, Query: q})
 	if err != nil {
 		return nil, err
 	}
 
-	people := make([]*models.Person, 0, len(hits))
-	for _, p := range hits {
+	people := make([]*models.Person, 0, len(results.Hits))
+	for _, p := range results.Hits {
 		if p.Active {
 			people = append(people, toPerson(p))
 		}
@@ -83,14 +83,14 @@ func (f *PeopleFacade) SuggestUsers(qs string) ([]*models.Person, error) {
 	return people, nil
 }
 
-func (f *PeopleFacade) SuggestOrganizations(qs string) ([]models.Completion, error) {
-	hits, err := f.index.SearchOrganizations(context.TODO(), qs)
+func (f *PeopleFacade) SuggestOrganizations(q string) ([]models.Completion, error) {
+	results, err := f.index.SearchOrganizations(context.TODO(), people.SearchParams{Limit: 20, Query: q})
 	if err != nil {
 		return nil, err
 	}
 
-	orgs := make([]models.Completion, len(hits))
-	for i, o := range hits {
+	orgs := make([]models.Completion, len(results.Hits))
+	for i, o := range results.Hits {
 		orgs[i] = models.Completion{
 			ID:      o.Identifiers.Get("biblio"),
 			Heading: o.Names.Get("eng"),

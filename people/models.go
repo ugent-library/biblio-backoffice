@@ -2,9 +2,29 @@ package people
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 )
+
+var ErrNotFound = errors.New("not found")
+
+type InvalidIdentifierError struct {
+	Identifier string
+}
+
+func (e *InvalidIdentifierError) Error() string {
+	return fmt.Sprintf("%q is not a valid identifier", e.Identifier)
+}
+
+type DuplicateError struct {
+	Identifier string
+}
+
+func (e *DuplicateError) Error() string {
+	return fmt.Sprintf("identifier %s already exists", e.Identifier)
+}
 
 type Iter[T any] func(context.Context, func(T) bool) error
 
@@ -78,7 +98,7 @@ type Person struct {
 }
 
 type Affiliation struct {
-	Organization *Organization
+	Organization *Organization `json:"organization"`
 }
 
 type Identifiers []Identifier
@@ -113,6 +133,14 @@ func (idents Identifiers) GetAll(kind string) (ids []string) {
 type Identifier struct {
 	Kind  string `json:"kind"`
 	Value string `json:"value"`
+}
+
+func NewIdentifier(str string) (Identifier, error) {
+	k, v, ok := strings.Cut(str, ":")
+	if !ok || k == "" || v == "" {
+		return Identifier{}, &InvalidIdentifierError{Identifier: str}
+	}
+	return Identifier{Kind: k, Value: v}, nil
 }
 
 func (i Identifier) String() string {
@@ -166,4 +194,18 @@ func (t Tokens) Get(kind string) []byte {
 type Token struct {
 	Kind  string `json:"kind"`
 	Value []byte `json:"value"`
+}
+
+type SearchParams struct {
+	Query  string `json:"query"`
+	Limit  int    `json:"limit"`
+	Offset int    `json:"offset"`
+}
+
+type SearchResults[T any] struct {
+	Query  string `json:"query"`
+	Limit  int    `json:"limit"`
+	Offset int    `json:"offset"`
+	Total  int    `json:"total"`
+	Hits   []T    `json:"hits"`
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/biblio-backoffice/util"
 )
@@ -55,7 +56,7 @@ type Affiliation struct {
 	UGentID string            `json:"ugent_id,omitempty"`
 }
 
-type Person struct {
+type Contributor struct {
 	ID            string        `json:"_id,omitempty"`
 	BiblioID      string        `json:"biblio_id,omitempty"`
 	CreditRole    []string      `json:"credit_role,omitempty"`
@@ -190,13 +191,13 @@ type Record struct {
 	ArticleNumber       string               `json:"article_number,omitempty"`
 	ArticleType         string               `json:"article_type,omitempty"`
 	ArxivID             string               `json:"arxiv_id,omitempty"`
-	Author              []Person             `json:"author,omitempty"`
+	Author              []Contributor        `json:"author,omitempty"`
 	AuthorSort          string               `json:"author_sort,omitempty"`
 	Classification      string               `json:"classification,omitempty"`
 	Conference          *Conference          `json:"conference,omitempty"`
 	ConferenceType      string               `json:"conference_type,omitempty"`
 	CopyrightStatement  string               `json:"copyright_statement,omitempty"`
-	CreatedBy           *Person              `json:"created_by,omitempty"`
+	CreatedBy           *Contributor         `json:"created_by,omitempty"`
 	DateFrom            string               `json:"date_from"`
 	DateCreated         string               `json:"date_created"`
 	DateUpdated         string               `json:"date_updated"`
@@ -204,13 +205,13 @@ type Record struct {
 	DOI                 []string             `json:"doi,omitempty"`
 	ECOOM               map[string]ECOOMFund `json:"ecoom,omitempty"`
 	Edition             string               `json:"edition,omitempty"`
-	Editor              []Person             `json:"editor,omitempty"`
+	Editor              []Contributor        `json:"editor,omitempty"`
 	ESCIID              string               `json:"esci_id,omitempty"`
 	Embargo             string               `json:"embargo,omitempty"`
 	EmbargoTo           string               `json:"embargo_to,omitempty"`
 	External            int                  `json:"external"`
 	File                []File               `json:"file,omitempty"`
-	FirstAuthor         []Person             `json:"first_author,omitempty"`
+	FirstAuthor         []Contributor        `json:"first_author,omitempty"`
 	Format              []string             `json:"format,omitempty"`
 	Handle              string               `json:"handle,omitempty"`
 	Identifier          []Identifier         `json:"identifier,omitempty"`
@@ -221,19 +222,19 @@ type Record struct {
 	JCR                 *JCR                 `json:"jcr,omitempty"`
 	Keyword             []string             `json:"keyword,omitempty"`
 	Language            []string             `json:"language,omitempty"`
-	LastAuthor          []Person             `json:"last_author,omitempty"`
+	LastAuthor          []Contributor        `json:"last_author,omitempty"`
 	License             string               `json:"license,omitempty"`
 	MiscType            string               `json:"misc_type,omitempty"`
 	OtherLicense        string               `json:"other_license,omitempty"`
 	Page                *Page                `json:"page,omitempty"`
 	Parent              *Parent              `json:"parent,omitempty"`
 	Project             []Project            `json:"project,omitempty"`
-	Promoter            []Person             `json:"promoter,omitempty"`
+	Promoter            []Contributor        `json:"promoter,omitempty"`
 	PublicationStatus   string               `json:"publication_status,omitempty"`
 	Publisher           *Publisher           `json:"publisher,omitempty"`
 	PubMedID            string               `json:"pubmed_id,omitempty"`
 	SeriesTitle         string               `json:"series_title,omitempty"`
-	SoleAuthor          *Person              `json:"sole_author,omitempty"`
+	SoleAuthor          *Contributor         `json:"sole_author,omitempty"`
 	Source              *Source              `json:"source,omitempty"`
 	Status              string               `json:"status,omitempty"`
 	Subject             []string             `json:"subject,omitempty"`
@@ -296,8 +297,8 @@ type Hits struct {
 	Hits   []*Record `json:"hits"`
 }
 
-func mapContributor(c *models.Contributor) *Person {
-	p := &Person{
+func mapContributor(c *models.Contributor) *Contributor {
+	rec := &Contributor{
 		ID:        c.PersonID,
 		BiblioID:  c.PersonID,
 		FirstName: c.FirstName(),
@@ -305,11 +306,11 @@ func mapContributor(c *models.Contributor) *Person {
 		Name:      c.Name(),
 		ORCID:     c.ORCID(),
 	}
-	if p.LastName != "" && p.FirstName != "" {
-		p.NameLastFirst = fmt.Sprintf("%s, %s", p.LastName, p.FirstName)
+	if rec.LastName != "" && rec.FirstName != "" {
+		rec.NameLastFirst = fmt.Sprintf("%s, %s", rec.LastName, rec.FirstName)
 	}
 	if c.Person != nil {
-		p.UGentID = c.Person.UGentID
+		rec.UGentID = c.Person.UGentID
 		for _, a := range c.Person.Affiliations {
 			aff := Affiliation{
 				UGentID: a.OrganizationID,
@@ -319,10 +320,10 @@ func mapContributor(c *models.Contributor) *Person {
 			for i, t := range a.Organization.Tree {
 				aff.Path[i].UGentID = t.ID
 			}
-			p.Affiliation = append(p.Affiliation, aff)
+			rec.Affiliation = append(rec.Affiliation, aff)
 		}
 	}
-	return p
+	return rec
 }
 
 func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
@@ -430,8 +431,8 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 	if len(rec.Author) == 1 {
 		rec.SoleAuthor = &rec.Author[0]
 	} else if len(rec.Author) > 1 {
-		firstAuthor := make([]Person, 0)
-		lastAuthor := make([]Person, 0)
+		firstAuthor := make([]Contributor, 0)
+		lastAuthor := make([]Contributor, 0)
 		for _, person := range rec.Author {
 			if slices.Contains(person.CreditRole, "first_author") {
 				firstAuthor = append(firstAuthor, person)
@@ -993,5 +994,101 @@ func MapDataset(d *models.Dataset, repo *repositories.Repo) *Record {
 		rec.Status = d.Status
 	}
 
+	return rec
+}
+
+type Person struct {
+	ID                 string         `json:"_id"`
+	IDs                []string       `json:"ids"`
+	UGentID            []string       `json:"ugent_id,omitempty"`
+	Active             int            `json:"active"`
+	FullName           string         `json:"full_name,omitempty"`
+	FirstName          string         `json:"first_name,omitempty"`
+	PreferredFirstName string         `json:"preferred_first_name,omitempty"`
+	LastName           string         `json:"last_name,omitempty"`
+	PreferredLastName  string         `json:"preferred_last_name,omitempty"`
+	Email              string         `json:"email,omitempty"`
+	Title              string         `json:"title,omitempty"`
+	OrcidID            string         `json:"orcid_id,omitempty"`
+	OrcidToken         string         `json:"orcid_token,omitempty"`
+	OrcidBio           string         `json:"orcid_bio,omitempty"`
+	OrcidSettings      map[string]any `json:"orcid_settings,omitempty"`
+	UGentDepartmentID  []string       `json:"ugent_department_id,omitempty"`
+	UGentMemorialisID  string         `json:"ugent_memorialis_id,omitempty"`
+}
+
+func MapPerson(p *people.Person) *Person {
+	rec := &Person{
+		FullName:           p.Name,
+		FirstName:          p.GivenName,
+		PreferredFirstName: p.PreferredGivenName,
+		LastName:           p.FamilyName,
+		PreferredLastName:  p.PreferredFamilyName,
+		Email:              p.Email,
+		Title:              p.HonorificPrefix,
+	}
+	if p.Active {
+		rec.Active = 1
+	}
+	if p.PreferredName != "" {
+		rec.FullName = p.PreferredName
+	}
+	for _, ident := range p.Identifiers {
+		switch ident.Kind {
+		case "id":
+			rec.ID = ident.Value
+			rec.IDs = append(rec.IDs, ident.Value)
+		case "ugentID", "ugentHistoricID":
+			rec.UGentID = append(rec.UGentID, ident.Value)
+		case "orcid":
+			rec.OrcidID = ident.Value
+		case "ugentMemorialisID":
+			rec.UGentMemorialisID = ident.Value
+		}
+	}
+	for _, token := range p.Tokens {
+		switch token.Kind {
+		case "orcid":
+			rec.OrcidToken = string(token.Value)
+		}
+	}
+	for _, attr := range p.Attributes {
+		if attr.Scope == "orcid" && attr.Key == "bio" {
+			rec.OrcidBio = attr.Value
+		} else if attr.Scope == "orcid" && attr.Key == "sendEmails" {
+			rec.OrcidSettings = map[string]any{"send-emails": 1}
+		}
+	}
+	for _, a := range p.Affiliations {
+		for _, ident := range a.Organization.Identifiers {
+			switch ident.Kind {
+			case "biblio":
+				rec.UGentDepartmentID = append(rec.UGentDepartmentID, ident.Value)
+			}
+		}
+	}
+	return rec
+}
+
+type ParentOrganization struct {
+	ID string `json:"id"`
+}
+
+type Organization struct {
+	ID   string               `json:"id"`
+	Name string               `json:"name"`
+	Tree []ParentOrganization `json:"tree"`
+}
+
+func MapOrganization(o *people.Organization) *Organization {
+	id := o.Identifiers.Get("biblio")
+	rec := &Organization{
+		ID:   id,
+		Name: o.Names.Get("eng"),
+		Tree: []ParentOrganization{{ID: id}},
+	}
+	for _, po := range o.Parents {
+		rec.Tree = append(rec.Tree, ParentOrganization{ID: po.Identifiers.Get("biblio")})
+	}
 	return rec
 }

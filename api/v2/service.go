@@ -68,24 +68,24 @@ func (s *Service) GetPerson(ctx context.Context, req *GetPersonRequest) (GetPers
 }
 
 func (s *Service) SearchOrganizations(ctx context.Context, req *SearchOrganizationsRequest) (*SearchOrganizations, error) {
-	hits, err := s.peopleIndex.SearchOrganizations(ctx, req.Query.Value)
+	results, err := s.peopleIndex.SearchOrganizations(ctx, people.SearchParams{Limit: 20, Query: req.Query.Value})
 	if err != nil {
 		return nil, err
 	}
 
 	return &SearchOrganizations{
-		Hits: lo.Map(hits, func(v *people.Organization, _ int) Organization { return convertOrganization(v) }),
+		Hits: lo.Map(results.Hits, func(v *people.Organization, _ int) Organization { return convertOrganization(v) }),
 	}, nil
 }
 
 func (s *Service) SearchPeople(ctx context.Context, req *SearchPeopleRequest) (*SearchPeople, error) {
-	hits, err := s.peopleIndex.SearchPeople(ctx, req.Query.Value)
+	results, err := s.peopleIndex.SearchPeople(ctx, people.SearchParams{Limit: 20, Query: req.Query.Value})
 	if err != nil {
 		return nil, err
 	}
 
 	return &SearchPeople{
-		Hits: lo.Map(hits, func(v *people.Person, _ int) Person { return convertPerson(v) }),
+		Hits: lo.Map(results.Hits, func(v *people.Person, _ int) Person { return convertPerson(v) }),
 	}, nil
 }
 
