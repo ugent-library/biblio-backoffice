@@ -16,6 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/people"
+	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
@@ -28,6 +29,7 @@ type Handler struct {
 	Repo             *repositories.Repo
 	FileStore        backends.FileStore
 	PeopleIndex      *people.Index
+	ProjectsIndex    *projects.Index
 	IPRanges         string
 	IPFilter         *ipfilter.IPFilter
 	FrontendUsername string
