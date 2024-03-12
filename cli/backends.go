@@ -137,7 +137,7 @@ func newServices() *backends.Services {
 		OrganizationService: organizationService,
 	}
 
-	projectsFacade := backends.NewProjectsFacade(projectsRepo, projectsIndex)
+	projectsFacade := backends.NewProjectsFacade(projectsIndex)
 	projectsService := caching.NewProjectService(projectsFacade)
 
 	repo := newRepo(pool, personService, organizationService, projectsService)

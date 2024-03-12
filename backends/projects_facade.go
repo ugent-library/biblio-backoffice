@@ -8,13 +8,11 @@ import (
 )
 
 type ProjectsFacade struct {
-	repo  *projects.Repo
 	index *projects.Index
 }
 
-func NewProjectsFacade(repo *projects.Repo, index *projects.Index) *ProjectsFacade {
+func NewProjectsFacade(index *projects.Index) *ProjectsFacade {
 	return &ProjectsFacade{
-		repo:  repo,
 		index: index,
 	}
 }
