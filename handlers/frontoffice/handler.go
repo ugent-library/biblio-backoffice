@@ -95,26 +95,6 @@ func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
 	httpx.RenderJSON(w, 200, frontoffice.MapDataset(p, h.Repo))
 }
 
-func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
-	ident, err := projects.NewIdentifier(bind.PathValue(r, "id"))
-	if err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
-
-	p, err := h.ProjectsIndex.GetProjectByIdentifier(r.Context(), ident.Kind, ident.Value)
-	if err == projects.ErrNotFound {
-		render.NotFound(w, r, err)
-		return
-	}
-	if err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
-
-	httpx.RenderJSON(w, 200, frontoffice.MapProject(p))
-}
-
 // TODO this gets way too many data
 // TODO materialize sort order
 // TODO constrain to those with publications
@@ -246,7 +226,7 @@ func (h *Handler) BrowsePeople(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
-	ident, err := people.NewIdentifier(bind.PathValue(r, "id")) // TODO don't use function from people ns
+	ident, err := projects.NewIdentifier(bind.PathValue(r, "id")) // TODO don't use function from people ns
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return

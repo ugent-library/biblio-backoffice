@@ -1120,22 +1120,3 @@ func MapOrganization(o *people.Organization) *Organization {
 	}
 	return rec
 }
-
-func MapProject(p *projects.Project) *Project {
-	id := p.Identifiers.Get("iweto")
-	rec := &Project{
-		ID:                   id,
-		Title:                p.Names.Get("und"),
-		StartDate:            p.StartDate,
-		EndDate:              p.EndDate,
-		EUID:                 p.Attributes.Get("cordis", "eu_id"),
-		EUCallID:             p.Attributes.Get("cordis", "eu_call_id"),
-		EUFrameworkProgramme: p.Attributes.Get("cordis", "eu_framework_programme"),
-		EUAcronym:            p.Attributes.Get("cordis", "eu_acronym"),
-		GISMOID:              p.Attributes.Get("gismo", "gismo_id"),
-		IWETOID:              p.Identifiers.Get("iweto"),
-		Abstract:             p.Descriptions.Get("und"),
-	}
-
-	return rec
-}
