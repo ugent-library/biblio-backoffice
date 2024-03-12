@@ -245,6 +245,26 @@ func (h *Handler) BrowsePeople(w http.ResponseWriter, r *http.Request) {
 	httpx.RenderJSON(w, 200, hits)
 }
 
+func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
+	ident, err := people.NewIdentifier(bind.PathValue(r, "id")) // TODO don't use function from people ns
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	p, err := h.ProjectsIndex.GetProjectByIdentifier(r.Context(), ident.Kind, ident.Value)
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	httpx.RenderJSON(w, 200, frontoffice.MapProject(p))
+}
+
 type BindGetAll struct {
 	Limit        int    `query:"limit"`
 	Offset       int    `query:"offset"`
@@ -388,12 +408,13 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		defer reader.Close()
 	}
 
-	responseHeaders := [][]string{}
-	responseHeaders = append(responseHeaders, []string{"Content-Type", f.ContentType})
-	responseHeaders = append(responseHeaders, []string{"Content-Length", fmt.Sprintf("%d", f.Size)})
-	responseHeaders = append(responseHeaders, []string{"Last-Modified", f.DateUpdated.UTC().Format(http.TimeFormat)})
-	responseHeaders = append(responseHeaders, []string{"ETag", f.SHA256})
-	responseHeaders = append(responseHeaders, []string{"Content-Disposition", fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name))})
+	responseHeaders := [][]string{
+		{"Content-Type", f.ContentType},
+		{"Content-Length", fmt.Sprintf("%d", f.Size)},
+		{"Last-Modified", f.DateUpdated.UTC().Format(http.TimeFormat)},
+		{"ETag", f.SHA256},
+		{"Content-Disposition", fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name))},
+	}
 
 	/*
 		Important: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/304 dictates that all
