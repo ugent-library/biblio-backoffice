@@ -49,6 +49,15 @@ func (UnimplementedHandler) GetPerson(ctx context.Context, req *GetPersonRequest
 	return r, ht.ErrNotImplemented
 }
 
+// GetProject implements getProject operation.
+//
+// Get project.
+//
+// POST /get-project
+func (UnimplementedHandler) GetProject(ctx context.Context, req *GetProjectRequest) (r GetProjectRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // ImportOrganizations implements importOrganizations operation.
 //
 // Import organization hierarchy.

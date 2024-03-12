@@ -29,6 +29,17 @@ type projectRow struct {
 	UpdatedAt    time.Time
 }
 
+type projectRows []*projectRow
+
+func (rows projectRows) Has(id int64) bool {
+	for _, row := range rows {
+		if row.ID == id {
+			return true
+		}
+	}
+	return false
+}
+
 func (row *projectRow) toProject() *Project {
 	return &Project{
 		Identifiers:  row.Identifiers,

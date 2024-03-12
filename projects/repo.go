@@ -2,27 +2,13 @@ package projects
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"slices"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
 const idKind = "id"
-
-var ErrNotFound = errors.New("not found")
-
-type DuplicateProjectError struct {
-	ID   string
-	Kind string
-}
-
-func (e *DuplicateProjectError) Error() string {
-	return fmt.Sprintf("duplicate project detected: %s:%s already exists", e.Kind, e.ID)
-}
 
 type Repo struct {
 	conn Conn
@@ -80,48 +66,30 @@ func (r *Repo) EachProject(ctx context.Context, fn func(*Project) bool) error {
 	return rows.Err()
 }
 
-type ImportProjectParams struct {
-	Identifiers  []Identifier
-	Names        []Text
-	Descriptions []Text
-	StartDate    string
-	EndDate      string
-	Deleted      bool
-	Attributes   []Attribute
-	CreatedAt    *time.Time
-	UpdatedAt    *time.Time
-}
-
-func (r *Repo) ImportProject(ctx context.Context, params ImportProjectParams) error {
+func (r *Repo) ImportProject(ctx context.Context, p ImportProjectParams) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback(ctx)
 
-	// Find if it has a project identifier
-
-	for _, id := range params.Identifiers {
-		_, err := getProjectByIdentifier(ctx, tx, id.Kind, id.Value)
-		if err != nil && err != pgx.ErrNoRows {
-			return err
-		}
-
+	for _, ident := range p.Identifiers {
+		_, err := getProjectByIdentifier(ctx, tx, ident.Kind, ident.Value)
 		if err == pgx.ErrNoRows {
 			continue
 		}
-
-		return &DuplicateProjectError{
-			ID:   id.Value,
-			Kind: id.Kind,
+		if err != nil {
+			return err
 		}
+
+		return &DuplicateError{ident.String()}
 	}
 
-	if !slices.ContainsFunc(params.Identifiers, func(id Identifier) bool { return id.Kind == idKind }) {
-		params.Identifiers = append(params.Identifiers, newID())
+	if !p.Identifiers.Has(idKind) {
+		p.Identifiers = append(p.Identifiers, newID())
 	}
 
-	err = insertProject(ctx, tx, params)
+	err = insertProject(ctx, tx, p)
 	if err != nil {
 		return err
 	}
@@ -129,27 +97,17 @@ func (r *Repo) ImportProject(ctx context.Context, params ImportProjectParams) er
 	return tx.Commit(ctx)
 }
 
-type AddProjectParams struct {
-	Identifiers  []Identifier
-	Names        []Text
-	Descriptions []Text
-	StartDate    string
-	EndDate      string
-	Deleted      bool
-	Attributes   []Attribute
-}
-
-func (r *Repo) AddProject(ctx context.Context, params AddProjectParams) error {
+func (r *Repo) AddProject(ctx context.Context, p AddProjectParams) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback(ctx)
 
-	var rows []*projectRow
+	var rows projectRows
 
-	for _, id := range params.Identifiers {
-		row, err := getProjectByIdentifier(ctx, tx, id.Kind, id.Value)
+	for _, ident := range p.Identifiers {
+		row, err := getProjectByIdentifier(ctx, tx, ident.Kind, ident.Value)
 		if err != nil && err != pgx.ErrNoRows {
 			return err
 		}
@@ -158,7 +116,7 @@ func (r *Repo) AddProject(ctx context.Context, params AddProjectParams) error {
 			continue
 		}
 
-		if !slices.ContainsFunc(rows, func(r *projectRow) bool { return r.ID == row.ID }) {
+		if !rows.Has(row.ID) {
 			rows = append(rows, row)
 		}
 	}
@@ -172,20 +130,20 @@ func (r *Repo) AddProject(ctx context.Context, params AddProjectParams) error {
 
 	switch len(rows) {
 	case 0:
-		if !slices.ContainsFunc(params.Identifiers, func(id Identifier) bool { return id.Kind == idKind }) {
-			params.Identifiers = append(params.Identifiers, newID())
+		if !p.Identifiers.Has(idKind) {
+			p.Identifiers = append(p.Identifiers, newID())
 		}
-		if _, err := createProject(ctx, tx, params); err != nil {
+		if _, err := createProject(ctx, tx, p); err != nil {
 			return err
 		}
 	case 1:
-		params = transferValues(rows, params)
-		if err := updateProject(ctx, tx, rows[0].ID, params); err != nil {
+		p = transferValues(rows, p)
+		if err := updateProject(ctx, tx, rows[0].ID, p); err != nil {
 			return err
 		}
 	default:
-		params = transferValues(rows, params)
-		id, err := createProject(ctx, tx, params)
+		p = transferValues(rows, p)
+		id, err := createProject(ctx, tx, p)
 		if err != nil {
 			return err
 		}

@@ -21,16 +21,20 @@ import (
 //go:embed *.json
 var indexSettingsFS embed.FS
 
+const (
+	projectsIndexName = "projects"
+)
+
 type IndexConfig struct {
-	Conn      string
-	Name      string
-	Retention int
-	Logger    *slog.Logger
+	Conn        string
+	IndexPrefix string
+	Retention   int
+	Logger      *slog.Logger
 }
 
 type Index struct {
 	client    *elasticsearch.Client
-	alias     string
+	prefix    string
 	retention int
 	logger    *slog.Logger
 }
@@ -45,23 +49,16 @@ func NewIndex(c IndexConfig) (*Index, error) {
 
 	return &Index{
 		client:    client,
-		alias:     c.Name,
+		prefix:    c.IndexPrefix,
 		retention: c.Retention,
 		logger:    c.Logger,
 	}, nil
 }
 
-type getResponseBody[T any] struct {
-	Source struct {
-		Record T `json:"record"`
-	} `json:"_source"`
-}
-
 type searchResponseBody[T any] struct {
 	Hits struct {
-		// Total int `json:"total"`
-		Hits []struct {
-			ID     string `json:"_id"`
+		Total int `json:"total"`
+		Hits  []struct {
 			Source struct {
 				Record T `json:"record"`
 			} `json:"_source"`
@@ -89,18 +86,27 @@ func decodeResponseBody[T any](res *esapi.Response, resBody T) error {
 
 const searchBody = `{
 	"query": {{template "query" .}},
-	"size": 20
+	"size": {{.Limit}},
+	"from": {{.Offset}},
+	"_source": ["record"]
 }`
 
-const matchAllQuery = `{{define "query"}}{"match_all": {}}{{end}}`
+const identifierQuery = `{{define "query"}}{
+	"bool": {
+		"filter": [
+			{"term": {"identifiers": "{{.Identifier.Value}}"}}
+		]
+	}
+}{{end}}`
 
 const queryStringQuery = `{{define "query"}}{
+	{{if .Query}}
 	"dis_max": {
 		"queries": [
 			{
 				"match": {
 					"identifiers": {
-						"query": "{{.QueryString}}",
+						"query": "{{.Query}}",
 						"operator": "AND",
 						"boost": "100"
 					}
@@ -109,7 +115,7 @@ const queryStringQuery = `{{define "query"}}{
 			{
 				"match": {
 					"phrase_ngram": {
-						"query": "{{.QueryString}}",
+						"query": "{{.Query}}",
 						"operator": "AND",
 						"boost": "0.05"
 					}
@@ -118,7 +124,7 @@ const queryStringQuery = `{{define "query"}}{
 			{
 				"match": {
 					"ngram": {
-						"query": "{{.QueryString}}",
+						"query": "{{.Query}}",
 						"operator": "AND",
 						"boost": "0.01"
 					}
@@ -126,40 +132,29 @@ const queryStringQuery = `{{define "query"}}{
 			}
 		]
 	}
+	{{else}}
+	"match_all": {}
+	{{end}}
 }{{end}}`
 
 var (
-	matchAllTmpl    = template.Must(template.New("").Parse(matchAllQuery + searchBody))
+	identifierTmpl  = template.Must(template.New("").Parse(identifierQuery + searchBody))
 	queryStringTmpl = template.Must(template.New("").Parse(queryStringQuery + searchBody))
 )
 
-func (idx *Index) GetProject(ctx context.Context, id string) (*Project, error) {
-	res, err := idx.client.Get(idx.alias, id,
-		idx.client.Get.WithSource("record"),
-	)
-	if err != nil {
-		return nil, err
-	}
-	resBody := getResponseBody[*Project]{}
-	if err := decodeResponseBody(res, &resBody); err != nil {
-		return nil, err
-	}
-	return resBody.Source.Record, nil
+func (idx *Index) GetProjectByIdentifier(ctx context.Context, kind, value string) (*Project, error) {
+	return getByIdentifier(ctx, idx, projectsIndexName, Identifier{Kind: kind, Value: value})
 }
 
-func (idx *Index) SearchProjects(ctx context.Context, qs string) ([]*Project, error) {
-	qs = strings.TrimSpace(qs)
-
+func getByIdentifier(ctx context.Context, idx *Index, indexName string, ident Identifier) (*Project, error) {
 	b := bytes.Buffer{}
-	tmpl := matchAllTmpl
-	if qs != "" {
-		tmpl = queryStringTmpl
-	}
-
-	err := tmpl.Execute(&b, struct {
-		QueryString string
+	err := identifierTmpl.Execute(&b, struct {
+		Limit      int
+		Offset     int
+		Identifier Identifier
 	}{
-		QueryString: qs,
+		Limit:      1,
+		Identifier: ident,
 	})
 	if err != nil {
 		return nil, err
@@ -167,11 +162,9 @@ func (idx *Index) SearchProjects(ctx context.Context, qs string) ([]*Project, er
 
 	res, err := idx.client.Search(
 		idx.client.Search.WithContext(ctx),
-		idx.client.Search.WithIndex(idx.alias),
-		// idx.client.Search.WithTrackTotalHits(true),
+		idx.client.Search.WithIndex(idx.prefix+projectsIndexName),
+		idx.client.Search.WithTrackTotalHits(false),
 		idx.client.Search.WithBody(strings.NewReader(b.String())),
-		idx.client.Search.WithSort("_score:desc"),
-		idx.client.Search.WithSource("record"),
 	)
 	if err != nil {
 		return nil, err
@@ -182,22 +175,66 @@ func (idx *Index) SearchProjects(ctx context.Context, qs string) ([]*Project, er
 		return nil, err
 	}
 
-	recs := make([]*Project, len(resBody.Hits.Hits))
-
-	for i, hit := range resBody.Hits.Hits {
-		recs[i] = hit.Source.Record
+	if len(resBody.Hits.Hits) != 1 {
+		return nil, ErrNotFound
 	}
 
-	return recs, nil
+	return resBody.Hits.Hits[0].Source.Record, nil
+
+}
+
+func (idx *Index) SearchProjects(ctx context.Context, params SearchParams) (*SearchResults[*Project], error) {
+	return search(ctx, idx, projectsIndexName, queryStringTmpl, params, "_score:desc")
+}
+
+func search(ctx context.Context, idx *Index, indexName string, tmpl *template.Template, params SearchParams, sort string) (*SearchResults[*Project], error) {
+	b := bytes.Buffer{}
+	err := tmpl.Execute(&b, params)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := idx.client.Search(
+		idx.client.Search.WithContext(ctx),
+		idx.client.Search.WithIndex(idx.prefix+projectsIndexName),
+		idx.client.Search.WithTrackTotalHits(true),
+		idx.client.Search.WithBody(strings.NewReader(b.String())),
+		idx.client.Search.WithSort(sort),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	resBody := searchResponseBody[*Project]{}
+	if err := decodeResponseBody(res, &resBody); err != nil {
+		return nil, err
+	}
+
+	results := SearchResults[*Project]{
+		Limit:  params.Limit,
+		Offset: params.Offset,
+		Total:  resBody.Hits.Total,
+		Hits:   make([]*Project, len(resBody.Hits.Hits)),
+	}
+
+	for i, hit := range resBody.Hits.Hits {
+		results.Hits[i] = hit.Source.Record
+	}
+
+	return &results, nil
 }
 
 func (idx *Index) ReindexProjects(ctx context.Context, iter ProjectIter) error {
-	b, err := indexSettingsFS.ReadFile("projects_index_settings.json")
+	return reindex(ctx, idx, projectsIndexName, iter, toProjectDoc)
+}
+
+func reindex(ctx context.Context, idx *Index, indexName string, iter ProjectIter, docFn func(*Project) (string, []byte, error)) error {
+	b, err := indexSettingsFS.ReadFile(indexName + "_index_settings.json")
 	if err != nil {
 		return err
 	}
 
-	switcher, err := index.NewSwitcher(idx.client, idx.alias, string(b))
+	switcher, err := index.NewSwitcher(idx.client, idx.prefix+projectsIndexName, string(b))
 	if err != nil {
 		return err
 	}
@@ -217,7 +254,7 @@ func (idx *Index) ReindexProjects(ctx context.Context, iter ProjectIter) error {
 
 	var indexErr error
 	err = iter(ctx, func(p *Project) bool {
-		doc, err := json.Marshal(newIndexProject(p))
+		docID, doc, err := docFn(p)
 		if err != nil {
 			indexErr = err
 			return false
@@ -226,7 +263,7 @@ func (idx *Index) ReindexProjects(ctx context.Context, iter ProjectIter) error {
 			ctx,
 			esutil.BulkIndexerItem{
 				Action:       "index",
-				DocumentID:   p.ID(),
+				DocumentID:   docID,
 				DocumentType: "_doc",
 				Body:         bytes.NewReader(doc),
 				OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
@@ -251,32 +288,39 @@ func (idx *Index) ReindexProjects(ctx context.Context, iter ProjectIter) error {
 	return switcher.Switch(ctx, idx.retention)
 }
 
-type indexProject struct {
+type projectDoc struct {
 	Names        []string `json:"names"`
 	Descriptions []string `json:"descriptions"`
 	Identifiers  []string `json:"identifiers"`
+	Deleted      bool     `json:"deleted"`
 	Record       *Project `json:"record"`
 }
 
-func newIndexProject(p *Project) *indexProject {
-	ip := &indexProject{
+func toProjectDoc(p *Project) (string, []byte, error) {
+	pd := &projectDoc{
 		Names:        make([]string, len(p.Names)),
 		Descriptions: make([]string, len(p.Descriptions)),
 		Identifiers:  make([]string, len(p.Identifiers)),
+		Deleted:      p.Deleted,
 		Record:       p,
 	}
 
 	for i, name := range p.Names {
-		ip.Names[i] = name.Value
+		pd.Names[i] = name.Value
 	}
 
 	for i, desc := range p.Descriptions {
-		ip.Descriptions[i] = desc.Value
+		pd.Descriptions[i] = desc.Value
 	}
 
 	for i, id := range p.Identifiers {
-		ip.Identifiers[i] = id.Value
+		pd.Identifiers[i] = id.Value
 	}
 
-	return ip
+	doc, err := json.Marshal(pd)
+	if err != nil {
+		return "", nil, err
+	}
+
+	return p.Identifiers.Get(idKind), doc, nil
 }
