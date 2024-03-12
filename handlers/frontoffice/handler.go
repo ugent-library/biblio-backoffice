@@ -3,7 +3,6 @@ package frontoffice
 import (
 	"crypto/sha256"
 	"crypto/subtle"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -16,16 +15,19 @@ import (
 	"github.com/ugent-library/biblio-backoffice/frontoffice"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httpx"
 )
 
 type Handler struct {
 	handlers.BaseHandler
 	Repo             *repositories.Repo
 	FileStore        backends.FileStore
+	PeopleIndex      *people.Index
 	IPRanges         string
 	IPFilter         *ipfilter.IPFilter
 	FrontendUsername string
@@ -56,11 +58,11 @@ func (h *Handler) BasicAuth(fn func(http.ResponseWriter, *http.Request)) http.Ha
 	}
 }
 
-type Hits struct {
-	Limit  int                   `json:"limit"`
-	Offset int                   `json:"offset"`
-	Total  int                   `json:"total"`
-	Hits   []*frontoffice.Record `json:"hits"`
+type Hits[T any] struct {
+	Limit  int `json:"limit"`
+	Offset int `json:"offset"`
+	Total  int `json:"total"`
+	Hits   []T `json:"hits"`
 }
 
 func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
@@ -73,13 +75,8 @@ func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	j, err := json.Marshal(frontoffice.MapPublication(p, h.Repo))
-	if err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(j)
+
+	httpx.RenderJSON(w, 200, frontoffice.MapPublication(p, h.Repo))
 }
 
 func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
@@ -92,13 +89,138 @@ func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	j, err := json.Marshal(frontoffice.MapDataset(p, h.Repo))
+
+	httpx.RenderJSON(w, 200, frontoffice.MapDataset(p, h.Repo))
+}
+
+// TODO this gets way too many data
+// TODO materialize sort order
+// TODO constrain to those with publications
+// TODO a-z sorting by id isn't the best order
+func (h *Handler) GetAllOrganizations(w http.ResponseWriter, r *http.Request) {
+	results, err := h.PeopleIndex.SearchOrganizations(r.Context(), people.SearchParams{Limit: 1000})
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(j)
+
+	recs := make([]*frontoffice.Organization, len(results.Hits))
+	for i, o := range results.Hits {
+		recs[i] = frontoffice.MapOrganization(o)
+	}
+
+	httpx.RenderJSON(w, 200, recs)
+}
+
+func (h *Handler) GetOrganization(w http.ResponseWriter, r *http.Request) {
+	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	o, err := h.PeopleIndex.GetOrganizationByIdentifier(r.Context(), ident.Kind, ident.Value)
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	httpx.RenderJSON(w, 200, frontoffice.MapOrganization(o))
+}
+
+func (h *Handler) GetPerson(w http.ResponseWriter, r *http.Request) {
+	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	p, err := h.PeopleIndex.GetPersonByIdentifier(r.Context(), ident.Kind, ident.Value)
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	httpx.RenderJSON(w, 200, frontoffice.MapPerson(p))
+}
+
+func (h *Handler) GetActivePerson(w http.ResponseWriter, r *http.Request) {
+	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	p, err := h.PeopleIndex.GetActivePersonByIdentifier(r.Context(), ident.Kind, ident.Value)
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	httpx.RenderJSON(w, 200, frontoffice.MapPerson(p))
+}
+
+func (h *Handler) GetActivePersonByUsername(w http.ResponseWriter, r *http.Request) {
+	p, err := h.PeopleIndex.GetActivePersonByUsername(r.Context(), bind.PathValue(r, "username"))
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	httpx.RenderJSON(w, 200, frontoffice.MapPerson(p))
+}
+
+type BindQuery struct {
+	Limit  int    `query:"limit"`
+	Offset int    `query:"offset"`
+	Query  string `query:"query"`
+}
+
+// TODO constrain to those with publications
+func (h *Handler) BrowsePeople(w http.ResponseWriter, r *http.Request) {
+	b := BindQuery{}
+	if err := bind.Query(r, &b); err != nil {
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	results, err := h.PeopleIndex.BrowsePeople(r.Context(), people.SearchParams{
+		Query:  b.Query,
+		Limit:  b.Limit,
+		Offset: b.Offset,
+	})
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	hits := &Hits[*frontoffice.Person]{
+		Limit:  results.Limit,
+		Offset: results.Offset,
+		Total:  results.Total,
+		Hits:   make([]*frontoffice.Person, len(results.Hits)),
+	}
+	for i, p := range results.Hits {
+		hits.Hits[i] = frontoffice.MapPerson(p)
+	}
+
+	httpx.RenderJSON(w, 200, hits)
 }
 
 type BindGetAll struct {
@@ -125,11 +247,6 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 		updatedSince = t.Local()
 	}
 
-	mappedHits := &Hits{
-		Limit:  b.Limit,
-		Offset: b.Offset,
-	}
-
 	n, publications, err := h.Repo.PublicationsAfter(updatedSince, b.Limit, b.Offset)
 	if err != nil {
 		h.Logger.Errorw("select error", err)
@@ -137,21 +254,18 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mappedHits.Total = n
-	mappedHits.Hits = make([]*frontoffice.Record, 0, len(publications))
+	hits := &Hits[*frontoffice.Record]{
+		Limit:  b.Limit,
+		Offset: b.Offset,
+		Total:  n,
+		Hits:   make([]*frontoffice.Record, 0, len(publications)),
+	}
 	for _, p := range publications {
-		mappedHits.Hits = append(mappedHits.Hits, frontoffice.MapPublication(p, h.Repo))
+		hits.Hits = append(hits.Hits, frontoffice.MapPublication(p, h.Repo))
 	}
 
-	j, err := json.Marshal(mappedHits)
-	if err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-cache")
-	w.Write(j)
+	httpx.RenderJSON(w, 200, hits)
 }
 
 func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
@@ -172,11 +286,6 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 		updatedSince = t.Local()
 	}
 
-	mappedHits := &Hits{
-		Limit:  b.Limit,
-		Offset: b.Offset,
-	}
-
 	n, datasets, err := h.Repo.DatasetsAfter(updatedSince, b.Limit, b.Offset)
 	if err != nil {
 		h.Logger.Errorw("select error", err)
@@ -184,21 +293,18 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mappedHits.Total = n
-	mappedHits.Hits = make([]*frontoffice.Record, 0, len(datasets))
+	hits := &Hits[*frontoffice.Record]{
+		Limit:  b.Limit,
+		Offset: b.Offset,
+		Total:  n,
+		Hits:   make([]*frontoffice.Record, 0, len(datasets)),
+	}
 	for _, d := range datasets {
-		mappedHits.Hits = append(mappedHits.Hits, frontoffice.MapDataset(d, h.Repo))
+		hits.Hits = append(hits.Hits, frontoffice.MapDataset(d, h.Repo))
 	}
 
-	j, err := json.Marshal(mappedHits)
-	if err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-cache")
-	w.Write(j)
+	httpx.RenderJSON(w, 200, hits)
 }
 
 func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
