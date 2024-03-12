@@ -45,6 +45,7 @@ SELECT id,
 	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.organization_id IS NOT NULL) AS identifiers,
 	   names,
 	   ceased,
+	   position,
 	   created_at,
 	   updated_at
 FROM organizations o
