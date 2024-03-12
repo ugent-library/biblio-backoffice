@@ -30,6 +30,7 @@ SELECT id,
 	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.organization_id IS NOT NULL) AS identifiers,
 	   names,
 	   ceased,
+	   position,
 	   created_at,
 	   updated_at
 FROM organizations o
@@ -44,6 +45,7 @@ SELECT id,
 	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.organization_id IS NOT NULL) AS identifiers,
 	   names,
 	   ceased,
+	   position,
 	   created_at,
 	   updated_at
 FROM organizations o
@@ -97,10 +99,18 @@ INSERT INTO organizations (
 	parent_id, 
 	names,
 	ceased,
+	position,
 	created_at,
 	updated_at
 )
-VALUES ($1, $2, $3, COALESCE($4,CURRENT_TIMESTAMP), COALESCE($5,CURRENT_TIMESTAMP))
+VALUES (
+	$1,
+	$2,
+	$3,
+	(SELECT COUNT(*) FROM organizations WHERE parent_id = $1),
+	COALESCE($4,CURRENT_TIMESTAMP),
+	COALESCE($5,CURRENT_TIMESTAMP)
+)
 RETURNING id;
 `
 
@@ -290,6 +300,7 @@ type organizationRow struct {
 	Identifiers []Identifier
 	Names       []Text
 	Ceased      bool
+	Position    int
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -299,6 +310,7 @@ func (row *organizationRow) toOrganization() *Organization {
 		Identifiers: row.Identifiers,
 		Names:       row.Names,
 		Ceased:      row.Ceased,
+		Position:    row.Position,
 		CreatedAt:   row.CreatedAt,
 		UpdatedAt:   row.UpdatedAt,
 	}
@@ -372,6 +384,7 @@ func getOrganizationByIdentifier(ctx context.Context, conn Conn, kind, value str
 		&r.Identifiers,
 		&r.Names,
 		&r.Ceased,
+		&r.Position,
 		&r.CreatedAt,
 		&r.UpdatedAt,
 	)
