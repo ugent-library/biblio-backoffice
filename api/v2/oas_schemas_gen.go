@@ -397,6 +397,7 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 
 func (*ErrorStatusCode) getOrganizationRes()     {}
 func (*ErrorStatusCode) getPersonRes()           {}
+func (*ErrorStatusCode) getProjectRes()          {}
 func (*ErrorStatusCode) importOrganizationsRes() {}
 func (*ErrorStatusCode) importPersonRes()        {}
 func (*ErrorStatusCode) importProjectRes()       {}
@@ -462,6 +463,38 @@ func (s *GetPersonRequest) GetIdentifier() Identifier {
 
 // SetIdentifier sets the value of Identifier.
 func (s *GetPersonRequest) SetIdentifier(val Identifier) {
+	s.Identifier = val
+}
+
+// Ref: #/components/schemas/GetProject
+type GetProject struct {
+	Project Project `json:"project"`
+}
+
+// GetProject returns the value of Project.
+func (s *GetProject) GetProject() Project {
+	return s.Project
+}
+
+// SetProject sets the value of Project.
+func (s *GetProject) SetProject(val Project) {
+	s.Project = val
+}
+
+func (*GetProject) getProjectRes() {}
+
+// Ref: #/components/schemas/GetProjectRequest
+type GetProjectRequest struct {
+	Identifier Identifier `json:"identifier"`
+}
+
+// GetIdentifier returns the value of Identifier.
+func (s *GetProjectRequest) GetIdentifier() Identifier {
+	return s.Identifier
+}
+
+// SetIdentifier sets the value of Identifier.
+func (s *GetProjectRequest) SetIdentifier(val Identifier) {
 	s.Identifier = val
 }
 

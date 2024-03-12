@@ -89,10 +89,10 @@ func newServices() *backends.Services {
 	}
 
 	projectsIndex, err := projects.NewIndex(projects.IndexConfig{
-		Conn:      config.Es6URL,
-		Name:      "biblio_backoffice_projects", // TODO make configurable
-		Retention: config.IndexRetention,
-		Logger:    logger,
+		Conn:        config.Es6URL,
+		IndexPrefix: "biblio_backoffice_", // TODO make configurable
+		Retention:   config.IndexRetention,
+		Logger:      logger,
 	})
 	if err != nil {
 		panic(err)

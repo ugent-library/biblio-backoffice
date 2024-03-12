@@ -67,6 +67,24 @@ func (s *Service) GetPerson(ctx context.Context, req *GetPersonRequest) (GetPers
 	return &GetPerson{Person: convertPerson(p)}, nil
 }
 
+func (s *Service) GetProject(ctx context.Context, req *GetProjectRequest) (GetProjectRes, error) {
+	p, err := s.projectsIndex.GetProjectByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
+	if errors.Is(err, projects.ErrNotFound) {
+		return nil, &ErrorStatusCode{
+			StatusCode: 404,
+			Response: Error{
+				Code:    404,
+				Message: "Project not found",
+			},
+		}
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &GetProject{Project: convertProject(p)}, nil
+}
+
 func (s *Service) SearchOrganizations(ctx context.Context, req *SearchOrganizationsRequest) (*SearchOrganizations, error) {
 	results, err := s.peopleIndex.SearchOrganizations(ctx, people.SearchParams{Limit: 20, Query: req.Query.Value})
 	if err != nil {
@@ -235,13 +253,13 @@ func (s *Service) AddProject(ctx context.Context, req *AddProjectRequest) error 
 }
 
 func (s *Service) SearchProjects(ctx context.Context, req *SearchProjectsRequest) (*SearchProjects, error) {
-	hits, err := s.projectsIndex.SearchProjects(ctx, req.Query.Value)
+	results, err := s.projectsIndex.SearchProjects(ctx, projects.SearchParams{Limit: 20, Query: req.Query.Value})
 	if err != nil {
 		return nil, err
 	}
 
 	return &SearchProjects{
-		Hits: lo.Map(hits, func(v *projects.Project, _ int) Project { return convertProject(v) }),
+		Hits: lo.Map(results.Hits, func(v *projects.Project, _ int) Project { return convertProject(v) }),
 	}, nil
 }
 

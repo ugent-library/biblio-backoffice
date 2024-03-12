@@ -56,6 +56,31 @@ paths:
         default:
           $ref: "#/components/responses/Error"
   
+  "/get-project":
+    post:
+      summary: Get project
+      description: Get project
+      operationId: getProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetProjectRequest"
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetProject"
+        '404':
+          description: Not found
+          $ref: "#/components/responses/Error"
+        default:
+          $ref: "#/components/responses/Error"
+
+
   "/search-organizations":
     post:
       summary: Search organizations
@@ -271,6 +296,20 @@ components:
         person:
           $ref: "#/components/schemas/Person"
       required: [person]
+
+    GetProjectRequest:
+      type: object
+      properties:
+        identifier:
+          $ref: "#/components/schemas/Identifier"
+      required: [identifier]
+
+    GetProject:
+      type: object
+      properties:
+        project:
+          $ref: "#/components/schemas/Project"
+      required: [project]
 
     SearchOrganizationsRequest:
       type: object

@@ -241,7 +241,7 @@ type PersonSearchService interface {
 }
 
 type ProjectSearchService interface {
-	SuggestProjects(string) ([]models.Project, error)
+	SuggestProjects(string) ([]*models.Project, error)
 }
 
 type UserSearchService interface {

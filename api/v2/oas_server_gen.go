@@ -32,6 +32,12 @@ type Handler interface {
 	//
 	// POST /get-person
 	GetPerson(ctx context.Context, req *GetPersonRequest) (GetPersonRes, error)
+	// GetProject implements getProject operation.
+	//
+	// Get project.
+	//
+	// POST /get-project
+	GetProject(ctx context.Context, req *GetProjectRequest) (GetProjectRes, error)
 	// ImportOrganizations implements importOrganizations operation.
 	//
 	// Import organization hierarchy.

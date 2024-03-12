@@ -67,6 +67,20 @@ func encodeGetPersonRequest(
 	return nil
 }
 
+func encodeGetProjectRequest(
+	req *GetProjectRequest,
+	r *http.Request,
+) error {
+	const contentType = "application/json"
+	e := new(jx.Encoder)
+	{
+		req.Encode(e)
+	}
+	encoded := e.Bytes()
+	ht.SetBody(r, bytes.NewReader(encoded), contentType)
+	return nil
+}
+
 func encodeImportOrganizationsRequest(
 	req *ImportOrganizationsRequest,
 	r *http.Request,

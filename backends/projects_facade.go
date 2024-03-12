@@ -20,7 +20,7 @@ func NewProjectsFacade(repo *projects.Repo, index *projects.Index) *ProjectsFaca
 }
 
 func (f *ProjectsFacade) GetProject(id string) (*models.Project, error) {
-	p, err := f.repo.GetProjectByIdentifier(context.TODO(), "iweto", id)
+	p, err := f.index.GetProjectByIdentifier(context.TODO(), "iweto", id)
 	if err != nil {
 		return nil, err
 	}
@@ -28,15 +28,15 @@ func (f *ProjectsFacade) GetProject(id string) (*models.Project, error) {
 	return toProject(p), nil
 }
 
-func (f *ProjectsFacade) SuggestProjects(qs string) ([]models.Project, error) {
-	hits, err := f.index.SearchProjects(context.TODO(), qs)
+func (f *ProjectsFacade) SuggestProjects(q string) ([]*models.Project, error) {
+	results, err := f.index.SearchProjects(context.TODO(), projects.SearchParams{Limit: 20, Query: q})
 	if err != nil {
 		return nil, err
 	}
 
-	projects := make([]models.Project, len(hits))
-	for i, p := range hits {
-		projects[i] = *toProject(p)
+	projects := make([]*models.Project, len(results.Hits))
+	for i, p := range results.Hits {
+		projects[i] = toProject(p)
 	}
 
 	return projects, nil
