@@ -184,6 +184,7 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 			&row.Identifiers,
 			&row.Names,
 			&row.Ceased,
+			&row.Position,
 			&row.CreatedAt,
 			&row.UpdatedAt,
 		); err != nil {
