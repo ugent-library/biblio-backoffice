@@ -190,7 +190,7 @@ func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
 func (s *Service) ImportProject(ctx context.Context, req *ImportProjectRequest) (ImportProjectRes, error) {
 	err := s.projectsRepo.ImportProject(ctx, convertImportProjectParams(req.Project))
 
-	var dupErr *projects.DuplicateProjectError
+	var dupErr *projects.DuplicateError
 	if errors.As(err, &dupErr) {
 		return nil, &ErrorStatusCode{
 			StatusCode: 409,
