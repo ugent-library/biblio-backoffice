@@ -16,6 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/people"
+	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
@@ -28,6 +29,7 @@ type Handler struct {
 	Repo             *repositories.Repo
 	FileStore        backends.FileStore
 	PeopleIndex      *people.Index
+	ProjectsIndex    *projects.Index
 	IPRanges         string
 	IPFilter         *ipfilter.IPFilter
 	FrontendUsername string
@@ -91,6 +93,26 @@ func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
 	}
 
 	httpx.RenderJSON(w, 200, frontoffice.MapDataset(p, h.Repo))
+}
+
+func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
+	ident, err := projects.NewIdentifier(bind.PathValue(r, "id"))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	p, err := h.ProjectsIndex.GetProjectByIdentifier(r.Context(), ident.Kind, ident.Value)
+	if err == projects.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	httpx.RenderJSON(w, 200, frontoffice.MapProject(p))
 }
 
 // TODO this gets way too many data

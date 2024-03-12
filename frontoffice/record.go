@@ -11,6 +11,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/people"
+	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/biblio-backoffice/util"
 )
@@ -1092,5 +1093,24 @@ func MapOrganization(o *people.Organization) *Organization {
 	for _, po := range o.Parents {
 		rec.Tree = append(rec.Tree, ParentOrganization{ID: po.Identifiers.Get("biblio")})
 	}
+	return rec
+}
+
+func MapProject(p *projects.Project) *Project {
+	id := p.Identifiers.Get("iweto")
+	rec := &Project{
+		ID:                   id,
+		Title:                p.Names.Get("und"),
+		StartDate:            p.StartDate,
+		EndDate:              p.EndDate,
+		EUID:                 p.Attributes.Get("cordis", "eu_id"),
+		EUCallID:             p.Attributes.Get("cordis", "eu_call_id"),
+		EUFrameworkProgramme: p.Attributes.Get("cordis", "eu_framework_programme"),
+		EUAcronym:            p.Attributes.Get("cordis", "eu_acronym"),
+		GISMOID:              p.Attributes.Get("gismo", "gismo_id"),
+		IWETOID:              p.Identifiers.Get("iweto"),
+		Abstract:             p.Descriptions.Get("und"),
+	}
+
 	return rec
 }
