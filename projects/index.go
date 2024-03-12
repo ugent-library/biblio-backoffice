@@ -143,10 +143,10 @@ var (
 )
 
 func (idx *Index) GetProjectByIdentifier(ctx context.Context, kind, value string) (*Project, error) {
-	return getByIdentifier(ctx, idx, projectsIndexName, Identifier{Kind: kind, Value: value})
+	return getByIdentifier(ctx, idx, Identifier{Kind: kind, Value: value})
 }
 
-func getByIdentifier(ctx context.Context, idx *Index, indexName string, ident Identifier) (*Project, error) {
+func getByIdentifier(ctx context.Context, idx *Index, ident Identifier) (*Project, error) {
 	b := bytes.Buffer{}
 	err := identifierTmpl.Execute(&b, struct {
 		Limit      int
@@ -184,10 +184,10 @@ func getByIdentifier(ctx context.Context, idx *Index, indexName string, ident Id
 }
 
 func (idx *Index) SearchProjects(ctx context.Context, params SearchParams) (*SearchResults[*Project], error) {
-	return search(ctx, idx, projectsIndexName, queryStringTmpl, params, "_score:desc")
+	return search(ctx, idx, queryStringTmpl, params, "_score:desc")
 }
 
-func search(ctx context.Context, idx *Index, indexName string, tmpl *template.Template, params SearchParams, sort string) (*SearchResults[*Project], error) {
+func search(ctx context.Context, idx *Index, tmpl *template.Template, params SearchParams, sort string) (*SearchResults[*Project], error) {
 	b := bytes.Buffer{}
 	err := tmpl.Execute(&b, params)
 	if err != nil {
