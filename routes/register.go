@@ -230,8 +230,10 @@ func Register(c Config) {
 	c.Router.Get("/frontoffice/person/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetPerson))
 	c.Router.Get("/frontoffice/person/active/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetActivePerson))
 	c.Router.Get("/frontoffice/person/username/{username}", frontofficeHandler.BasicAuth(frontofficeHandler.GetActivePersonByUsername))
+	c.Router.Get("/frontoffice/person/list", frontofficeHandler.BasicAuth(frontofficeHandler.GetPeople))
 	c.Router.Get("/frontoffice/person/browse", frontofficeHandler.BasicAuth(frontofficeHandler.BrowsePeople))
 	c.Router.Get("/frontoffice/project/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetProject))
+	c.Router.Get("/frontoffice/project/browse", frontofficeHandler.BasicAuth(frontofficeHandler.BrowseProjects))
 	// frontoffice file download
 	c.Router.Get("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
 	c.Router.Head("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)

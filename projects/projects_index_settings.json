@@ -88,6 +88,14 @@
       "project": {
         "dynamic": "false",
         "properties": {
+          "nameKey": {
+            "type": "keyword",
+            "normalizer": "tag"
+          },
+          "sortName": {
+            "type": "keyword",
+            "normalizer": "tag"
+          },
           "names": {
             "type": "text",
             "copy_to": [

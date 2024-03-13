@@ -137,9 +137,18 @@ const queryStringQuery = `{{define "query"}}{
 	{{end}}
 }{{end}}`
 
+const browseNameQuery = `{{define "query"}}{
+	"bool": {
+		"filter": [
+			{"term": {"nameKey": "{{.Query}}"}}
+		]
+	}
+}{{end}}`
+
 var (
 	identifierTmpl  = template.Must(template.New("").Parse(identifierQuery + searchBody))
 	queryStringTmpl = template.Must(template.New("").Parse(queryStringQuery + searchBody))
+	browseNameTmpl  = template.Must(template.New("").Parse(browseNameQuery + searchBody))
 )
 
 func (idx *Index) GetProjectByIdentifier(ctx context.Context, kind, value string) (*Project, error) {
@@ -185,6 +194,10 @@ func getByIdentifier(ctx context.Context, idx *Index, ident Identifier) (*Projec
 
 func (idx *Index) SearchProjects(ctx context.Context, params SearchParams) (*SearchResults[*Project], error) {
 	return search(ctx, idx, queryStringTmpl, params, "_score:desc")
+}
+
+func (idx *Index) BrowseProjects(ctx context.Context, params SearchParams) (*SearchResults[*Project], error) {
+	return search(ctx, idx, browseNameTmpl, params, "sortName:asc")
 }
 
 func search(ctx context.Context, idx *Index, tmpl *template.Template, params SearchParams, sort string) (*SearchResults[*Project], error) {
@@ -289,6 +302,8 @@ func reindex(ctx context.Context, idx *Index, indexName string, iter ProjectIter
 }
 
 type projectDoc struct {
+	NameKey      string   `json:"nameKey"`
+	SortName     string   `json:"sortName"`
 	Names        []string `json:"names"`
 	Descriptions []string `json:"descriptions"`
 	Identifiers  []string `json:"identifiers"`
@@ -303,6 +318,11 @@ func toProjectDoc(p *Project) (string, []byte, error) {
 		Identifiers:  make([]string, len(p.Identifiers)),
 		Deleted:      p.Deleted,
 		Record:       p,
+	}
+
+	if name := p.Names.Get("und"); name != "" {
+		pd.SortName = name
+		pd.NameKey = name[0:1]
 	}
 
 	for i, name := range p.Names {
