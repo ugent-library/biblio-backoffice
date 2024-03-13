@@ -154,6 +154,32 @@ func (h *Handler) GetPerson(w http.ResponseWriter, r *http.Request) {
 	httpx.RenderJSON(w, 200, frontoffice.MapPerson(p))
 }
 
+// TODO optimize
+func (h *Handler) GetPeople(w http.ResponseWriter, r *http.Request) {
+	ids := r.URL.Query()["id"]
+	recs := make([]*frontoffice.Person, len(ids))
+	for i, id := range ids {
+		ident, err := people.NewIdentifier(id)
+		if err != nil {
+			render.InternalServerError(w, r, err)
+			return
+		}
+
+		p, err := h.PeopleIndex.GetPersonByIdentifier(r.Context(), ident.Kind, ident.Value)
+		if err == people.ErrNotFound {
+			render.NotFound(w, r, err)
+			return
+		}
+		if err != nil {
+			render.InternalServerError(w, r, err)
+			return
+		}
+		recs[i] = frontoffice.MapPerson(p)
+	}
+
+	httpx.RenderJSON(w, 200, recs)
+}
+
 func (h *Handler) GetActivePerson(w http.ResponseWriter, r *http.Request) {
 	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
 	if err != nil {
@@ -243,6 +269,37 @@ func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	httpx.RenderJSON(w, 200, frontoffice.MapProject(p))
+}
+
+// TODO constrain to those with publications
+func (h *Handler) BrowseProjects(w http.ResponseWriter, r *http.Request) {
+	b := BindQuery{}
+	if err := bind.Query(r, &b); err != nil {
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	results, err := h.ProjectsIndex.BrowseProjects(r.Context(), projects.SearchParams{
+		Query:  b.Query,
+		Limit:  b.Limit,
+		Offset: b.Offset,
+	})
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	hits := &Hits[*frontoffice.Project]{
+		Limit:  results.Limit,
+		Offset: results.Offset,
+		Total:  results.Total,
+		Hits:   make([]*frontoffice.Project, len(results.Hits)),
+	}
+	for i, p := range results.Hits {
+		hits.Hits[i] = frontoffice.MapProject(p)
+	}
+
+	httpx.RenderJSON(w, 200, hits)
 }
 
 type BindGetAll struct {
