@@ -104,14 +104,14 @@ const identifierQuery = `{{define "query"}}{
 	}
 }{{end}}`
 
-const usernameQuery = `{{define "query"}}{
-	"bool": {
-		"filter": [
-			{"term": {"active": true}},
-			{"term": {"username": "{{.Username}}"}}
-		]
-	}
-}{{end}}`
+// const usernameQuery = `{{define "query"}}{
+// 	"bool": {
+// 		"filter": [
+// 			{"term": {"active": true}},
+// 			{"term": {"username": "{{.Username}}"}}
+// 		]
+// 	}
+// }{{end}}`
 
 const queryStringQuery = `{{define "query"}}{
 	{{if .Query}}
@@ -160,8 +160,8 @@ const browseNameQuery = `{{define "query"}}{
 }{{end}}`
 
 var (
-	identifierTmpl  = template.Must(template.New("").Parse(identifierQuery + searchBody))
-	usernameTmpl    = template.Must(template.New("").Parse(usernameQuery + searchBody))
+	identifierTmpl = template.Must(template.New("").Parse(identifierQuery + searchBody))
+	// usernameTmpl    = template.Must(template.New("").Parse(usernameQuery + searchBody))
 	queryStringTmpl = template.Must(template.New("").Parse(queryStringQuery + searchBody))
 	browseNameTmpl  = template.Must(template.New("").Parse(browseNameQuery + searchBody))
 )
@@ -174,9 +174,9 @@ func (idx *Index) GetPersonByIdentifier(ctx context.Context, kind, value string)
 	return getByIdentifier[Person](ctx, idx, peopleIndexName, Identifier{Kind: kind, Value: value}, false)
 }
 
-func (idx *Index) GetActivePersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
-	return getByIdentifier[Person](ctx, idx, peopleIndexName, Identifier{Kind: kind, Value: value}, true)
-}
+// func (idx *Index) GetActivePersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
+// 	return getByIdentifier[Person](ctx, idx, peopleIndexName, Identifier{Kind: kind, Value: value}, true)
+// }
 
 func getByIdentifier[T any](ctx context.Context, idx *Index, indexName string, ident Identifier, onlyActive bool) (*T, error) {
 	b := bytes.Buffer{}
@@ -216,41 +216,41 @@ func getByIdentifier[T any](ctx context.Context, idx *Index, indexName string, i
 	return resBody.Hits.Hits[0].Source.Record, nil
 }
 
-func (idx *Index) GetActivePersonByUsername(ctx context.Context, username string) (*Person, error) {
-	b := bytes.Buffer{}
-	err := usernameTmpl.Execute(&b, struct {
-		Limit    int
-		Offset   int
-		Username string
-	}{
-		Limit:    1,
-		Username: username,
-	})
-	if err != nil {
-		return nil, err
-	}
+// func (idx *Index) GetActivePersonByUsername(ctx context.Context, username string) (*Person, error) {
+// 	b := bytes.Buffer{}
+// 	err := usernameTmpl.Execute(&b, struct {
+// 		Limit    int
+// 		Offset   int
+// 		Username string
+// 	}{
+// 		Limit:    1,
+// 		Username: username,
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	res, err := idx.client.Search(
-		idx.client.Search.WithContext(ctx),
-		idx.client.Search.WithIndex(idx.prefix+peopleIndexName),
-		idx.client.Search.WithTrackTotalHits(false),
-		idx.client.Search.WithBody(strings.NewReader(b.String())),
-	)
-	if err != nil {
-		return nil, err
-	}
+// 	res, err := idx.client.Search(
+// 		idx.client.Search.WithContext(ctx),
+// 		idx.client.Search.WithIndex(idx.prefix+peopleIndexName),
+// 		idx.client.Search.WithTrackTotalHits(false),
+// 		idx.client.Search.WithBody(strings.NewReader(b.String())),
+// 	)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	resBody := searchResponseBody[*Person]{}
-	if err := decodeResponseBody(res, &resBody); err != nil {
-		return nil, err
-	}
+// 	resBody := searchResponseBody[*Person]{}
+// 	if err := decodeResponseBody(res, &resBody); err != nil {
+// 		return nil, err
+// 	}
 
-	if len(resBody.Hits.Hits) != 1 {
-		return nil, ErrNotFound
-	}
+// 	if len(resBody.Hits.Hits) != 1 {
+// 		return nil, ErrNotFound
+// 	}
 
-	return resBody.Hits.Hits[0].Source.Record, nil
-}
+// 	return resBody.Hits.Hits[0].Source.Record, nil
+// }
 
 func (idx *Index) SearchOrganizations(ctx context.Context, params SearchParams) (*SearchResults[*Organization], error) {
 	return search[Organization](ctx, idx, organizationsIndexName, queryStringTmpl, params, "_score:desc")

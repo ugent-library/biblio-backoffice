@@ -196,6 +196,59 @@ WHERE p.replaced_by_id IS NULL
 GROUP BY p.id;
 `
 
+const getActivePersonByIdentifierQuery = `
+SELECT p.id,
+	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.person_id IS NOT NULL) AS identifiers,
+	   array_agg(DISTINCT a.organization_id) FILTER (WHERE a.person_id IS NOT NULL) AS affiliations,
+       p.name,
+       p.preferred_name,
+	   p.given_name,
+	   p.preferred_given_name,
+	   p.family_name,
+	   p.preferred_family_name,
+	   p.honorific_prefix,
+	   p.email,
+	   p.active,
+	   p.role,
+	   p.username,
+	   p.attributes,
+	   p.tokens,
+	   p.created_at,
+	   p.updated_at
+FROM people p
+JOIN person_identifiers pi ON p.id = pi.person_id AND pi.kind = $1 and pi.value = $2
+LEFT JOIN person_identifiers ids ON p.id = ids.person_id
+LEFT JOIN affiliations a ON p.id = a.person_id
+WHERE p.replaced_by_id IS NULL AND p.active = TRUE
+GROUP BY p.id;
+`
+
+const getActivePersonByUsernameQuery = `
+SELECT p.id,
+	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.person_id IS NOT NULL) AS identifiers,
+	   array_agg(DISTINCT a.organization_id) FILTER (WHERE a.person_id IS NOT NULL) AS affiliations,
+       p.name,
+       p.preferred_name,
+	   p.given_name,
+	   p.preferred_given_name,
+	   p.family_name,
+	   p.preferred_family_name,
+	   p.honorific_prefix,
+	   p.email,
+	   p.active,
+	   p.role,
+	   p.username,
+	   p.attributes,
+	   p.tokens,
+	   p.created_at,
+	   p.updated_at
+FROM people p
+LEFT JOIN person_identifiers ids ON p.id = ids.person_id
+LEFT JOIN affiliations a ON p.id = a.person_id
+WHERE p.replaced_by_id IS NULL AND p.active = TRUE AND p.username = $1
+GROUP BY p.id;
+`
+
 const getAllPeopleQuery = `
 SELECT id,
 	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.person_id IS NOT NULL) AS identifiers,
@@ -503,6 +556,132 @@ func getPersonByIdentifier(ctx context.Context, conn Conn, kind, value string) (
 	q := getPersonByIdentifierQuery
 
 	err := conn.QueryRow(ctx, q, kind, value).Scan(
+		&r.ID,
+		&r.Identifiers,
+		&orgIDs,
+		&r.Name,
+		&r.PreferredName,
+		&r.GivenName,
+		&r.PreferredGivenName,
+		&r.FamilyName,
+		&r.PreferredFamilyName,
+		&r.HonorificPrefix,
+		&r.Email,
+		&r.Active,
+		&r.Role,
+		&r.Username,
+		&r.Attributes,
+		&r.Tokens,
+		&r.CreatedAt,
+		&r.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, orgID := range orgIDs {
+		var org *Organization
+		rows, err := conn.Query(ctx, getParentOrganizations, orgID)
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var o organizationRow
+			if err := rows.Scan(
+				&o.Identifiers,
+				&o.Names,
+				&o.Ceased,
+				&o.CeasedOn,
+				&o.CreatedAt,
+				&o.UpdatedAt,
+			); err != nil {
+				return nil, err
+			}
+			if org == nil {
+				org = o.toOrganization()
+			} else {
+				org.Parents = append(org.Parents, o.toParentOrganization())
+			}
+		}
+
+		r.Affiliations = append(r.Affiliations, Affiliation{Organization: org})
+	}
+
+	return &r, nil
+}
+
+func getActivePersonByIdentifier(ctx context.Context, conn Conn, kind, value string) (*personRow, error) {
+	var r personRow
+
+	var orgIDs []int64
+
+	q := getActivePersonByIdentifierQuery
+
+	err := conn.QueryRow(ctx, q, kind, value).Scan(
+		&r.ID,
+		&r.Identifiers,
+		&orgIDs,
+		&r.Name,
+		&r.PreferredName,
+		&r.GivenName,
+		&r.PreferredGivenName,
+		&r.FamilyName,
+		&r.PreferredFamilyName,
+		&r.HonorificPrefix,
+		&r.Email,
+		&r.Active,
+		&r.Role,
+		&r.Username,
+		&r.Attributes,
+		&r.Tokens,
+		&r.CreatedAt,
+		&r.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, orgID := range orgIDs {
+		var org *Organization
+		rows, err := conn.Query(ctx, getParentOrganizations, orgID)
+		if err != nil {
+			return nil, err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			var o organizationRow
+			if err := rows.Scan(
+				&o.Identifiers,
+				&o.Names,
+				&o.Ceased,
+				&o.CeasedOn,
+				&o.CreatedAt,
+				&o.UpdatedAt,
+			); err != nil {
+				return nil, err
+			}
+			if org == nil {
+				org = o.toOrganization()
+			} else {
+				org.Parents = append(org.Parents, o.toParentOrganization())
+			}
+		}
+
+		r.Affiliations = append(r.Affiliations, Affiliation{Organization: org})
+	}
+
+	return &r, nil
+}
+
+func getActivePersonByUsername(ctx context.Context, conn Conn, username string) (*personRow, error) {
+	var r personRow
+
+	var orgIDs []int64
+
+	q := getActivePersonByUsernameQuery
+
+	err := conn.QueryRow(ctx, q, username).Scan(
 		&r.ID,
 		&r.Identifiers,
 		&orgIDs,
