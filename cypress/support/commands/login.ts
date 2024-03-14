@@ -1,4 +1,4 @@
-import { logCommand } from './helpers'
+import { logCommand } from "./helpers";
 
 export default function login(username, password): void {
   // WARNING: Whenever you change the code of the session setup, Cypress will throw an error:
@@ -9,46 +9,48 @@ export default function login(username, password): void {
   // Temporarily uncomment the following line to clear the sessions if this happens
   // Cypress.session.clearAllSavedSessions()
 
-  logCommand('login', { username }, username)
+  logCommand("login", { username }, username);
 
   cy.session(
     username,
     () => {
-      cy.request('/login', { log: false })
-        .then(response => {
-          const action = response.body.match(/action\=\"(.*)\" /)[1]
+      cy.request({ url: "/login", log: false }).then((response) => {
+        const form = new DOMParser()
+          .parseFromString(response.body, "text/html")
+          .querySelector("form");
 
-          return action.replace(/&amp;/g, '&')
-        })
-        .then(actionUrl =>
-          cy.request({
-            method: 'POST',
-            url: actionUrl,
-            form: true,
+        const body = Object.fromEntries(new FormData(form));
+        if ("username" in body) {
+          body.username = username;
+        }
+        if ("password" in body) {
+          body.password = password;
+        }
 
-            body: {
-              username,
-              password,
-            },
+        cy.request({
+          method: "POST",
+          url: form.action,
+          form: true,
+          body,
 
-            // Make sure we redirect back and get the cookie we need
-            followRedirect: true,
+          // Make sure we redirect back and get the cookie we need
+          followRedirect: true,
 
-            // Make sure we don't leak passwords in the Cypress log
-            log: false,
-          })
-        )
+          // Make sure we don't leak passwords in the Cypress log
+          log: false,
+        });
+      });
     },
     {
       cacheAcrossSpecs: true,
-    }
-  )
+    },
+  );
 }
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      login(username: string, password: string): Chainable<void>
+      login(username: string, password: string): Chainable<void>;
     }
   }
 }

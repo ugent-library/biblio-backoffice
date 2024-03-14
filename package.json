@@ -1,11 +1,13 @@
 {
   "private": true,
   "scripts": {
+    "dev": "reflex -d none -c reflex.docker.conf",
     "test": "cypress run --config-file cypress/cypress.config.ts",
-    "test:local": "cypress run --config-file cypress/cypress.config.ts --config baseUrl=http://localhost:3001",
-    "cypress:open": "cypress open --config-file cypress/cypress.config.ts --browser chrome --e2e",
-    "cypress:open:local": "cypress open --config-file cypress/cypress.config.ts --browser chrome --e2e --config baseUrl=http://localhost:3001",
+    "test:bibliodev": "env-cmd --file ./cypress/.env npm test --",
+    "cypress:open": "cypress open --config-file cypress/cypress.config.ts --browser electron --e2e",
+    "cypress:open:bibliodev": "env-cmd --file ./cypress/.env npm run cypress:open --",
     "cypress:record": "cypress/cypress-record.sh",
+    "db:reset": "go run main.go reset --force",
     "precommit": "node node_modules/js-precommit-hook",
     "generate-issue-test": "node ./cypress/scripts/generate-issue-test.mjs"
   },
@@ -22,9 +24,9 @@
   "devDependencies": {
     "cypress": "^13.6.6",
     "cypress-common": "github:ugent-library/cypress-common#3.16.1",
-    "cypress-dotenv": "^2.0.0",
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
+    "env-cmd": "^10.1.0",
     "js-precommit-hook": "git+https://github.com/ugent-library/js-precommit-hook.git",
     "laravel-mix": "^6.0.49",
     "resolve-url-loader": "^5.0.0",
