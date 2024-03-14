@@ -1,12 +1,21 @@
 package models
 
+import (
+	"slices"
+
+	"github.com/samber/lo"
+)
+
+var CollapseFromFacetLine = 2
+
 type SearchArgs struct {
-	Query    string              `query:"q,omitempty"`
-	Filters  map[string][]string `query:"f,omitempty"`
-	Page     int                 `query:"page"`
-	Sort     []string            `query:"sort,omitempty"`
-	PageSize int                 `query:"page-size"`
-	Facets   []string            `query:"-"`
+	Query      string              `query:"q,omitempty"`
+	Filters    map[string][]string `query:"f,omitempty"`
+	Page       int                 `query:"page"`
+	Sort       []string            `query:"sort,omitempty"`
+	PageSize   int                 `query:"page-size"`
+	Facets     []string            `query:"-"`
+	FacetLines [][]string          `query:"-"`
 }
 
 func NewSearchArgs() *SearchArgs {
@@ -24,16 +33,17 @@ func (s *SearchArgs) Clone() *SearchArgs {
 	sort := make([]string, len(s.Sort))
 	copy(sort, s.Sort)
 
-	facets := make([]string, len(s.Facets))
-	copy(facets, s.Facets)
+	facetLines := make([][]string, len(s.FacetLines))
+	copy(facetLines, s.FacetLines)
 
 	return &SearchArgs{
-		Query:    s.Query,
-		Filters:  filters,
-		Page:     s.Page,
-		Sort:     sort,
-		PageSize: s.PageSize,
-		Facets:   facets,
+		Query:      s.Query,
+		Filters:    filters,
+		Page:       s.Page,
+		Sort:       sort,
+		PageSize:   s.PageSize,
+		Facets:     lo.Flatten(facetLines),
+		FacetLines: facetLines,
 	}
 }
 
@@ -50,8 +60,9 @@ func (s *SearchArgs) WithFilter(field string, terms ...string) *SearchArgs {
 	return s
 }
 
-func (s *SearchArgs) WithFacets(facets ...string) *SearchArgs {
-	s.Facets = facets
+func (s *SearchArgs) WithFacetLines(facetLines [][]string) *SearchArgs {
+	s.FacetLines = facetLines
+	s.Facets = lo.Flatten(facetLines)
 	return s
 }
 
@@ -127,6 +138,35 @@ func (s *SearchArgs) Offset() int {
 func (s *SearchArgs) Cleanup() {
 	//remove filters with empty values
 	cleanupParams(s.Filters)
+}
+
+func (s *SearchArgs) IsCollapsedFacet(field string) bool {
+	if s.HasFilter(field) {
+		return false
+	}
+
+	for i, line := range s.FacetLines {
+		if slices.Contains(line, field) {
+			return i >= CollapseFromFacetLine
+		}
+	}
+
+	return false
+}
+
+func (s *SearchArgs) HasActiveCollapsedFacets() bool {
+	collpasibleFacetLines := s.FacetLines[CollapseFromFacetLine:]
+
+	for _, line := range collpasibleFacetLines {
+		for _, facet := range line {
+			if s.HasFilter(facet) {
+				return true
+			}
+		}
+	}
+
+	return false
+
 }
 
 func cleanupParams(m map[string][]string) {

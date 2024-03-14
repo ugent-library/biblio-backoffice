@@ -1,4 +1,4 @@
-<div class="dropdown{{if not (.SearchArgs.HasFilter "created_since")}} toggle-on{{end}}">
+<div class="dropdown {{if .SearchArgs.IsCollapsedFacet "created_since"}}toggle-on{{end}}">
     <a class="badge {{if .SearchArgs.HasFilter "created_since"}}bg-primary{{else}}badge-default{{end}} me-3"
         data-bs-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button"

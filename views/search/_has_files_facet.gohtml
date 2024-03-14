@@ -1,9 +1,9 @@
-<div class="dropdown{{if not (.SearchArgs.HasFilter "has_files")}} toggle-on{{end}}">
+<div class="dropdown {{if .SearchArgs.IsCollapsedFacet "has_files"}}toggle-on{{end}}">
     <a class="badge {{if .SearchArgs.HasFilter "has_files"}}bg-primary{{else if .Hits.Facets.has_files.HasMatches}}badge-default{{else}}badge-light{{end}} me-3"
         data-bs-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button"
     >
-        <span class="badge-text">Files</span>
+        <span class="badge-text">File</span>
         {{with .SearchArgs.FiltersFor "has_files"}}
         <span class="badge-value ml-2">
             &ndash;
@@ -20,7 +20,7 @@
         <div class="bc-navbar bc-navbar--bordered-bottom">
             <div class="bc-toolbar bc-toolbar--auto">
                 <div class="bc-toolbar-left">
-                    <h4 class="text-nowrap">Files</h4>
+                    <h4 class="text-nowrap">File</h4>
                 </div>
                 <div class="bc-toolbar-right">
                     <button type="button" class="btn btn-link form-check-all">Select all</button>

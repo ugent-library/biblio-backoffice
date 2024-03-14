@@ -1,21 +1,29 @@
-<div class="bc-toolbar bc-toolbar--auto mb-4 toggle-zone">
+<div
+  class="bc-toolbar bc-toolbar--auto mb-4{{if gt (len .SearchArgs.FacetLines) 2}} toggle-zone{{
+    end
+  }}"
+>
   <div class="bc-toolbar-left">
     <div class="bc-toolbar-item">
+      {{ range.SearchArgs.FacetLines }}
       <div class="badge-list">
-        {{ range.SearchArgs.Facets }}
+        {{ range .}}
         {{partial (printf "search/%s_facet" (. | replace "." "_")) $}}
         {{ end }}
       </div>
+      {{ end }}
     </div>
   </div>
   <div class="bc-toolbar-right">
     <div class="bc-toolbar-item">
       <div class="c-button-toolbar">
-        {{if eq .UserRole "curator"}}
+        {{if gt (len .SearchArgs.FacetLines) 2}}
         <div class="form-check">
           <input
             type="checkbox"
             id="show-all-facet-filters-toggle"
+            {{if
+            .SearchArgs.HasActiveCollapsedFacets}}checked{{end}}
             class="btn-check toggle"
             autocomplete="off"
           />
