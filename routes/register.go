@@ -132,6 +132,7 @@ func Register(c Config) {
 		BaseHandler:      baseHandler,
 		Repo:             c.Services.Repo,
 		FileStore:        c.Services.FileStore,
+		PeopleRepo:       c.Services.PeopleRepo,
 		PeopleIndex:      c.Services.PeopleIndex,
 		ProjectsIndex:    c.Services.ProjectsIndex,
 		FrontendUsername: c.FrontendUsername,
@@ -227,11 +228,12 @@ func Register(c Config) {
 	c.Router.Get("/frontoffice/dataset", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllDatasets))
 	c.Router.Get("/frontoffice/organization/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetOrganization))
 	c.Router.Get("/frontoffice/organization", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllOrganizations))
+	c.Router.Get("/frontoffice/user/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetUser))
+	c.Router.Get("/frontoffice/user/username/{username}", frontofficeHandler.BasicAuth(frontofficeHandler.GetUserByUsername))
 	c.Router.Get("/frontoffice/person/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetPerson))
-	c.Router.Get("/frontoffice/person/active/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetActivePerson))
-	c.Router.Get("/frontoffice/person/username/{username}", frontofficeHandler.BasicAuth(frontofficeHandler.GetActivePersonByUsername))
 	c.Router.Get("/frontoffice/person/list", frontofficeHandler.BasicAuth(frontofficeHandler.GetPeople))
 	c.Router.Get("/frontoffice/person/browse", frontofficeHandler.BasicAuth(frontofficeHandler.BrowsePeople))
+	c.Router.Get("/frontoffice/person", frontofficeHandler.BasicAuth(frontofficeHandler.SearchPeople))
 	c.Router.Get("/frontoffice/project/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetProject))
 	c.Router.Get("/frontoffice/project/browse", frontofficeHandler.BasicAuth(frontofficeHandler.BrowseProjects))
 	// frontoffice file download

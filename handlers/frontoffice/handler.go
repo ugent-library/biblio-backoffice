@@ -28,6 +28,7 @@ type Handler struct {
 	handlers.BaseHandler
 	Repo             *repositories.Repo
 	FileStore        backends.FileStore
+	PeopleRepo       *people.Repo
 	PeopleIndex      *people.Index
 	ProjectsIndex    *projects.Index
 	IPRanges         string
@@ -180,14 +181,14 @@ func (h *Handler) GetPeople(w http.ResponseWriter, r *http.Request) {
 	httpx.RenderJSON(w, 200, recs)
 }
 
-func (h *Handler) GetActivePerson(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	p, err := h.PeopleIndex.GetActivePersonByIdentifier(r.Context(), ident.Kind, ident.Value)
+	p, err := h.PeopleRepo.GetActivePersonByIdentifier(r.Context(), ident.Kind, ident.Value)
 	if err == people.ErrNotFound {
 		render.NotFound(w, r, err)
 		return
@@ -200,8 +201,8 @@ func (h *Handler) GetActivePerson(w http.ResponseWriter, r *http.Request) {
 	httpx.RenderJSON(w, 200, frontoffice.MapPerson(p))
 }
 
-func (h *Handler) GetActivePersonByUsername(w http.ResponseWriter, r *http.Request) {
-	p, err := h.PeopleIndex.GetActivePersonByUsername(r.Context(), bind.PathValue(r, "username"))
+func (h *Handler) GetUserByUsername(w http.ResponseWriter, r *http.Request) {
+	p, err := h.PeopleRepo.GetActivePersonByUsername(r.Context(), bind.PathValue(r, "username"))
 	if err == people.ErrNotFound {
 		render.NotFound(w, r, err)
 		return
@@ -218,6 +219,36 @@ type BindQuery struct {
 	Limit  int    `query:"limit"`
 	Offset int    `query:"offset"`
 	Query  string `query:"query"`
+}
+
+func (h *Handler) SearchPeople(w http.ResponseWriter, r *http.Request) {
+	b := BindQuery{}
+	if err := bind.Query(r, &b); err != nil {
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	results, err := h.PeopleIndex.SearchPeople(r.Context(), people.SearchParams{
+		Query:  b.Query,
+		Limit:  b.Limit,
+		Offset: b.Offset,
+	})
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	hits := &Hits[*frontoffice.Person]{
+		Limit:  results.Limit,
+		Offset: results.Offset,
+		Total:  results.Total,
+		Hits:   make([]*frontoffice.Person, len(results.Hits)),
+	}
+	for i, p := range results.Hits {
+		hits.Hits[i] = frontoffice.MapPerson(p)
+	}
+
+	httpx.RenderJSON(w, 200, hits)
 }
 
 // TODO constrain to those with publications

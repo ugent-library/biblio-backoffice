@@ -169,6 +169,28 @@ func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*
 	return row.toPerson(r.tokenSecret)
 }
 
+func (r *Repo) GetActivePersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
+	row, err := getActivePersonByIdentifier(ctx, r.conn, kind, value)
+	if err == pgx.ErrNoRows {
+		return nil, ErrNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	return row.toPerson(r.tokenSecret)
+}
+
+func (r *Repo) GetActivePersonByUsername(ctx context.Context, username string) (*Person, error) {
+	row, err := getActivePersonByUsername(ctx, r.conn, username)
+	if err == pgx.ErrNoRows {
+		return nil, ErrNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	return row.toPerson(r.tokenSecret)
+}
+
 // TODO get "conn busy" error when wrapping in tx
 func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool) error {
 	rows, err := r.conn.Query(ctx, getAllOrganizationsQuery)
