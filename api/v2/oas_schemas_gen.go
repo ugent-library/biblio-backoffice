@@ -530,6 +530,7 @@ type ImportOrganizationParams struct {
 	ParentIdentifier OptIdentifier `json:"parentIdentifier"`
 	Names            []Text        `json:"names"`
 	Ceased           OptBool       `json:"ceased"`
+	CeasedOn         OptDate       `json:"ceasedOn"`
 	CreatedAt        OptDateTime   `json:"createdAt"`
 	UpdatedAt        OptDateTime   `json:"updatedAt"`
 }
@@ -552,6 +553,11 @@ func (s *ImportOrganizationParams) GetNames() []Text {
 // GetCeased returns the value of Ceased.
 func (s *ImportOrganizationParams) GetCeased() OptBool {
 	return s.Ceased
+}
+
+// GetCeasedOn returns the value of CeasedOn.
+func (s *ImportOrganizationParams) GetCeasedOn() OptDate {
+	return s.CeasedOn
 }
 
 // GetCreatedAt returns the value of CreatedAt.
@@ -582,6 +588,11 @@ func (s *ImportOrganizationParams) SetNames(val []Text) {
 // SetCeased sets the value of Ceased.
 func (s *ImportOrganizationParams) SetCeased(val OptBool) {
 	s.Ceased = val
+}
+
+// SetCeasedOn sets the value of CeasedOn.
+func (s *ImportOrganizationParams) SetCeasedOn(val OptDate) {
+	s.CeasedOn = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.
@@ -994,6 +1005,52 @@ func (o OptBool) Or(d bool) bool {
 	return d
 }
 
+// NewOptDate returns new OptDate with value set to v.
+func NewOptDate(v time.Time) OptDate {
+	return OptDate{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDate is optional time.Time.
+type OptDate struct {
+	Value time.Time
+	Set   bool
+}
+
+// IsSet returns true if OptDate was set.
+func (o OptDate) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDate) Reset() {
+	var v time.Time
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDate) SetTo(v time.Time) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDate) Get() (v time.Time, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDate) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptDateTime returns new OptDateTime with value set to v.
 func NewOptDateTime(v time.Time) OptDateTime {
 	return OptDateTime{
@@ -1183,6 +1240,7 @@ type Organization struct {
 	Identifiers []Identifier         `json:"identifiers"`
 	Names       []Text               `json:"names"`
 	Ceased      bool                 `json:"ceased"`
+	CeasedOn    OptDate              `json:"ceasedOn"`
 	CreatedAt   time.Time            `json:"createdAt"`
 	Position    OptInt               `json:"position"`
 	UpdatedAt   time.Time            `json:"updatedAt"`
@@ -1202,6 +1260,11 @@ func (s *Organization) GetNames() []Text {
 // GetCeased returns the value of Ceased.
 func (s *Organization) GetCeased() bool {
 	return s.Ceased
+}
+
+// GetCeasedOn returns the value of CeasedOn.
+func (s *Organization) GetCeasedOn() OptDate {
+	return s.CeasedOn
 }
 
 // GetCreatedAt returns the value of CreatedAt.
@@ -1239,6 +1302,11 @@ func (s *Organization) SetCeased(val bool) {
 	s.Ceased = val
 }
 
+// SetCeasedOn sets the value of CeasedOn.
+func (s *Organization) SetCeasedOn(val OptDate) {
+	s.CeasedOn = val
+}
+
 // SetCreatedAt sets the value of CreatedAt.
 func (s *Organization) SetCreatedAt(val time.Time) {
 	s.CreatedAt = val
@@ -1264,6 +1332,7 @@ type ParentOrganization struct {
 	Identifiers []Identifier `json:"identifiers"`
 	Names       []Text       `json:"names"`
 	Ceased      bool         `json:"ceased"`
+	CeasedOn    OptDate      `json:"ceasedOn"`
 }
 
 // GetIdentifiers returns the value of Identifiers.
@@ -1281,6 +1350,11 @@ func (s *ParentOrganization) GetCeased() bool {
 	return s.Ceased
 }
 
+// GetCeasedOn returns the value of CeasedOn.
+func (s *ParentOrganization) GetCeasedOn() OptDate {
+	return s.CeasedOn
+}
+
 // SetIdentifiers sets the value of Identifiers.
 func (s *ParentOrganization) SetIdentifiers(val []Identifier) {
 	s.Identifiers = val
@@ -1294,6 +1368,11 @@ func (s *ParentOrganization) SetNames(val []Text) {
 // SetCeased sets the value of Ceased.
 func (s *ParentOrganization) SetCeased(val bool) {
 	s.Ceased = val
+}
+
+// SetCeasedOn sets the value of CeasedOn.
+func (s *ParentOrganization) SetCeasedOn(val OptDate) {
+	s.CeasedOn = val
 }
 
 // Ref: #/components/schemas/Person

@@ -33,6 +33,7 @@ type ImportOrganizationParams struct {
 	ParentIdentifier *Identifier `json:"parentIdentifier,omitempty"`
 	Names            Texts       `json:"names,omitempty"`
 	Ceased           bool        `json:"ceased"`
+	CeasedOn         *time.Time  `json:"ceasedOn,omitempty"`
 	CreatedAt        *time.Time  `json:"createdAt,omitempty"`
 	UpdatedAt        *time.Time  `json:"updatedAt,omitempty"`
 }
@@ -42,6 +43,7 @@ type Organization struct {
 	Identifiers Identifiers          `json:"identifiers"`
 	Names       Texts                `json:"names,omitempty"`
 	Ceased      bool                 `json:"ceased"`
+	CeasedOn    *time.Time           `json:"ceasedOn,omitempty"`
 	Position    int                  `json:"position"`
 	CreatedAt   time.Time            `json:"createdAt"`
 	UpdatedAt   time.Time            `json:"updatedAt"`
@@ -52,6 +54,7 @@ type ParentOrganization struct {
 	Identifiers Identifiers `json:"identifiers"`
 	Names       Texts       `json:"names,omitempty"`
 	Ceased      bool        `json:"ceased"`
+	CeasedOn    *time.Time  `json:"ceasedOn,omitempty"`
 }
 
 type ImportPersonParams struct {

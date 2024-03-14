@@ -141,6 +141,7 @@ func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value stri
 				&o.Identifiers,
 				&o.Names,
 				&o.Ceased,
+				&o.CeasedOn,
 				&o.CreatedAt,
 				&o.UpdatedAt,
 			); err != nil {
@@ -184,6 +185,7 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 			&row.Identifiers,
 			&row.Names,
 			&row.Ceased,
+			&row.CeasedOn,
 			&row.Position,
 			&row.CreatedAt,
 			&row.UpdatedAt,
@@ -205,6 +207,7 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 					&o.Identifiers,
 					&o.Names,
 					&o.Ceased,
+					&o.CeasedOn,
 					&o.CreatedAt,
 					&o.UpdatedAt,
 				); err != nil {
@@ -271,6 +274,7 @@ func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 					&o.Identifiers,
 					&o.Names,
 					&o.Ceased,
+					&o.CeasedOn,
 					&o.CreatedAt,
 					&o.UpdatedAt,
 				); err != nil {

@@ -1896,6 +1896,12 @@ func (s *ImportOrganizationParams) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.CeasedOn.Set {
+			e.FieldStart("ceasedOn")
+			s.CeasedOn.Encode(e, json.EncodeDate)
+		}
+	}
+	{
 		if s.CreatedAt.Set {
 			e.FieldStart("createdAt")
 			s.CreatedAt.Encode(e, json.EncodeDateTime)
@@ -1909,13 +1915,14 @@ func (s *ImportOrganizationParams) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfImportOrganizationParams = [6]string{
+var jsonFieldsNameOfImportOrganizationParams = [7]string{
 	0: "identifiers",
 	1: "parentIdentifier",
 	2: "names",
 	3: "ceased",
-	4: "createdAt",
-	5: "updatedAt",
+	4: "ceasedOn",
+	5: "createdAt",
+	6: "updatedAt",
 }
 
 // Decode decodes ImportOrganizationParams from json.
@@ -1981,6 +1988,16 @@ func (s *ImportOrganizationParams) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"ceased\"")
+			}
+		case "ceasedOn":
+			if err := func() error {
+				s.CeasedOn.Reset()
+				if err := s.CeasedOn.Decode(d, json.DecodeDate); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"ceasedOn\"")
 			}
 		case "createdAt":
 			if err := func() error {
@@ -3077,6 +3094,41 @@ func (s *OptBool) UnmarshalJSON(data []byte) error {
 }
 
 // Encode encodes time.Time as json.
+func (o OptDate) Encode(e *jx.Encoder, format func(*jx.Encoder, time.Time)) {
+	if !o.Set {
+		return
+	}
+	format(e, o.Value)
+}
+
+// Decode decodes time.Time from json.
+func (o *OptDate) Decode(d *jx.Decoder, format func(*jx.Decoder) (time.Time, error)) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptDate to nil")
+	}
+	o.Set = true
+	v, err := format(d)
+	if err != nil {
+		return err
+	}
+	o.Value = v
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptDate) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e, json.EncodeDate)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptDate) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d, json.DecodeDate)
+}
+
+// Encode encodes time.Time as json.
 func (o OptDateTime) Encode(e *jx.Encoder, format func(*jx.Encoder, time.Time)) {
 	if !o.Set {
 		return
@@ -3246,6 +3298,12 @@ func (s *Organization) encodeFields(e *jx.Encoder) {
 		e.Bool(s.Ceased)
 	}
 	{
+		if s.CeasedOn.Set {
+			e.FieldStart("ceasedOn")
+			s.CeasedOn.Encode(e, json.EncodeDate)
+		}
+	}
+	{
 		e.FieldStart("createdAt")
 		json.EncodeDateTime(e, s.CreatedAt)
 	}
@@ -3271,14 +3329,15 @@ func (s *Organization) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfOrganization = [7]string{
+var jsonFieldsNameOfOrganization = [8]string{
 	0: "identifiers",
 	1: "names",
 	2: "ceased",
-	3: "createdAt",
-	4: "position",
-	5: "updatedAt",
-	6: "parents",
+	3: "ceasedOn",
+	4: "createdAt",
+	5: "position",
+	6: "updatedAt",
+	7: "parents",
 }
 
 // Decode decodes Organization from json.
@@ -3337,8 +3396,18 @@ func (s *Organization) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"ceased\"")
 			}
+		case "ceasedOn":
+			if err := func() error {
+				s.CeasedOn.Reset()
+				if err := s.CeasedOn.Decode(d, json.DecodeDate); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"ceasedOn\"")
+			}
 		case "createdAt":
-			requiredBitSet[0] |= 1 << 3
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.CreatedAt = v
@@ -3360,7 +3429,7 @@ func (s *Organization) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"position\"")
 			}
 		case "updatedAt":
-			requiredBitSet[0] |= 1 << 5
+			requiredBitSet[0] |= 1 << 6
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.UpdatedAt = v
@@ -3398,7 +3467,7 @@ func (s *Organization) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00101101,
+		0b01010101,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -3475,12 +3544,19 @@ func (s *ParentOrganization) encodeFields(e *jx.Encoder) {
 		e.FieldStart("ceased")
 		e.Bool(s.Ceased)
 	}
+	{
+		if s.CeasedOn.Set {
+			e.FieldStart("ceasedOn")
+			s.CeasedOn.Encode(e, json.EncodeDate)
+		}
+	}
 }
 
-var jsonFieldsNameOfParentOrganization = [3]string{
+var jsonFieldsNameOfParentOrganization = [4]string{
 	0: "identifiers",
 	1: "names",
 	2: "ceased",
+	3: "ceasedOn",
 }
 
 // Decode decodes ParentOrganization from json.
@@ -3538,6 +3614,16 @@ func (s *ParentOrganization) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"ceased\"")
+			}
+		case "ceasedOn":
+			if err := func() error {
+				s.CeasedOn.Reset()
+				if err := s.CeasedOn.Decode(d, json.DecodeDate); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"ceasedOn\"")
 			}
 		default:
 			return d.Skip()
