@@ -53,7 +53,7 @@ type AffiliationPath struct {
 
 type Affiliation struct {
 	Path    []AffiliationPath `json:"path,omitempty"`
-	Name    string            `json:"-"`
+	Name    string            `json:"name"`
 	UGentID string            `json:"ugent_id,omitempty"`
 }
 

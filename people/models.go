@@ -38,7 +38,6 @@ type ImportOrganizationParams struct {
 	UpdatedAt        *time.Time  `json:"updatedAt,omitempty"`
 }
 
-// TODO add ceasedAt
 type Organization struct {
 	Identifiers Identifiers          `json:"identifiers"`
 	Names       Texts                `json:"names,omitempty"`
