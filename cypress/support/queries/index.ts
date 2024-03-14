@@ -1,3 +1,3 @@
-import getLabel from './get-label'
+import getLabel from "./get-label";
 
-Cypress.Commands.addQuery('getLabel', getLabel)
+Cypress.Commands.addQuery("getLabel", getLabel);
