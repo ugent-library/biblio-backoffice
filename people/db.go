@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/samber/lo"
 	"github.com/ugent-library/crypt"
 )
 
@@ -30,6 +31,7 @@ SELECT id,
 	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.organization_id IS NOT NULL) AS identifiers,
 	   names,
 	   ceased,
+	   ceased_on,
 	   position,
 	   created_at,
 	   updated_at
@@ -45,6 +47,7 @@ SELECT id,
 	   json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.organization_id IS NOT NULL) AS identifiers,
 	   names,
 	   ceased,
+	   ceased_on,
 	   position,
 	   created_at,
 	   updated_at
@@ -59,6 +62,7 @@ WITH RECURSIVE orgs AS (
 	       parent_id,
 	       names,
 	       ceased,
+		   ceased_on,
 		   created_at,
 		   updated_at,
 		   0 AS level
@@ -71,6 +75,7 @@ WITH RECURSIVE orgs AS (
            o.parent_id,
 	       o.names,
 	       o.ceased,
+		   o.ceased_on,
 		   o.created_at,
 		   o.updated_at,	
 		   orgs.level + 1
@@ -81,6 +86,7 @@ WITH RECURSIVE orgs AS (
 SELECT json_agg(DISTINCT jsonb_build_object('kind', ids.kind, 'value', ids.value)) FILTER (WHERE ids.organization_id IS NOT NULL) AS identifiers,
        o.names,
        o.ceased,
+	   o.ceased_on,
 	   o.created_at,
 	   o.updated_at
 FROM orgs o
@@ -88,6 +94,7 @@ LEFT JOIN organization_identifiers ids ON o.id = ids.organization_id
 GROUP BY o.id,
          o.names,
          o.ceased,
+		 o.ceased_on,
 		 o.created_at,
 		 o.updated_at,
 		 o.level
@@ -99,6 +106,7 @@ INSERT INTO organizations (
 	parent_id, 
 	names,
 	ceased,
+	ceased_on,
 	position,
 	created_at,
 	updated_at
@@ -107,6 +115,7 @@ VALUES (
 	$1,
 	$2,
 	$3,
+	$4,
 	(SELECT COUNT(*) FROM organizations WHERE parent_id = $1),
 	COALESCE($4,CURRENT_TIMESTAMP),
 	COALESCE($5,CURRENT_TIMESTAMP)
@@ -300,6 +309,7 @@ type organizationRow struct {
 	Identifiers []Identifier
 	Names       []Text
 	Ceased      bool
+	CeasedOn    pgtype.Date
 	Position    int
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -311,6 +321,7 @@ func (row *organizationRow) toOrganization() *Organization {
 		Names:       row.Names,
 		Ceased:      row.Ceased,
 		Position:    row.Position,
+		CeasedOn:    lo.Ternary(row.CeasedOn.Valid, &row.CeasedOn.Time, nil),
 		CreatedAt:   row.CreatedAt,
 		UpdatedAt:   row.UpdatedAt,
 	}
@@ -384,6 +395,7 @@ func getOrganizationByIdentifier(ctx context.Context, conn Conn, kind, value str
 		&r.Identifiers,
 		&r.Names,
 		&r.Ceased,
+		&r.CeasedOn,
 		&r.Position,
 		&r.CreatedAt,
 		&r.UpdatedAt,
@@ -419,6 +431,7 @@ func insertOrganization(ctx context.Context, conn Conn, o ImportOrganizationPara
 		parentID,
 		o.Names,
 		o.Ceased,
+		o.CeasedOn,
 		o.CreatedAt,
 		o.UpdatedAt,
 	).Scan(&id)
@@ -526,6 +539,7 @@ func getPersonByIdentifier(ctx context.Context, conn Conn, kind, value string) (
 				&o.Identifiers,
 				&o.Names,
 				&o.Ceased,
+				&o.CeasedOn,
 				&o.CreatedAt,
 				&o.UpdatedAt,
 			); err != nil {

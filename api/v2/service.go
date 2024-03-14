@@ -292,6 +292,7 @@ func convertOrganization(from *people.Organization) Organization {
 		Identifiers: lo.Map(from.Identifiers, func(v people.Identifier, _ int) Identifier { return Identifier(v) }),
 		Names:       lo.Map(from.Names, func(v people.Text, _ int) Text { return Text(v) }),
 		Ceased:      from.Ceased,
+		CeasedOn:    lo.Ternary(from.CeasedOn != nil, NewOptDate(*from.CeasedOn), OptDate{Set: false}),
 		Position:    NewOptInt(from.Position),
 		Parents:     lo.Map(from.Parents, func(v people.ParentOrganization, _ int) ParentOrganization { return convertParentOrganization(v) }),
 		CreatedAt:   from.CreatedAt,
@@ -336,7 +337,8 @@ func convertImportOrganizationParams(from ImportOrganizationParams) people.Impor
 		Identifiers:      lo.Map(from.Identifiers, func(v Identifier, _ int) people.Identifier { return people.Identifier(v) }),
 		ParentIdentifier: lo.Ternary(from.ParentIdentifier.Set, lo.ToPtr(people.Identifier(from.ParentIdentifier.Value)), nil),
 		Names:            lo.Map(from.Names, func(v Text, _ int) people.Text { return people.Text(v) }),
-		Ceased:           from.Ceased.Value,
+		Ceased:           from.Ceased.Value || from.CeasedOn.Set,
+		CeasedOn:         lo.Ternary(from.CeasedOn.Set, &from.CeasedOn.Value, nil),
 		CreatedAt:        lo.Ternary(from.CreatedAt.Set, &from.CreatedAt.Value, nil),
 		UpdatedAt:        lo.Ternary(from.UpdatedAt.Set, &from.UpdatedAt.Value, nil),
 	}

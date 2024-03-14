@@ -381,6 +381,9 @@ components:
             $ref: "#/components/schemas/Text"
         ceased:
           type: boolean
+        ceasedOn:
+          type: string
+          format: date
         createdAt:
           type: string
           format: date-time
@@ -692,6 +695,9 @@ components:
           minItems: 1
         ceased:
           type: boolean
+        ceasedOn:
+          type: string
+          format: date
         createdAt:
           type: string
           format: date-time
@@ -722,6 +728,9 @@ components:
           minItems: 1
         ceased:
           type: boolean
+        ceasedOn:
+          type: string
+          format: date
       required: [identifiers, ceased]
 
     Affiliation:
