@@ -107,13 +107,6 @@
             "type": "keyword",
             "normalizer": "tag"
           },
-          "active": {
-            "type": "boolean"
-          },
-          "username": {
-            "type": "keyword",
-            "normalizer": "tag"
-          },
           "record": {
             "type": "object",
             "enabled": "false"
