@@ -6,7 +6,7 @@ import (
 	"github.com/samber/lo"
 )
 
-var CollapseFromFacetLine = 2
+const CollapseFromFacetLine = 2
 
 type SearchArgs struct {
 	Query      string              `query:"q,omitempty"`
