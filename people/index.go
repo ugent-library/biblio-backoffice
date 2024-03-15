@@ -153,14 +153,14 @@ var (
 )
 
 func (idx *Index) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
-	return getByIdentifier[Organization](ctx, idx, organizationsIndexName, Identifier{Kind: kind, Value: value}, false)
+	return getByIdentifier[Organization](ctx, idx, organizationsIndexName, Identifier{Kind: kind, Value: value})
 }
 
 func (idx *Index) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
-	return getByIdentifier[Person](ctx, idx, peopleIndexName, Identifier{Kind: kind, Value: value}, false)
+	return getByIdentifier[Person](ctx, idx, peopleIndexName, Identifier{Kind: kind, Value: value})
 }
 
-func getByIdentifier[T any](ctx context.Context, idx *Index, indexName string, ident Identifier, onlyActive bool) (*T, error) {
+func getByIdentifier[T any](ctx context.Context, idx *Index, indexName string, ident Identifier) (*T, error) {
 	b := bytes.Buffer{}
 	err := identifierTmpl.Execute(&b, struct {
 		Limit      int
