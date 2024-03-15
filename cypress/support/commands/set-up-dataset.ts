@@ -2,15 +2,21 @@ import { logCommand } from "./helpers";
 
 const NO_LOG = { log: false };
 
-export default function setUpDataset(
-  prepareForPublishing = false,
-  title?: string,
-): void {
-  title ??= "The dataset title";
+type SetUpDatasetOptions = {
+  prepareForPublishing?: boolean;
+  title?: string;
+  biblioIDAlias?: string;
+};
 
+export default function setUpDataset({
+  prepareForPublishing = false,
+  title = "The dataset title",
+  biblioIDAlias = "biblioId",
+}: SetUpDatasetOptions = {}): void {
   logCommand("setUpDataset", {
     "Prepare for publishing": prepareForPublishing,
     title,
+    "Biblio ID alias": biblioIDAlias,
   });
 
   cy.visit("/dataset/add", NO_LOG);
@@ -35,7 +41,7 @@ export default function setUpDataset(
 
       return biblioId;
     })
-    .as("biblioId", { type: "static" });
+    .as(biblioIDAlias, { type: "static" });
 
   cy.wait("@completeDescription", NO_LOG);
 
@@ -83,10 +89,7 @@ export default function setUpDataset(
 declare global {
   namespace Cypress {
     interface Chainable {
-      setUpDataset(
-        prepareForPublishing?: boolean,
-        title?: string,
-      ): Chainable<void>;
+      setUpDataset(options?: SetUpDatasetOptions): Chainable<void>;
     }
   }
 }
