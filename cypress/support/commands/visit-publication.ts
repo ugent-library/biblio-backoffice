@@ -4,7 +4,7 @@ export default function visitPublication(
   bilbioIdAlias: string = "@biblioId",
 ): void {
   const log = logCommand("visitPublication", {
-    "BiblioID alias": bilbioIdAlias,
+    "Biblio ID alias": bilbioIdAlias,
   });
 
   cy.get(bilbioIdAlias, { log: false }).then((biblioId) => {
