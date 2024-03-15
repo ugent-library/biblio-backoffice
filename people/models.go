@@ -111,6 +111,7 @@ type Person struct {
 	Username            string        `json:"username,omitempty"`
 	Attributes          Attributes    `json:"attributes,omitempty"`
 	Tokens              Tokens        `json:"tokens,omitempty"`
+	PublicationCount    int           `json:"publication_count"`
 	Affiliations        []Affiliation `json:"affiliations,omitempty"`
 	CreatedAt           time.Time     `json:"createdAt"`
 	UpdatedAt           time.Time     `json:"updatedAt"`
