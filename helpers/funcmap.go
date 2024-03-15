@@ -50,5 +50,10 @@ func FormatBool(b bool, t, f string) string {
 }
 
 func FormatTime(t time.Time, loc *time.Location, fmt string) string {
+	if loc == nil {
+		// TODO this is not ok, should be the default but is not applied in devcontainer
+		loc, _ = time.LoadLocation("Europe/Brussels")
+	}
+
 	return t.In(loc).Format(fmt)
 }
