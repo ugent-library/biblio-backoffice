@@ -2,9 +2,21 @@ import { logCommand } from "./helpers";
 
 const NO_LOG = { log: false };
 
-export default function setUpDataset(prepareForPublishing = false): void {
+type SetUpDatasetOptions = {
+  prepareForPublishing?: boolean;
+  title?: string;
+  biblioIDAlias?: string;
+};
+
+export default function setUpDataset({
+  prepareForPublishing = false,
+  title = "The dataset title",
+  biblioIDAlias = "biblioId",
+}: SetUpDatasetOptions = {}): void {
   logCommand("setUpDataset", {
     "Prepare for publishing": prepareForPublishing,
+    title,
+    "Biblio ID alias": biblioIDAlias,
   });
 
   cy.visit("/dataset/add", NO_LOG);
@@ -29,14 +41,14 @@ export default function setUpDataset(prepareForPublishing = false): void {
 
       return biblioId;
     })
-    .as("biblioId", { type: "static" });
+    .as(biblioIDAlias, { type: "static" });
 
   cy.wait("@completeDescription", NO_LOG);
 
   cy.updateFields(
     "Dataset details",
     () => {
-      cy.setFieldByLabel("Title", `The dataset title [CYPRESSTEST]`);
+      cy.setFieldByLabel("Title", `${title} [CYPRESSTEST]`);
 
       cy.setFieldByLabel("Persistent identifier type", "DOI");
       cy.setFieldByLabel("Identifier", "10.5072/test/t");
@@ -77,7 +89,7 @@ export default function setUpDataset(prepareForPublishing = false): void {
 declare global {
   namespace Cypress {
     interface Chainable {
-      setUpDataset(prepareForPublishing?: boolean): Chainable<void>;
+      setUpDataset(options?: SetUpDatasetOptions): Chainable<void>;
     }
   }
 }
