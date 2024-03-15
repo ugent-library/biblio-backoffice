@@ -11,12 +11,21 @@ type PublicationType =
 
 const NO_LOG = { log: false };
 
+type SetUpPublicationOptions = {
+  prepareForPublishing?: boolean;
+  title?: string;
+  biblioIDAlias?: string;
+};
+
 export default function setUpPublication(
-  publicationType: PublicationType,
-  prepareForPublishing = false,
-  title?: string,
+  publicationType: PublicationType = "Miscellaneous",
+  options: SetUpPublicationOptions = {},
 ): void {
-  title ??= `The ${publicationType} title`;
+  const {
+    prepareForPublishing = false,
+    title = `The ${publicationType} title`,
+    biblioIDAlias = "biblioId",
+  } = options;
 
   logCommand(
     "setUpPublication",
@@ -24,6 +33,7 @@ export default function setUpPublication(
       "Publication type": publicationType,
       "Prepare for publishing": prepareForPublishing,
       title,
+      "Biblio ID alias": biblioIDAlias,
     },
     publicationType,
   );
@@ -54,7 +64,7 @@ export default function setUpPublication(
 
       return biblioId;
     })
-    .as("biblioId", { type: "static" });
+    .as(biblioIDAlias, { type: "static" });
 
   cy.wait("@completeDescription", NO_LOG);
 
@@ -93,9 +103,8 @@ declare global {
   namespace Cypress {
     interface Chainable {
       setUpPublication(
-        publicationType: PublicationType,
-        prepareForPublishing?: boolean,
-        title?: string,
+        publicationType?: PublicationType,
+        options?: SetUpPublicationOptions,
       ): Chainable<void>;
     }
   }
