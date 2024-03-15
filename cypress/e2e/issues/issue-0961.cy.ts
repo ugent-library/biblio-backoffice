@@ -8,12 +8,41 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
       cy.visit("/publication");
 
       assertNoCollapsibleFacetFilters();
+
+      listAllFacetsByFacetLine().should("eql", [
+        [
+          "Biblio status",
+          "Classification",
+          "Faculty",
+          "Publication year",
+          "Publication type",
+        ],
+        [
+          "Message",
+          "Locked",
+          "File",
+          "VABB type",
+          "Created since",
+          "Updated since",
+        ],
+      ]);
     });
 
     it("should not show collapsible facet filters for datasets", () => {
       cy.visit("/dataset");
 
       assertNoCollapsibleFacetFilters();
+
+      listAllFacetsByFacetLine().should("eql", [
+        [
+          "Biblio status",
+          "Faculty",
+          "Locked",
+          "Message",
+          "Created since",
+          "Updated since",
+        ],
+      ]);
     });
   });
 
@@ -33,12 +62,41 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
         cy.visit("/publication");
 
         assertNoCollapsibleFacetFilters();
+
+        listAllFacetsByFacetLine().should("eql", [
+          [
+            "Biblio status",
+            "Classification",
+            "Faculty",
+            "Publication year",
+            "Publication type",
+          ],
+          [
+            "Message",
+            "Locked",
+            "File",
+            "VABB type",
+            "Created since",
+            "Updated since",
+          ],
+        ]);
       });
 
       it("should not show collapsible facet filters for datasets", () => {
         cy.visit("/dataset");
 
         assertNoCollapsibleFacetFilters();
+
+        listAllFacetsByFacetLine().should("eql", [
+          [
+            "Biblio status",
+            "Faculty",
+            "Locked",
+            "Message",
+            "Created since",
+            "Updated since",
+          ],
+        ]);
       });
     });
 
@@ -47,38 +105,32 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
         cy.switchMode("Librarian");
       });
 
-      it("should show collapsible facet filters for publications", () => {
-        cy.visit("/publication");
+      it(
+        "should show collapsible facet filters for publications",
+        { scrollBehavior: false },
+        () => {
+          cy.visit("/publication");
 
-        cy.get(".toggle-zone").should("be.visible");
-        cy.get("#show-all-facet-filters-toggle").should("be.visible");
-        cy.contains(".btn", "Show all filters")
-          .as("showAllFilters")
-          .should("be.visible")
-          .closest(".bc-toolbar")
-          .find(".bc-toolbar-left .bc-toolbar-item .badge-list")
-          .as("facetLines")
-          .find(".dropdown .badge")
-          .as("facets");
+          cy.get(".toggle-zone").should("be.visible");
+          cy.get("#show-all-facet-filters-toggle").should("be.visible");
 
-        assertAssetsAreCollapsed();
-        cy.get("@facets").filter(":visible").should("have.length", 10);
+          cy.contains(".bc-toolbar", "Reset filters")
+            .find(".bc-toolbar-left .bc-toolbar-item .badge-list")
+            .find(".dropdown .badge")
+            .as("facets");
 
-        cy.get("@showAllFilters").click();
-        assertAssetsAreExpanded();
-        cy.get("@facets").filter(":visible").should("have.length", 17);
+          assertAssetsAreCollapsed();
+          cy.get("@facets").filter(":visible").should("have.length", 10);
 
-        cy.contains(".btn", "Show less filters").click();
-        assertAssetsAreCollapsed();
-        cy.get("@facets").filter(":visible").should("have.length", 10);
+          cy.contains(".btn", "Show all filters").click();
+          assertAssetsAreExpanded();
+          cy.get("@facets").filter(":visible").should("have.length", 17);
 
-        cy.get("@facetLines")
-          .map<HTMLElement, string[]>((badgeList) =>
-            Array.from(
-              badgeList.querySelectorAll(".dropdown .badge .badge-text"),
-            ).map((e) => e.textContent),
-          )
-          .should("eql", [
+          cy.contains(".btn", "Show less filters").click();
+          assertAssetsAreCollapsed();
+          cy.get("@facets").filter(":visible").should("have.length", 10);
+
+          listAllFacetsByFacetLine().should("eql", [
             [
               "Biblio status",
               "Classification",
@@ -103,7 +155,8 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
               "Legacy",
             ],
           ]);
-      });
+        },
+      );
 
       it("should not collapse the third line if one of its filters is active", () => {
         cy.visit("/publication");
@@ -222,6 +275,11 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
         cy.visit("/dataset");
 
         assertNoCollapsibleFacetFilters();
+
+        listAllFacetsByFacetLine().should("eql", [
+          ["Biblio status", "Faculty", "Locked", "Persistent identifier type"],
+          ["Librarian tags", "Message", "Created since", "Updated since"],
+        ]);
       });
     });
   });
@@ -242,5 +300,16 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
     cy.get(".toggle-zone .badge-list:visible").should("have.length", 3);
     cy.contains(".btn", "Show all filters").should("not.be.visible");
     cy.contains(".btn", "Show less filters").should("be.visible");
+  }
+
+  function listAllFacetsByFacetLine() {
+    return cy
+      .contains(".bc-toolbar", "Reset filters")
+      .find(".bc-toolbar-left .bc-toolbar-item .badge-list")
+      .map<HTMLElement, string[]>((badgeList) =>
+        Array.from(
+          badgeList.querySelectorAll(".dropdown .badge .badge-text"),
+        ).map((e) => e.textContent),
+      );
   }
 });

@@ -3,16 +3,17 @@ package vocabularies
 var Facets = map[string][][]string{
 	"publication": {
 		{
-
 			"status",
-			"locked",
-			"faculty_id",
-			"type",
-			"wos_type",
 			"classification",
+			"faculty_id",
 			"year",
-			"vabb_type",
+			"type",
+		},
+		{
+			"has_message",
+			"locked",
 			"has_files",
+			"vabb_type",
 			"created_since",
 			"updated_since",
 		},
@@ -45,8 +46,9 @@ var Facets = map[string][][]string{
 	"dataset": {
 		{
 			"status",
-			"locked",
 			"faculty_id",
+			"locked",
+			"has_message",
 			"created_since",
 			"updated_since",
 		},
@@ -54,13 +56,15 @@ var Facets = map[string][][]string{
 	"dataset_curation": {
 		{
 			"status",
-			"locked",
 			"faculty_id",
+			"locked",
+			"identifier_type",
+		},
+		{
 			"reviewer_tags",
 			"has_message",
 			"created_since",
 			"updated_since",
-			"identifier_type",
 		},
 	},
 }
