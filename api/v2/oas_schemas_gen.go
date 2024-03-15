@@ -1391,6 +1391,7 @@ type Person struct {
 	Role                OptString     `json:"role"`
 	Attributes          []Attribute   `json:"attributes"`
 	Tokens              []Token       `json:"tokens"`
+	PublicationCount    int           `json:"publicationCount"`
 	Affiliations        []Affiliation `json:"affiliations"`
 	CreatedAt           time.Time     `json:"createdAt"`
 	UpdatedAt           time.Time     `json:"updatedAt"`
@@ -1464,6 +1465,11 @@ func (s *Person) GetAttributes() []Attribute {
 // GetTokens returns the value of Tokens.
 func (s *Person) GetTokens() []Token {
 	return s.Tokens
+}
+
+// GetPublicationCount returns the value of PublicationCount.
+func (s *Person) GetPublicationCount() int {
+	return s.PublicationCount
 }
 
 // GetAffiliations returns the value of Affiliations.
@@ -1551,6 +1557,11 @@ func (s *Person) SetTokens(val []Token) {
 	s.Tokens = val
 }
 
+// SetPublicationCount sets the value of PublicationCount.
+func (s *Person) SetPublicationCount(val int) {
+	s.PublicationCount = val
+}
+
 // SetAffiliations sets the value of Affiliations.
 func (s *Person) SetAffiliations(val []Affiliation) {
 	s.Affiliations = val
@@ -1568,15 +1579,16 @@ func (s *Person) SetUpdatedAt(val time.Time) {
 
 // Ref: #/components/schemas/Project
 type Project struct {
-	Identifiers  []Identifier `json:"identifiers"`
-	Names        []Text       `json:"names"`
-	Descriptions []Text       `json:"descriptions"`
-	StartDate    OptString    `json:"startDate"`
-	EndDate      OptString    `json:"endDate"`
-	Deleted      bool         `json:"deleted"`
-	Attributes   []Attribute  `json:"attributes"`
-	CreatedAt    time.Time    `json:"createdAt"`
-	UpdatedAt    time.Time    `json:"updatedAt"`
+	Identifiers      []Identifier `json:"identifiers"`
+	Names            []Text       `json:"names"`
+	Descriptions     []Text       `json:"descriptions"`
+	StartDate        OptString    `json:"startDate"`
+	EndDate          OptString    `json:"endDate"`
+	Deleted          bool         `json:"deleted"`
+	Attributes       []Attribute  `json:"attributes"`
+	PublicationCount int          `json:"publicationCount"`
+	CreatedAt        time.Time    `json:"createdAt"`
+	UpdatedAt        time.Time    `json:"updatedAt"`
 }
 
 // GetIdentifiers returns the value of Identifiers.
@@ -1612,6 +1624,11 @@ func (s *Project) GetDeleted() bool {
 // GetAttributes returns the value of Attributes.
 func (s *Project) GetAttributes() []Attribute {
 	return s.Attributes
+}
+
+// GetPublicationCount returns the value of PublicationCount.
+func (s *Project) GetPublicationCount() int {
+	return s.PublicationCount
 }
 
 // GetCreatedAt returns the value of CreatedAt.
@@ -1657,6 +1674,11 @@ func (s *Project) SetDeleted(val bool) {
 // SetAttributes sets the value of Attributes.
 func (s *Project) SetAttributes(val []Attribute) {
 	s.Attributes = val
+}
+
+// SetPublicationCount sets the value of PublicationCount.
+func (s *Project) SetPublicationCount(val int) {
+	s.PublicationCount = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.

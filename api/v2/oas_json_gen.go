@@ -3781,6 +3781,10 @@ func (s *Person) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		e.FieldStart("publicationCount")
+		e.Int(s.PublicationCount)
+	}
+	{
 		if s.Affiliations != nil {
 			e.FieldStart("affiliations")
 			e.ArrStart()
@@ -3800,7 +3804,7 @@ func (s *Person) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfPerson = [17]string{
+var jsonFieldsNameOfPerson = [18]string{
 	0:  "identifiers",
 	1:  "name",
 	2:  "preferredName",
@@ -3815,9 +3819,10 @@ var jsonFieldsNameOfPerson = [17]string{
 	11: "role",
 	12: "attributes",
 	13: "tokens",
-	14: "affiliations",
-	15: "createdAt",
-	16: "updatedAt",
+	14: "publicationCount",
+	15: "affiliations",
+	16: "createdAt",
+	17: "updatedAt",
 }
 
 // Decode decodes Person from json.
@@ -3995,6 +4000,18 @@ func (s *Person) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"tokens\"")
 			}
+		case "publicationCount":
+			requiredBitSet[1] |= 1 << 6
+			if err := func() error {
+				v, err := d.Int()
+				s.PublicationCount = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"publicationCount\"")
+			}
 		case "affiliations":
 			if err := func() error {
 				s.Affiliations = make([]Affiliation, 0)
@@ -4013,7 +4030,7 @@ func (s *Person) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"affiliations\"")
 			}
 		case "createdAt":
-			requiredBitSet[1] |= 1 << 7
+			requiredBitSet[2] |= 1 << 0
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.CreatedAt = v
@@ -4025,7 +4042,7 @@ func (s *Person) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"createdAt\"")
 			}
 		case "updatedAt":
-			requiredBitSet[2] |= 1 << 0
+			requiredBitSet[2] |= 1 << 1
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.UpdatedAt = v
@@ -4047,8 +4064,8 @@ func (s *Person) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [3]uint8{
 		0b00000011,
-		0b10000100,
-		0b00000001,
+		0b01000100,
+		0b00000011,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -4158,6 +4175,10 @@ func (s *Project) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		e.FieldStart("publicationCount")
+		e.Int(s.PublicationCount)
+	}
+	{
 		e.FieldStart("createdAt")
 		json.EncodeDateTime(e, s.CreatedAt)
 	}
@@ -4167,7 +4188,7 @@ func (s *Project) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProject = [9]string{
+var jsonFieldsNameOfProject = [10]string{
 	0: "identifiers",
 	1: "names",
 	2: "descriptions",
@@ -4175,8 +4196,9 @@ var jsonFieldsNameOfProject = [9]string{
 	4: "endDate",
 	5: "deleted",
 	6: "attributes",
-	7: "createdAt",
-	8: "updatedAt",
+	7: "publicationCount",
+	8: "createdAt",
+	9: "updatedAt",
 }
 
 // Decode decodes Project from json.
@@ -4289,8 +4311,20 @@ func (s *Project) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"attributes\"")
 			}
-		case "createdAt":
+		case "publicationCount":
 			requiredBitSet[0] |= 1 << 7
+			if err := func() error {
+				v, err := d.Int()
+				s.PublicationCount = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"publicationCount\"")
+			}
+		case "createdAt":
+			requiredBitSet[1] |= 1 << 0
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.CreatedAt = v
@@ -4302,7 +4336,7 @@ func (s *Project) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"createdAt\"")
 			}
 		case "updatedAt":
-			requiredBitSet[1] |= 1 << 0
+			requiredBitSet[1] |= 1 << 1
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.UpdatedAt = v
@@ -4324,7 +4358,7 @@ func (s *Project) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
 		0b10100001,
-		0b00000001,
+		0b00000011,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
