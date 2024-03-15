@@ -138,8 +138,10 @@ const searchQuery = `{{define "query"}}{
 	"bool": {
 		"filter": [
 			{{range .Filters}}
-			{{if eq .Name "identifier"}}
+			{{if eq .Name "identifierKind"}}
 			{"term": {"flags": "identifier:{{.Value}}"}}
+			{{else if eq .Name "nameKey"}}
+			{"term": {"nameKey": "{{.Value}}"}}
 			{{end}}
 			{{end}}
 		]
@@ -149,19 +151,17 @@ const searchQuery = `{{define "query"}}{
 	{{end}}
 }{{end}}`
 
-const browseNameQuery = `{{define "query"}}{
-	"bool": {
-		"filter": [
-			{"term": {"nameKey": "{{.Query}}"}}
-		]
-	}
-}{{end}}`
-
 var (
 	identifierTmpl = template.Must(template.New("").Parse(identifierQuery + searchBody))
 	searchTmpl     = template.Must(template.New("").Parse(searchQuery + searchBody))
-	browseNameTmpl = template.Must(template.New("").Parse(browseNameQuery + searchBody))
 )
+
+const defaultSort = "relevance"
+
+var sorts = map[string]string{
+	"relevance": "_score:desc",
+	"name":      "sortName:asc",
+}
 
 func (idx *Index) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
 	return getByIdentifier[Organization](ctx, idx, organizationsIndexName, Identifier{Kind: kind, Value: value})
@@ -208,22 +208,27 @@ func getByIdentifier[T any](ctx context.Context, idx *Index, indexName string, i
 }
 
 func (idx *Index) SearchOrganizations(ctx context.Context, params SearchParams) (*SearchResults[*Organization], error) {
-	return search[Organization](ctx, idx, organizationsIndexName, searchTmpl, params, "_score:desc")
+	return search[Organization](ctx, idx, organizationsIndexName, searchTmpl, params)
 }
 
 func (idx *Index) SearchPeople(ctx context.Context, params SearchParams) (*SearchResults[*Person], error) {
-	return search[Person](ctx, idx, peopleIndexName, searchTmpl, params, "_score:desc")
+	return search[Person](ctx, idx, peopleIndexName, searchTmpl, params)
 }
 
-func (idx *Index) BrowsePeople(ctx context.Context, params SearchParams) (*SearchResults[*Person], error) {
-	return search[Person](ctx, idx, peopleIndexName, browseNameTmpl, params, "sortName:asc")
-}
+func search[T any](ctx context.Context, idx *Index, indexName string, tmpl *template.Template, params SearchParams) (*SearchResults[*T], error) {
+	if params.Sort == "" {
+		params.Sort = defaultSort
+	}
 
-func search[T any](ctx context.Context, idx *Index, indexName string, tmpl *template.Template, params SearchParams, sort string) (*SearchResults[*T], error) {
 	b := bytes.Buffer{}
 	err := tmpl.Execute(&b, params)
 	if err != nil {
 		return nil, err
+	}
+
+	sort, ok := sorts[params.Sort]
+	if !ok {
+		return nil, &InvalidSortError{Sort: params.Sort}
 	}
 
 	res, err := idx.client.Search(

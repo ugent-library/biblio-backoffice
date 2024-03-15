@@ -220,6 +220,7 @@ type BindQuery struct {
 	Offset  int      `query:"offset"`
 	Query   string   `query:"q"`
 	Filters []string `query:"f"`
+	Sort    string   `query:"sort"`
 }
 
 func (h *Handler) SearchPeople(w http.ResponseWriter, r *http.Request) {
@@ -233,6 +234,7 @@ func (h *Handler) SearchPeople(w http.ResponseWriter, r *http.Request) {
 		Limit:  b.Limit,
 		Offset: b.Offset,
 		Query:  b.Query,
+		Sort:   b.Sort,
 	}
 	for _, f := range b.Filters {
 		if err := params.AddFilter(f); err != nil {
@@ -242,37 +244,6 @@ func (h *Handler) SearchPeople(w http.ResponseWriter, r *http.Request) {
 	}
 
 	results, err := h.PeopleIndex.SearchPeople(r.Context(), params)
-	if err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
-
-	hits := &Hits[*frontoffice.Person]{
-		Limit:  results.Limit,
-		Offset: results.Offset,
-		Total:  results.Total,
-		Hits:   make([]*frontoffice.Person, len(results.Hits)),
-	}
-	for i, p := range results.Hits {
-		hits.Hits[i] = frontoffice.MapPerson(p)
-	}
-
-	httpx.RenderJSON(w, 200, hits)
-}
-
-// TODO constrain to those with publications
-func (h *Handler) BrowsePeople(w http.ResponseWriter, r *http.Request) {
-	b := BindQuery{}
-	if err := bind.Query(r, &b); err != nil {
-		render.BadRequest(w, r, err)
-		return
-	}
-
-	results, err := h.PeopleIndex.BrowsePeople(r.Context(), people.SearchParams{
-		Query:  b.Query,
-		Limit:  b.Limit,
-		Offset: b.Offset,
-	})
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
