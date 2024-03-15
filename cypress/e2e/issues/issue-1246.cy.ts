@@ -27,7 +27,7 @@ describe("Issue #1246: Close button on toast does not work", () => {
   });
 
   it("should be possible to dismiss the publish publication toast", () => {
-    cy.setUpPublication("Miscellaneous", true);
+    cy.setUpPublication("Miscellaneous", { prepareForPublishing: true });
 
     cy.contains(".btn", "Save as draft").click();
 
@@ -43,7 +43,7 @@ describe("Issue #1246: Close button on toast does not work", () => {
   });
 
   it("should be possible to dismiss the withdraw publication toast", () => {
-    cy.setUpPublication("Miscellaneous", true);
+    cy.setUpPublication("Miscellaneous", { prepareForPublishing: true });
 
     cy.contains(".btn", "Publish to Biblio").click();
 
@@ -59,7 +59,7 @@ describe("Issue #1246: Close button on toast does not work", () => {
   });
 
   it("should be possible to dismiss the republish publication toast", () => {
-    cy.setUpPublication("Miscellaneous", true);
+    cy.setUpPublication("Miscellaneous", { prepareForPublishing: true });
 
     cy.contains(".btn", "Publish to Biblio").click();
 
