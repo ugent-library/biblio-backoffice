@@ -96,6 +96,9 @@
             "type": "keyword",
             "normalizer": "tag"
           },
+          "flags": {
+            "type": "keyword"
+          },
           "names": {
             "type": "text",
             "copy_to": [

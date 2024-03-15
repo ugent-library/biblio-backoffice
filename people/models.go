@@ -18,6 +18,14 @@ func (e *InvalidIdentifierError) Error() string {
 	return fmt.Sprintf("%q is not a valid identifier", e.Identifier)
 }
 
+type InvalidFilterError struct {
+	Filter string
+}
+
+func (e *InvalidFilterError) Error() string {
+	return fmt.Sprintf("%q is not a valid filter", e.Filter)
+}
+
 type DuplicateError struct {
 	Identifier string
 }
@@ -199,10 +207,27 @@ type Token struct {
 	Value []byte `json:"value"`
 }
 
+type SearchFilter struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
 type SearchParams struct {
-	Query  string `json:"query"`
-	Limit  int    `json:"limit"`
-	Offset int    `json:"offset"`
+	Query   string         `json:"query"`
+	Filters []SearchFilter `json:"filters"`
+	Limit   int            `json:"limit"`
+	Offset  int            `json:"offset"`
+}
+
+func (p *SearchParams) AddFilter(str string) error {
+	n, v, ok := strings.Cut(str, ":")
+	if !ok || n == "" || v == "" {
+		return &InvalidFilterError{Filter: str}
+	}
+
+	p.Filters = append(p.Filters, SearchFilter{Name: n, Value: v})
+
+	return nil
 }
 
 type SearchResults[T any] struct {
