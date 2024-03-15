@@ -8,7 +8,7 @@ describe('Issue #1364: Add "Updated (oldest first)" to sorting options', () => {
 
     for (let i = 1; i <= 3; i++) {
       cy.setUpPublication("Miscellaneous", false, `Title ${i} ${randomTitle}`);
-      cy.extractBiblioId().as(`publication_${i}`);
+      cy.extractBiblioId(`publication_${i}`);
       cy.visitPublication(`@publication_${i}`);
       cy.updateFields(
         "Publication details",
@@ -22,7 +22,7 @@ describe('Issue #1364: Add "Updated (oldest first)" to sorting options', () => {
       );
 
       cy.setUpDataset(false, `Title ${i} ${randomTitle}`);
-      cy.extractBiblioId().as(`dataset_${i}`);
+      cy.extractBiblioId(`dataset_${i}`);
       cy.visitDataset(`@dataset_${i}`);
       cy.updateFields(
         "Dataset details",
