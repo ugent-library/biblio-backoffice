@@ -604,13 +604,15 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Attribute"
+        publicationCount:
+          type: integer
         createdAt:
           type: string
           format: date-time
         updatedAt:
           type: string
           format: date-time
-      required: [identifiers, deleted, createdAt, updatedAt]
+      required: [identifiers, deleted, publicationCount, createdAt, updatedAt]
 
     AffiliationParams:
       type: object
@@ -668,6 +670,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Token"
+        publicationCount:
+          type: integer
         affiliations:
           type: array
           items:
@@ -678,7 +682,7 @@ components:
         updatedAt:
           type: string
           format: date-time
-      required: [identifiers, name, active, createdAt, updatedAt]
+      required: [identifiers, name, active, publicationCount, createdAt, updatedAt]
 
     Organization:
       type: object

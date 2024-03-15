@@ -275,15 +275,16 @@ func (s *Service) NewError(ctx context.Context, err error) *ErrorStatusCode {
 
 func convertProject(from *projects.Project) Project {
 	return Project{
-		Identifiers:  lo.Map(from.Identifiers, func(v projects.Identifier, _ int) Identifier { return Identifier(v) }),
-		Names:        lo.Map(from.Names, func(v projects.Text, _ int) Text { return Text(v) }),
-		Descriptions: lo.Map(from.Descriptions, func(v projects.Text, _ int) Text { return Text(v) }),
-		StartDate:    OptString{Set: from.StartDate != "", Value: from.StartDate},
-		EndDate:      OptString{Set: from.EndDate != "", Value: from.EndDate},
-		Deleted:      from.Deleted,
-		Attributes:   lo.Map(from.Attributes, func(v projects.Attribute, _ int) Attribute { return Attribute(v) }),
-		CreatedAt:    from.CreatedAt,
-		UpdatedAt:    from.UpdatedAt,
+		Identifiers:      lo.Map(from.Identifiers, func(v projects.Identifier, _ int) Identifier { return Identifier(v) }),
+		Names:            lo.Map(from.Names, func(v projects.Text, _ int) Text { return Text(v) }),
+		Descriptions:     lo.Map(from.Descriptions, func(v projects.Text, _ int) Text { return Text(v) }),
+		StartDate:        OptString{Set: from.StartDate != "", Value: from.StartDate},
+		EndDate:          OptString{Set: from.EndDate != "", Value: from.EndDate},
+		Deleted:          from.Deleted,
+		Attributes:       lo.Map(from.Attributes, func(v projects.Attribute, _ int) Attribute { return Attribute(v) }),
+		PublicationCount: from.PublicationCount,
+		CreatedAt:        from.CreatedAt,
+		UpdatedAt:        from.UpdatedAt,
 	}
 }
 
@@ -316,6 +317,7 @@ func convertPerson(from *people.Person) Person {
 		Username:            OptString{Set: from.Username != "", Value: from.Username},
 		Attributes:          lo.Map(from.Attributes, func(v people.Attribute, _ int) Attribute { return Attribute(v) }),
 		Tokens:              lo.Map(from.Tokens, func(v people.Token, _ int) Token { return Token(v) }),
+		PublicationCount:    from.PublicationCount,
 		Affiliations: lo.Map(from.Affiliations, func(a people.Affiliation, _ int) Affiliation {
 			return Affiliation{Organization: convertOrganization(a.Organization)}
 		}),
