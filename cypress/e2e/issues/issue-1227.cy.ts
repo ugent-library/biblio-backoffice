@@ -1,3 +1,5 @@
+import { getRandomText } from "support/util";
+
 describe("Issue #1127: Cannot search any longer on book title, journal title, short journal title nor conference title", () => {
   beforeEach(() => {
     cy.loginAsResearcher();
@@ -137,8 +139,4 @@ describe("Issue #1127: Cannot search any longer on book title, journal title, sh
 
     cy.search(randomText).should("eq", 1);
   });
-
-  function getRandomText() {
-    return crypto.randomUUID().replace(/-/g, "").toUpperCase();
-  }
 });
