@@ -216,9 +216,10 @@ func (h *Handler) GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 }
 
 type BindQuery struct {
-	Limit  int    `query:"limit"`
-	Offset int    `query:"offset"`
-	Query  string `query:"query"`
+	Limit   int      `query:"limit"`
+	Offset  int      `query:"offset"`
+	Query   string   `query:"q"`
+	Filters []string `query:"f"`
 }
 
 func (h *Handler) SearchPeople(w http.ResponseWriter, r *http.Request) {
@@ -228,11 +229,19 @@ func (h *Handler) SearchPeople(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	results, err := h.PeopleIndex.SearchPeople(r.Context(), people.SearchParams{
-		Query:  b.Query,
+	params := people.SearchParams{
 		Limit:  b.Limit,
 		Offset: b.Offset,
-	})
+		Query:  b.Query,
+	}
+	for _, f := range b.Filters {
+		if err := params.AddFilter(f); err != nil {
+			render.BadRequest(w, r, err)
+			return
+		}
+	}
+
+	results, err := h.PeopleIndex.SearchPeople(r.Context(), params)
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return

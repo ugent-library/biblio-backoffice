@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"slices"
 	"strings"
 	"text/template"
 
@@ -100,7 +101,7 @@ const identifierQuery = `{{define "query"}}{
 	}
 }{{end}}`
 
-const queryStringQuery = `{{define "query"}}{
+const searchQuery = `{{define "query"}}{
 	{{if .Query}}
 	"dis_max": {
 		"queries": [
@@ -133,6 +134,16 @@ const queryStringQuery = `{{define "query"}}{
 			}
 		]
 	}
+	{{else if .Filters}}
+	"bool": {
+		"filter": [
+			{{range .Filters}}
+			{{if eq .Name "identifier"}}
+			{"term": {"flags": "identifier:{{.Value}}"}}
+			{{end}}
+			{{end}}
+		]
+	}
 	{{else}}
 	"match_all": {}
 	{{end}}
@@ -147,9 +158,9 @@ const browseNameQuery = `{{define "query"}}{
 }{{end}}`
 
 var (
-	identifierTmpl  = template.Must(template.New("").Parse(identifierQuery + searchBody))
-	queryStringTmpl = template.Must(template.New("").Parse(queryStringQuery + searchBody))
-	browseNameTmpl  = template.Must(template.New("").Parse(browseNameQuery + searchBody))
+	identifierTmpl = template.Must(template.New("").Parse(identifierQuery + searchBody))
+	searchTmpl     = template.Must(template.New("").Parse(searchQuery + searchBody))
+	browseNameTmpl = template.Must(template.New("").Parse(browseNameQuery + searchBody))
 )
 
 func (idx *Index) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
@@ -197,11 +208,11 @@ func getByIdentifier[T any](ctx context.Context, idx *Index, indexName string, i
 }
 
 func (idx *Index) SearchOrganizations(ctx context.Context, params SearchParams) (*SearchResults[*Organization], error) {
-	return search[Organization](ctx, idx, organizationsIndexName, queryStringTmpl, params, "_score:desc")
+	return search[Organization](ctx, idx, organizationsIndexName, searchTmpl, params, "_score:desc")
 }
 
 func (idx *Index) SearchPeople(ctx context.Context, params SearchParams) (*SearchResults[*Person], error) {
-	return search[Person](ctx, idx, peopleIndexName, queryStringTmpl, params, "_score:desc")
+	return search[Person](ctx, idx, peopleIndexName, searchTmpl, params, "_score:desc")
 }
 
 func (idx *Index) BrowsePeople(ctx context.Context, params SearchParams) (*SearchResults[*Person], error) {
@@ -346,6 +357,7 @@ func toOrganizationDoc(o *Organization) (string, []byte, error) {
 type personDoc struct {
 	NameKey     string   `json:"nameKey"`
 	SortName    string   `json:"sortName"`
+	Flags       []string `json:"flags"`
 	Names       []string `json:"names"`
 	Identifiers []string `json:"identifiers"`
 	Record      *Person  `json:"record"`
@@ -381,6 +393,12 @@ func toPersonDoc(p *Person) (string, []byte, error) {
 
 	for _, id := range p.Identifiers {
 		pd.Identifiers = append(pd.Identifiers, id.String(), id.Value)
+		if id.Kind != "id" {
+			flag := "identifier:" + id.Kind
+			if !slices.Contains(pd.Flags, flag) {
+				pd.Flags = append(pd.Flags, flag)
+			}
+		}
 	}
 
 	doc, err := json.Marshal(pd)
