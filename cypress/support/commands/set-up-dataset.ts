@@ -2,9 +2,15 @@ import { logCommand } from "./helpers";
 
 const NO_LOG = { log: false };
 
-export default function setUpDataset(prepareForPublishing = false): void {
+export default function setUpDataset(
+  prepareForPublishing = false,
+  title?: string,
+): void {
+  title ??= "The dataset title";
+
   logCommand("setUpDataset", {
     "Prepare for publishing": prepareForPublishing,
+    title,
   });
 
   cy.visit("/dataset/add", NO_LOG);
@@ -36,7 +42,7 @@ export default function setUpDataset(prepareForPublishing = false): void {
   cy.updateFields(
     "Dataset details",
     () => {
-      cy.setFieldByLabel("Title", `The dataset title [CYPRESSTEST]`);
+      cy.setFieldByLabel("Title", `${title} [CYPRESSTEST]`);
 
       cy.setFieldByLabel("Persistent identifier type", "DOI");
       cy.setFieldByLabel("Identifier", "10.5072/test/t");
@@ -77,7 +83,10 @@ export default function setUpDataset(prepareForPublishing = false): void {
 declare global {
   namespace Cypress {
     interface Chainable {
-      setUpDataset(prepareForPublishing?: boolean): Chainable<void>;
+      setUpDataset(
+        prepareForPublishing?: boolean,
+        title?: string,
+      ): Chainable<void>;
     }
   }
 }
