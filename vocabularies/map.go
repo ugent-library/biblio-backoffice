@@ -166,8 +166,9 @@ var Map = map[string][]string{
 	},
 	"publication_sorts": {
 		"date-updated-desc",
-		"date-created-asc",
+		"date-updated-asc",
 		"date-created-desc",
+		"date-created-asc",
 		"year-desc",
 	},
 	// NOTE keep ordered from most to least accessible
