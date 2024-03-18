@@ -210,9 +210,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
-			case 'i': // Prefix: "import-"
+			case 'i': // Prefix: "i"
 				origElem := elem
-				if l := len("import-"); len(elem) >= l && elem[0:l] == "import-" {
+				if l := len("i"); len(elem) >= l && elem[0:l] == "i" {
 					elem = elem[l:]
 				} else {
 					break
@@ -222,30 +222,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					break
 				}
 				switch elem[0] {
-				case 'o': // Prefix: "organizations"
+				case 'm': // Prefix: "mport-"
 					origElem := elem
-					if l := len("organizations"); len(elem) >= l && elem[0:l] == "organizations" {
-						elem = elem[l:]
-					} else {
-						break
-					}
-
-					if len(elem) == 0 {
-						// Leaf node.
-						switch r.Method {
-						case "POST":
-							s.handleImportOrganizationsRequest([0]string{}, elemIsEscaped, w, r)
-						default:
-							s.notAllowed(w, r, "POST")
-						}
-
-						return
-					}
-
-					elem = origElem
-				case 'p': // Prefix: "p"
-					origElem := elem
-					if l := len("p"); len(elem) >= l && elem[0:l] == "p" {
+					if l := len("mport-"); len(elem) >= l && elem[0:l] == "mport-" {
 						elem = elem[l:]
 					} else {
 						break
@@ -255,9 +234,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 					switch elem[0] {
-					case 'e': // Prefix: "erson"
+					case 'o': // Prefix: "organizations"
 						origElem := elem
-						if l := len("erson"); len(elem) >= l && elem[0:l] == "erson" {
+						if l := len("organizations"); len(elem) >= l && elem[0:l] == "organizations" {
 							elem = elem[l:]
 						} else {
 							break
@@ -267,7 +246,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							// Leaf node.
 							switch r.Method {
 							case "POST":
-								s.handleImportPersonRequest([0]string{}, elemIsEscaped, w, r)
+								s.handleImportOrganizationsRequest([0]string{}, elemIsEscaped, w, r)
 							default:
 								s.notAllowed(w, r, "POST")
 							}
@@ -276,27 +255,84 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						elem = origElem
-					case 'r': // Prefix: "roject"
+					case 'p': // Prefix: "p"
 						origElem := elem
-						if l := len("roject"); len(elem) >= l && elem[0:l] == "roject" {
+						if l := len("p"); len(elem) >= l && elem[0:l] == "p" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
 						if len(elem) == 0 {
-							// Leaf node.
-							switch r.Method {
-							case "POST":
-								s.handleImportProjectRequest([0]string{}, elemIsEscaped, w, r)
-							default:
-								s.notAllowed(w, r, "POST")
+							break
+						}
+						switch elem[0] {
+						case 'e': // Prefix: "erson"
+							origElem := elem
+							if l := len("erson"); len(elem) >= l && elem[0:l] == "erson" {
+								elem = elem[l:]
+							} else {
+								break
 							}
 
-							return
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "POST":
+									s.handleImportPersonRequest([0]string{}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "POST")
+								}
+
+								return
+							}
+
+							elem = origElem
+						case 'r': // Prefix: "roject"
+							origElem := elem
+							if l := len("roject"); len(elem) >= l && elem[0:l] == "roject" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "POST":
+									s.handleImportProjectRequest([0]string{}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "POST")
+								}
+
+								return
+							}
+
+							elem = origElem
 						}
 
 						elem = origElem
+					}
+
+					elem = origElem
+				case 'n': // Prefix: "ndex-projects"
+					origElem := elem
+					if l := len("ndex-projects"); len(elem) >= l && elem[0:l] == "ndex-projects" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleIndexProjectsRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "POST")
+						}
+
+						return
 					}
 
 					elem = origElem
@@ -661,9 +697,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 
 				elem = origElem
-			case 'i': // Prefix: "import-"
+			case 'i': // Prefix: "i"
 				origElem := elem
-				if l := len("import-"); len(elem) >= l && elem[0:l] == "import-" {
+				if l := len("i"); len(elem) >= l && elem[0:l] == "i" {
 					elem = elem[l:]
 				} else {
 					break
@@ -673,34 +709,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					break
 				}
 				switch elem[0] {
-				case 'o': // Prefix: "organizations"
+				case 'm': // Prefix: "mport-"
 					origElem := elem
-					if l := len("organizations"); len(elem) >= l && elem[0:l] == "organizations" {
-						elem = elem[l:]
-					} else {
-						break
-					}
-
-					if len(elem) == 0 {
-						switch method {
-						case "POST":
-							// Leaf: ImportOrganizations
-							r.name = "ImportOrganizations"
-							r.summary = "Import organization hierarchy"
-							r.operationID = "importOrganizations"
-							r.pathPattern = "/import-organizations"
-							r.args = args
-							r.count = 0
-							return r, true
-						default:
-							return
-						}
-					}
-
-					elem = origElem
-				case 'p': // Prefix: "p"
-					origElem := elem
-					if l := len("p"); len(elem) >= l && elem[0:l] == "p" {
+					if l := len("mport-"); len(elem) >= l && elem[0:l] == "mport-" {
 						elem = elem[l:]
 					} else {
 						break
@@ -710,9 +721,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						break
 					}
 					switch elem[0] {
-					case 'e': // Prefix: "erson"
+					case 'o': // Prefix: "organizations"
 						origElem := elem
-						if l := len("erson"); len(elem) >= l && elem[0:l] == "erson" {
+						if l := len("organizations"); len(elem) >= l && elem[0:l] == "organizations" {
 							elem = elem[l:]
 						} else {
 							break
@@ -721,11 +732,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						if len(elem) == 0 {
 							switch method {
 							case "POST":
-								// Leaf: ImportPerson
-								r.name = "ImportPerson"
-								r.summary = "Import a person"
-								r.operationID = "importPerson"
-								r.pathPattern = "/import-person"
+								// Leaf: ImportOrganizations
+								r.name = "ImportOrganizations"
+								r.summary = "Import organization hierarchy"
+								r.operationID = "importOrganizations"
+								r.pathPattern = "/import-organizations"
 								r.args = args
 								r.count = 0
 								return r, true
@@ -735,31 +746,96 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						elem = origElem
-					case 'r': // Prefix: "roject"
+					case 'p': // Prefix: "p"
 						origElem := elem
-						if l := len("roject"); len(elem) >= l && elem[0:l] == "roject" {
+						if l := len("p"); len(elem) >= l && elem[0:l] == "p" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
 						if len(elem) == 0 {
-							switch method {
-							case "POST":
-								// Leaf: ImportProject
-								r.name = "ImportProject"
-								r.summary = "Import a project"
-								r.operationID = "importProject"
-								r.pathPattern = "/import-project"
-								r.args = args
-								r.count = 0
-								return r, true
-							default:
-								return
+							break
+						}
+						switch elem[0] {
+						case 'e': // Prefix: "erson"
+							origElem := elem
+							if l := len("erson"); len(elem) >= l && elem[0:l] == "erson" {
+								elem = elem[l:]
+							} else {
+								break
 							}
+
+							if len(elem) == 0 {
+								switch method {
+								case "POST":
+									// Leaf: ImportPerson
+									r.name = "ImportPerson"
+									r.summary = "Import a person"
+									r.operationID = "importPerson"
+									r.pathPattern = "/import-person"
+									r.args = args
+									r.count = 0
+									return r, true
+								default:
+									return
+								}
+							}
+
+							elem = origElem
+						case 'r': // Prefix: "roject"
+							origElem := elem
+							if l := len("roject"); len(elem) >= l && elem[0:l] == "roject" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								switch method {
+								case "POST":
+									// Leaf: ImportProject
+									r.name = "ImportProject"
+									r.summary = "Import a project"
+									r.operationID = "importProject"
+									r.pathPattern = "/import-project"
+									r.args = args
+									r.count = 0
+									return r, true
+								default:
+									return
+								}
+							}
+
+							elem = origElem
 						}
 
 						elem = origElem
+					}
+
+					elem = origElem
+				case 'n': // Prefix: "ndex-projects"
+					origElem := elem
+					if l := len("ndex-projects"); len(elem) >= l && elem[0:l] == "ndex-projects" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "POST":
+							// Leaf: IndexProjects
+							r.name = "IndexProjects"
+							r.summary = "Index projects"
+							r.operationID = "indexProjects"
+							r.pathPattern = "/index-projects"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
 					}
 
 					elem = origElem
