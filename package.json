@@ -1,4 +1,5 @@
 {
+  "name": "biblio-backoffice",
   "private": true,
   "scripts": {
     "dev": "reflex -d none -c reflex.docker.conf",
