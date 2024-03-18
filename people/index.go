@@ -399,7 +399,7 @@ func toPersonDoc(p *Person) (string, []byte, error) {
 	for _, id := range p.Identifiers {
 		pd.Identifiers = append(pd.Identifiers, id.String(), id.Value)
 		if id.Kind != "id" {
-			flag := "identifier:" + id.Kind
+			flag := "identifierKind:" + id.Kind
 			if !slices.Contains(pd.Flags, flag) {
 				pd.Flags = append(pd.Flags, flag)
 			}
