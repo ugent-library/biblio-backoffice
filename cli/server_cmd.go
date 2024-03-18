@@ -11,9 +11,11 @@ import (
 	"github.com/Masterminds/sprig/v3"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/sessions"
+	"github.com/jackc/pgx/v5"
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/ory/graceful"
+	"github.com/riverqueue/river"
 	"github.com/spf13/cobra"
 	ffclient "github.com/thomaspoignant/go-feature-flag"
 	"github.com/thomaspoignant/go-feature-flag/retriever/fileretriever"
@@ -81,7 +83,7 @@ var serverStartCmd = &cobra.Command{
 		}
 
 		// start jobs
-		err := jobs.Start(context.TODO(), jobs.JobsConfig{
+		riverClient, err := jobs.Start(context.TODO(), jobs.JobsConfig{
 			PgxPool:       services.PgxPool,
 			Repo:          services.Repo,
 			PeopleRepo:    services.PeopleRepo,
@@ -95,7 +97,7 @@ var serverStartCmd = &cobra.Command{
 		}
 
 		// setup router
-		router, err := buildRouter(services)
+		router, err := buildRouter(services, riverClient)
 		if err != nil {
 			return err
 		}
@@ -118,7 +120,7 @@ var serverStartCmd = &cobra.Command{
 	},
 }
 
-func buildRouter(services *backends.Services) (*ich.Mux, error) {
+func buildRouter(services *backends.Services, riverClient *river.Client[pgx.Tx]) (*ich.Mux, error) {
 	b := config.BaseURL
 	if b == "" {
 		if config.Host == "" {
@@ -210,7 +212,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	}
 
 	// api server
-	apiService := api.NewService(services.PeopleRepo, services.PeopleIndex, services.ProjectsRepo, services.ProjectsIndex)
+	apiService := api.NewService(services.PeopleRepo, services.PeopleIndex, services.ProjectsRepo, services.ProjectsIndex, riverClient)
 	apiServer, err := api.NewServer(apiService, &api.ApiSecurityHandler{APIKey: config.APIKey})
 	if err != nil {
 		return nil, err

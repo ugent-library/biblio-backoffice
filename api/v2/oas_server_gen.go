@@ -56,6 +56,12 @@ type Handler interface {
 	//
 	// POST /import-project
 	ImportProject(ctx context.Context, req *ImportProjectRequest) (ImportProjectRes, error)
+	// IndexProjects implements indexProjects operation.
+	//
+	// Trigger indexing projects.
+	//
+	// POST /index-projects
+	IndexProjects(ctx context.Context) error
 	// SearchOrganizations implements searchOrganizations operation.
 	//
 	// Search organizations.

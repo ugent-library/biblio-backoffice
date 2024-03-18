@@ -8,6 +8,17 @@ info:
   version: 0.0.1
 
 paths:
+  "/index-projects":
+    post:
+      summary: Index projects
+      description: Trigger indexing projects
+      operationId: indexProjects
+      responses:
+        '204':
+          description: Success
+        default:
+          $ref: "#/components/responses/Error"
+
   "/get-organization":
     post:
       summary: Get organization
