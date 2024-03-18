@@ -13,14 +13,14 @@ import (
 	"github.com/ugent-library/friendly"
 )
 
-func FuncMap() template.FuncMap {
+func FuncMap(loc *time.Location) template.FuncMap {
 	return template.FuncMap{
 		"searchArgs":        models.NewSearchArgs,
 		"timeElapsed":       elapsed.LocalTime,
 		"formatRange":       FormatRange,
 		"formatBool":        FormatBool,
 		"formatBytes":       friendly.Bytes,
-		"formatTime":        FormatTime,
+		"formatTime":        getFormatTime(loc),
 		"languageName":      localize.LanguageName,
 		"resolveIdentifier": identifiers.Resolve,
 		"pathEscape":        url.PathEscape,
@@ -51,4 +51,10 @@ func FormatBool(b bool, t, f string) string {
 
 func FormatTime(t time.Time, loc *time.Location, fmt string) string {
 	return t.In(loc).Format(fmt)
+}
+
+func getFormatTime(loc *time.Location) func(time.Time, string) string {
+	return func(t time.Time, fmt string) string {
+		return FormatTime(t, loc, fmt)
+	}
 }
