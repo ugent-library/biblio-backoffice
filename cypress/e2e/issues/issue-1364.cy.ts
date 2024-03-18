@@ -92,19 +92,19 @@ describe('Issue #1364: Add "Updated (oldest first)" to sorting options', () => {
 
     getTitles().should("eql", ["Title 2", "Title 3", "Title 1"]);
 
-    cy.setFieldByLabel("Sort by", "date-updated-asc");
+    cy.setFieldByLabel("Sort by", "Updated (oldest first)");
     cy.wait(100);
     getTitles().should("eql", ["Title 1", "Title 3", "Title 2"]);
 
-    cy.setFieldByLabel("Sort by", "date-created-desc");
+    cy.setFieldByLabel("Sort by", "Added (newest first)");
     cy.wait(100);
     getTitles().should("eql", ["Title 3", "Title 2", "Title 1"]);
 
-    cy.setFieldByLabel("Sort by", "date-created-asc");
+    cy.setFieldByLabel("Sort by", "Added (oldest first)");
     cy.wait(100);
     getTitles().should("eql", ["Title 1", "Title 2", "Title 3"]);
 
-    cy.setFieldByLabel("Sort by", "year-desc");
+    cy.setFieldByLabel("Sort by", "Publication year (newest first)");
     cy.wait(100);
     getTitles().should("eql", ["Title 3", "Title 2", "Title 1"]);
   }
