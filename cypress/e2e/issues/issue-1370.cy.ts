@@ -9,8 +9,10 @@ dayjs.extend(CustomParseFormat);
 
 describe("Issue #1370: Make created, edited and system update timestamp more informative.", () => {
   const RANDOM_TEXT = getRandomText();
-  const CREATED_REGEX = /^Created (?<timestamp>.*) by Biblio Researcher.$/;
-  const EDITED_REGEX = /^Edited (?<timestamp>.*) by Biblio Librarian.$/;
+  const CREATED_REGEX =
+    /^Created (?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}) by Biblio Researcher.$/;
+  const EDITED_REGEX =
+    /^Edited (?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}) by Biblio Librarian.$/;
 
   describe("for publications", () => {
     before(() => {
@@ -112,7 +114,7 @@ describe("Issue #1370: Make created, edited and system update timestamp more inf
       .should("match", REGEX)
       .then((text) => {
         const { timestamp } = text.match(REGEX).groups;
-        const created = dayjs(timestamp, "DD/MM/YYYY HH:mm");
+        const created = dayjs(timestamp, "YYYY-MM-DD HH:mm");
 
         // Allow a 2 minute margin of error
         const lower = dayjs().second(0).millisecond(0).subtract(1, "minute");
