@@ -14,10 +14,12 @@ import (
 	"github.com/riverqueue/river/riverdriver/riverpgxv5"
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
+	"github.com/ugent-library/biblio-backoffice/repositories"
 )
 
 type JobsConfig struct {
 	PgxPool       *pgxpool.Pool
+	Repo          *repositories.Repo
 	PeopleRepo    *people.Repo
 	PeopleIndex   *people.Index
 	ProjectsRepo  *projects.Repo
@@ -32,6 +34,7 @@ func Start(ctx context.Context, c JobsConfig) error {
 	river.AddWorker(riverWorkers, NewReindexOrganizationsWorker(c.PeopleRepo, c.PeopleIndex))
 	river.AddWorker(riverWorkers, NewReindexPeopleWorker(c.PeopleRepo, c.PeopleIndex))
 	river.AddWorker(riverWorkers, NewReindexProjectsWorker(c.ProjectsRepo, c.ProjectsIndex))
+	river.AddWorker(riverWorkers, NewUpdatePublicationCountWorker(c.Repo, c.PeopleRepo, c.ProjectsRepo))
 	riverClient, err := river.NewClient(riverpgxv5.New(c.PgxPool), &river.Config{
 		Logger:  c.Logger,
 		Workers: riverWorkers,
@@ -64,6 +67,13 @@ func Start(ctx context.Context, c JobsConfig) error {
 				river.PeriodicInterval(30*time.Minute),
 				func() (river.JobArgs, *river.InsertOpts) {
 					return ReindexProjectsArgs{}, nil
+				},
+				&river.PeriodicJobOpts{RunOnStart: true},
+			),
+			river.NewPeriodicJob(
+				river.PeriodicInterval(1*time.Hour),
+				func() (river.JobArgs, *river.InsertOpts) {
+					return UpdatePublicationCountArgs{}, nil
 				},
 				&river.PeriodicJobOpts{RunOnStart: true},
 			),

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/riverqueue/river"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/repositories"
@@ -39,5 +40,53 @@ func NewUpdatePublicationCountWorker(repo *repositories.Repo, peopleRepo *people
 }
 
 func (w *UpdatePublicationCountWorker) Work(ctx context.Context, job *river.Job[UpdatePublicationCountArgs]) error {
-	return nil
+	peopleCounts := make(map[string]int)
+	projectCounts := make(map[string]int)
+
+	w.repo.EachPublication(func(p *models.Publication) bool {
+		if p.Status != "public" {
+			return true
+		}
+		for _, rp := range p.RelatedProjects {
+			projectCounts[rp.ProjectID] += 1
+		}
+		for _, a := range p.Author {
+			if a.PersonID != "" {
+				peopleCounts[a.PersonID] += 1
+			}
+		}
+		if p.Type == "book_editor" || p.Type == "issue_editor" {
+			for _, a := range p.Editor {
+				if a.PersonID != "" {
+					peopleCounts[a.PersonID] += 1
+				}
+			}
+		}
+		return true
+	})
+
+	var numPeeps int
+
+	var iterErr error
+	w.peopleRepo.EachPerson(ctx, func(p *people.Person) bool {
+		numPeeps++
+		var count int
+		for _, id := range p.Identifiers.GetAll("id") {
+			if c, ok := peopleCounts[id]; ok {
+				count = c
+				break
+			}
+		}
+
+		id := p.Identifiers.Get("id")
+		iterErr = w.peopleRepo.SetPersonPublicationCount(ctx, "id", id, count)
+
+		return iterErr == nil
+	})
+
+	return iterErr
+}
+
+func (w *UpdatePublicationCountWorker) Timeout(*river.Job[UpdatePublicationCountArgs]) time.Duration {
+	return 10 * time.Minute
 }

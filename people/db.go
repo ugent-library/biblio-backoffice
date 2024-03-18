@@ -189,7 +189,7 @@ SELECT p.id,
 	   p.created_at,
 	   p.updated_at
 FROM people p
-JOIN person_identifiers pi ON p.id = pi.person_id AND pi.kind = $1 and pi.value = $2
+JOIN person_identifiers pi ON p.id = pi.person_id AND pi.kind = $1 AND pi.value = $2
 LEFT JOIN person_identifiers ids ON p.id = ids.person_id
 LEFT JOIN affiliations a ON p.id = a.person_id
 WHERE p.replaced_by_id IS NULL
@@ -354,6 +354,13 @@ WHERE id = $1;
 const deactivatePeopleQuery = `
 UPDATE people SET active = FALSE
 WHERE updated_at < $1;
+`
+
+const setPersonPublicationCount = `
+UPDATE people p
+SET publication_count = $3
+FROM person_identifiers pi
+WHERE p.replaced_by_id IS NULL AND p.id = pi.person_id AND pi.kind = $1 AND pi.value = $2;
 `
 
 type organizationRow struct {
