@@ -147,9 +147,12 @@
                     </div>
 
                     {{block "summary_footer" .}}{{end}}
-                    <div class="d-lg-flex flex-row-reverse align-items-center justify-content-end gap-4">
-                        <ul class="c-meta-list c-meta-list-horizontal d-block">
-                            <li class="c-meta-item c-body-small d-inline">
+                    <div class="d-lg-flex flex-row-reverse align-items-center justify-content-end vstack gap-4 flex-wrap">
+                        <ul class="c-meta-list c-meta-list-inline c-body-small">
+                            <li class="c-meta-item">
+                                {{partial "shared/created_by" .Dataset}}
+                            </li>
+                            <li class="c-meta-item">
                                 {{partial "shared/updated_by" .Dataset}}
                             </li>
                         </ul>
