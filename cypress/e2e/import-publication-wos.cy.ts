@@ -44,6 +44,8 @@ describe("Publication import", () => {
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
 
     cy.contains("Review and publish").should("be.visible");
+    cy.wait(1000); // Give elastic some extra time to index imports
+    cy.reload();
     cy.contains("Imported publications Showing 3").should("be.visible");
 
     // Delete 2 publications
