@@ -34,12 +34,14 @@ func Start(ctx context.Context, c JobsConfig) (*river.Client[pgx.Tx], error) {
 
 	// Periodic workers
 	river.AddWorker(riverWorkers, NewDeactivatePeopleWorker(c.PeopleRepo))
-	river.AddWorker(riverWorkers, NewReindexOrganizationsWorker(c.PeopleRepo, c.PeopleIndex))
-	river.AddWorker(riverWorkers, NewReindexPeopleWorker(c.PeopleRepo, c.PeopleIndex))
+	river.AddWorker(riverWorkers, NewReindexOrganizationsPeriodicWorker(c.PeopleRepo, c.PeopleIndex))
+	river.AddWorker(riverWorkers, NewReindexPeoplePeriodicWorker(c.PeopleRepo, c.PeopleIndex))
 	river.AddWorker(riverWorkers, NewReindexProjectsPeriodicWorker(c.ProjectsRepo, c.ProjectsIndex))
 	river.AddWorker(riverWorkers, NewUpdatePublicationCountWorker(c.Repo, c.PeopleRepo, c.ProjectsRepo))
 	// One-off workers
+	river.AddWorker(riverWorkers, NewReindexOrganizationsWorker(c.PeopleRepo, c.PeopleIndex))
 	river.AddWorker(riverWorkers, NewReindexProjectsWorker(c.ProjectsRepo, c.ProjectsIndex))
+	river.AddWorker(riverWorkers, NewReindexPeopleWorker(c.PeopleRepo, c.PeopleIndex))
 
 	riverClient, err := river.NewClient(riverpgxv5.New(c.PgxPool), &river.Config{
 		Logger:  c.Logger,

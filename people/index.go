@@ -405,6 +405,9 @@ func toPersonDoc(p *Person) (string, []byte, error) {
 			}
 		}
 	}
+	if p.PublicationCount > 0 {
+		pd.Flags = append(pd.Flags, "hasPublications")
+	}
 
 	doc, err := json.Marshal(pd)
 	if err != nil {

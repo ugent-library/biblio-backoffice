@@ -959,6 +959,12 @@ func (s *ImportProjectRequest) SetProject(val ImportProjectParams) {
 	s.Project = val
 }
 
+// IndexOrganizationsNoContent is response for IndexOrganizations operation.
+type IndexOrganizationsNoContent struct{}
+
+// IndexPeopleNoContent is response for IndexPeople operation.
+type IndexPeopleNoContent struct{}
+
 // IndexProjectsNoContent is response for IndexProjects operation.
 type IndexProjectsNoContent struct{}
 
