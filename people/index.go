@@ -138,8 +138,8 @@ const searchQuery = `{{define "query"}}{
 	"bool": {
 		"filter": [
 			{{range .Filters}}
-			{{if eq .Name "identifierKind"}}
-			{"term": {"flags": "identifier:{{.Value}}"}}
+			{{if eq .Name "has"}}
+			{"term": {"flags": "{{.Value}}"}}
 			{{else if eq .Name "nameKey"}}
 			{"term": {"nameKey": "{{.Value}}"}}
 			{{end}}
@@ -399,14 +399,13 @@ func toPersonDoc(p *Person) (string, []byte, error) {
 	for _, id := range p.Identifiers {
 		pd.Identifiers = append(pd.Identifiers, id.String(), id.Value)
 		if id.Kind != "id" {
-			flag := "identifierKind:" + id.Kind
-			if !slices.Contains(pd.Flags, flag) {
-				pd.Flags = append(pd.Flags, flag)
+			if !slices.Contains(pd.Flags, id.Kind) {
+				pd.Flags = append(pd.Flags, id.Kind)
 			}
 		}
 	}
 	if p.PublicationCount > 0 {
-		pd.Flags = append(pd.Flags, "hasPublications")
+		pd.Flags = append(pd.Flags, "publications")
 	}
 
 	doc, err := json.Marshal(pd)
