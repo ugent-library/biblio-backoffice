@@ -28,6 +28,9 @@ describe("Issue #1370: Make created, edited and system update timestamp more inf
         },
         true,
       );
+
+      // Give elastic some extra time to index
+      cy.wait(1000);
     });
 
     beforeEach(() => {
@@ -70,6 +73,9 @@ describe("Issue #1370: Make created, edited and system update timestamp more inf
         },
         true,
       );
+
+      // Give elastic some extra time to index
+      cy.wait(1000);
     });
 
     beforeEach(() => {
