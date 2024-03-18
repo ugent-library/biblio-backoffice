@@ -83,6 +83,7 @@ var serverStartCmd = &cobra.Command{
 		// start jobs
 		err := jobs.Start(context.TODO(), jobs.JobsConfig{
 			PgxPool:       services.PgxPool,
+			Repo:          services.Repo,
 			PeopleRepo:    services.PeopleRepo,
 			PeopleIndex:   services.PeopleIndex,
 			ProjectsRepo:  services.ProjectsRepo,

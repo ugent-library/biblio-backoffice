@@ -408,6 +408,11 @@ func (r *Repo) DeactivatePeople(ctx context.Context) error {
 	return err
 }
 
+func (r *Repo) SetPersonPublicationCount(ctx context.Context, idKind, idValue string, n int) error {
+	_, err := r.conn.Exec(ctx, setPersonPublicationCount, idKind, idValue, n)
+	return err
+}
+
 func newID() Identifier {
 	return Identifier{Kind: idKind, Value: uuid.NewString()}
 }
