@@ -1,21 +1,22 @@
 // https://github.com/ugent-library/biblio-backoffice/issues/1370
 
 import * as dayjs from "dayjs";
+import * as CustomParseFormat from "dayjs/plugin/customParseFormat";
 
 import { getRandomText } from "support/util";
 
+dayjs.extend(CustomParseFormat);
+
 describe("Issue #1370: Make created, edited and system update timestamp more informative.", () => {
-  const randomText = getRandomText();
-  let creationTime: string;
-  let editedTime: string;
+  const RANDOM_TEXT = getRandomText();
+  const CREATED_REGEX = /^Created (?<timestamp>.*) by Biblio Researcher.$/;
+  const EDITED_REGEX = /^Edited (?<timestamp>.*) by Biblio Librarian.$/;
 
   describe("for publications", () => {
     before(() => {
       cy.loginAsResearcher();
       cy.setUpPublication("Miscellaneous", {
-        title: `Publication ${randomText}`,
-      }).then(() => {
-        creationTime = dayjs().format("DD/MM/YYYY HH:mm");
+        title: `Publication ${RANDOM_TEXT}`,
       });
 
       cy.loginAsLibrarian();
@@ -26,51 +27,39 @@ describe("Issue #1370: Make created, edited and system update timestamp more inf
           cy.setFieldByLabel("Publication year", "2000");
         },
         true,
-      ).then(() => {
-        editedTime = dayjs().format("DD/MM/YYYY HH:mm");
-      });
+      );
     });
 
     beforeEach(() => {
       cy.loginAsResearcher();
 
-      cy.visit("/publication", { qs: { q: randomText } });
+      cy.visit("/publication", { qs: { q: RANDOM_TEXT } });
       cy.extractBiblioId();
     });
 
     it("should display the date created and edited in the publications list", () => {
-      cy.visit("/publication", { qs: { q: randomText } });
+      cy.visit("/publication", { qs: { q: RANDOM_TEXT } });
 
-      getCreatedText(".list-group-item .c-meta-item").should(
-        "eq",
-        `Created ${creationTime} by Biblio Researcher.`,
+      assertTimestamp(
+        ".list-group-item .c-meta-item",
+        "Created",
+        CREATED_REGEX,
       );
-
-      getEditedText(".list-group-item .c-meta-item").should(
-        "eq",
-        `Edited ${editedTime} by Biblio Librarian.`,
-      );
+      assertTimestamp(".list-group-item .c-meta-item", "Edited", EDITED_REGEX);
     });
 
     it("should display the date created and edited in the publication detail page", () => {
       cy.visitPublication();
 
-      getCreatedText("#summary .c-subline").should(
-        "eq",
-        `Created ${creationTime} by Biblio Researcher.`,
-      );
-
-      getEditedText("#summary .c-subline").should(
-        "eq",
-        `Edited ${editedTime} by Biblio Librarian.`,
-      );
+      assertTimestamp("#summary .c-subline", "Created", CREATED_REGEX);
+      assertTimestamp("#summary .c-subline", "Edited", EDITED_REGEX);
     });
   });
 
   describe("for datasets", () => {
     before(() => {
       cy.loginAsResearcher();
-      cy.setUpDataset({ title: `Dataset ${randomText}` });
+      cy.setUpDataset({ title: `Dataset ${RANDOM_TEXT}` });
 
       cy.loginAsLibrarian();
       cy.visitDataset();
@@ -86,52 +75,50 @@ describe("Issue #1370: Make created, edited and system update timestamp more inf
     beforeEach(() => {
       cy.loginAsResearcher();
 
-      cy.visit("/dataset", { qs: { q: randomText } });
+      cy.visit("/dataset", { qs: { q: RANDOM_TEXT } });
       cy.extractBiblioId();
     });
 
     it("should display the date created and edited in the datasets list", () => {
-      cy.visit("/dataset", { qs: { q: randomText } });
+      cy.visit("/dataset", { qs: { q: RANDOM_TEXT } });
 
-      getCreatedText(".list-group-item .c-meta-item").should(
-        "eq",
-        `Created ${creationTime} by Biblio Researcher.`,
+      assertTimestamp(
+        ".list-group-item .c-meta-item",
+        "Created",
+        CREATED_REGEX,
       );
-
-      getEditedText(".list-group-item .c-meta-item").should(
-        "eq",
-        `Edited ${editedTime} by Biblio Librarian.`,
-      );
+      assertTimestamp(".list-group-item .c-meta-item", "Edited", EDITED_REGEX);
     });
 
     it("should display the date created and edited in the dataset detail page", () => {
       cy.visitDataset();
 
-      getCreatedText("#summary .c-subline").should(
-        "eq",
-        `Created ${creationTime} by Biblio Researcher.`,
-      );
-
-      getEditedText("#summary .c-subline").should(
-        "eq",
-        `Edited ${editedTime} by Biblio Librarian.`,
-      );
+      assertTimestamp("#summary .c-subline", "Created", CREATED_REGEX);
+      assertTimestamp("#summary .c-subline", "Edited", EDITED_REGEX);
     });
   });
 
-  function getEditedText(selector: string) {
+  function assertTimestamp(
+    selector: string,
+    substring: "Created" | "Edited",
+    REGEX: RegExp,
+  ) {
     return cy
-      .contains(selector, "Edited")
+      .get(`${selector}:contains(${substring})`)
+      .should("have.length", 1)
       .should("be.visible")
       .invoke("text")
-      .invoke("trim");
-  }
+      .invoke("trim")
+      .should("match", REGEX)
+      .then((text) => {
+        const { timestamp } = text.match(REGEX).groups;
+        const created = dayjs(timestamp, "DD/MM/YYYY HH:mm");
 
-  function getCreatedText(selector: string) {
-    return cy
-      .contains(selector, "Created")
-      .should("be.visible")
-      .invoke("text")
-      .invoke("trim");
+        // Allow a 2 minute margin of error
+        const lower = dayjs().second(0).millisecond(0).subtract(1, "minute");
+        const upper = lower.clone().add(2, "minutes");
+
+        expect(created.unix()).to.be.within(lower.unix(), upper.unix());
+      });
   }
 });
