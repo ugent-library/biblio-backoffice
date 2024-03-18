@@ -35,6 +35,10 @@ func (w *ReindexPeoplePeriodicWorker) Work(ctx context.Context, job *river.Job[R
 	return w.index.ReindexPeople(ctx, w.repo.EachPerson)
 }
 
+func (w *ReindexPeoplePeriodicWorker) Timeout(*river.Job[ReindexPeoplePeriodicArgs]) time.Duration {
+	return 5 * time.Minute
+}
+
 type ReindexPeopleArgs struct{}
 
 func (ReindexPeopleArgs) Kind() string { return "reindexPeople" }
@@ -51,4 +55,8 @@ func NewReindexPeopleWorker(repo *people.Repo, index *people.Index) *ReindexPeop
 
 func (w *ReindexPeopleWorker) Work(ctx context.Context, job *river.Job[ReindexPeopleArgs]) error {
 	return w.index.ReindexPeople(ctx, w.repo.EachPerson)
+}
+
+func (w *ReindexPeopleWorker) Timeout(*river.Job[ReindexPeopleArgs]) time.Duration {
+	return 5 * time.Minute
 }
