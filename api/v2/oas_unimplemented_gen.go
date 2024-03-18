@@ -85,6 +85,24 @@ func (UnimplementedHandler) ImportProject(ctx context.Context, req *ImportProjec
 	return r, ht.ErrNotImplemented
 }
 
+// IndexOrganizations implements indexOrganizations operation.
+//
+// Trigger indexing organizations.
+//
+// POST /index-organizations
+func (UnimplementedHandler) IndexOrganizations(ctx context.Context) error {
+	return ht.ErrNotImplemented
+}
+
+// IndexPeople implements indexPeople operation.
+//
+// Trigger indexing people.
+//
+// POST /index-people
+func (UnimplementedHandler) IndexPeople(ctx context.Context) error {
+	return ht.ErrNotImplemented
+}
+
 // IndexProjects implements indexProjects operation.
 //
 // Trigger indexing projects.

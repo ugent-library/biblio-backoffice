@@ -4,10 +4,32 @@ servers:
   - url: /api/v2
 
 info:
-  title: Projects Service
+  title: Biblio backoffice management api
   version: 0.0.1
 
 paths:
+  "/index-organizations":
+    post:
+      summary: Index organizations
+      description: Trigger indexing organizations
+      operationId: indexOrganizations
+      responses:
+        '204':
+          description: Success
+        default:
+          $ref: "#/components/responses/Error"
+  
+  "/index-people":
+    post:
+      summary: Index people
+      description: Trigger indexing people
+      operationId: indexPeople
+      responses:
+        '204':
+          description: Success
+        default:
+          $ref: "#/components/responses/Error"
+
   "/index-projects":
     post:
       summary: Index projects

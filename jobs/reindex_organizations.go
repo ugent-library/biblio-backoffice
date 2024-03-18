@@ -8,11 +8,11 @@ import (
 	"github.com/ugent-library/biblio-backoffice/people"
 )
 
-type ReindexOrganizationsArgs struct{}
+type ReindexOrganizationsPeriodicArgs struct{}
 
-func (ReindexOrganizationsArgs) Kind() string { return "reindexOrganizations" }
+func (ReindexOrganizationsPeriodicArgs) Kind() string { return "reindexOrganizationsPeriodic" }
 
-func (ReindexOrganizationsArgs) InsertOpts() river.InsertOpts {
+func (ReindexOrganizationsPeriodicArgs) InsertOpts() river.InsertOpts {
 	return river.InsertOpts{
 		UniqueOpts: river.UniqueOpts{
 			ByArgs:   true,
@@ -20,6 +20,24 @@ func (ReindexOrganizationsArgs) InsertOpts() river.InsertOpts {
 		},
 	}
 }
+
+type ReindexOrganizationsPeriodicWorker struct {
+	river.WorkerDefaults[ReindexOrganizationsPeriodicArgs]
+	repo  *people.Repo
+	index *people.Index
+}
+
+func NewReindexOrganizationsPeriodicWorker(repo *people.Repo, index *people.Index) *ReindexOrganizationsPeriodicWorker {
+	return &ReindexOrganizationsPeriodicWorker{repo: repo, index: index}
+}
+
+func (w *ReindexOrganizationsPeriodicWorker) Work(ctx context.Context, job *river.Job[ReindexOrganizationsPeriodicArgs]) error {
+	return w.index.ReindexOrganizations(ctx, w.repo.EachOrganization)
+}
+
+type ReindexOrganizationsArgs struct{}
+
+func (ReindexOrganizationsArgs) Kind() string { return "reindexOrganizations" }
 
 type ReindexOrganizationsWorker struct {
 	river.WorkerDefaults[ReindexOrganizationsArgs]

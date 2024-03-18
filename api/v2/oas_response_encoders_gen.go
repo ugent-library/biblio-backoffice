@@ -276,6 +276,20 @@ func encodeImportProjectResponse(response ImportProjectRes, w http.ResponseWrite
 	}
 }
 
+func encodeIndexOrganizationsResponse(response *IndexOrganizationsNoContent, w http.ResponseWriter, span trace.Span) error {
+	w.WriteHeader(204)
+	span.SetStatus(codes.Ok, http.StatusText(204))
+
+	return nil
+}
+
+func encodeIndexPeopleResponse(response *IndexPeopleNoContent, w http.ResponseWriter, span trace.Span) error {
+	w.WriteHeader(204)
+	span.SetStatus(codes.Ok, http.StatusText(204))
+
+	return nil
+}
+
 func encodeIndexProjectsResponse(response *IndexProjectsNoContent, w http.ResponseWriter, span trace.Span) error {
 	w.WriteHeader(204)
 	span.SetStatus(codes.Ok, http.StatusText(204))

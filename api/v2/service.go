@@ -36,6 +36,22 @@ func NewService(
 	}
 }
 
+func (s *Service) IndexOrganizations(ctx context.Context) error {
+	_, err := s.riverClient.Insert(ctx, jobs.ReindexOrganizationsArgs{}, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Service) IndexPeople(ctx context.Context) error {
+	_, err := s.riverClient.Insert(ctx, jobs.ReindexPeopleArgs{}, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *Service) IndexProjects(ctx context.Context) error {
 	_, err := s.riverClient.Insert(ctx, jobs.ReindexProjectsArgs{}, nil)
 	if err != nil {

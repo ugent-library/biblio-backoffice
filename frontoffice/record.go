@@ -1041,6 +1041,7 @@ type Person struct {
 	OrcidSettings      map[string]any `json:"orcid_settings,omitempty"`
 	UGentDepartmentID  []string       `json:"ugent_department_id,omitempty"`
 	UGentMemorialisID  string         `json:"ugent_memorialis_id,omitempty"`
+	PublicationCount   int            `json:"publication_count"`
 }
 
 func MapPerson(p *people.Person) *Person {
@@ -1052,6 +1053,7 @@ func MapPerson(p *people.Person) *Person {
 		PreferredLastName:  p.PreferredFamilyName,
 		Email:              p.Email,
 		Title:              p.HonorificPrefix,
+		PublicationCount:   p.PublicationCount,
 	}
 	if p.Active {
 		rec.Active = 1
