@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/riverqueue/river"
 	"github.com/riverqueue/river/riverdriver/riverpgxv5"
@@ -25,13 +26,17 @@ type JobsConfig struct {
 	Logger        *slog.Logger
 }
 
-func Start(ctx context.Context, c JobsConfig) error {
+func Start(ctx context.Context, c JobsConfig) (*river.Client[pgx.Tx], error) {
 	// start job server
 	riverWorkers := river.NewWorkers()
+	// Periodic workers
 	river.AddWorker(riverWorkers, NewDeactivatePeopleWorker(c.PeopleRepo))
 	river.AddWorker(riverWorkers, NewReindexOrganizationsWorker(c.PeopleRepo, c.PeopleIndex))
 	river.AddWorker(riverWorkers, NewReindexPeopleWorker(c.PeopleRepo, c.PeopleIndex))
+	river.AddWorker(riverWorkers, NewReindexProjectsPeriodicWorker(c.ProjectsRepo, c.ProjectsIndex))
+	// One-off workers
 	river.AddWorker(riverWorkers, NewReindexProjectsWorker(c.ProjectsRepo, c.ProjectsIndex))
+
 	riverClient, err := river.NewClient(riverpgxv5.New(c.PgxPool), &river.Config{
 		Logger:  c.Logger,
 		Workers: riverWorkers,
@@ -63,19 +68,19 @@ func Start(ctx context.Context, c JobsConfig) error {
 			river.NewPeriodicJob(
 				river.PeriodicInterval(30*time.Minute),
 				func() (river.JobArgs, *river.InsertOpts) {
-					return ReindexProjectsArgs{}, nil
+					return ReindexProjectsPeriodicArgs{}, nil
 				},
 				&river.PeriodicJobOpts{RunOnStart: true},
 			),
 		},
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	c.Logger.Info("Starting jobs server...")
 	if err := riverClient.Start(context.TODO()); err != nil {
-		return err
+		return nil, err
 	}
 
 	sigintOrTerm := make(chan os.Signal, 1)
@@ -124,5 +129,5 @@ func Start(ctx context.Context, c JobsConfig) error {
 		// hard stop succeeded
 	}()
 
-	return nil
+	return riverClient, nil
 }
