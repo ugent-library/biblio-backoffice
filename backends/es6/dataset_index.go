@@ -62,7 +62,6 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.SearchHits, err
 
 		// facet filter contains all query and all filters except itself
 		for _, field := range args.Facets {
-
 			filters := make([]M, 0, len(di.scopes)+1)
 
 			// add all internal filters

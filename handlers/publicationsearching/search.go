@@ -40,7 +40,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 		return
 	}
 
-	ctx.SearchArgs.WithFacets(vocabularies.Map["publication_facets"]...)
+	ctx.SearchArgs.WithFacetLines(vocabularies.Facets["publication"])
 	if ctx.SearchArgs.FilterFor("scope") == "" {
 		ctx.SearchArgs.WithFilter("scope", "all")
 	}
@@ -134,7 +134,7 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 		return
 	}
 
-	ctx.SearchArgs.WithFacets(vocabularies.Map["publication_curation_facets"]...)
+	ctx.SearchArgs.WithFacetLines(vocabularies.Facets["publication_curation"])
 
 	searcher := h.PublicationSearchIndex.WithScope("status", "private", "public", "returned")
 	hits, err := searcher.Search(ctx.SearchArgs)
