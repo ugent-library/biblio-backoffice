@@ -406,7 +406,7 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 		return
 	}
 
-	searchArgs.WithFacets(vocabularies.Map["publication_facets"]...)
+	searchArgs.WithFacetLines(vocabularies.Facets["publication"])
 
 	batchID := bind.PathValue(r, "batch_id")
 
@@ -474,7 +474,7 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 		return
 	}
 
-	searchArgs.WithFacets(vocabularies.Map["publication_facets"]...)
+	searchArgs.WithFacetLines(vocabularies.Facets["publication"])
 
 	batchID := bind.PathValue(r, "batch_id")
 

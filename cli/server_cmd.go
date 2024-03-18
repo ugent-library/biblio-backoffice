@@ -131,11 +131,17 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		return nil, err
 	}
 
+	// timezone
+	timezone, err := time.LoadLocation(config.Timezone)
+	if err != nil {
+		return nil, err
+	}
+
 	// renderer
 	funcMaps := []template.FuncMap{
 		sprig.FuncMap(),
 		urls.FuncMap(router, baseURL.Scheme, baseURL.Host),
-		helpers.FuncMap(),
+		helpers.FuncMap(timezone),
 		{
 			"assetPath": assets.AssetPath,
 			"appMode": func() string { // TODO eliminate need for this
@@ -161,12 +167,6 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	// locale
 	loc := gotext.NewLocale("locales", "en")
 	loc.AddDomain("default")
-
-	// timezone
-	timezone, err := time.LoadLocation(config.Timezone)
-	if err != nil {
-		return nil, err
-	}
 
 	// sessions & auth
 	sessionSecret := []byte(config.Session.Secret)

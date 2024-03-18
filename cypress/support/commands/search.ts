@@ -5,9 +5,12 @@ const NO_LOG = { log: false };
 export default function search(query: string): Cypress.Chainable<number> {
   const log = logCommand("search", { query }, query);
 
+  // Give elastic some extra time to index changes
+  cy.wait(1000, NO_LOG);
+
   cy.get('input[placeholder="Search..."]', NO_LOG)
-    .clear()
-    .type(query)
+    .clear(NO_LOG)
+    .type(query, NO_LOG)
     .closest(".input-group", NO_LOG)
     .contains(".btn", "Search", NO_LOG)
     .click(NO_LOG);

@@ -1,7 +1,7 @@
 {{if .User}}
-Last edit {{timeElapsed .DateUpdated "en"}} by {{.User.FullName}}.
+Edited {{formatTime .DateUpdated "2006-01-02 15:04"}} by {{.User.FullName}}.
 {{else}}
-System update {{timeElapsed .DateUpdated "en"}}.
+System update {{formatTime .DateUpdated "2006-01-02 15:04"}}.
 {{if .LastUser}}
 Last edit by {{.LastUser.FullName}}.{{end}}
 {{end}}
