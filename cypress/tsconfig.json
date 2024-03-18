@@ -6,7 +6,8 @@
     "target": "es5",
     "lib": ["es5", "dom", "DOM.Iterable"],
     "types": ["cypress", "node"],
-    "noEmit": true
+    "noEmit": true,
+    "downlevelIteration": true
   },
   "include": ["**/*.ts"]
 }
