@@ -1,0 +1,22 @@
+.toggle-zone {
+  &:has(.toggle:checked) {
+    .toggle-on {
+      display: block;
+    }
+
+    .toggle-off {
+      display: none;
+    }
+  }
+
+  // Don't use ":not(:has(.toggle:checked))" here as this would also hide items when there is no toggle.
+  &:has(.toggle:not(:checked)) {
+    .toggle-on {
+      display: none;
+    }
+
+    .toggle-off {
+      display: block;
+    }
+  }
+}

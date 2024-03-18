@@ -1,4 +1,4 @@
-import { logCommand, updateConsoleProps } from "support/commands/helpers";
+import { logCommand } from "support/commands/helpers";
 
 type GetLabelOptions = {
   log?: boolean;
@@ -33,11 +33,7 @@ export default function (
       return caption.test(currentLabelText);
     });
 
-    if (
-      log &&
-      // @ts-expect-error cy.state is not typed
-      cy.state("current") === this
-    ) {
+    if (log && cy.state("current") === this) {
       log
         .set({
           $el,
