@@ -4,7 +4,10 @@ import (
 	"context"
 
 	"github.com/go-faster/errors"
+	"github.com/jackc/pgx/v5"
+	"github.com/riverqueue/river"
 	"github.com/samber/lo"
+	"github.com/ugent-library/biblio-backoffice/jobs"
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
 )
@@ -14,6 +17,7 @@ type Service struct {
 	peopleIndex   *people.Index
 	projectsRepo  *projects.Repo
 	projectsIndex *projects.Index
+	riverClient   *river.Client[pgx.Tx]
 }
 
 func NewService(
@@ -21,13 +25,23 @@ func NewService(
 	peopleIndex *people.Index,
 	projectsRepo *projects.Repo,
 	projectsIndex *projects.Index,
+	riverClient *river.Client[pgx.Tx],
 ) *Service {
 	return &Service{
 		peopleRepo:    peopleRepo,
 		peopleIndex:   peopleIndex,
 		projectsRepo:  projectsRepo,
 		projectsIndex: projectsIndex,
+		riverClient:   riverClient,
 	}
+}
+
+func (s *Service) IndexProjects(ctx context.Context) error {
+	_, err := s.riverClient.Insert(ctx, jobs.ReindexProjectsArgs{}, nil)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *Service) GetOrganization(ctx context.Context, req *GetOrganizationRequest) (GetOrganizationRes, error) {

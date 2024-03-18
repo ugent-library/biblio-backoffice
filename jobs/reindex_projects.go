@@ -8,11 +8,11 @@ import (
 	"github.com/ugent-library/biblio-backoffice/projects"
 )
 
-type ReindexProjectsArgs struct{}
+type ReindexProjectsPeriodicArgs struct{}
 
-func (ReindexProjectsArgs) Kind() string { return "reindexProjects" }
+func (ReindexProjectsPeriodicArgs) Kind() string { return "reindexProjectsPeriodic" }
 
-func (ReindexProjectsArgs) InsertOpts() river.InsertOpts {
+func (ReindexProjectsPeriodicArgs) InsertOpts() river.InsertOpts {
 	return river.InsertOpts{
 		UniqueOpts: river.UniqueOpts{
 			ByArgs:   true,
@@ -20,6 +20,24 @@ func (ReindexProjectsArgs) InsertOpts() river.InsertOpts {
 		},
 	}
 }
+
+type ReindexProjectsPeriodicWorker struct {
+	river.WorkerDefaults[ReindexProjectsPeriodicArgs]
+	repo  *projects.Repo
+	index *projects.Index
+}
+
+func NewReindexProjectsPeriodicWorker(repo *projects.Repo, index *projects.Index) *ReindexProjectsPeriodicWorker {
+	return &ReindexProjectsPeriodicWorker{repo: repo, index: index}
+}
+
+func (w *ReindexProjectsPeriodicWorker) Work(ctx context.Context, job *river.Job[ReindexProjectsPeriodicArgs]) error {
+	return w.index.ReindexProjects(ctx, w.repo.EachProject)
+}
+
+type ReindexProjectsArgs struct{}
+
+func (ReindexProjectsArgs) Kind() string { return "reindexProjects" }
 
 type ReindexProjectsWorker struct {
 	river.WorkerDefaults[ReindexProjectsArgs]

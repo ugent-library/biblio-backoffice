@@ -959,6 +959,9 @@ func (s *ImportProjectRequest) SetProject(val ImportProjectParams) {
 	s.Project = val
 }
 
+// IndexProjectsNoContent is response for IndexProjects operation.
+type IndexProjectsNoContent struct{}
+
 // NewOptBool returns new OptBool with value set to v.
 func NewOptBool(v bool) OptBool {
 	return OptBool{
