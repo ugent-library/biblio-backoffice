@@ -1,4 +1,4 @@
-<div class="dropdown">
+<div class="dropdown {{if .SearchArgs.IsCollapsedFacet "identifier_type"}}toggle-on{{end}}">
     <a class="badge {{if .SearchArgs.HasFilter "identifier_type"}}bg-primary{{else if .Hits.Facets.identifier_type.HasMatches}}badge-default{{else}}badge-light{{end}} me-3"
         data-bs-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button"

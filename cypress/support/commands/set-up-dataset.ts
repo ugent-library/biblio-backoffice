@@ -1,77 +1,95 @@
-import { logCommand } from './helpers'
+import { logCommand } from "./helpers";
 
-const NO_LOG = { log: false }
+const NO_LOG = { log: false };
 
-export default function setUpDataset(prepareForPublishing = false): void {
-  logCommand('setUpDataset', {
-    'Prepare for publishing': prepareForPublishing,
-  })
+type SetUpDatasetOptions = {
+  prepareForPublishing?: boolean;
+  title?: string;
+  biblioIDAlias?: string;
+};
 
-  cy.visit('/dataset/add', NO_LOG)
+export default function setUpDataset({
+  prepareForPublishing = false,
+  title = "The dataset title",
+  biblioIDAlias = "biblioId",
+}: SetUpDatasetOptions = {}): void {
+  logCommand("setUpDataset", {
+    "Prepare for publishing": prepareForPublishing,
+    title,
+    "Biblio ID alias": biblioIDAlias,
+  });
 
-  cy.intercept('/dataset/*/description*').as('completeDescription')
+  cy.visit("/dataset/add", NO_LOG);
 
-  cy.contains('Register a dataset manually', NO_LOG).find(':radio', NO_LOG).click(NO_LOG)
-  cy.contains('.btn', 'Add dataset', NO_LOG).click(NO_LOG)
+  cy.intercept("/dataset/*/description*").as("completeDescription");
+
+  cy.contains("Register a dataset manually", NO_LOG)
+    .find(":radio", NO_LOG)
+    .click(NO_LOG);
+  cy.contains(".btn", "Add dataset", NO_LOG).click(NO_LOG);
 
   // Extract biblioId at this point
-  cy.get('#show-content', NO_LOG)
-    .attr('hx-get')
-    .then(hxGet => {
-      const biblioId = hxGet.match(/\/dataset\/(?<biblioId>.*)\/description/)?.groups['biblioId']
+  cy.get("#show-content", NO_LOG)
+    .attr("hx-get")
+    .then((hxGet) => {
+      const biblioId = hxGet.match(/\/dataset\/(?<biblioId>.*)\/description/)
+        ?.groups["biblioId"];
 
       if (!biblioId) {
-        throw new Error('Could not extract biblioId.')
+        throw new Error("Could not extract biblioId.");
       }
 
-      return biblioId
+      return biblioId;
     })
-    .as('biblioId', { type: 'static' })
+    .as(biblioIDAlias, { type: "static" });
 
-  cy.wait('@completeDescription', NO_LOG)
+  cy.wait("@completeDescription", NO_LOG);
 
   cy.updateFields(
-    'Dataset details',
+    "Dataset details",
     () => {
-      cy.setFieldByLabel('Title', `The dataset title [CYPRESSTEST]`)
+      cy.setFieldByLabel("Title", `${title} [CYPRESSTEST]`);
 
-      cy.setFieldByLabel('Persistent identifier type', 'DOI')
-      cy.setFieldByLabel('Identifier', '10.5072/test/t')
+      cy.setFieldByLabel("Persistent identifier type", "DOI");
+      cy.setFieldByLabel("Identifier", "10.5072/test/t");
 
       if (prepareForPublishing) {
-        cy.setFieldByLabel('Access level', 'Open access')
-        cy.setFieldByLabel('Data format', 'text/csv')
-          .next('.autocomplete-hits', NO_LOG)
-          .contains('.badge', 'text/csv', NO_LOG)
-          .click(NO_LOG)
-        cy.setFieldByLabel('Publisher', 'UGent')
-        cy.setFieldByLabel('Publication year', new Date().getFullYear().toString())
-        cy.setFieldByLabel('License', 'CC0 (1.0)')
+        cy.setFieldByLabel("Access level", "Open access");
+        cy.setFieldByLabel("Data format", "text/csv")
+          .next(".autocomplete-hits", NO_LOG)
+          .contains(".badge", "text/csv", NO_LOG)
+          .click(NO_LOG);
+        cy.setFieldByLabel("Publisher", "UGent");
+        cy.setFieldByLabel(
+          "Publication year",
+          new Date().getFullYear().toString(),
+        );
+        cy.setFieldByLabel("License", "CC0 (1.0)");
       }
     },
-    true
-  )
+    true,
+  );
 
   if (prepareForPublishing) {
     cy.updateFields(
-      'Creators',
+      "Creators",
       () => {
-        cy.setFieldByLabel('First name', 'Dries')
-        cy.setFieldByLabel('Last name', 'Moreels')
+        cy.setFieldByLabel("First name", "Dries");
+        cy.setFieldByLabel("Last name", "Moreels");
 
-        cy.contains('.btn', 'Add creator', NO_LOG).click(NO_LOG)
+        cy.contains(".btn", "Add creator", NO_LOG).click(NO_LOG);
       },
-      /^Save$/
-    )
+      /^Save$/,
+    );
   }
 
-  cy.contains('.btn', 'Complete Description', NO_LOG).click(NO_LOG)
+  cy.contains(".btn", "Complete Description", NO_LOG).click(NO_LOG);
 }
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      setUpDataset(prepareForPublishing?: boolean): Chainable<void>
+      setUpDataset(options?: SetUpDatasetOptions): Chainable<void>;
     }
   }
 }

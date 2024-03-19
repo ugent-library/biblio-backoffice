@@ -1,18 +1,54 @@
 [
-    {
-        "active": true,
-        "name": "biblio",
-        "given_name": "biblio",
-        "family_name": "biblio",
-        "email": "biblio@ugent.be",
-        "identifier": [
-            {
-                "value": "biblio",
-                "namespace": "ugent_username"
-            }
-        ],
-        "role": [
-            "biblio-admin"
-        ]
-    }
+  {
+    "active": true,
+    "name": "Biblio Librarian",
+    "given_name": "biblio",
+    "family_name": "librarian",
+    "email": "biblio-librarian@ugent.be",
+    "identifier": [
+      {
+        "namespace": "ugent_username",
+        "value": "biblio-librarian"
+      }
+    ],
+    "role": ["biblio-admin"]
+  },
+  {
+    "active": true,
+    "name": "Biblio Researcher",
+    "given_name": "biblio",
+    "family_name": "researcher",
+    "email": "biblio-researcher@ugent.be",
+    "identifier": [
+      {
+        "namespace": "ugent_username",
+        "value": "biblio-researcher"
+      }
+    ]
+  },
+  {
+    "active": true,
+    "name": "Dries Moreels",
+    "given_name": "Dries",
+    "family_name": "Moreels",
+    "email": "dries.moreels@ugent.be",
+    "identifier": [
+      {
+        "namespace": "historic_ugent_id",
+        "value": "802001088860"
+      },
+      {
+        "namespace": "ugent_username",
+        "value": "drmoreel"
+      },
+      {
+        "namespace": "orcid",
+        "value": "0000-0002-5297-1074"
+      },
+      {
+        "namespace": "organization",
+        "value": "CA20"
+      }
+    ]
+  }
 ]

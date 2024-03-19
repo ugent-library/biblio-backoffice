@@ -62,7 +62,6 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.SearchHits, err
 
 		// facet filter contains all query and all filters except itself
 		for _, field := range args.Facets {
-
 			filters := make([]M, 0, len(di.scopes)+1)
 
 			// add all internal filters
@@ -120,10 +119,12 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.SearchHits, err
 		switch args.Sort[0] {
 		case "date-updated-desc":
 			// sorts = []string{"date_updated:desc", "year:desc"}
-		case "date-created-asc":
-			sorts = []string{"date_created:asc", "year:asc"}
+		case "date-updated-asc":
+			sorts = []string{"date_updated:asc", "year:asc"}
 		case "date-created-desc":
 			sorts = []string{"date_created:desc", "year:desc"}
+		case "date-created-asc":
+			sorts = []string{"date_created:asc", "year:asc"}
 		case "year-desc":
 			sorts = []string{"year:desc"}
 		case "id-asc":

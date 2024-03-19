@@ -1,54 +1,62 @@
-import { logCommand, updateConsoleProps } from 'support/commands/helpers'
+import { logCommand } from "support/commands/helpers";
 
 type GetLabelOptions = {
-  log?: boolean
-}
+  log?: boolean;
+};
 
-export default function (caption: string | RegExp, options: GetLabelOptions = { log: true }) {
-  const log = options.log !== false && logCommand('getLabel', null, caption)
+export default function (
+  caption: string | RegExp,
+  options: GetLabelOptions = { log: true },
+) {
+  const log = options.log !== false && logCommand("getLabel", null, caption);
 
-  const getFn = cy.now('get', 'label', { log: false }) as () => JQuery<HTMLElement>
+  const getFn = cy.now("get", "label", {
+    log: false,
+  }) as () => JQuery<HTMLElement>;
 
   return (): JQuery<HTMLElement> => {
     let $el = getFn().filter((_, el) => {
-      const $currentLabel = Cypress.$(el).clone()
+      const $currentLabel = Cypress.$(el).clone();
 
-      $currentLabel.find('.badge, .visually-hidden').remove()
+      $currentLabel.find(".badge, .visually-hidden").remove();
 
-      const currentLabelText = $currentLabel.text().trim().split(/\s/).join(' ')
+      const currentLabelText = $currentLabel
+        .text()
+        .trim()
+        .split(/\s/)
+        .join(" ");
 
-      if (typeof caption === 'string') {
-        return currentLabelText === caption
+      if (typeof caption === "string") {
+        return currentLabelText === caption;
       }
 
-      return caption.test(currentLabelText)
-    })
+      return caption.test(currentLabelText);
+    });
 
-    if (
-      log &&
-      // @ts-expect-error cy.state is not typed
-      cy.state('current') === this
-    ) {
+    if (log && cy.state("current") === this) {
       log
         .set({
           $el,
           consoleProps: () => ({
             Caption: caption,
-            Yielded: $el?.length ? $el[0] : '--nothing--',
+            Yielded: $el?.length ? $el[0] : "--nothing--",
             Elements: $el != null ? $el.length : 0,
           }),
         })
-        .finish()
+        .finish();
     }
 
-    return $el
-  }
+    return $el;
+  };
 }
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      getLabel(caption: string | RegExp, options?: GetLabelOptions): Chainable<JQuery<HTMLLabelElement>>
+      getLabel(
+        caption: string | RegExp,
+        options?: GetLabelOptions,
+      ): Chainable<JQuery<HTMLLabelElement>>;
     }
   }
 }
