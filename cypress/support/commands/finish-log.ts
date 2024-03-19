@@ -1,24 +1,28 @@
-import { updateConsoleProps, updateLogMessage } from './helpers'
+import { updateConsoleProps, updateLogMessage } from "./helpers";
 
-export default function finishLog(subject: unknown, log: Cypress.Log, appendToMessage = false) {
+export default function finishLog(
+  subject: unknown,
+  log: Cypress.Log,
+  appendToMessage = false,
+) {
   if (log) {
-    let theSubject = subject
+    let theSubject = subject;
     if (subject === null) {
-      theSubject = '(null)'
-    } else if (subject === '') {
-      theSubject = '""'
+      theSubject = "(null)";
+    } else if (subject === "") {
+      theSubject = '""';
     }
 
-    updateConsoleProps(log, cp => (cp.yielded = theSubject))
+    updateConsoleProps(log, (cp) => (cp.yielded = theSubject));
 
     if (appendToMessage) {
-      updateLogMessage(log, subject)
+      updateLogMessage(log, subject);
     }
 
-    log.finish()
+    log.finish();
   }
 
-  return subject
+  return subject;
 }
 
 declare global {
@@ -33,7 +37,7 @@ declare global {
        *   .validatedRequest(...)
        *   .finishLog(log)
        */
-      finishLog(log: Log, appendToMessage?: boolean): Chainable<Subject>
+      finishLog(log: Log, appendToMessage?: boolean): Chainable<Subject>;
     }
   }
 }

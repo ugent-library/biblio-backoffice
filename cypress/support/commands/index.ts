@@ -1,28 +1,29 @@
 // Parent commands
-import login from './login'
-import loginAsResearcher from './login-as-researcher'
-import loginAsLibrarian from './login-as-librarian'
-import switchMode from './switch-mode'
-import ensureModal from './ensure-modal'
-import ensureNoModal from './ensure-no-modal'
-import visitPublication from './visit-publication'
-import visitDataset from './visit-dataset'
-import ensureToast from './ensure-toast'
-import ensureNoToast from './ensure-no-toast'
-import setFieldByLabel from './set-field-by-label'
-import search from './search'
-import updateFields from './update-fields'
-import setUpPublication from './set-up-publication'
-import setUpDataset from './set-up-dataset'
+import login from "./login";
+import loginAsResearcher from "./login-as-researcher";
+import loginAsLibrarian from "./login-as-librarian";
+import switchMode from "./switch-mode";
+import ensureModal from "./ensure-modal";
+import ensureNoModal from "./ensure-no-modal";
+import visitPublication from "./visit-publication";
+import visitDataset from "./visit-dataset";
+import ensureToast from "./ensure-toast";
+import ensureNoToast from "./ensure-no-toast";
+import setFieldByLabel from "./set-field-by-label";
+import search from "./search";
+import updateFields from "./update-fields";
+import setUpPublication from "./set-up-publication";
+import setUpDataset from "./set-up-dataset";
+import clocked from "./clocked";
 
 // Child commands
-import finishLog from './finish-log'
-import closeToast from './close-toast'
-import setField from './set-field'
+import finishLog from "./finish-log";
+import closeToast from "./close-toast";
+import setField from "./set-field";
 
 // Dual commands
-import extractBiblioId from './extract-biblio-id'
-import closeModal from './close-modal'
+import extractBiblioId from "./extract-biblio-id";
+import closeModal from "./close-modal";
 
 // Parent commands
 Cypress.Commands.addAll({
@@ -55,7 +56,9 @@ Cypress.Commands.addAll({
   setUpPublication,
 
   setUpDataset,
-})
+
+  clocked,
+});
 
 // Child commands
 Cypress.Commands.addAll(
@@ -67,16 +70,16 @@ Cypress.Commands.addAll(
 
     setField,
   }
-)
+);
 
 // Dual commands
 Cypress.Commands.addAll(
   {
-    prevSubject: 'optional',
+    prevSubject: "optional",
   },
   {
     extractBiblioId,
 
     closeModal,
   }
-)
+);

@@ -245,11 +245,14 @@ msgstr "Software"
 msgid "publication_sorts.date-updated-desc"
 msgstr "Updated (newest first)"
 
-msgid "publication_sorts.date-created-asc"
-msgstr "Added (oldest first)"
+msgid "publication_sorts.date-updated-asc"
+msgstr "Updated (oldest first)"
 
 msgid "publication_sorts.date-created-desc"
 msgstr "Added (newest first)"
+
+msgid "publication_sorts.date-created-asc"
+msgstr "Added (oldest first)"
 
 msgid "publication_sorts.year-desc"
 msgstr "Publication year (newest first)"
