@@ -39,13 +39,14 @@
         {{end}}
         {{end}}
         <div class="dropdown-menu__body">
-            {{$last := sub (len .Hits.Facets.locked) 1}}
-            {{range $i, $f := .Hits.Facets.locked}}
-            <div class="form-check {{if lt $i $last}} mb-4{{end}}">
-                <input class="form-check-input" id="filter-locked-{{$i}}" type="checkbox" name="f[locked]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "locked" .Value}} checked{{end}}>
-                <label class="form-check-label" for="filter-locked-{{$i}}">{{$.Loc.Get (print "locked." $f.Value)}} ({{$f.Count}})</label>
+            <div class="d-flex flex-column gap-4">
+                {{range $i, $f := .Hits.Facets.locked}}
+                <div class="form-check">
+                    <input class="form-check-input" id="filter-locked-{{$i}}" type="checkbox" name="f[locked]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "locked" .Value}} checked{{end}}>
+                    <label class="form-check-label" for="filter-locked-{{$i}}">{{$.Loc.Get (print "locked." $f.Value)}} ({{$f.Count}})</label>
+                </div>
+                {{end}}
             </div>
-            {{end}}
         </div>
         <div class="bc-navbar bc-navbar--large">
             <button class="btn btn-primary d-grid w-100" type="submit">Apply filter</button>
