@@ -1,6 +1,6 @@
 <div class="mb-6 row{{if .Error}} is-invalid{{end}}">
     <div class="col-{{.Cols}} offset-lg-3 mt-2">
-      <div class="form-check ">
+      <div class="form-check">
         <input class="form-check-input{{if .Error}} is-invalid{{end}}" type="checkbox" id="{{.Name}}" name="{{.Name}}"
           {{if .Checked}}checked{{end}} value="{{.Value}}">
         <label class="form-check-label" for="{{.Name}}">{{.Label}}</label>

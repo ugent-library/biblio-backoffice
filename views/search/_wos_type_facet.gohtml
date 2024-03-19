@@ -39,13 +39,14 @@
         {{end}}
         {{end}}
         <div class="dropdown-menu__body border-bottom">
-            {{$last := sub (len .Hits.Facets.wos_type) 1}}
-            {{range $i, $f := .Hits.Facets.wos_type}}
-            <div class="form-check {{if lt $i $last}} mb-4{{end}}">
-                <input class="form-check-input" id="filter-wos-type-{{$i}}" type="checkbox" name="f[wos_type]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "wos_type" $f.Value}} checked{{end}}>
-                <label class="form-check-label" for="filter-wos-type-{{$i}}">{{$f.Value}} ({{$f.Count}})</label>
+            <div class="d-flex flex-column gap-4">
+                {{range $i, $f := .Hits.Facets.wos_type}}
+                <div class="form-check">
+                    <input class="form-check-input" id="filter-wos-type-{{$i}}" type="checkbox" name="f[wos_type]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "wos_type" $f.Value}} checked{{end}}>
+                    <label class="form-check-label" for="filter-wos-type-{{$i}}">{{$f.Value}} ({{$f.Count}})</label>
+                </div>
+                {{end}}
             </div>
-            {{end}}
         </div>
         <div class="bc-navbar bc-navbar--large">
             <button class="btn btn-primary d-grid w-100" type="submit">Apply filter</button>
