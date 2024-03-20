@@ -203,9 +203,9 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
   }
 
   function fillOutFilterFields(facet: string) {
-    cy.get(`input[name="f[${facet}]"]`)
+    cy.get<HTMLInputElement>(`input[name="f[${facet}]"]`)
       // In case of checkboxes, we pick a random one to check
-      .random<JQuery<HTMLInputElement>>()
+      .random()
       .as("facetField")
       .then(($input) => {
         if ($input.prop("type") === "text") {
