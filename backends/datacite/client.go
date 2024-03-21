@@ -21,7 +21,7 @@ import (
 
 const ContentType = "application/vnd.datacite.datacite+json"
 
-var reSplit = regexp.MustCompile(`\s*,\s*`)
+var reSplit = regexp.MustCompile(`\s*[,;]\s*`)
 
 type Client struct {
 	url  string
@@ -83,7 +83,7 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 	if res := attrs.Get("titles.0.title"); res.Exists() {
 		d.Title = res.String()
 	}
-	if res := attrs.Get("publisher"); res.Exists() {
+	if res := attrs.Get("publisher.name"); res.Exists() {
 		d.Publisher = res.String()
 	}
 	if res := attrs.Get("formats"); res.Exists() {
