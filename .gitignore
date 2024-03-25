@@ -27,7 +27,6 @@ tmp
 root
 .tern*
 !.tern.example.conf
-tern.*
 
 # env
 .env
