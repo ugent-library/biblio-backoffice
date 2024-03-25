@@ -39,13 +39,14 @@
         {{end}}
         {{end}}
         <div class="dropdown-menu__body">
-            {{$last := sub (len .Hits.Facets.has_message) 1}}
-            {{range $i, $f := .Hits.Facets.has_message}}
-            <div class="form-check {{if lt $i $last}} mb-4{{end}}">
-                <input class="form-check-input" id="filter-has-message-{{$i}}" type="checkbox" name="f[has_message]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "has_message" $f.Value}} checked{{end}}>
-                <label class="form-check-label" for="filter-has-message-{{$i}}">{{$.Loc.Get (print "has_message." $f.Value)}} ({{$f.Count}})</label>
+            <div class="d-flex flex-column gap-4">
+                {{range $i, $f := .Hits.Facets.has_message}}
+                <div class="form-check">
+                    <input class="form-check-input" id="filter-has-message-{{$i}}" type="checkbox" name="f[has_message]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "has_message" $f.Value}} checked{{end}}>
+                    <label class="form-check-label" for="filter-has-message-{{$i}}">{{$.Loc.Get (print "has_message." $f.Value)}} ({{$f.Count}})</label>
+                </div>
+                {{end}}
             </div>
-            {{end}}
         </div>
         <div class="bc-navbar bc-navbar--large">
             <button class="btn btn-primary d-grid w-100" type="submit">Apply filter</button>
