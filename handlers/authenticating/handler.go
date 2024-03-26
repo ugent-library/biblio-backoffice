@@ -38,7 +38,7 @@ func (h *Handler) Callback(w http.ResponseWriter, r *http.Request, ctx Context) 
 		return
 	}
 
-	user, err := h.UserService.GetUserByUsername(claims.PreferredUsername)
+	user, err := h.UserService.GetUserByUsername(claims.AdditionalClaims.GetString("uid"))
 	if err != nil {
 		h.Logger.Warnw("authentication: No user with that name could be found:", "errors", err, "user", claims.PreferredUsername)
 		h.InternalServerError(w, r, ctx.BaseContext)
