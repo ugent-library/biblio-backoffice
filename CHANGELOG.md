@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.53] - 2024-03-26
+
+### Added
+
+### Fixed
+
+- #1395: export xlsx publication: fix field has_open_access_file
+- #1383: bug duplicate DOI for datasets in frontoffice record
+
 ## [v1.0.52] - 2024-01-31
 
 ### Added
