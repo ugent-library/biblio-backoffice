@@ -12,7 +12,7 @@ export default function closeModal(
   options: CloseModalOptions = { log: true },
 ): void {
   const dismissButtonText =
-    typeof save === "boolean" ? (save ? "Save" : "Cancel") : save;
+    typeof save === "boolean" ? (save ? /^\s*Save\s*$/ : "Cancel") : save;
 
   let log: Cypress.Log | null = null;
   if (options.log === true) {

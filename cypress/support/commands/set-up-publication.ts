@@ -92,7 +92,7 @@ export default function setUpPublication(
 
         cy.contains(".btn", "Add author", NO_LOG).click(NO_LOG);
       },
-      /^Save$/,
+      true,
     );
   }
 

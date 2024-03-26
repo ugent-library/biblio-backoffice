@@ -79,7 +79,7 @@ export default function setUpDataset({
 
         cy.contains(".btn", "Add creator", NO_LOG).click(NO_LOG);
       },
-      /^Save$/,
+      true,
     );
   }
 

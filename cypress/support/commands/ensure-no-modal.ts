@@ -11,15 +11,9 @@ export default function ensureNoModal(
     logCommand("ensureNoModal");
   }
 
-  cy.get("#modals > *", { log: false })
-    .should("have.length", 0)
-    .then(() => {
-      // Check before asserting to keep out of command log if ok
-      if (Cypress.$("#modal, #modal-backdrop").length > 0) {
-        cy.get("#modal").should("not.exist");
-        cy.get("#modal-backdrop").should("not.exist");
-      }
-    });
+  cy.get("#modals > *, #modal, #modal-backdrop", { log: false }).should(
+    "not.exist",
+  );
 }
 
 declare global {

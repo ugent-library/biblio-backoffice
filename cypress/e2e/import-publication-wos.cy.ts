@@ -124,7 +124,7 @@ describe("Publication import", () => {
           .should("have.length", 1)
           .should("contain.text", "Dries Moreels");
       })
-      .closeModal(/^Save$/);
+      .closeModal(true);
 
     cy.ensureNoModal();
 

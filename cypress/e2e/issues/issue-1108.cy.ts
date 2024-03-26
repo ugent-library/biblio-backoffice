@@ -20,7 +20,7 @@ describe("Issue #1108: Cannot add author without first name", () => {
           .contains(".btn", "Add external author")
           .click();
       },
-      /^Save$/,
+      true,
     );
 
     cy.get(".card#authors")
@@ -43,7 +43,7 @@ describe("Issue #1108: Cannot add author without first name", () => {
           .contains(".btn", "Add external author")
           .click();
       },
-      /^Save$/,
+      true,
     );
 
     cy.get(".card#authors")
