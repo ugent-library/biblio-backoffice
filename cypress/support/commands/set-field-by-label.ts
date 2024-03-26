@@ -1,5 +1,7 @@
 import { logCommand, updateConsoleProps } from "./helpers";
 
+const NO_LOG = { log: false };
+
 export default function setFieldByLabel(
   labelCaption: string | RegExp,
   value: string,
@@ -10,16 +12,16 @@ export default function setFieldByLabel(
     `${labelCaption} = ${value}`,
   ).snapshot("before");
 
-  cy.getLabel(labelCaption, { log: false })
+  cy.getLabel(labelCaption, NO_LOG)
     .then((label) => {
       updateConsoleProps(log, (cp) => (cp["Label element"] = label.get(0)));
 
       return label;
     })
-    .click({ log: false });
+    .click(NO_LOG);
 
   return cy
-    .focused({ log: false })
+    .focused(NO_LOG)
     .then((field) => {
       updateConsoleProps(log, (cp) => {
         cp["Field element"] = field.get(0);
@@ -28,7 +30,7 @@ export default function setFieldByLabel(
 
       return field;
     })
-    .setField(value, { log: false })
+    .setField(value, NO_LOG)
     .then((field) => {
       log.snapshot("after");
 

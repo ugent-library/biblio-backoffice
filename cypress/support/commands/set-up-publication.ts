@@ -1,6 +1,6 @@
 import { logCommand } from "./helpers";
 
-type PublicationType =
+export type PublicationType =
   | "Journal Article"
   | "Book Chapter"
   | "Book"

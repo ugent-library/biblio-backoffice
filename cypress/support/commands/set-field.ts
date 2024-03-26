@@ -17,6 +17,7 @@ export default function setField(
 
   switch (subject.prop("tagName")) {
     case "INPUT":
+    case "TEXTAREA":
       field.clear({ log: false }).type(value, { delay: 0, log: false });
       break;
 
