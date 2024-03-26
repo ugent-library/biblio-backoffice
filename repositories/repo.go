@@ -33,7 +33,7 @@ type Repo struct {
 }
 
 type Config struct {
-	DSN                  string
+	Conn                 *pgxpool.Pool
 	PublicationListeners []PublicationListener
 	DatasetListeners     []DatasetListener
 	PublicationMutators  map[string]PublicationMutator
@@ -50,12 +50,7 @@ type PublicationVisitor = func(*models.Publication) error
 type DatasetVisitor = func(*models.Dataset) error
 
 func New(c Config) (*Repo, error) {
-	conn, err := pgxpool.New(context.Background(), c.DSN)
-	if err != nil {
-		return nil, err
-	}
-
-	client := snapstore.New(conn, []string{"publications", "datasets"},
+	client := snapstore.New(c.Conn, []string{"publications", "datasets"},
 		snapstore.WithIDGenerator(func() (string, error) {
 			return ulid.Make().String(), nil
 		}),
@@ -66,8 +61,8 @@ func New(c Config) (*Repo, error) {
 		client:           client,
 		publicationStore: client.Store("publications"),
 		datasetStore:     client.Store("datasets"),
-		queries:          db.New(conn),
-		conn:             conn,
+		queries:          db.New(c.Conn),
+		conn:             c.Conn,
 	}, nil
 }
 
