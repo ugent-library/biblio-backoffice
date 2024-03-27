@@ -19,6 +19,7 @@ node_modules
 !.gitkeep
 
 go.work
+go.work.sum
 
 # Live reloading (reflex, air)
 reflex.conf

@@ -152,9 +152,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		ClientID:     config.OIDC.ClientID,
 		ClientSecret: config.OIDC.ClientSecret,
 		RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
-		CookieName:   config.Session.Name + ".state",
-		CookieSecret: []byte(config.Session.Secret),
-		Insecure:     config.Env != "local",
+		CookiePrefix: config.Session.Name + ".",
 	})
 	if err != nil {
 		return nil, err
@@ -178,6 +176,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		Loc:              loc,
 		Logger:           logger,
 		OIDCAuth:         oidcAuth,
+		UsernameClaim:    config.OIDC.UsernameClaim,
 		FrontendURL:      config.Frontend.URL,
 		FrontendUsername: config.Frontend.Username,
 		FrontendPassword: config.Frontend.Password,
