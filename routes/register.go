@@ -63,6 +63,7 @@ type Config struct {
 	Loc              *gotext.Locale
 	Logger           *zap.SugaredLogger
 	OIDCAuth         *oidc.Auth
+	UsernameClaim    string
 	FrontendURL      string
 	FrontendUsername string
 	FrontendPassword string
@@ -116,8 +117,9 @@ func Register(c Config) {
 		FrontendBaseUrl: c.FrontendURL,
 	}
 	authenticatingHandler := &authenticating.Handler{
-		BaseHandler: baseHandler,
-		OIDCAuth:    c.OIDCAuth,
+		BaseHandler:   baseHandler,
+		OIDCAuth:      c.OIDCAuth,
+		UsernameClaim: c.UsernameClaim,
 	}
 	impersonatingHandler := &impersonating.Handler{
 		BaseHandler:       baseHandler,

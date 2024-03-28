@@ -64,9 +64,10 @@ type Config struct {
 		Sandbox      bool   `env:"SANDBOX"`
 	} `envPrefix:"ORCID_"`
 	OIDC struct {
-		URL          string `env:"URL"`
-		ClientID     string `env:"CLIENT_ID"`
-		ClientSecret string `env:"CLIENT_SECRET"`
+		URL           string `env:"URL"`
+		ClientID      string `env:"CLIENT_ID"`
+		ClientSecret  string `env:"CLIENT_SECRET"`
+		UsernameClaim string `env:"USERNAME_CLAIM" envDefault:"preferred_username"`
 	} `envPrefix:"OIDC_"`
 	CiteprocURL string `env:"CITEPROC_URL"`
 	MongoDBURL  string `env:"MONGODB_URL"`
