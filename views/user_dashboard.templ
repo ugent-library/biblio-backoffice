@@ -44,23 +44,6 @@ templ UserDashboard(c *ctx.Ctx) {
                 <div class="row">
                     <div class="col-xl-8 mb-6">
                         <div class="row">
-                            <div class="col-xl-8 mb-6">
-                                <div class="alert alert-info">
-                                    <i class="if if-info-circle-filled"></i>
-                                    <div class="alert-content">
-                                        <h3 class="alert-title">Scheduled maintenance: Biblio temporarily unavailable.</h3>
-                                        <p class="mt-2">Due to maintenance Biblio Backoffice will not be available on:</p>
-                                        <ul class="mb-2">
-                                            <li>Wednesday, March 27, 17:00 &mdash; 21:00</li>
-                                            <li>Thursday, March 28, 17:00 &mdash; 21:00</li>
-                                        </ul>
-                                        <p>For any questions, please contact <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>. We apologise for any inconveniences, thank you for your understanding.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-xl-6" hx-get={ c.PathTo("action_required").String() } hx-trigger="load">
                             </div>
                             <div class="col-xl-6" hx-get={ c.PathTo("drafts_to_complete").String() } hx-trigger="load">
