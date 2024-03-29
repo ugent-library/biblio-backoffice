@@ -43,6 +43,7 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231012201019-e917dd12ba7a
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
+	mvdan.cc/xurls/v2 v2.5.0
 )
 
 require (
@@ -124,7 +125,6 @@ require (
 	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
-	mvdan.cc/xurls/v2 v2.5.0 // indirect
 )
 
 require (
