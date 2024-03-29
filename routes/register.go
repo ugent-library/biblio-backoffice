@@ -292,6 +292,10 @@ func Register(c Config) {
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
+
+						// withdraw
+						r.Get("/publish/withdraw", datasetEditingHandler.ConfirmWithdraw).Name("dataset_confirm_withdraw")
+						r.Post("/withdraw", datasetEditingHandler.Withdraw).Name("dataset_withdraw")
 					})
 				})
 			})
@@ -399,14 +403,6 @@ func Register(c Config) {
 		r.Post("/dataset/{id}/publish",
 			datasetEditingHandler.Wrap(datasetEditingHandler.Publish)).
 			Name("dataset_publish")
-
-		// withdraw dataset
-		r.Get("/dataset/{id}/publish/withdraw",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmWithdraw)).
-			Name("dataset_confirm_withdraw")
-		r.Post("/dataset/{id}/withdraw",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Withdraw)).
-			Name("dataset_withdraw")
 
 		// re-publish dataset
 		r.Get("/dataset/{id}/republish/confirm",
