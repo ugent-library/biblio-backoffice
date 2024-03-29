@@ -284,6 +284,16 @@ func Register(c Config) {
 					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
 					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
 				})
+
+				// datasets
+				r.Route("/dataset/{id}", func(r *ich.Mux) {
+					r.Use(ctx.SetDataset(c.Services.Repo))
+
+					// curator actions
+					r.Group(func(r *ich.Mux) {
+						r.Use(ctx.RequireCurator)
+					})
+				})
 			})
 		})
 		// END NEW STYLE HANDLERS
