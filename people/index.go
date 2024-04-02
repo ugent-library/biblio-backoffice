@@ -137,13 +137,14 @@ const searchQuery = `{{define "query"}}{
 	{{else if .Filters}}
 	"bool": {
 		"filter": [
-			{{range .Filters}}
-			{{if eq .Name "has"}}
-			{"term": {"flags": "{{.Value}}"}}
-			{{else if eq .Name "nameKey"}}
-			{"term": {"nameKey": "{{.Value}}"}}
+		{{range $i, $f := .Filters}}
+			{{if $i}},{{end}}
+			{{if eq $f.Name "has"}}
+			{"term": {"flags": "{{$f.Value}}"}}
+			{{else}}
+			{"term": {"{{$f.Name}}": "{{$f.Value}}"}}
 			{{end}}
-			{{end}}
+		{{end}}
 		]
 	}
 	{{else}}

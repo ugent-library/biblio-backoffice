@@ -90,7 +90,7 @@ var serverStartCmd = &cobra.Command{
 			PeopleIndex:   services.PeopleIndex,
 			ProjectsRepo:  services.ProjectsRepo,
 			ProjectsIndex: services.ProjectsIndex,
-			Logger:        logger,
+			Logger:        logger.With("producer", "river"),
 		})
 		if err != nil {
 			return err
