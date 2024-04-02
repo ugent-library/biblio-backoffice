@@ -189,6 +189,7 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p, err := h.PeopleRepo.GetActivePersonByIdentifier(r.Context(), ident.Kind, ident.Value)
+
 	if err == people.ErrNotFound {
 		render.NotFound(w, r, err)
 		return

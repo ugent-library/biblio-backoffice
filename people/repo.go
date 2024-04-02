@@ -276,6 +276,7 @@ func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 			&pr.Email,
 			&pr.Active,
 			&pr.Username,
+			&pr.PublicationCount,
 			&pr.Attributes,
 			&pr.CreatedAt,
 			&pr.UpdatedAt,

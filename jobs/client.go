@@ -78,20 +78,20 @@ func Start(ctx context.Context, c JobsConfig) (*river.Client[pgx.Tx], error) {
 				},
 				&river.PeriodicJobOpts{RunOnStart: true},
 			),
-			// river.NewPeriodicJob(
-			// 	river.PeriodicInterval(1*time.Hour),
-			// 	func() (river.JobArgs, *river.InsertOpts) {
-			// 		return UpdatePublicationCountArgs{}, nil
-			// 	},
-			// 	&river.PeriodicJobOpts{RunOnStart: true},
-			// ),
+			river.NewPeriodicJob(
+				river.PeriodicInterval(1*time.Hour),
+				func() (river.JobArgs, *river.InsertOpts) {
+					return UpdatePublicationCountArgs{}, nil
+				},
+				&river.PeriodicJobOpts{RunOnStart: true},
+			),
 		},
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	c.Logger.Info("Starting jobs server...")
+	c.Logger.Info("Starting job server...")
 	if err := riverClient.Start(context.TODO()); err != nil {
 		return nil, err
 	}
