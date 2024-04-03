@@ -599,6 +599,8 @@ github.com/ugent-library/httperror v0.0.0-20230123152913-d3d289bcce20 h1:djFbAZZ
 github.com/ugent-library/httperror v0.0.0-20230123152913-d3d289bcce20/go.mod h1:QuEpmxsRkH6YuLjj1xAS2g1xywDUxxdfuN0bBfkB1oc=
 github.com/ugent-library/httpx v0.0.0-20231026122034-e9de0b29458b h1:Y1gD0JpRWEBMPx2Nbc+hxTMjzVzegdWsEgI5q9N2meE=
 github.com/ugent-library/httpx v0.0.0-20231026122034-e9de0b29458b/go.mod h1:+m4mWcYSpZknAPTanWib+3cehzEyTDxz9ipf3NG3ezM=
+github.com/ugent-library/httpx v0.0.0-20240403070226-3cd9bcf467c1 h1:1mBYqCAKUlE8OT0c1fob8AkfOTk0pHodff5PxgpI9wo=
+github.com/ugent-library/httpx v0.0.0-20240403070226-3cd9bcf467c1/go.mod h1:+m4mWcYSpZknAPTanWib+3cehzEyTDxz9ipf3NG3ezM=
 github.com/ugent-library/index v0.0.0-20240208101504-240e390f8d3d h1:BVr6RJBklwwlmvDl2/Vwy/zNTPED6f52Ej6PkMqKxf0=
 github.com/ugent-library/index v0.0.0-20240208101504-240e390f8d3d/go.mod h1:eNYZDTlJAppLb25EaTZTWMG3NnNft3J7GtCl+fEjFug=
 github.com/ugent-library/mix v0.0.0-20230123152737-b51ce0c6439b h1:4Ine7pmtSh4f8xSFb5hAIelgy5O/HjOVne49+C04fto=
