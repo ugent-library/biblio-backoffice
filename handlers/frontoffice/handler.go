@@ -271,7 +271,7 @@ func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p, err := h.ProjectsIndex.GetProjectByIdentifier(r.Context(), ident.Kind, ident.Value)
-	if err == people.ErrNotFound {
+	if err == projects.ErrNotFound {
 		render.NotFound(w, r, err)
 		return
 	}
