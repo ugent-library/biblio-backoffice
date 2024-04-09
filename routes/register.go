@@ -299,13 +299,13 @@ func Register(c Config) {
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 
+					// withdraw
+					r.Get("/withdraw/confirm", datasetEditingHandler.ConfirmWithdraw).Name("dataset_confirm_withdraw")
+					r.Post("/withdraw", datasetEditingHandler.Withdraw).Name("dataset_withdraw")
+
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
-
-						// withdraw
-						r.Get("/withdraw/confirm", datasetEditingHandler.ConfirmWithdraw).Name("dataset_confirm_withdraw")
-						r.Post("/withdraw", datasetEditingHandler.Withdraw).Name("dataset_withdraw")
 					})
 				})
 			})
