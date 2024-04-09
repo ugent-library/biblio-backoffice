@@ -369,6 +369,14 @@ type personDoc struct {
 	Record      *Person  `json:"record"`
 }
 
+func fixSortName(sort string) string {
+	sort = strings.ToLower(sort)
+	sort = strings.ReplaceAll(sort, " ", "")
+	sort = strings.ReplaceAll(sort, "'", "")
+	sort = strings.ReplaceAll(sort, "-", "")
+	return sort
+}
+
 func toPersonDoc(p *Person) (string, []byte, error) {
 	pd := &personDoc{
 		Names:       []string{p.Name},
@@ -389,6 +397,10 @@ func toPersonDoc(p *Person) (string, []byte, error) {
 	}
 	if p.PreferredGivenName != "" {
 		pd.SortName += p.PreferredGivenName
+	}
+
+	if pd.SortName != "" {
+		pd.SortName = fixSortName(pd.SortName)
 	}
 
 	for _, name := range []string{p.PreferredName, p.GivenName, p.PreferredGivenName, p.FamilyName, p.PreferredFamilyName} {
