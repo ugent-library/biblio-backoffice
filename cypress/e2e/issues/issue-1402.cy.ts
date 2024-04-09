@@ -6,8 +6,48 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
   });
 
   describe("for publications", () => {
-    // TODO
-    it("should be possible to change the publication type");
+    it("should be possible to change the publication type", () => {
+      cy.setUpPublication("Dissertation");
+      cy.visitPublication();
+
+      cy.contains(".card", "Publication details")
+        .contains(".btn", "Edit")
+        .click();
+
+      cy.intercept("/publication/*/type/confirm?type=journal_article").as(
+        "changeType",
+      );
+
+      cy.ensureModal("Edit publication details").within(() => {
+        cy.getLabel("Publication type")
+          .next()
+          .find("select > option:selected")
+          .should("have.value", "dissertation")
+          .should("have.text", "Dissertation");
+
+        cy.setFieldByLabel("Publication type", "Journal article");
+      });
+
+      cy.wait("@changeType");
+
+      cy.ensureModal("Changing the publication type might result in data loss")
+        .within(() => {
+          cy.get(".modal-body").should(
+            "contain",
+            "Are you sure you want to change the type to Journal article?",
+          );
+        })
+        .closeModal("Proceed");
+      cy.ensureNoModal();
+
+      cy.contains(".card", "Publication details")
+        .find(".card-body")
+        .within(() => {
+          cy.getLabel("Publication type")
+            .next()
+            .should("contain", "Journal article");
+        });
+    });
 
     it("should be possible to add, edit and delete abstracts", () => {
       cy.setUpPublication();
