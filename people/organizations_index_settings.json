@@ -19,7 +19,7 @@
             },
             "token_edge_ngram": {
               "type": "edge_ngram",
-              "min_gram": "2",
+              "min_gram": "1",
               "max_gram": "20"
             }
           },
@@ -97,7 +97,11 @@
           },
           "identifiers": {
             "type": "keyword",
-            "normalizer": "tag"
+            "normalizer": "tag",
+            "copy_to": [
+              "ngram",
+              "phrase_ngram"
+            ]
           },
           "record": {
             "type": "object",
