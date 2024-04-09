@@ -16,11 +16,6 @@ import (
 	"github.com/ugent-library/okay"
 )
 
-type YieldPublish struct {
-	Context
-	RedirectURL string
-}
-
 func (h *Handler) ConfirmPublish(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	redirectUrl := r.URL.Query().Get("redirect-url")

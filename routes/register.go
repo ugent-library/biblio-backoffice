@@ -296,6 +296,10 @@ func Register(c Config) {
 						// publish
 						r.Get("/publish/confirm", datasetEditingHandler.ConfirmPublish).Name("dataset_confirm_publish")
 						r.Post("/publish", datasetEditingHandler.Publish).Name("dataset_publish")
+
+						// re-publish
+						r.Get("/republish/confirm", datasetEditingHandler.ConfirmRepublish).Name("dataset_confirm_republish")
+						r.Post("/republish", datasetEditingHandler.Republish).Name("dataset_republish")
 					})
 				})
 			})
@@ -403,14 +407,6 @@ func Register(c Config) {
 		r.Post("/dataset/{id}/withdraw",
 			datasetEditingHandler.Wrap(datasetEditingHandler.Withdraw)).
 			Name("dataset_withdraw")
-
-		// re-publish dataset
-		r.Get("/dataset/{id}/republish/confirm",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmRepublish)).
-			Name("dataset_confirm_republish")
-		r.Post("/dataset/{id}/republish",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Republish)).
-			Name("dataset_republish")
 
 		// lock dataset
 		r.Post("/dataset/{id}/lock",
