@@ -292,6 +292,10 @@ func Register(c Config) {
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
+
+						// publish
+						r.Get("/publish/confirm", publicationEditingHandler.ConfirmPublish).Name("publication_confirm_publish")
+						r.Post("/publish", publicationEditingHandler.Publish).Name("publication_publish")
 					})
 				})
 
@@ -680,14 +684,6 @@ func Register(c Config) {
 		r.Get("/publication/{id}/files/{file_id}",
 			publicationViewingHandler.Wrap(publicationViewingHandler.DownloadFile)).
 			Name("publication_download_file")
-
-		// publish publication
-		r.Get("/publication/{id}/publish/confirm",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmPublish)).
-			Name("publication_confirm_publish")
-		r.Post("/publication/{id}/publish",
-			publicationEditingHandler.Wrap(publicationEditingHandler.Publish)).
-			Name("publication_publish")
 
 		// withdraw publication
 		r.Get("/publication/{id}/withdraw/confirm",
