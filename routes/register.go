@@ -292,6 +292,10 @@ func Register(c Config) {
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
+
+						// withdraw
+						r.Get("/withdraw/confirm", publicationEditingHandler.ConfirmWithdraw).Name("publication_confirm_withdraw")
+						r.Post("/withdraw", publicationEditingHandler.Withdraw).Name("publication_withdraw")
 					})
 				})
 
@@ -688,14 +692,6 @@ func Register(c Config) {
 		r.Post("/publication/{id}/publish",
 			publicationEditingHandler.Wrap(publicationEditingHandler.Publish)).
 			Name("publication_publish")
-
-		// withdraw publication
-		r.Get("/publication/{id}/withdraw/confirm",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmWithdraw)).
-			Name("publication_confirm_withdraw")
-		r.Post("/publication/{id}/withdraw",
-			publicationEditingHandler.Wrap(publicationEditingHandler.Withdraw)).
-			Name("publication_withdraw")
 
 		// re-publish publication
 		r.Get("/publication/{id}/republish/confirm",
