@@ -285,6 +285,16 @@ func Register(c Config) {
 					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
 				})
 
+				// publications
+				r.Route("/publication/{id}", func(r *ich.Mux) {
+					r.Use(ctx.SetPublication(c.Services.Repo))
+
+					// curator actions
+					r.Group(func(r *ich.Mux) {
+						r.Use(ctx.RequireCurator)
+					})
+				})
+
 				// datasets
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))

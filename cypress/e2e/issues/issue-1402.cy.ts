@@ -6,8 +6,48 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
   });
 
   describe("for publications", () => {
-    // TODO
-    it("should be possible to change the publication type");
+    it("should be possible to change the publication type", () => {
+      cy.setUpPublication("Dissertation");
+      cy.visitPublication();
+
+      cy.contains(".card", "Publication details")
+        .contains(".btn", "Edit")
+        .click();
+
+      cy.intercept("/publication/*/type/confirm?type=journal_article").as(
+        "changeType",
+      );
+
+      cy.ensureModal("Edit publication details").within(() => {
+        cy.getLabel("Publication type")
+          .next()
+          .find("select > option:selected")
+          .should("have.value", "dissertation")
+          .should("have.text", "Dissertation");
+
+        cy.setFieldByLabel("Publication type", "Journal article");
+      });
+
+      cy.wait("@changeType");
+
+      cy.ensureModal("Changing the publication type might result in data loss")
+        .within(() => {
+          cy.get(".modal-body").should(
+            "contain",
+            "Are you sure you want to change the type to Journal article?",
+          );
+        })
+        .closeModal("Proceed");
+      cy.ensureNoModal();
+
+      cy.contains(".card", "Publication details")
+        .find(".card-body")
+        .within(() => {
+          cy.getLabel("Publication type")
+            .next()
+            .should("contain", "Journal article");
+        });
+    });
 
     it("should be possible to add, edit and delete abstracts", () => {
       cy.setUpPublication();
@@ -524,6 +564,110 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       cy.ensureNoModal();
       cy.ensureToast("Publication was successfully unlocked.").closeToast();
     });
+
+    it("should error when publication is not ready for publication", () => {
+      cy.setUpPublication("Miscellaneous", { prepareForPublishing: false });
+      cy.visitPublication();
+
+      cy.contains(".btn-success", "Publish to Biblio").click();
+      cy.ensureModal("Are you sure?")
+        .within(() => {
+          cy.get(".modal-content").should(
+            "contain",
+            "Are you sure you want to publish this publication to Biblio?",
+          );
+        })
+        .closeModal("Publish");
+
+      cy.ensureModal(
+        "Unable to publish this publication due to the following errors",
+      )
+        .within(() => {
+          cy.get("ul > li")
+            .map("textContent")
+            .should("have.members", [
+              "Publication year is required",
+              "One or more authors are required",
+              "At least one UGent author is required",
+            ]);
+        })
+        .closeModal("Close");
+      cy.ensureNoModal();
+      cy.ensureNoToast();
+
+      cy.reload();
+
+      cy.contains(".btn-success", "Publish to Biblio").should("be.visible");
+    });
+
+    it("should error when publication is not ready for republication", () => {
+      cy.setUpPublication("Miscellaneous", { prepareForPublishing: true });
+      cy.visitPublication();
+
+      cy.contains(".btn-success", "Publish to Biblio").click();
+      cy.ensureModal("Are you sure?").closeModal("Publish");
+      cy.ensureNoModal();
+      cy.ensureToast("Publication was successfully published.").closeToast();
+
+      cy.contains(".btn-outline-danger", "Withdraw").click();
+      cy.ensureModal("Are you sure?").closeModal("Withdraw");
+      cy.ensureNoModal();
+      cy.ensureToast("Publication was successfully withdrawn.").closeToast();
+
+      cy.updateFields(
+        "Publication details",
+        () => {
+          cy.setFieldByLabel("Publication year", " ");
+        },
+        true,
+      );
+
+      cy.contains(".nav-link", "People & Affiliations").click();
+
+      // Delete interal author
+      cy.get("#authors button:has(.if-delete)").click();
+      cy.ensureModal("Are you sure?").closeModal("Delete");
+
+      // Add external author
+      cy.updateFields(
+        "Authors",
+        () => {
+          cy.setFieldByLabel("First name", "John");
+          cy.setFieldByLabel("Last name", "Doe");
+          cy.contains(".btn", "Add external author").click();
+        },
+        true,
+      );
+
+      cy.contains(".btn-success", "Republish to Biblio").click();
+      cy.ensureModal("Are you sure?")
+        .within(() => {
+          cy.get(".modal-content").should(
+            "contain",
+            "Are you sure you want to republish this publication to Biblio?",
+          );
+        })
+        .closeModal("Republish");
+
+      cy.ensureModal(
+        "Unable to republish this publication due to the following errors",
+      )
+        .within(() => {
+          cy.get("ul > li")
+            .map("textContent")
+            .should("have.members", [
+              "Publication year is required",
+              "At least one UGent author is required",
+            ]);
+        })
+        .closeModal("Close");
+      cy.ensureNoModal();
+      cy.ensureNoToast();
+
+      cy.reload();
+
+      cy.contains(".btn-success", "Republish to Biblio").should("be.visible");
+    });
   });
 
   describe("for datasets", () => {
@@ -843,6 +987,116 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       cy.contains(".btn-outline-secondary", "Unlock").click();
       cy.ensureNoModal();
       cy.ensureToast("Dataset was successfully unlocked.").closeToast();
+    });
+
+    it("should error when dataset is not ready for publication", () => {
+      cy.setUpDataset({ prepareForPublishing: false });
+      cy.visitDataset();
+
+      cy.contains(".btn-success", "Publish to Biblio").click();
+      cy.ensureModal("Are you sure?")
+        .within(() => {
+          cy.get(".modal-content").should(
+            "contain",
+            "Are you sure you want to publish this dataset to Biblio?",
+          );
+        })
+        .closeModal("Publish");
+
+      cy.ensureModal(
+        "Unable to publish this dataset due to the following errors",
+      )
+        .within(() => {
+          cy.get("ul > li")
+            .map("textContent")
+            .should("have.members", [
+              "Access level is required",
+              "Format is required",
+              "Publisher is required",
+              "Publication year is required",
+              "One or more authors are required",
+              "At least one UGent author is required",
+              "License is required",
+            ]);
+        })
+        .closeModal("Close");
+      cy.ensureNoModal();
+      cy.ensureNoToast();
+
+      cy.reload();
+
+      cy.contains(".btn-success", "Publish to Biblio").should("be.visible");
+    });
+
+    it("should error when dataset is not ready for republication", () => {
+      cy.setUpDataset({ prepareForPublishing: true });
+      cy.visitDataset();
+
+      cy.contains(".btn-success", "Publish to Biblio").click();
+      cy.ensureModal("Are you sure?").closeModal("Publish");
+      cy.ensureNoModal();
+      cy.ensureToast("Dataset was successfully published.").closeToast();
+
+      cy.contains(".btn-outline-danger", "Withdraw").click();
+      cy.ensureModal("Are you sure?").closeModal("Withdraw");
+      cy.ensureNoModal();
+      cy.ensureToast("Dataset was successfully withdrawn.").closeToast();
+
+      cy.updateFields(
+        "Dataset details",
+        () => {
+          cy.setFieldByLabel("Publisher", " ");
+          cy.setFieldByLabel("Publication year", " ");
+        },
+        true,
+      );
+
+      cy.contains(".nav-link", "People & Affiliations").click();
+
+      // Delete interal author
+      cy.get("#authors button:has(.if-delete)").click();
+      cy.ensureModal("Are you sure?").closeModal("Delete");
+
+      // Add external author
+      cy.updateFields(
+        "Creators",
+        () => {
+          cy.setFieldByLabel("First name", "John");
+          cy.setFieldByLabel("Last name", "Doe");
+          cy.contains(".btn", "Add external creator").click();
+        },
+        true,
+      );
+
+      cy.contains(".btn-success", "Republish to Biblio").click();
+      cy.ensureModal("Are you sure?")
+        .within(() => {
+          cy.get(".modal-content").should(
+            "contain",
+            "Are you sure you want to republish this dataset to Biblio?",
+          );
+        })
+        .closeModal("Republish");
+
+      cy.ensureModal(
+        "Unable to republish this dataset due to the following errors",
+      )
+        .within(() => {
+          cy.get("ul > li")
+            .map("textContent")
+            .should("have.members", [
+              "Publisher is required",
+              "Publication year is required",
+              "At least one UGent author is required",
+            ]);
+        })
+        .closeModal("Close");
+      cy.ensureNoModal();
+      cy.ensureNoToast();
+
+      cy.reload();
+
+      cy.contains(".btn-success", "Republish to Biblio").should("be.visible");
     });
   });
 });
