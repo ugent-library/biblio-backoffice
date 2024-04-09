@@ -304,7 +304,7 @@ func Register(c Config) {
 						r.Use(ctx.RequireCurator)
 
 						// withdraw
-						r.Get("/publish/withdraw", datasetEditingHandler.ConfirmWithdraw).Name("dataset_confirm_withdraw")
+						r.Get("/withdraw/confirm", datasetEditingHandler.ConfirmWithdraw).Name("dataset_confirm_withdraw")
 						r.Post("/withdraw", datasetEditingHandler.Withdraw).Name("dataset_withdraw")
 					})
 				})
