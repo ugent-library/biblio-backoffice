@@ -114,6 +114,15 @@ const queryStringQuery = `{{define "query"}}{
 			},
 			{
 				"match": {
+					"all": {
+						"query": "{{.Query}}",
+						"operator": "AND",
+						"boost": "0.1"
+					}
+				}
+			},
+			{
+				"match": {
 					"phrase_ngram": {
 						"query": "{{.Query}}",
 						"operator": "AND",
