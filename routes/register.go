@@ -289,13 +289,13 @@ func Register(c Config) {
 				r.Route("/publication/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetPublication(c.Services.Repo))
 
+					// withdraw
+					r.Get("/withdraw/confirm", publicationEditingHandler.ConfirmWithdraw).Name("publication_confirm_withdraw")
+					r.Post("/withdraw", publicationEditingHandler.Withdraw).Name("publication_withdraw")
+
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
-
-						// withdraw
-						r.Get("/withdraw/confirm", publicationEditingHandler.ConfirmWithdraw).Name("publication_confirm_withdraw")
-						r.Post("/withdraw", publicationEditingHandler.Withdraw).Name("publication_withdraw")
 					})
 				})
 
