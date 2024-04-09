@@ -299,17 +299,17 @@ func Register(c Config) {
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 
+					// publish
+					r.Get("/publish/confirm", datasetEditingHandler.ConfirmPublish).Name("dataset_confirm_publish")
+					r.Post("/publish", datasetEditingHandler.Publish).Name("dataset_publish")
+
+					// re-publish
+					r.Get("/republish/confirm", datasetEditingHandler.ConfirmRepublish).Name("dataset_confirm_republish")
+					r.Post("/republish", datasetEditingHandler.Republish).Name("dataset_republish")
+
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
-
-						// publish
-						r.Get("/publish/confirm", datasetEditingHandler.ConfirmPublish).Name("dataset_confirm_publish")
-						r.Post("/publish", datasetEditingHandler.Publish).Name("dataset_publish")
-
-						// re-publish
-						r.Get("/republish/confirm", datasetEditingHandler.ConfirmRepublish).Name("dataset_confirm_republish")
-						r.Post("/republish", datasetEditingHandler.Republish).Name("dataset_republish")
 					})
 				})
 			})
