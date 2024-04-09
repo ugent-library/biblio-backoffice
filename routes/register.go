@@ -289,13 +289,13 @@ func Register(c Config) {
 				r.Route("/publication/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetPublication(c.Services.Repo))
 
+					// re-publish
+					r.Get("/republish/confirm", publicationEditingHandler.ConfirmRepublish).Name("publication_confirm_republish")
+					r.Post("/republish", publicationEditingHandler.Republish).Name("publication_republish")
+
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
-
-						// re-publish
-						r.Get("/republish/confirm", publicationEditingHandler.ConfirmRepublish).Name("publication_confirm_republish")
-						r.Post("/republish", publicationEditingHandler.Republish).Name("publication_republish")
 					})
 				})
 
