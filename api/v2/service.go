@@ -319,16 +319,19 @@ func convertProject(from *projects.Project) Project {
 }
 
 func convertOrganization(from *people.Organization) Organization {
-	return Organization{
+	o := Organization{
 		Identifiers: lo.Map(from.Identifiers, func(v people.Identifier, _ int) Identifier { return Identifier(v) }),
 		Names:       lo.Map(from.Names, func(v people.Text, _ int) Text { return Text(v) }),
 		Ceased:      from.Ceased,
-		CeasedOn:    lo.Ternary(from.CeasedOn != nil, NewOptDate(*from.CeasedOn), OptDate{Set: false}),
 		Position:    NewOptInt(from.Position),
 		Parents:     lo.Map(from.Parents, func(v people.ParentOrganization, _ int) ParentOrganization { return convertParentOrganization(v) }),
 		CreatedAt:   from.CreatedAt,
 		UpdatedAt:   from.UpdatedAt,
 	}
+	if from.CeasedOn != nil {
+		o.CeasedOn = NewOptDate(*from.CeasedOn)
+	}
+	return o
 }
 
 func convertPerson(from *people.Person) Person {
