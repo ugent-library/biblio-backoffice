@@ -7,7 +7,7 @@ type EnsureModalOptions = {
 };
 
 export default function ensureModal(
-  expectedTitle: string | RegExp,
+  expectedTitle: string | RegExp | null,
   options: EnsureModalOptions = { log: true },
 ): Cypress.Chainable<JQuery<HTMLElement>> {
   let log: Cypress.Log | null = null;
@@ -30,7 +30,9 @@ export default function ensureModal(
     .get("#modal", NO_LOG)
     .should("be.visible")
     .within(NO_LOG, () => {
-      if (expectedTitle instanceof RegExp) {
+      if (expectedTitle === null) {
+        cy.get(".modal-title", NO_LOG).should("not.exist");
+      } else if (expectedTitle instanceof RegExp) {
         cy.get(".modal-title", NO_LOG)
           .invoke(NO_LOG, "text")
           .should("match", expectedTitle);
@@ -45,7 +47,7 @@ declare global {
   namespace Cypress {
     interface Chainable {
       ensureModal(
-        expectedTitle: string | RegExp,
+        expectedTitle: string | RegExp | null,
         options?: EnsureModalOptions,
       ): Chainable<JQuery<HTMLElement>>;
     }

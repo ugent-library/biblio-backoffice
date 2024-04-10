@@ -52,6 +52,62 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           });
       });
 
+      it("should error when changing publication type and publication was updated concurrently", () => {
+        cy.setUpPublication();
+        cy.visitPublication();
+
+        // First perform an update but also capture the snapshot ID
+        cy.updateFields(
+          "Abstract",
+          () => {
+            cy.setFieldByLabel("Abstract", "This is an abstract");
+            cy.setFieldByLabel("Language", "Danish");
+
+            cy.contains(".modal-footer .btn", "Add abstract")
+              .attr("hx-headers")
+              .as("initialSnapshot");
+          },
+          "Add abstract",
+        );
+
+        cy.contains(".card", "Publication details")
+          .contains(".btn", "Edit")
+          .click();
+
+        cy.intercept("/publication/*/type/confirm?type=journal_article").as(
+          "changeType",
+        );
+
+        cy.ensureModal("Edit publication details").within(() => {
+          cy.setFieldByLabel("Publication type", "Journal article");
+        });
+        cy.wait("@changeType");
+
+        cy.ensureModal(
+          "Changing the publication type might result in data loss",
+        )
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to change the type to Journal article?",
+            );
+
+            // "Fix" the proceed button with the old (outdated) snapshot ID
+            cy.contains(".modal-footer .btn", "Proceed").then((button) => {
+              cy.get<string>("@initialSnapshot").then((initialSnapshot) => {
+                button.attr("hx-headers", initialSnapshot);
+              });
+            });
+          })
+          .closeModal("Proceed");
+
+        cy.ensureModal(null).within(() => {
+          cy.contains(
+            "Publication has been modified by another user. Please reload the page.",
+          ).should("be.visible");
+        });
+      });
+
       it("should be possible to add, edit and delete abstracts", () => {
         cy.setUpPublication();
         cy.visitPublication();
