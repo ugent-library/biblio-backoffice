@@ -42,11 +42,6 @@ func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, legacyConte
 
 	publication.ChangeType(b.Type)
 
-	// TODO This breaks converting the record type.
-	//  e.g. moving from "conference" to "dissertation" is not possible. Dissertation requires a
-	//  a "supervisor". This block will revert the record back to conference. The "supervisors" table
-	//  won't become available and the user won't be able to set a supervisor, therefor being unable
-	//  to satisfy the validation rule. (circular logic)
 	if validationErrs := publication.Validate(); validationErrs != nil {
 		form := detailsForm(c.User, c.Loc, publication, validationErrs.(*okay.Errors))
 
