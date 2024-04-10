@@ -377,6 +377,14 @@ func fixSortName(sort string) string {
 	return sort
 }
 
+func fixNameKey(nameKey string) string {
+	nameKey = strings.ReplaceAll(nameKey, "'", "")
+	nameKey = strings.TrimSpace(nameKey)
+	nameKey = strings.ToUpper(nameKey)
+	nameKey = nameKey[0:1]
+	return nameKey
+}
+
 func toPersonDoc(p *Person) (string, []byte, error) {
 	pd := &personDoc{
 		Names:       []string{p.Name},
@@ -385,11 +393,11 @@ func toPersonDoc(p *Person) (string, []byte, error) {
 	}
 
 	if p.FamilyName != "" {
-		pd.NameKey = p.FamilyName[0:1]
+		pd.NameKey = fixNameKey(p.FamilyName)
 		pd.SortName = p.FamilyName
 	}
 	if p.PreferredFamilyName != "" {
-		pd.NameKey = p.PreferredFamilyName[0:1]
+		pd.NameKey = fixNameKey(p.PreferredFamilyName)
 		pd.SortName = p.PreferredFamilyName
 	}
 	if p.GivenName != "" {
