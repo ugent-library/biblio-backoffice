@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
+	"slices"
 	"strings"
 
 	"github.com/elastic/go-elasticsearch/v6"
@@ -107,6 +107,27 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.SearchHits, err
 
 			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = facet
 		}
+
+		// Dynamically add variable facet values
+		preIncludeFields := []string{}
+		for _, facet := range args.Facets {
+			if slices.Contains([]string{"reviewer_tags"}, facet) {
+				preIncludeFields = append(preIncludeFields, facet)
+			}
+		}
+		if len(preIncludeFields) > 0 {
+			facetValues, err := di.getScopedFacetValues(preIncludeFields...)
+			if err != nil {
+				return nil, err
+			}
+			for field, values := range facetValues {
+				if len(values) == 0 {
+					continue
+				}
+				query["aggs"].(M)["facets"].(M)["aggs"].(M)[field].(M)["aggs"].(M)["facet"].(M)["terms"].(M)["include"] = values
+			}
+		}
+
 	}
 
 	// ADD QUERY FILTERS
@@ -171,6 +192,75 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.SearchHits, err
 	return hits, nil
 }
 
+func (di *DatasetIndex) getScopedFacetValues(fields ...string) (map[string][]string, error) {
+	req := M{
+		"query": M{
+			"bool": M{
+				"filter": di.scopes,
+			},
+		},
+		"size": 0,
+		"aggs": M{},
+	}
+	for _, field := range fields {
+		req["aggs"].(M)[field] = M{
+			"terms": M{
+				"field":         field,
+				"order":         M{"_key": "asc"},
+				"size":          999,
+				"min_doc_count": 1,
+			},
+		}
+	}
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(req); err != nil {
+		return nil, err
+	}
+
+	opts := []func(*esapi.SearchRequest){
+		di.client.Search.WithContext(context.Background()),
+		di.client.Search.WithIndex(di.index),
+		di.client.Search.WithTrackTotalHits(false),
+		di.client.Search.WithBody(&buf),
+	}
+
+	var res map[string]any
+	err := di.searchWithOpts(opts, func(r io.ReadCloser) error {
+		if err := json.NewDecoder(r).Decode(&res); err != nil {
+			return fmt.Errorf("error parsing the response body")
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	m := map[string][]string{}
+
+	for field, agg := range res["aggregations"].(map[string]any) {
+		buckets := agg.(map[string]any)["buckets"].([]any)
+		m[field] = make([]string, 0, len(buckets))
+		for _, bucket := range buckets {
+			fv := bucket.(map[string]any)
+			if v, e := fv["key_as_string"]; e {
+				m[field] = append(m[field], v.(string))
+			} else {
+				switch v := fv["key"].(type) {
+				case string:
+					m[field] = append(m[field], v)
+				case int:
+					m[field] = append(m[field], fmt.Sprintf("%d", v))
+				case float64:
+					m[field] = append(m[field], fmt.Sprintf("%.2f", v))
+				}
+			}
+		}
+	}
+
+	return m, nil
+}
+
 func (di *DatasetIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func(string)) error {
 	nProcessed := 0
 	start := 0
@@ -207,8 +297,6 @@ func (di *DatasetIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func
 		if err := json.NewEncoder(&buf).Encode(query); err != nil {
 			return err
 		}
-
-		fmt.Fprintf(os.Stderr, "es dataset search: %s\n", buf.String())
 
 		opts := []func(*esapi.SearchRequest){
 			di.client.Search.WithContext(context.Background()),
