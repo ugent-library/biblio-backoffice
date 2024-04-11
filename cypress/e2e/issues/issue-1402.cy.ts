@@ -597,7 +597,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           })
           .closeModal("Publish");
         cy.ensureNoModal();
-        cy.ensureToast("Publication was successfully published.").closeToast();
+        cy.ensureToast("Publication was successfully published.");
 
         cy.contains(".btn-outline-danger", "Withdraw").click();
         cy.ensureModal("Are you sure?")
@@ -609,7 +609,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           })
           .closeModal("Withdraw");
         cy.ensureNoModal();
-        cy.ensureToast("Publication was successfully withdrawn.").closeToast();
+        cy.ensureToast("Publication was successfully withdrawn.");
 
         cy.contains(".btn-success", "Republish to Biblio").click();
         cy.ensureModal("Are you sure?")
@@ -621,9 +621,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           })
           .closeModal("Republish");
         cy.ensureNoModal();
-        cy.ensureToast(
-          "Publication was successfully republished.",
-        ).closeToast();
+        cy.ensureToast("Publication was successfully republished.");
       });
 
       it("should error when publication is not ready for publication", () => {
@@ -668,12 +666,12 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Publish to Biblio").click();
         cy.ensureModal("Are you sure?").closeModal("Publish");
         cy.ensureNoModal();
-        cy.ensureToast("Publication was successfully published.").closeToast();
+        cy.ensureToast("Publication was successfully published.");
 
         cy.contains(".btn-outline-danger", "Withdraw").click();
         cy.ensureModal("Are you sure?").closeModal("Withdraw");
         cy.ensureNoModal();
-        cy.ensureToast("Publication was successfully withdrawn.").closeToast();
+        cy.ensureToast("Publication was successfully withdrawn.");
 
         cy.updateFields(
           "Publication details",
@@ -992,7 +990,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           })
           .closeModal("Publish");
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully published.").closeToast();
+        cy.ensureToast("Dataset was successfully published.");
 
         cy.contains(".btn-outline-danger", "Withdraw").click();
         cy.ensureModal("Are you sure?")
@@ -1004,7 +1002,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           })
           .closeModal("Withdraw");
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully withdrawn.").closeToast();
+        cy.ensureToast("Dataset was successfully withdrawn.");
 
         cy.contains(".btn-success", "Republish to Biblio").click();
         cy.ensureModal("Are you sure?")
@@ -1016,7 +1014,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           })
           .closeModal("Republish");
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully republished.").closeToast();
+        cy.ensureToast("Dataset was successfully republished.");
       });
 
       it("should error when dataset is not ready for publication", () => {
@@ -1065,12 +1063,12 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Publish to Biblio").click();
         cy.ensureModal("Are you sure?").closeModal("Publish");
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully published.").closeToast();
+        cy.ensureToast("Dataset was successfully published.");
 
         cy.contains(".btn-outline-danger", "Withdraw").click();
         cy.ensureModal("Are you sure?").closeModal("Withdraw");
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully withdrawn.").closeToast();
+        cy.ensureToast("Dataset was successfully withdrawn.");
 
         cy.updateFields(
           "Dataset details",
@@ -1227,15 +1225,15 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.contains(".btn-success", "Publish to Biblio").click();
         cy.ensureModal("Are you sure?").closeModal("Publish");
-        cy.ensureToast("Publication was successfully published.").closeToast();
+        cy.ensureToast("Publication was successfully published.");
 
         cy.contains(".btn-outline-secondary", "Lock").click();
         cy.ensureNoModal();
-        cy.ensureToast("Publication was successfully locked.").closeToast();
+        cy.ensureToast("Publication was successfully locked.");
 
         cy.contains(".btn-outline-secondary", "Unlock").click();
         cy.ensureNoModal();
-        cy.ensureToast("Publication was successfully unlocked.").closeToast();
+        cy.ensureToast("Publication was successfully unlocked.");
       });
     });
 
@@ -1329,15 +1327,15 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.contains(".btn-success", "Publish to Biblio").click();
         cy.ensureModal("Are you sure?").closeModal("Publish");
-        cy.ensureToast("Dataset was successfully published.").closeToast();
+        cy.ensureToast("Dataset was successfully published.");
 
         cy.contains(".btn-outline-secondary", "Lock").click();
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully locked.").closeToast();
+        cy.ensureToast("Dataset was successfully locked.");
 
         cy.contains(".btn-outline-secondary", "Unlock").click();
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully unlocked.").closeToast();
+        cy.ensureToast("Dataset was successfully unlocked.");
       });
     });
   });
