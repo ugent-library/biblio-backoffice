@@ -117,8 +117,22 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn", "Add abstract").click();
         cy.ensureModal("Add abstract")
           .within(() => {
-            cy.setFieldByLabel("Abstract", "The initial abstract");
+            cy.setFieldByLabel("Abstract", " ");
             cy.setFieldByLabel("Language", "Danish");
+          })
+          .closeModal("Add abstract");
+
+        cy.ensureModal("Add abstract")
+          .within(() => {
+            cy.contains(".alert-danger", "Abstract text can't be empty").should(
+              "be.visible",
+            );
+            cy.get("textarea[name=text]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should("have.text", "Abstract text can't be empty");
+
+            cy.setFieldByLabel("Abstract", "The initial abstract");
           })
           .closeModal("Add abstract");
         cy.ensureNoModal();
@@ -139,8 +153,22 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.ensureModal("Edit abstract")
           .within(() => {
-            cy.setFieldByLabel("Abstract", "The updated abstract");
+            cy.setFieldByLabel("Abstract", "");
             cy.setFieldByLabel("Language", "Northern Sami");
+          })
+          .closeModal("Update abstract");
+
+        cy.ensureModal("Edit abstract")
+          .within(() => {
+            cy.contains(".alert-danger", "Abstract text can't be empty").should(
+              "be.visible",
+            );
+            cy.get("textarea[name=text]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should("have.text", "Abstract text can't be empty");
+
+            cy.setFieldByLabel("Abstract", "The updated abstract");
           })
           .closeModal("Update abstract");
         cy.ensureNoModal();
@@ -236,8 +264,23 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn", "Add lay summary").click();
         cy.ensureModal("Add lay summary")
           .within(() => {
-            cy.setFieldByLabel("Lay summary", "The initial lay summary");
+            cy.setFieldByLabel("Lay summary", " ");
             cy.setFieldByLabel("Language", "Italian");
+          })
+          .closeModal("Add lay summary");
+
+        cy.ensureModal("Add lay summary")
+          .within(() => {
+            cy.contains(
+              ".alert-danger",
+              "Lay summary text can't be empty",
+            ).should("be.visible");
+            cy.get("textarea[name=text]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should("have.text", "Lay summary text can't be empty");
+
+            cy.setFieldByLabel("Lay summary", "The initial lay summary");
           })
           .closeModal("Add lay summary");
         cy.ensureNoModal();
@@ -258,8 +301,23 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.ensureModal("Edit lay summary")
           .within(() => {
-            cy.setFieldByLabel("Lay summary", "The updated lay summary");
+            cy.setFieldByLabel("Lay summary", "");
             cy.setFieldByLabel("Language", "Multiple languages");
+          })
+          .closeModal("Update lay summary");
+
+        cy.ensureModal("Edit lay summary")
+          .within(() => {
+            cy.contains(
+              ".alert-danger",
+              "Lay summary text can't be empty",
+            ).should("be.visible");
+            cy.get("textarea[name=text]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should("have.text", "Lay summary text can't be empty");
+
+            cy.setFieldByLabel("Lay summary", "The updated lay summary");
           })
           .closeModal("Update lay summary");
         cy.ensureNoModal();
@@ -658,8 +716,22 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn", "Add abstract").click();
         cy.ensureModal("Add abstract")
           .within(() => {
-            cy.setFieldByLabel("Abstract", "The initial abstract");
+            cy.setFieldByLabel("Abstract", " ");
             cy.setFieldByLabel("Language", "Danish");
+          })
+          .closeModal("Add abstract");
+
+        cy.ensureModal("Add abstract")
+          .within(() => {
+            cy.contains(".alert-danger", "Abstract text can't be empty").should(
+              "be.visible",
+            );
+            cy.get("textarea[name=text]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should("have.text", "Abstract text can't be empty");
+
+            cy.setFieldByLabel("Abstract", "The initial abstract");
           })
           .closeModal("Add abstract");
         cy.ensureNoModal();
@@ -680,8 +752,22 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.ensureModal("Edit abstract")
           .within(() => {
-            cy.setFieldByLabel("Abstract", "The updated abstract");
+            cy.setFieldByLabel("Abstract", "");
             cy.setFieldByLabel("Language", "Northern Sami");
+          })
+          .closeModal("Update abstract");
+
+        cy.ensureModal("Edit abstract")
+          .within(() => {
+            cy.contains(".alert-danger", "Abstract text can't be empty").should(
+              "be.visible",
+            );
+            cy.get("textarea[name=text]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should("have.text", "Abstract text can't be empty");
+
+            cy.setFieldByLabel("Abstract", "The updated abstract");
           })
           .closeModal("Update abstract");
         cy.ensureNoModal();
