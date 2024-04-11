@@ -7,6 +7,33 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
     });
 
     describe("for publications", () => {
+      it("should be possible to delete a publication", () => {
+        cy.setUpPublication();
+        cy.visitPublication();
+
+        cy.get(".btn .if-more").click();
+        cy.contains(".dropdown-item", "Delete").click();
+
+        cy.ensureModal("Are you sure?")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to delete this publication?",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.location("pathname").should("eq", "/publication");
+
+        cy.get<string>("@biblioId").then((biblioId) => {
+          cy.request({
+            url: `/publication/${biblioId}`,
+            failOnStatusCode: false,
+          }).should("have.property", "isOkStatusCode", false);
+        });
+      });
+
       it("should be possible to change the publication type", () => {
         cy.setUpPublication("Dissertation");
         cy.visitPublication();
@@ -708,6 +735,33 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       beforeEach(() => {
         cy.setUpDataset();
         cy.visitDataset();
+      });
+
+      it("should be possible to delete a dataset", () => {
+        cy.setUpDataset();
+        cy.visitDataset();
+
+        cy.get(".btn .if-more").click();
+        cy.contains(".dropdown-item", "Delete").click();
+
+        cy.ensureModal("Are you sure?")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to delete this dataset?",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.location("pathname").should("eq", "/dataset");
+
+        cy.get<string>("@biblioId").then((biblioId) => {
+          cy.request({
+            url: `/dataset/${biblioId}`,
+            failOnStatusCode: false,
+          }).should("have.property", "isOkStatusCode", false);
+        });
       });
 
       it("should be possible to add, edit and delete abstracts", () => {
