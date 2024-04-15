@@ -138,6 +138,11 @@ INSERT INTO affiliations (
 ) VALUES ($1, $2);
 `
 
+const deleteAffiliationsQuery = `
+DELETE FROM affiliations
+WHERE person_id = $1;
+`
+
 // SELECT p.id,
 // 	   json_agg(json_build_object('kind', ids.kind, 'value', ids.value)) AS identifiers,
 //   	   json_agg(DISTINCT jsonb_build_object('organization_id', a.organization_id, 'organization', a.organization)) FILTER (WHERE a.person_id IS NOT NULL) as affiliations,
@@ -771,6 +776,21 @@ func createPerson(ctx context.Context, conn Conn, params AddPersonParams) (int64
 	if err != nil {
 		return id, err
 	}
+
+	for _, a := range params.Affiliations {
+		var organizationID int64
+		err := conn.QueryRow(ctx, getOrganizationIDQuery, a.OrganizationIdentifier.Kind, a.OrganizationIdentifier.Value).Scan(&organizationID)
+		if err == pgx.ErrNoRows {
+			return id, fmt.Errorf("organization %s not found", a.OrganizationIdentifier.String())
+		}
+		if err != nil {
+			return id, err
+		}
+		if _, err := conn.Exec(ctx, insertAffiliationQuery, id, organizationID); err != nil {
+			return id, err
+		}
+	}
+
 	return id, replacePersonIdentifiers(ctx, conn, id, params.Identifiers)
 }
 
@@ -792,6 +812,25 @@ func updatePerson(ctx context.Context, conn Conn, id int64, params AddPersonPara
 	if err != nil {
 		return err
 	}
+
+	if _, err := conn.Exec(ctx, deleteAffiliationsQuery, id); err != nil {
+		return err
+	}
+
+	for _, a := range params.Affiliations {
+		var organizationID int64
+		err := conn.QueryRow(ctx, getOrganizationIDQuery, a.OrganizationIdentifier.Kind, a.OrganizationIdentifier.Value).Scan(&organizationID)
+		if err == pgx.ErrNoRows {
+			return fmt.Errorf("organization %s not found", a.OrganizationIdentifier.String())
+		}
+		if err != nil {
+			return err
+		}
+		if _, err := conn.Exec(ctx, insertAffiliationQuery, id, organizationID); err != nil {
+			return err
+		}
+	}
+
 	return replacePersonIdentifiers(ctx, conn, id, params.Identifiers)
 }
 

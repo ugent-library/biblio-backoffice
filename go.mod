@@ -26,7 +26,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/jpillora/ipfilter v1.2.9
 	github.com/leonelquinteros/gotext v1.5.2
-	github.com/ogen-go/ogen v0.83.0
+	github.com/ogen-go/ogen v1.0.0
 	github.com/ory/graceful v0.1.3
 	github.com/pkg/errors v0.9.1
 	github.com/riverqueue/river/riverdriver/riverpgxv5 v0.0.22
@@ -124,10 +124,10 @@ require (
 	github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	github.com/zclconf/go-cty v1.14.0 // indirect
-	golang.org/x/exp v0.0.0-20231206192017-f3f8817b8deb // indirect
-	golang.org/x/mod v0.16.0 // indirect
+	golang.org/x/exp v0.0.0-20240409090435-93d18d7e34b8 // indirect
+	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/net v0.22.0 // indirect
-	golang.org/x/sync v0.6.0 // indirect
+	golang.org/x/sync v0.7.0 // indirect
 )
 
 require (
@@ -192,7 +192,7 @@ require (
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/oauth2 v0.18.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

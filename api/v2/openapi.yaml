@@ -538,6 +538,10 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Attribute"
+            affiliations:
+              type: array
+              items:
+                $ref: "#/components/schemas/AffiliationParams"
           required: [identifiers, name]
       required: [person]
 

@@ -214,6 +214,9 @@ func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
 		Active:              p.Active.Value,
 		Username:            p.Username.Value,
 		Attributes:          attributes,
+		Affiliations: lo.Map(p.Affiliations, func(v AffiliationParams, _ int) people.AffiliationParams {
+			return people.AffiliationParams{OrganizationIdentifier: people.Identifier(v.OrganizationIdentifier)}
+		}),
 	})
 }
 

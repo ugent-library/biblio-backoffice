@@ -193,9 +193,19 @@ func (s *AddPersonRequestPerson) encodeFields(e *jx.Encoder) {
 			e.ArrEnd()
 		}
 	}
+	{
+		if s.Affiliations != nil {
+			e.FieldStart("affiliations")
+			e.ArrStart()
+			for _, elem := range s.Affiliations {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
+		}
+	}
 }
 
-var jsonFieldsNameOfAddPersonRequestPerson = [12]string{
+var jsonFieldsNameOfAddPersonRequestPerson = [13]string{
 	0:  "identifiers",
 	1:  "name",
 	2:  "preferredName",
@@ -208,6 +218,7 @@ var jsonFieldsNameOfAddPersonRequestPerson = [12]string{
 	9:  "username",
 	10: "active",
 	11: "attributes",
+	12: "affiliations",
 }
 
 // Decode decodes AddPersonRequestPerson from json.
@@ -355,6 +366,23 @@ func (s *AddPersonRequestPerson) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"attributes\"")
+			}
+		case "affiliations":
+			if err := func() error {
+				s.Affiliations = make([]AffiliationParams, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem AffiliationParams
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Affiliations = append(s.Affiliations, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"affiliations\"")
 			}
 		default:
 			return d.Skip()

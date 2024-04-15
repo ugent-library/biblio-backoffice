@@ -339,6 +339,7 @@ type AddPersonParams struct {
 	Active              bool
 	Username            string
 	Attributes          []Attribute
+	Affiliations        []AffiliationParams
 }
 
 func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
