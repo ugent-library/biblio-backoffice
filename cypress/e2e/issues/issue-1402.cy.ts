@@ -1152,7 +1152,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .should("contains.text", "application/vnd.google-earth.kmz")
           .parent()
           .prop("innerText")
-          .should("contain", "application/vnd.google-earth.kmz");
+          .should("contain", "application/vnd.google-earth.kmz")
+          .should("not.contain", "(")
+          .should("not.contain", ")");
 
         cy.get("@items")
           .eq(2)
