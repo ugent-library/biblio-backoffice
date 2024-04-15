@@ -299,6 +299,9 @@ func Register(c Config) {
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 
+					// contributor actions
+					r.Get("/contributors/{role}/{position}/confirm-delete", datasetEditingHandler.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
+
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
@@ -592,9 +595,6 @@ func Register(c Config) {
 		r.Put("/dataset/{id}/contributors/{role}/{position}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateContributor)).
 			Name("dataset_update_contributor")
-		r.Get("/dataset/{id}/contributors/{role}/{position}/confirm-delete",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteContributor)).
-			Name("dataset_confirm_delete_contributor")
 		r.Delete("/dataset/{id}/contributors/{role}/{position}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteContributor)).
 			Name("dataset_delete_contributor")
