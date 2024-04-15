@@ -226,7 +226,7 @@ type SearchParams struct {
 	Filters []SearchFilter `json:"filters"`
 	Limit   int            `json:"limit"`
 	Offset  int            `json:"offset"`
-	Sort    string         `json:"name"`
+	Sort    string         `json:"sort"`
 }
 
 func (p *SearchParams) AddFilter(str string) error {

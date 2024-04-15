@@ -130,8 +130,8 @@ func (h *Handler) GetPerson(w http.ResponseWriter, r *http.Request) {
 // TODO optimize
 func (h *Handler) GetPeople(w http.ResponseWriter, r *http.Request) {
 	ids := r.URL.Query()["id"]
-	recs := make([]*frontoffice.Person, len(ids))
-	for i, id := range ids {
+	recs := make([]*frontoffice.Person, 0, len(ids))
+	for _, id := range ids {
 		ident, err := people.NewIdentifier(id)
 		if err != nil {
 			render.InternalServerError(w, r, err)
@@ -140,14 +140,14 @@ func (h *Handler) GetPeople(w http.ResponseWriter, r *http.Request) {
 
 		p, err := h.PeopleIndex.GetPersonByIdentifier(r.Context(), ident.Kind, ident.Value)
 		if err == people.ErrNotFound {
-			render.NotFound(w, r, err)
-			return
+			h.Logger.Warnf("unable to find person with identifier %s", ident.String())
+			continue
 		}
 		if err != nil {
 			render.InternalServerError(w, r, err)
 			return
 		}
-		recs[i] = frontoffice.MapPerson(p)
+		recs = append(recs, frontoffice.MapPerson(p))
 	}
 
 	httpx.RenderJSON(w, 200, recs)
@@ -243,7 +243,7 @@ func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p, err := h.ProjectsIndex.GetProjectByIdentifier(r.Context(), ident.Kind, ident.Value)
-	if err == people.ErrNotFound {
+	if err == projects.ErrNotFound {
 		render.NotFound(w, r, err)
 		return
 	}

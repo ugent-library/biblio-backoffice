@@ -114,6 +114,15 @@ const queryStringQuery = `{{define "query"}}{
 			},
 			{
 				"match": {
+					"all": {
+						"query": "{{.Query}}",
+						"operator": "AND",
+						"boost": "0.1"
+					}
+				}
+			},
+			{
+				"match": {
 					"phrase_ngram": {
 						"query": "{{.Query}}",
 						"operator": "AND",
@@ -311,6 +320,14 @@ type projectDoc struct {
 	Record       *Project `json:"record"`
 }
 
+func fixSortName(sort string) string {
+	sort = strings.ToLower(sort)
+	sort = strings.ReplaceAll(sort, " ", "")
+	sort = strings.ReplaceAll(sort, "'", "")
+	sort = strings.ReplaceAll(sort, "-", "")
+	return sort
+}
+
 func toProjectDoc(p *Project) (string, []byte, error) {
 	pd := &projectDoc{
 		Names:        make([]string, len(p.Names)),
@@ -323,6 +340,10 @@ func toProjectDoc(p *Project) (string, []byte, error) {
 	if name := p.Names.Get("und"); name != "" {
 		pd.SortName = name
 		pd.NameKey = name[0:1]
+	}
+
+	if pd.SortName != "" {
+		pd.SortName = fixSortName(pd.SortName)
 	}
 
 	for i, name := range p.Names {
