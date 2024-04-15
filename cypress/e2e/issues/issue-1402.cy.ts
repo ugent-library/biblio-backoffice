@@ -1127,6 +1127,47 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Republish to Biblio").should("be.visible");
       });
     });
+
+    describe("media type suggestions", () => {
+      it("should provide format type suggestions", () => {
+        cy.visit("media_type/suggestions", {
+          qs: { input: "format", format: "earth" },
+        });
+
+        cy.get(".card .list-group .list-group-item")
+          .as("items")
+          .should("have.length", 3);
+
+        cy.get("@items")
+          .eq(0)
+          .should("have.attr", "data-value", "earth")
+          .should("contain.text", 'Use custom data format "earth"')
+          .find(".badge")
+          .should("not.exist");
+
+        cy.get("@items")
+          .eq(1)
+          .should("have.attr", "data-value", "application/vnd.google-earth.kmz")
+          .find(".badge")
+          .should("contains.text", "application/vnd.google-earth.kmz")
+          .parent()
+          .prop("innerText")
+          .should("contain", "application/vnd.google-earth.kmz");
+
+        cy.get("@items")
+          .eq(2)
+          .should(
+            "have.attr",
+            "data-value",
+            "application/vnd.google-earth.kml+xml",
+          )
+          .find(".badge")
+          .should("contains.text", "application/vnd.google-earth.kml+xml")
+          .parent()
+          .prop("innerText")
+          .should("contain", "application/vnd.google-earth.kml+xml (.kml)");
+      });
+    });
   });
 
   describe("as librarian", () => {
