@@ -27,7 +27,7 @@ var updateCandidateRecords = &cobra.Command{
 		err = src.GetRecords(context.Background(), func(srcRec recordsources.Record) error {
 			oldCandidateRec, err := services.Repo.GetCandidateRecordBySource(context.TODO(), srcRec.SourceName(), srcRec.SourceID())
 			if oldCandidateRec != nil {
-				logger.Warnf("skipping duplicate candidate record from source %s/%s: already found in %s", srcRec.SourceName(), srcRec.SourceID(), oldCandidateRec.ID)
+				zapLogger.Warnf("skipping duplicate candidate record from source %s/%s: already found in %s", srcRec.SourceName(), srcRec.SourceID(), oldCandidateRec.ID)
 				return nil
 			}
 			if err != nil {
@@ -43,7 +43,7 @@ var updateCandidateRecords = &cobra.Command{
 				return err
 			}
 
-			logger.Infof("added candidate record %s from source %s/%s", candidateRec.ID, candidateRec.SourceName, candidateRec.SourceID)
+			zapLogger.Infof("added candidate record %s from source %s/%s", candidateRec.ID, candidateRec.SourceName, candidateRec.SourceID)
 
 			return nil
 		})

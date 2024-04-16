@@ -7,6 +7,33 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
     });
 
     describe("for publications", () => {
+      it("should be possible to delete a publication", () => {
+        cy.setUpPublication();
+        cy.visitPublication();
+
+        cy.get(".btn .if-more").click();
+        cy.contains(".dropdown-item", "Delete").click();
+
+        cy.ensureModal("Are you sure?")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to delete this publication?",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.location("pathname").should("eq", "/publication");
+
+        cy.get<string>("@biblioId").then((biblioId) => {
+          cy.request({
+            url: `/publication/${biblioId}`,
+            failOnStatusCode: false,
+          }).should("have.property", "isOkStatusCode", false);
+        });
+      });
+
       it("should be possible to change the publication type", () => {
         cy.setUpPublication("Dissertation");
         cy.visitPublication();
@@ -117,8 +144,22 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn", "Add abstract").click();
         cy.ensureModal("Add abstract")
           .within(() => {
-            cy.setFieldByLabel("Abstract", "The initial abstract");
+            cy.setFieldByLabel("Abstract", " ");
             cy.setFieldByLabel("Language", "Danish");
+          })
+          .closeModal("Add abstract");
+
+        cy.ensureModal("Add abstract")
+          .within(() => {
+            cy.contains(".alert-danger", "Abstract text can't be empty").should(
+              "be.visible",
+            );
+            cy.get("textarea[name=text]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should("have.text", "Abstract text can't be empty");
+
+            cy.setFieldByLabel("Abstract", "The initial abstract");
           })
           .closeModal("Add abstract");
         cy.ensureNoModal();
@@ -139,8 +180,22 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.ensureModal("Edit abstract")
           .within(() => {
-            cy.setFieldByLabel("Abstract", "The updated abstract");
+            cy.setFieldByLabel("Abstract", "");
             cy.setFieldByLabel("Language", "Northern Sami");
+          })
+          .closeModal("Update abstract");
+
+        cy.ensureModal("Edit abstract")
+          .within(() => {
+            cy.contains(".alert-danger", "Abstract text can't be empty").should(
+              "be.visible",
+            );
+            cy.get("textarea[name=text]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should("have.text", "Abstract text can't be empty");
+
+            cy.setFieldByLabel("Abstract", "The updated abstract");
           })
           .closeModal("Update abstract");
         cy.ensureNoModal();
@@ -236,8 +291,23 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn", "Add lay summary").click();
         cy.ensureModal("Add lay summary")
           .within(() => {
-            cy.setFieldByLabel("Lay summary", "The initial lay summary");
+            cy.setFieldByLabel("Lay summary", " ");
             cy.setFieldByLabel("Language", "Italian");
+          })
+          .closeModal("Add lay summary");
+
+        cy.ensureModal("Add lay summary")
+          .within(() => {
+            cy.contains(
+              ".alert-danger",
+              "Lay summary text can't be empty",
+            ).should("be.visible");
+            cy.get("textarea[name=text]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should("have.text", "Lay summary text can't be empty");
+
+            cy.setFieldByLabel("Lay summary", "The initial lay summary");
           })
           .closeModal("Add lay summary");
         cy.ensureNoModal();
@@ -258,8 +328,23 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.ensureModal("Edit lay summary")
           .within(() => {
-            cy.setFieldByLabel("Lay summary", "The updated lay summary");
+            cy.setFieldByLabel("Lay summary", "");
             cy.setFieldByLabel("Language", "Multiple languages");
+          })
+          .closeModal("Update lay summary");
+
+        cy.ensureModal("Edit lay summary")
+          .within(() => {
+            cy.contains(
+              ".alert-danger",
+              "Lay summary text can't be empty",
+            ).should("be.visible");
+            cy.get("textarea[name=text]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should("have.text", "Lay summary text can't be empty");
+
+            cy.setFieldByLabel("Lay summary", "The updated lay summary");
           })
           .closeModal("Update lay summary");
         cy.ensureNoModal();
@@ -417,6 +502,128 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .should("have.ordered.members", ["the", "keywords", "updated"]);
       });
 
+      it("should be possible to delete authors", () => {
+        cy.setUpPublication();
+        cy.visitPublication();
+
+        cy.updateFields(
+          "Authors",
+          () => {
+            cy.setFieldByLabel("First name", "Jane");
+            cy.setFieldByLabel("Last name", "Doe");
+
+            cy.contains(".btn", "Add external author").click();
+          },
+          true,
+        );
+
+        cy.contains("#authors tr", "Jane Doe").find(".btn .if-delete").click();
+
+        cy.ensureModal("Are you sure?")
+          .within(() => {
+            cy.contains("Are you sure you want to remove this author?").should(
+              "be.visible",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.contains("#authors", "Jane Doe").should("not.exist");
+      });
+
+      it("should not be possible to delete the last UGent author of a published publication", () => {
+        cy.setUpPublication(undefined, { prepareForPublishing: true });
+        cy.visitPublication();
+
+        cy.contains(".btn", "Publish to Biblio").click();
+        cy.ensureModal("Are you sure?").closeModal("Publish");
+        cy.ensureToast("Publication was successfully published.").closeToast();
+
+        cy.updateFields(
+          "Authors",
+          () => {
+            cy.setFieldByLabel("First name", "Jane");
+            cy.setFieldByLabel("Last name", "Doe");
+            cy.contains(".btn", "Add external author").click();
+          },
+          true,
+        );
+
+        cy.contains("#authors tr", "Dries Moreels")
+          .find(".btn .if-delete")
+          .click();
+        cy.ensureModal("Are you sure?").closeModal("Delete");
+
+        cy.ensureModal(
+          "Can't delete this contributor due to the following errors",
+        ).within(() => {
+          cy.contains(
+            ".alert-danger",
+            "At least one UGent author is required",
+          ).should("be.visible");
+        });
+      });
+
+      it("should be possible to delete editors", () => {
+        cy.setUpPublication("Book");
+        cy.visitPublication();
+
+        cy.updateFields(
+          "Editors",
+          () => {
+            cy.setFieldByLabel("First name", "Jane");
+            cy.setFieldByLabel("Last name", "Doe");
+
+            cy.contains(".btn", "Add external editor").click();
+          },
+          true,
+        );
+
+        cy.contains("#editors tr", "Jane Doe").find(".btn .if-delete").click();
+
+        cy.ensureModal("Are you sure?")
+          .within(() => {
+            cy.contains("Are you sure you want to remove this editor?").should(
+              "be.visible",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.contains("#editors", "Jane Doe").should("not.exist");
+      });
+
+      it("should be possible to delete supervisors", () => {
+        cy.setUpPublication("Dissertation");
+        cy.visitPublication();
+
+        cy.updateFields(
+          "Supervisors",
+          () => {
+            cy.setFieldByLabel("First name", "Jane");
+            cy.setFieldByLabel("Last name", "Doe");
+
+            cy.contains(".btn", "Add external supervisor").click();
+          },
+          true,
+        );
+
+        cy.contains("#supervisors tr", "Jane Doe")
+          .find(".btn .if-delete")
+          .click();
+
+        cy.ensureModal("Are you sure?")
+          .within(() => {
+            cy.contains(
+              "Are you sure you want to remove this supervisor?",
+            ).should("be.visible");
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.contains("#supervisors", "Jane Doe").should("not.exist");
+      });
+
       it("should be possible to add and delete departments", () => {
         cy.setUpPublication();
         cy.visitPublication();
@@ -512,7 +719,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           })
           .closeModal("Publish");
         cy.ensureNoModal();
-        cy.ensureToast("Publication was successfully published.").closeToast();
+        cy.ensureToast("Publication was successfully published.");
 
         cy.contains(".btn-outline-danger", "Withdraw").click();
         cy.ensureModal("Are you sure?")
@@ -524,7 +731,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           })
           .closeModal("Withdraw");
         cy.ensureNoModal();
-        cy.ensureToast("Publication was successfully withdrawn.").closeToast();
+        cy.ensureToast("Publication was successfully withdrawn.");
 
         cy.contains(".btn-success", "Republish to Biblio").click();
         cy.ensureModal("Are you sure?")
@@ -536,9 +743,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           })
           .closeModal("Republish");
         cy.ensureNoModal();
-        cy.ensureToast(
-          "Publication was successfully republished.",
-        ).closeToast();
+        cy.ensureToast("Publication was successfully republished.");
       });
 
       it("should error when publication is not ready for publication", () => {
@@ -583,12 +788,12 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Publish to Biblio").click();
         cy.ensureModal("Are you sure?").closeModal("Publish");
         cy.ensureNoModal();
-        cy.ensureToast("Publication was successfully published.").closeToast();
+        cy.ensureToast("Publication was successfully published.");
 
         cy.contains(".btn-outline-danger", "Withdraw").click();
         cy.ensureModal("Are you sure?").closeModal("Withdraw");
         cy.ensureNoModal();
-        cy.ensureToast("Publication was successfully withdrawn.").closeToast();
+        cy.ensureToast("Publication was successfully withdrawn.");
 
         cy.updateFields(
           "Publication details",
@@ -652,14 +857,55 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.visitDataset();
       });
 
+      it("should be possible to delete a dataset", () => {
+        cy.setUpDataset();
+        cy.visitDataset();
+
+        cy.get(".btn .if-more").click();
+        cy.contains(".dropdown-item", "Delete").click();
+
+        cy.ensureModal("Are you sure?")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to delete this dataset?",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.location("pathname").should("eq", "/dataset");
+
+        cy.get<string>("@biblioId").then((biblioId) => {
+          cy.request({
+            url: `/dataset/${biblioId}`,
+            failOnStatusCode: false,
+          }).should("have.property", "isOkStatusCode", false);
+        });
+      });
+
       it("should be possible to add, edit and delete abstracts", () => {
         cy.get("#abstracts").find("table tbody tr").should("have.length", 0);
 
         cy.contains(".btn", "Add abstract").click();
         cy.ensureModal("Add abstract")
           .within(() => {
-            cy.setFieldByLabel("Abstract", "The initial abstract");
+            cy.setFieldByLabel("Abstract", " ");
             cy.setFieldByLabel("Language", "Danish");
+          })
+          .closeModal("Add abstract");
+
+        cy.ensureModal("Add abstract")
+          .within(() => {
+            cy.contains(".alert-danger", "Abstract text can't be empty").should(
+              "be.visible",
+            );
+            cy.get("textarea[name=text]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should("have.text", "Abstract text can't be empty");
+
+            cy.setFieldByLabel("Abstract", "The initial abstract");
           })
           .closeModal("Add abstract");
         cy.ensureNoModal();
@@ -680,8 +926,22 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.ensureModal("Edit abstract")
           .within(() => {
-            cy.setFieldByLabel("Abstract", "The updated abstract");
+            cy.setFieldByLabel("Abstract", "");
             cy.setFieldByLabel("Language", "Northern Sami");
+          })
+          .closeModal("Update abstract");
+
+        cy.ensureModal("Edit abstract")
+          .within(() => {
+            cy.contains(".alert-danger", "Abstract text can't be empty").should(
+              "be.visible",
+            );
+            cy.get("textarea[name=text]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should("have.text", "Abstract text can't be empty");
+
+            cy.setFieldByLabel("Abstract", "The updated abstract");
           })
           .closeModal("Update abstract");
         cy.ensureNoModal();
@@ -761,6 +1021,68 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.ensureNoModal();
 
         cy.get("#links").find("table tbody tr").should("have.length", 0);
+      });
+
+      it("should be possible to delete creators", () => {
+        cy.setUpDataset();
+        cy.visitDataset();
+
+        cy.updateFields(
+          "Creators",
+          () => {
+            cy.setFieldByLabel("First name", "Jane");
+            cy.setFieldByLabel("Last name", "Doe");
+
+            cy.contains(".btn", "Add external creator").click();
+          },
+          true,
+        );
+
+        cy.contains("#authors tr", "Jane Doe").find(".btn .if-delete").click();
+
+        cy.ensureModal("Are you sure?")
+          .within(() => {
+            cy.contains("Are you sure you want to remove this creator?").should(
+              "be.visible",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.contains("#authors", "Jane Doe").should("not.exist");
+      });
+
+      it("should not be possible to delete the last UGent creator of a published dataset", () => {
+        cy.setUpDataset({ prepareForPublishing: true });
+        cy.visitDataset();
+
+        cy.contains(".btn", "Publish to Biblio").click();
+        cy.ensureModal("Are you sure?").closeModal("Publish");
+        cy.ensureToast("Dataset was successfully published.").closeToast();
+
+        cy.updateFields(
+          "Creators",
+          () => {
+            cy.setFieldByLabel("First name", "Jane");
+            cy.setFieldByLabel("Last name", "Doe");
+            cy.contains(".btn", "Add external creator").click();
+          },
+          true,
+        );
+
+        cy.contains("#authors tr", "Dries Moreels")
+          .find(".btn .if-delete")
+          .click();
+        cy.ensureModal("Are you sure?").closeModal("Delete");
+
+        cy.ensureModal(
+          "Can't delete this contributor due to the following errors",
+        ).within(() => {
+          cy.contains(
+            ".alert-danger",
+            "At least one UGent author is required",
+          ).should("be.visible");
+        });
       });
 
       it("should be possible to add and delete departments", () => {
@@ -852,7 +1174,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           })
           .closeModal("Publish");
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully published.").closeToast();
+        cy.ensureToast("Dataset was successfully published.");
 
         cy.contains(".btn-outline-danger", "Withdraw").click();
         cy.ensureModal("Are you sure?")
@@ -864,7 +1186,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           })
           .closeModal("Withdraw");
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully withdrawn.").closeToast();
+        cy.ensureToast("Dataset was successfully withdrawn.");
 
         cy.contains(".btn-success", "Republish to Biblio").click();
         cy.ensureModal("Are you sure?")
@@ -876,7 +1198,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           })
           .closeModal("Republish");
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully republished.").closeToast();
+        cy.ensureToast("Dataset was successfully republished.");
       });
 
       it("should error when dataset is not ready for publication", () => {
@@ -925,12 +1247,12 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Publish to Biblio").click();
         cy.ensureModal("Are you sure?").closeModal("Publish");
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully published.").closeToast();
+        cy.ensureToast("Dataset was successfully published.");
 
         cy.contains(".btn-outline-danger", "Withdraw").click();
         cy.ensureModal("Are you sure?").closeModal("Withdraw");
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully withdrawn.").closeToast();
+        cy.ensureToast("Dataset was successfully withdrawn.");
 
         cy.updateFields(
           "Dataset details",
@@ -987,6 +1309,47 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.reload();
 
         cy.contains(".btn-success", "Republish to Biblio").should("be.visible");
+      });
+    });
+
+    describe("media type suggestions", () => {
+      it("should provide format type suggestions", () => {
+        cy.visit("media_type/suggestions", {
+          qs: { input: "format", format: "earth" },
+        });
+
+        cy.get(".card .list-group .list-group-item")
+          .as("items")
+          .should("have.length", 3);
+
+        cy.get("@items")
+          .eq(0)
+          .should("have.attr", "data-value", "earth")
+          .should("contain.text", 'Use custom data format "earth"')
+          .find(".badge")
+          .should("not.exist");
+
+        cy.get("@items")
+          .eq(1)
+          .should("have.attr", "data-value", "application/vnd.google-earth.kmz")
+          .find(".badge")
+          .should("contains.text", "application/vnd.google-earth.kmz")
+          .parent()
+          .prop("innerText")
+          .should("contain", "application/vnd.google-earth.kmz");
+
+        cy.get("@items")
+          .eq(2)
+          .should(
+            "have.attr",
+            "data-value",
+            "application/vnd.google-earth.kml+xml",
+          )
+          .find(".badge")
+          .should("contains.text", "application/vnd.google-earth.kml+xml")
+          .parent()
+          .prop("innerText")
+          .should("contain", "application/vnd.google-earth.kml+xml (.kml)");
       });
     });
   });
@@ -1087,15 +1450,15 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.contains(".btn-success", "Publish to Biblio").click();
         cy.ensureModal("Are you sure?").closeModal("Publish");
-        cy.ensureToast("Publication was successfully published.").closeToast();
+        cy.ensureToast("Publication was successfully published.");
 
         cy.contains(".btn-outline-secondary", "Lock").click();
         cy.ensureNoModal();
-        cy.ensureToast("Publication was successfully locked.").closeToast();
+        cy.ensureToast("Publication was successfully locked.");
 
         cy.contains(".btn-outline-secondary", "Unlock").click();
         cy.ensureNoModal();
-        cy.ensureToast("Publication was successfully unlocked.").closeToast();
+        cy.ensureToast("Publication was successfully unlocked.");
       });
     });
 
@@ -1189,15 +1552,15 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.contains(".btn-success", "Publish to Biblio").click();
         cy.ensureModal("Are you sure?").closeModal("Publish");
-        cy.ensureToast("Dataset was successfully published.").closeToast();
+        cy.ensureToast("Dataset was successfully published.");
 
         cy.contains(".btn-outline-secondary", "Lock").click();
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully locked.").closeToast();
+        cy.ensureToast("Dataset was successfully locked.");
 
         cy.contains(".btn-outline-secondary", "Unlock").click();
         cy.ensureNoModal();
-        cy.ensureToast("Dataset was successfully unlocked.").closeToast();
+        cy.ensureToast("Dataset was successfully unlocked.");
       });
     });
   });
