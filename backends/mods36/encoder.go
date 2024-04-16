@@ -12,7 +12,7 @@ import (
 )
 
 type personWithRole struct {
-	Person *frontoffice.Person
+	Person *frontoffice.Contributor
 	Role   string
 }
 
@@ -22,7 +22,7 @@ var funcs = template.FuncMap{
 		xml.EscapeText(&b, []byte(s))
 		return b.String()
 	},
-	"personWithRole": func(p *frontoffice.Person, r string) personWithRole {
+	"personWithRole": func(p *frontoffice.Contributor, r string) personWithRole {
 		return personWithRole{p, r}
 	},
 	"hasPrefix": strings.HasPrefix,
