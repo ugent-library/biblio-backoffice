@@ -30,7 +30,7 @@ func updatePublicationEmbargoes(services *backends.Services) error {
 		return err
 	}
 
-	logger.Infof("updated %d publication embargoes", n)
+	zapLogger.Infof("updated %d publication embargoes", n)
 
 	return nil
 }
@@ -41,7 +41,7 @@ func updateDatasetEmbargoes(e *backends.Services) error {
 		return err
 	}
 
-	logger.Infof("updated %d dataset embargoes", n)
+	zapLogger.Infof("updated %d dataset embargoes", n)
 
 	return nil
 }

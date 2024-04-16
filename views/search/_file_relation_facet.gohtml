@@ -1,4 +1,4 @@
-<div class="dropdown {{if .SearchArgs.IsCollapsedFacet "file_relation"}}toggle-on{{end}}">
+<div class="dropdown {{if .SearchArgs.IsCollapsedFacet "file_relation"}}toggle-on{{end}}" data-facet-dropdown="file_relation">
     <a class="badge {{if .SearchArgs.HasFilter "file_relation"}}bg-primary{{else if (index .Hits.Facets "file_relation").HasMatches}}badge-default{{else}}badge-light{{end}} me-3"
         data-bs-toggle="dropdown" data-persist="true" aria-haspopup="true"
         aria-expanded="false" role="button"
