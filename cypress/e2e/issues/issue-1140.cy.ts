@@ -14,17 +14,17 @@ describe("Issue #1140: External contributor info is empty in the suggest box", (
         cy.intercept({
           pathname: "/publication/*/contributors/author/suggestions",
           query: {
-            first_name: "John",
+            first_name: "Jane",
             last_name: "Doe",
           },
         }).as("suggestions");
 
-        cy.setFieldByLabel("First name", "John");
+        cy.setFieldByLabel("First name", "Jane");
         cy.setFieldByLabel("Last name", "Doe");
 
         cy.wait("@suggestions");
 
-        cy.contains("#person-suggestions .list-group-item", "John Doe")
+        cy.contains("#person-suggestions .list-group-item", "Jane Doe")
           .contains(".btn", "Add external author")
           .click();
 
@@ -33,7 +33,7 @@ describe("Issue #1140: External contributor info is empty in the suggest box", (
       /^Save$/,
     );
 
-    cy.contains("table#contributors-author-table tr", "John Doe")
+    cy.contains("table#contributors-author-table tr", "Jane Doe")
       .find(".if.if-edit")
       .click();
 
@@ -43,6 +43,6 @@ describe("Issue #1140: External contributor info is empty in the suggest box", (
       .find(".bc-avatar-text")
       .should("contain", "Current selection")
       .should("contain", "External, non-UGent")
-      .should("contain", "John Doe");
+      .should("contain", "Jane Doe");
   });
 });

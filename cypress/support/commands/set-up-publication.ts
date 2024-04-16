@@ -87,8 +87,8 @@ export default function setUpPublication(
     cy.updateFields(
       "Authors",
       () => {
-        cy.setFieldByLabel("First name", "Dries");
-        cy.setFieldByLabel("Last name", "Moreels");
+        cy.setFieldByLabel("First name", "John");
+        cy.setFieldByLabel("Last name", "Doe");
 
         cy.contains(".btn", "Add author", NO_LOG).click(NO_LOG);
       },
