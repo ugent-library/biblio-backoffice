@@ -1,9 +1,6 @@
 package frontoffice
 
 import (
-	"crypto/sha256"
-	"crypto/subtle"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -16,51 +13,31 @@ import (
 	"github.com/ugent-library/biblio-backoffice/frontoffice"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/people"
+	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httpx"
 )
 
 type Handler struct {
 	handlers.BaseHandler
-	Repo             *repositories.Repo
-	FileStore        backends.FileStore
-	IPRanges         string
-	IPFilter         *ipfilter.IPFilter
-	FrontendUsername string
-	FrontendPassword string
+	Repo          *repositories.Repo
+	FileStore     backends.FileStore
+	PeopleRepo    *people.Repo
+	PeopleIndex   *people.Index
+	ProjectsIndex *projects.Index
+	IPRanges      string
+	IPFilter      *ipfilter.IPFilter
 }
 
-// safe basic auth handling
-// see https://www.alexedwards.net/blog/basic-authentication-in-go
-func (h *Handler) BasicAuth(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if username, password, ok := r.BasicAuth(); ok {
-			usernameHash := sha256.Sum256([]byte(username))
-			passwordHash := sha256.Sum256([]byte(password))
-			expectedUsernameHash := sha256.Sum256([]byte(h.FrontendUsername))
-			expectedPasswordHash := sha256.Sum256([]byte(h.FrontendPassword))
-
-			usernameMatch := (subtle.ConstantTimeCompare(usernameHash[:], expectedUsernameHash[:]) == 1)
-			passwordMatch := (subtle.ConstantTimeCompare(passwordHash[:], expectedPasswordHash[:]) == 1)
-
-			if usernameMatch && passwordMatch {
-				fn(w, r)
-				return
-			}
-		}
-
-		w.Header().Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
-		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-	}
-}
-
-type Hits struct {
-	Limit  int                   `json:"limit"`
-	Offset int                   `json:"offset"`
-	Total  int                   `json:"total"`
-	Hits   []*frontoffice.Record `json:"hits"`
+type Hits[T any] struct {
+	Limit  int `json:"limit"`
+	Offset int `json:"offset"`
+	Total  int `json:"total"`
+	Hits   []T `json:"hits"`
 }
 
 func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
@@ -73,13 +50,8 @@ func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	j, err := json.Marshal(frontoffice.MapPublication(p, h.Repo))
-	if err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(j)
+
+	httpx.RenderJSON(w, 200, frontoffice.MapPublication(p, h.Repo))
 }
 
 func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
@@ -92,13 +64,226 @@ func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	j, err := json.Marshal(frontoffice.MapDataset(p, h.Repo))
+
+	httpx.RenderJSON(w, 200, frontoffice.MapDataset(p, h.Repo))
+}
+
+// TODO this gets way too many data
+// TODO materialize sort order
+// TODO constrain to those with publications
+// TODO a-z sorting by id isn't the best order
+func (h *Handler) GetAllOrganizations(w http.ResponseWriter, r *http.Request) {
+	results, err := h.PeopleIndex.SearchOrganizations(r.Context(), people.SearchParams{Limit: 1000})
 	if err != nil {
 		render.InternalServerError(w, r, err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(j)
+
+	recs := make([]*frontoffice.Organization, len(results.Hits))
+	for i, o := range results.Hits {
+		recs[i] = frontoffice.MapOrganization(o)
+	}
+
+	httpx.RenderJSON(w, 200, recs)
+}
+
+func (h *Handler) GetOrganization(w http.ResponseWriter, r *http.Request) {
+	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	o, err := h.PeopleIndex.GetOrganizationByIdentifier(r.Context(), ident.Kind, ident.Value)
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	httpx.RenderJSON(w, 200, frontoffice.MapOrganization(o))
+}
+
+func (h *Handler) GetPerson(w http.ResponseWriter, r *http.Request) {
+	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	p, err := h.PeopleIndex.GetPersonByIdentifier(r.Context(), ident.Kind, ident.Value)
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	httpx.RenderJSON(w, 200, frontoffice.MapPerson(p))
+}
+
+// TODO optimize
+func (h *Handler) GetPeople(w http.ResponseWriter, r *http.Request) {
+	ids := r.URL.Query()["id"]
+	recs := make([]*frontoffice.Person, 0, len(ids))
+	for _, id := range ids {
+		ident, err := people.NewIdentifier(id)
+		if err != nil {
+			render.InternalServerError(w, r, err)
+			return
+		}
+
+		p, err := h.PeopleIndex.GetPersonByIdentifier(r.Context(), ident.Kind, ident.Value)
+		if err == people.ErrNotFound {
+			h.Logger.Warnf("unable to find person with identifier %s", ident.String())
+			continue
+		}
+		if err != nil {
+			render.InternalServerError(w, r, err)
+			return
+		}
+		recs = append(recs, frontoffice.MapPerson(p))
+	}
+
+	httpx.RenderJSON(w, 200, recs)
+}
+
+func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
+	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	p, err := h.PeopleRepo.GetActivePersonByIdentifier(r.Context(), ident.Kind, ident.Value)
+
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	httpx.RenderJSON(w, 200, frontoffice.MapPerson(p))
+}
+
+func (h *Handler) GetUserByUsername(w http.ResponseWriter, r *http.Request) {
+	p, err := h.PeopleRepo.GetActivePersonByUsername(r.Context(), bind.PathValue(r, "username"))
+	if err == people.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	httpx.RenderJSON(w, 200, frontoffice.MapPerson(p))
+}
+
+type BindQuery struct {
+	Limit   int      `query:"limit"`
+	Offset  int      `query:"offset"`
+	Query   string   `query:"q"`
+	Filters []string `query:"f"`
+	Sort    string   `query:"sort"`
+}
+
+func (h *Handler) SearchPeople(w http.ResponseWriter, r *http.Request) {
+	b := BindQuery{}
+	if err := bind.Query(r, &b); err != nil {
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	params := people.SearchParams{
+		Limit:  b.Limit,
+		Offset: b.Offset,
+		Query:  b.Query,
+		Sort:   b.Sort,
+	}
+	for _, f := range b.Filters {
+		if err := params.AddFilter(f); err != nil {
+			render.BadRequest(w, r, err)
+			return
+		}
+	}
+
+	results, err := h.PeopleIndex.SearchPeople(r.Context(), params)
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	hits := &Hits[*frontoffice.Person]{
+		Limit:  results.Limit,
+		Offset: results.Offset,
+		Total:  results.Total,
+		Hits:   make([]*frontoffice.Person, len(results.Hits)),
+	}
+	for i, p := range results.Hits {
+		hits.Hits[i] = frontoffice.MapPerson(p)
+	}
+
+	httpx.RenderJSON(w, 200, hits)
+}
+
+func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
+	ident, err := projects.NewIdentifier(bind.PathValue(r, "id")) // TODO don't use function from people ns
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	p, err := h.ProjectsIndex.GetProjectByIdentifier(r.Context(), ident.Kind, ident.Value)
+	if err == projects.ErrNotFound {
+		render.NotFound(w, r, err)
+		return
+	}
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	httpx.RenderJSON(w, 200, frontoffice.MapProject(p))
+}
+
+// TODO constrain to those with publications
+func (h *Handler) BrowseProjects(w http.ResponseWriter, r *http.Request) {
+	b := BindQuery{}
+	if err := bind.Query(r, &b); err != nil {
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	results, err := h.ProjectsIndex.BrowseProjects(r.Context(), projects.SearchParams{
+		Query:  b.Query,
+		Limit:  b.Limit,
+		Offset: b.Offset,
+	})
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	hits := &Hits[*frontoffice.Project]{
+		Limit:  results.Limit,
+		Offset: results.Offset,
+		Total:  results.Total,
+		Hits:   make([]*frontoffice.Project, len(results.Hits)),
+	}
+	for i, p := range results.Hits {
+		hits.Hits[i] = frontoffice.MapProject(p)
+	}
+
+	httpx.RenderJSON(w, 200, hits)
 }
 
 type BindGetAll struct {
@@ -125,11 +310,6 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 		updatedSince = t.Local()
 	}
 
-	mappedHits := &Hits{
-		Limit:  b.Limit,
-		Offset: b.Offset,
-	}
-
 	n, publications, err := h.Repo.PublicationsAfter(updatedSince, b.Limit, b.Offset)
 	if err != nil {
 		h.Logger.Errorw("select error", err)
@@ -137,21 +317,18 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mappedHits.Total = n
-	mappedHits.Hits = make([]*frontoffice.Record, 0, len(publications))
+	hits := &Hits[*frontoffice.Record]{
+		Limit:  b.Limit,
+		Offset: b.Offset,
+		Total:  n,
+		Hits:   make([]*frontoffice.Record, 0, len(publications)),
+	}
 	for _, p := range publications {
-		mappedHits.Hits = append(mappedHits.Hits, frontoffice.MapPublication(p, h.Repo))
+		hits.Hits = append(hits.Hits, frontoffice.MapPublication(p, h.Repo))
 	}
 
-	j, err := json.Marshal(mappedHits)
-	if err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-cache")
-	w.Write(j)
+	httpx.RenderJSON(w, 200, hits)
 }
 
 func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
@@ -172,11 +349,6 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 		updatedSince = t.Local()
 	}
 
-	mappedHits := &Hits{
-		Limit:  b.Limit,
-		Offset: b.Offset,
-	}
-
 	n, datasets, err := h.Repo.DatasetsAfter(updatedSince, b.Limit, b.Offset)
 	if err != nil {
 		h.Logger.Errorw("select error", err)
@@ -184,21 +356,18 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mappedHits.Total = n
-	mappedHits.Hits = make([]*frontoffice.Record, 0, len(datasets))
+	hits := &Hits[*frontoffice.Record]{
+		Limit:  b.Limit,
+		Offset: b.Offset,
+		Total:  n,
+		Hits:   make([]*frontoffice.Record, 0, len(datasets)),
+	}
 	for _, d := range datasets {
-		mappedHits.Hits = append(mappedHits.Hits, frontoffice.MapDataset(d, h.Repo))
+		hits.Hits = append(hits.Hits, frontoffice.MapDataset(d, h.Repo))
 	}
 
-	j, err := json.Marshal(mappedHits)
-	if err != nil {
-		render.InternalServerError(w, r, err)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-cache")
-	w.Write(j)
+	httpx.RenderJSON(w, 200, hits)
 }
 
 func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
@@ -260,12 +429,13 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		defer reader.Close()
 	}
 
-	responseHeaders := [][]string{}
-	responseHeaders = append(responseHeaders, []string{"Content-Type", f.ContentType})
-	responseHeaders = append(responseHeaders, []string{"Content-Length", fmt.Sprintf("%d", f.Size)})
-	responseHeaders = append(responseHeaders, []string{"Last-Modified", f.DateUpdated.UTC().Format(http.TimeFormat)})
-	responseHeaders = append(responseHeaders, []string{"ETag", f.SHA256})
-	responseHeaders = append(responseHeaders, []string{"Content-Disposition", fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name))})
+	responseHeaders := [][]string{
+		{"Content-Type", f.ContentType},
+		{"Content-Length", fmt.Sprintf("%d", f.Size)},
+		{"Last-Modified", f.DateUpdated.UTC().Format(http.TimeFormat)},
+		{"ETag", f.SHA256},
+		{"Content-Disposition", fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name))},
+	}
 
 	/*
 		Important: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/304 dictates that all
