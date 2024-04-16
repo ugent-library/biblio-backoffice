@@ -11,15 +11,19 @@ import (
 	"github.com/Masterminds/sprig/v3"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/sessions"
+	"github.com/jackc/pgx/v5"
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/ory/graceful"
+	"github.com/riverqueue/river"
 	"github.com/spf13/cobra"
 	ffclient "github.com/thomaspoignant/go-feature-flag"
 	"github.com/thomaspoignant/go-feature-flag/retriever/fileretriever"
 	"github.com/thomaspoignant/go-feature-flag/retriever/githubretriever"
+	"github.com/ugent-library/biblio-backoffice/api/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
+	"github.com/ugent-library/biblio-backoffice/jobs"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/routes"
 	"github.com/ugent-library/biblio-backoffice/urls"
@@ -78,8 +82,22 @@ var serverStartCmd = &cobra.Command{
 			defer ffclient.Close()
 		}
 
+		// start jobs
+		riverClient, err := jobs.Start(context.TODO(), jobs.JobsConfig{
+			PgxPool:       services.PgxPool,
+			Repo:          services.Repo,
+			PeopleRepo:    services.PeopleRepo,
+			PeopleIndex:   services.PeopleIndex,
+			ProjectsRepo:  services.ProjectsRepo,
+			ProjectsIndex: services.ProjectsIndex,
+			Logger:        logger.With("producer", "river"),
+		})
+		if err != nil {
+			return err
+		}
+
 		// setup router
-		router, err := buildRouter(services)
+		router, err := buildRouter(services, riverClient)
 		if err != nil {
 			return err
 		}
@@ -92,17 +110,17 @@ var serverStartCmd = &cobra.Command{
 			ReadTimeout:  5 * time.Minute,
 			WriteTimeout: 5 * time.Minute,
 		})
-		logger.Infof("starting server at %s", addr)
+		zapLogger.Infof("starting server at %s", addr)
 		if err := graceful.Graceful(server.ListenAndServe, server.Shutdown); err != nil {
 			return err
 		}
-		logger.Info("gracefully stopped server")
+		zapLogger.Info("gracefully stopped server")
 
 		return nil
 	},
 }
 
-func buildRouter(services *backends.Services) (*ich.Mux, error) {
+func buildRouter(services *backends.Services, riverClient *river.Client[pgx.Tx]) (*ich.Mux, error) {
 	b := config.BaseURL
 	if b == "" {
 		if config.Host == "" {
@@ -185,10 +203,15 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		ClientID:     config.OIDC.ClientID,
 		ClientSecret: config.OIDC.ClientSecret,
 		RedirectURL:  baseURL.String() + "/auth/openid-connect/callback",
-		CookieName:   config.Session.Name + ".state",
-		CookieSecret: []byte(config.Session.Secret),
-		Insecure:     config.Env != "local",
+		CookiePrefix: config.Session.Name + ".",
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	// api server
+	apiService := api.NewService(services.PeopleRepo, services.PeopleIndex, services.ProjectsRepo, services.ProjectsIndex, riverClient)
+	apiServer, err := api.NewServer(apiService, &api.ApiSecurityHandler{APIKey: config.APIKey})
 	if err != nil {
 		return nil, err
 	}
@@ -209,8 +232,9 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		SessionName:      sessionName,
 		Timezone:         timezone,
 		Loc:              loc,
-		Logger:           logger,
+		Logger:           zapLogger,
 		OIDCAuth:         oidcAuth,
+		UsernameClaim:    config.OIDC.UsernameClaim,
 		FrontendURL:      config.Frontend.URL,
 		FrontendUsername: config.Frontend.Username,
 		FrontendPassword: config.Frontend.Password,
@@ -218,6 +242,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		MaxFileSize:      config.MaxFileSize,
 		CSRFName:         config.CSRF.Name,
 		CSRFSecret:       config.CSRF.Secret,
+		ApiServer:        apiServer,
 	})
 
 	return router, nil
