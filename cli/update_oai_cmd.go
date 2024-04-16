@@ -120,7 +120,7 @@ var updateOai = &cobra.Command{
 					})
 					if err != nil {
 						// TODO
-						logger.Fatal(err)
+						zapLogger.Fatal(err)
 					}
 				}
 				return true
@@ -133,7 +133,7 @@ var updateOai = &cobra.Command{
 			metadata, err := oaiEncoder.EncodePublication(p)
 			if err != nil {
 				// TODO
-				logger.Fatal(err)
+				zapLogger.Fatal(err)
 			}
 
 			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
@@ -142,13 +142,13 @@ var updateOai = &cobra.Command{
 				Content:        string(metadata),
 			})
 			if err != nil {
-				logger.Fatal(err)
+				zapLogger.Fatal(err)
 			}
 
 			metadata, err = modsEncoder.EncodePublication(p)
 			if err != nil {
 				// TODO
-				logger.Fatal(err)
+				zapLogger.Fatal(err)
 			}
 
 			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
@@ -158,7 +158,7 @@ var updateOai = &cobra.Command{
 			})
 			if err != nil {
 				// TODO
-				logger.Fatal(err)
+				zapLogger.Fatal(err)
 			}
 
 			setSpecs := []string{}
@@ -200,7 +200,7 @@ var updateOai = &cobra.Command{
 			})
 			if err != nil {
 				// TODO
-				logger.Fatal(err)
+				zapLogger.Fatal(err)
 			}
 
 			return true
@@ -217,7 +217,7 @@ var updateOai = &cobra.Command{
 					})
 					if err != nil {
 						// TODO
-						logger.Fatal(err)
+						zapLogger.Fatal(err)
 					}
 				}
 				return true
@@ -230,7 +230,7 @@ var updateOai = &cobra.Command{
 			metadata, err := oaiEncoder.EncodeDataset(d)
 			if err != nil {
 				// TODO
-				logger.Fatal(err)
+				zapLogger.Fatal(err)
 			}
 
 			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
@@ -239,13 +239,13 @@ var updateOai = &cobra.Command{
 				Content:        string(metadata),
 			})
 			if err != nil {
-				logger.Fatal(err)
+				zapLogger.Fatal(err)
 			}
 
 			metadata, err = modsEncoder.EncodeDataset(d)
 			if err != nil {
 				// TODO
-				logger.Fatal(err)
+				zapLogger.Fatal(err)
 			}
 
 			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
@@ -255,7 +255,7 @@ var updateOai = &cobra.Command{
 			})
 			if err != nil {
 				// TODO
-				logger.Fatal(err)
+				zapLogger.Fatal(err)
 			}
 
 			err = client.AddItem(context.TODO(), &api.AddItemRequest{
@@ -264,7 +264,7 @@ var updateOai = &cobra.Command{
 			})
 			if err != nil {
 				// TODO
-				logger.Fatal(err)
+				zapLogger.Fatal(err)
 			}
 
 			return true

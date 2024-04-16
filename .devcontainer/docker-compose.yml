@@ -30,60 +30,6 @@ services:
       - .env
     network_mode: service:app
 
-  people:
-    image: ugentlib/people-service:dev
-    restart: unless-stopped
-    env_file:
-      - .env
-    volumes:
-      - ./people:/opt/people-service/.data
-    environment:
-      TERN_MIGRATIONS: "etc/migrations"
-    command:
-      - sh
-      - -c
-      - |
-        /opt/people-service/tern status &&
-        /opt/people-service/tern migrate &&
-        /opt/people-service/people-service seed   --people-file /opt/people-service/.data/people.json &&
-        /opt/people-service/people-service server;
-    network_mode: service:app
-    depends_on:
-      - db-people
-
-  people-custom:
-    image: ugentlib/people-service:dev
-    restart: on-failure:5
-    env_file:
-      - .env
-    volumes:
-      - ./people:/opt/people-service/.data
-    command:
-      - sh
-      - -c
-      - |
-        /opt/people-service/people-service seed --people-file /opt/people-service/.data/people.json --without-generated-people --force
-    network_mode: service:app
-    depends_on:
-      - db-people
-      - people
-
-  projects:
-    image: ugentlib/projects-service:dev
-    restart: unless-stopped
-    env_file:
-      - .env
-    command:
-      - sh
-      - -c
-      - |
-        cd /dist
-        /dist/tern status
-        /dist/tern migrate
-        /dist/app reindex
-        /dist/app server
-    network_mode: service:app
-
   db-app:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -99,63 +45,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-
-  db-people:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    volumes:
-      - ../tmp/people/db_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DATABASE: people
-      POSTGRES_USER: people
-      POSTGRES_PASSWORD: people
-      PGPORT: 3052
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U people -d people"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-  db-projects:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    volumes:
-      - ../tmp/projects/db_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DATABASE: projects
-      POSTGRES_USER: projects
-      POSTGRES_PASSWORD: projects
-      PGPORT: 3053
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U projects -d projects"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-  # es:
-  #   image: elyalvarado/elasticsearch-arm64:6.8.16
-  #   environment:
-  #     - http.host=0.0.0.0
-  #     - http.port=3061
-  #     - ES_JAVA_OPTS=-Xmx512m -Xms512m -server
-  #     - discovery.type=single-node
-  #     - xpack.ml.enabled=false
-  #     - bootstrap.system_call_filter=false
-  #   volumes:
-  #     - ../tmp/backoffice/es_data:/usr/share/elasticsearch/data
-  #   ulimits:
-  #     nofile:
-  #       soft: 65536
-  #       hard: 65536
-  #   command: >
-  #       /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-icu
-  #       || ./bin/elasticsearch-plugin install https://artifacts.elastic.co/downloads/elasticsearch-plugins/analysis-icu/analysis-icu-6.8.16.zip;
-  #       /usr/local/bin/docker-entrypoint.sh"
-  #   healthcheck:
-  #     test: curl -s -f es:9200/_cat/health >/dev/null || exit 1
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
 
   # NOTE: Elastic 6.8 doesn't provide an arm64 image. So, we need to use a 
   # custom image for the time being. Switch to the container below if you are on x86_64.
