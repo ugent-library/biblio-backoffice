@@ -27,11 +27,11 @@ Here are some useful commands to get you started:\n\
 Start the app:\n\
     reflex -d none -c reflex.docker.conf\n\
 \n\
-Seed the app with dummy data:\n\
-    go run main.go seed\n\
+Seed the app with dummy organizations:\n\
+    go run main.go seed organizations < .devcontainer/people/organizations.json\n\
 \n\
-If you already have data in the database, you can force seeding:\n\
-    go run main.go seed --force\n\
+Seed the app with dummy people:\n\
+    go run main.go seed people < .devcontainer/people/people.json\n\
 \n\
 Purge all data from the database:\n\
     go run main.go reset --force\n\
