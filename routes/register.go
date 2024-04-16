@@ -13,6 +13,7 @@ import (
 	"github.com/jpillora/ipfilter"
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
+	"github.com/swaggest/swgui/v5emb"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
@@ -62,6 +63,7 @@ type Config struct {
 	Loc              *gotext.Locale
 	Logger           *zap.SugaredLogger
 	OIDCAuth         *oidc.Auth
+	UsernameClaim    string
 	FrontendURL      string
 	FrontendUsername string
 	FrontendPassword string
@@ -69,6 +71,7 @@ type Config struct {
 	MaxFileSize      int
 	CSRFName         string
 	CSRFSecret       string
+	ApiServer        http.Handler
 }
 
 func Register(c Config) {
@@ -90,6 +93,17 @@ func Register(c Config) {
 		httpx.RenderJSON(w, http.StatusOK, c.Version)
 	})
 
+	// rest api (api/v2)
+	c.Router.Mount("/api/v2", http.StripPrefix("/api/v2", c.ApiServer))
+	c.Router.Get("/api/v2/openapi.yaml", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "api/v2/openapi.yaml")
+	})
+	c.Router.Mount("/api/v2/docs", v5emb.New(
+		"Biblio Backoffice",
+		"/api/v2/openapi.yaml",
+		"/api/v2/docs",
+	))
+
 	// handlers
 	baseHandler := handlers.BaseHandler{
 		Logger:          c.Logger,
@@ -103,8 +117,9 @@ func Register(c Config) {
 		FrontendBaseUrl: c.FrontendURL,
 	}
 	authenticatingHandler := &authenticating.Handler{
-		BaseHandler: baseHandler,
-		OIDCAuth:    c.OIDCAuth,
+		BaseHandler:   baseHandler,
+		OIDCAuth:      c.OIDCAuth,
+		UsernameClaim: c.UsernameClaim,
 	}
 	impersonatingHandler := &impersonating.Handler{
 		BaseHandler:       baseHandler,
@@ -116,12 +131,13 @@ func Register(c Config) {
 		PublicationSearchIndex: c.Services.PublicationSearchIndex,
 	}
 	frontofficeHandler := &frontoffice.Handler{
-		BaseHandler:      baseHandler,
-		Repo:             c.Services.Repo,
-		FileStore:        c.Services.FileStore,
-		FrontendUsername: c.FrontendUsername,
-		FrontendPassword: c.FrontendPassword,
-		IPRanges:         c.IPRanges,
+		BaseHandler:   baseHandler,
+		Repo:          c.Services.Repo,
+		FileStore:     c.Services.FileStore,
+		PeopleRepo:    c.Services.PeopleRepo,
+		PeopleIndex:   c.Services.PeopleIndex,
+		ProjectsIndex: c.Services.ProjectsIndex,
+		IPRanges:      c.IPRanges,
 		IPFilter: ipfilter.New(ipfilter.Options{
 			AllowedIPs:     strings.Split(c.IPRanges, ","),
 			BlockByDefault: true,
@@ -206,10 +222,22 @@ func Register(c Config) {
 	}
 
 	// frontoffice data exchange api
-	c.Router.Get("/frontoffice/publication/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetPublication))
-	c.Router.Get("/frontoffice/publication", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllPublications))
-	c.Router.Get("/frontoffice/dataset/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetDataset))
-	c.Router.Get("/frontoffice/dataset", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllDatasets))
+	c.Router.Group(func(r *ich.Mux) {
+		r.Use(httpx.BasicAuth(c.FrontendUsername, c.FrontendPassword))
+		r.Get("/frontoffice/publication/{id}", frontofficeHandler.GetPublication)
+		r.Get("/frontoffice/publication", frontofficeHandler.GetAllPublications)
+		r.Get("/frontoffice/dataset/{id}", frontofficeHandler.GetDataset)
+		r.Get("/frontoffice/dataset", frontofficeHandler.GetAllDatasets)
+		r.Get("/frontoffice/organization/{id}", frontofficeHandler.GetOrganization)
+		r.Get("/frontoffice/organization", frontofficeHandler.GetAllOrganizations)
+		r.Get("/frontoffice/user/{id}", frontofficeHandler.GetUser)
+		r.Get("/frontoffice/user/username/{username}", frontofficeHandler.GetUserByUsername)
+		r.Get("/frontoffice/person/{id}", frontofficeHandler.GetPerson)
+		r.Get("/frontoffice/person/list", frontofficeHandler.GetPeople)
+		r.Get("/frontoffice/person", frontofficeHandler.SearchPeople)
+		r.Get("/frontoffice/project/{id}", frontofficeHandler.GetProject)
+		r.Get("/frontoffice/project/browse", frontofficeHandler.BrowseProjects)
+	})
 	// frontoffice file download
 	c.Router.Get("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
 	c.Router.Head("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
