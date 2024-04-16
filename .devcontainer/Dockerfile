@@ -24,8 +24,8 @@ RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && cat /etc/motd' \
 \n\
 Here are some useful commands to get you started:\n\
 \n\
-Start the app:\n\
-    reflex -d none -c reflex.docker.conf\n\
+Purge all data from the database (publications/datasets only):\n\
+    go run main.go reset --force\n\
 \n\
 Seed the app with dummy organizations:\n\
     go run main.go seed organizations < .devcontainer/people/organizations.json\n\
@@ -33,8 +33,8 @@ Seed the app with dummy organizations:\n\
 Seed the app with dummy people:\n\
     go run main.go seed people < .devcontainer/people/people.json\n\
 \n\
-Purge all data from the database:\n\
-    go run main.go reset --force\n\
+Start the app:\n\
+    reflex -d none -c reflex.docker.conf\n\
 \n\
 Happy hacking!\n"\
     > /etc/motd
