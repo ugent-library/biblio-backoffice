@@ -46,7 +46,7 @@ func createPublicationHandles(services *backends.Services) {
 			return false
 		}
 
-		logger.Infof("added handle url %s to publication %s", h.GetFullHandleURL(), p.ID)
+		zapLogger.Infof("added handle url %s to publication %s", h.GetFullHandleURL(), p.ID)
 
 		p.Handle = h.GetFullHandleURL()
 		if err = repo.UpdatePublication(p.SnapshotID, p, nil); err != nil {
@@ -59,10 +59,10 @@ func createPublicationHandles(services *backends.Services) {
 	})
 
 	if err != nil {
-		logger.Fatal(err)
+		zapLogger.Fatal(err)
 	}
 
-	logger.Infof("created %d publication handles", n)
+	zapLogger.Infof("created %d publication handles", n)
 }
 
 func createDatasetHandles(services *backends.Services) {
@@ -81,7 +81,7 @@ func createDatasetHandles(services *backends.Services) {
 			return false
 		}
 
-		logger.Infof("added handle url %s to dataset %s", h.GetFullHandleURL(), d.ID)
+		zapLogger.Infof("added handle url %s to dataset %s", h.GetFullHandleURL(), d.ID)
 
 		d.Handle = h.GetFullHandleURL()
 		if err = repo.UpdateDataset(d.SnapshotID, d, nil); err != nil {
@@ -94,8 +94,8 @@ func createDatasetHandles(services *backends.Services) {
 	})
 
 	if err != nil {
-		logger.Fatal(err)
+		zapLogger.Fatal(err)
 	}
 
-	logger.Infof("created %d dataset handles", n)
+	zapLogger.Infof("created %d dataset handles", n)
 }

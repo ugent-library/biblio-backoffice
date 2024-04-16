@@ -502,6 +502,128 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .should("have.ordered.members", ["the", "keywords", "updated"]);
       });
 
+      it("should be possible to delete authors", () => {
+        cy.setUpPublication();
+        cy.visitPublication();
+
+        cy.updateFields(
+          "Authors",
+          () => {
+            cy.setFieldByLabel("First name", "Jane");
+            cy.setFieldByLabel("Last name", "Doe");
+
+            cy.contains(".btn", "Add external author").click();
+          },
+          true,
+        );
+
+        cy.contains("#authors tr", "Jane Doe").find(".btn .if-delete").click();
+
+        cy.ensureModal("Are you sure?")
+          .within(() => {
+            cy.contains("Are you sure you want to remove this author?").should(
+              "be.visible",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.contains("#authors", "Jane Doe").should("not.exist");
+      });
+
+      it("should not be possible to delete the last UGent author of a published publication", () => {
+        cy.setUpPublication(undefined, { prepareForPublishing: true });
+        cy.visitPublication();
+
+        cy.contains(".btn", "Publish to Biblio").click();
+        cy.ensureModal("Are you sure?").closeModal("Publish");
+        cy.ensureToast("Publication was successfully published.").closeToast();
+
+        cy.updateFields(
+          "Authors",
+          () => {
+            cy.setFieldByLabel("First name", "Jane");
+            cy.setFieldByLabel("Last name", "Doe");
+            cy.contains(".btn", "Add external author").click();
+          },
+          true,
+        );
+
+        cy.contains("#authors tr", "Dries Moreels")
+          .find(".btn .if-delete")
+          .click();
+        cy.ensureModal("Are you sure?").closeModal("Delete");
+
+        cy.ensureModal(
+          "Can't delete this contributor due to the following errors",
+        ).within(() => {
+          cy.contains(
+            ".alert-danger",
+            "At least one UGent author is required",
+          ).should("be.visible");
+        });
+      });
+
+      it("should be possible to delete editors", () => {
+        cy.setUpPublication("Book");
+        cy.visitPublication();
+
+        cy.updateFields(
+          "Editors",
+          () => {
+            cy.setFieldByLabel("First name", "Jane");
+            cy.setFieldByLabel("Last name", "Doe");
+
+            cy.contains(".btn", "Add external editor").click();
+          },
+          true,
+        );
+
+        cy.contains("#editors tr", "Jane Doe").find(".btn .if-delete").click();
+
+        cy.ensureModal("Are you sure?")
+          .within(() => {
+            cy.contains("Are you sure you want to remove this editor?").should(
+              "be.visible",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.contains("#editors", "Jane Doe").should("not.exist");
+      });
+
+      it("should be possible to delete supervisors", () => {
+        cy.setUpPublication("Dissertation");
+        cy.visitPublication();
+
+        cy.updateFields(
+          "Supervisors",
+          () => {
+            cy.setFieldByLabel("First name", "Jane");
+            cy.setFieldByLabel("Last name", "Doe");
+
+            cy.contains(".btn", "Add external supervisor").click();
+          },
+          true,
+        );
+
+        cy.contains("#supervisors tr", "Jane Doe")
+          .find(".btn .if-delete")
+          .click();
+
+        cy.ensureModal("Are you sure?")
+          .within(() => {
+            cy.contains(
+              "Are you sure you want to remove this supervisor?",
+            ).should("be.visible");
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.contains("#supervisors", "Jane Doe").should("not.exist");
+      });
+
       it("should be possible to add and delete departments", () => {
         cy.setUpPublication();
         cy.visitPublication();
@@ -899,6 +1021,68 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.ensureNoModal();
 
         cy.get("#links").find("table tbody tr").should("have.length", 0);
+      });
+
+      it("should be possible to delete creators", () => {
+        cy.setUpDataset();
+        cy.visitDataset();
+
+        cy.updateFields(
+          "Creators",
+          () => {
+            cy.setFieldByLabel("First name", "Jane");
+            cy.setFieldByLabel("Last name", "Doe");
+
+            cy.contains(".btn", "Add external creator").click();
+          },
+          true,
+        );
+
+        cy.contains("#authors tr", "Jane Doe").find(".btn .if-delete").click();
+
+        cy.ensureModal("Are you sure?")
+          .within(() => {
+            cy.contains("Are you sure you want to remove this creator?").should(
+              "be.visible",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.contains("#authors", "Jane Doe").should("not.exist");
+      });
+
+      it("should not be possible to delete the last UGent creator of a published dataset", () => {
+        cy.setUpDataset({ prepareForPublishing: true });
+        cy.visitDataset();
+
+        cy.contains(".btn", "Publish to Biblio").click();
+        cy.ensureModal("Are you sure?").closeModal("Publish");
+        cy.ensureToast("Dataset was successfully published.").closeToast();
+
+        cy.updateFields(
+          "Creators",
+          () => {
+            cy.setFieldByLabel("First name", "Jane");
+            cy.setFieldByLabel("Last name", "Doe");
+            cy.contains(".btn", "Add external creator").click();
+          },
+          true,
+        );
+
+        cy.contains("#authors tr", "Dries Moreels")
+          .find(".btn .if-delete")
+          .click();
+        cy.ensureModal("Are you sure?").closeModal("Delete");
+
+        cy.ensureModal(
+          "Can't delete this contributor due to the following errors",
+        ).within(() => {
+          cy.contains(
+            ".alert-danger",
+            "At least one UGent author is required",
+          ).should("be.visible");
+        });
       });
 
       it("should be possible to add and delete departments", () => {

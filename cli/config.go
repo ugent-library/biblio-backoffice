@@ -1,5 +1,7 @@
 package cli
 
+import "time"
+
 // Version info
 type Version struct {
 	Branch string `env:"SOURCE_BRANCH"`
@@ -14,8 +16,9 @@ type Config struct {
 	Env              string `env:"MODE" envDefault:"production"`
 	BaseURL          string `env:"BASE_URL"`
 	Timezone         string `env:"TIMEZONE" envDefault:"Europe/Brussels"`
+	TokenSecret      string `env:"TOKEN_SECRET,notEmpty"`
 	IndexRetention   int    `env:"INDEX_RETENTION" envDefault:"2"`
-	PgConn           string `env:"PG_CONN"`
+	PgConn           string `env:"PG_CONN,notEmpty"`
 	Es6URL           string `env:"ES6_URL"`
 	PublicationIndex string `env:"PUBLICATION_INDEX"`
 	DatasetIndex     string `env:"DATASET_INDEX"`
@@ -61,12 +64,14 @@ type Config struct {
 		Sandbox      bool   `env:"SANDBOX"`
 	} `envPrefix:"ORCID_"`
 	OIDC struct {
-		URL          string `env:"URL"`
-		ClientID     string `env:"CLIENT_ID"`
-		ClientSecret string `env:"CLIENT_SECRET"`
+		URL           string `env:"URL"`
+		ClientID      string `env:"CLIENT_ID"`
+		ClientSecret  string `env:"CLIENT_SECRET"`
+		UsernameClaim string `env:"USERNAME_CLAIM" envDefault:"preferred_username"`
 	} `envPrefix:"OIDC_"`
 	CiteprocURL string `env:"CITEPROC_URL"`
 	MongoDBURL  string `env:"MONGODB_URL"`
+	APIKey      string `env:"API_KEY"`
 	Handle      struct {
 		Enabled  bool   `env:"ENABLED"`
 		URL      string `env:"URL"`
@@ -78,14 +83,6 @@ type Config struct {
 		APIURL string `env:"API_URL"`
 		APIKey string `env:"API_KEY"`
 	} `envPrefix:"OAI_"`
-	Projects struct {
-		APIURL string `env:"API_URL"`
-		APIKey string `env:"API_KEY"`
-	} `envPrefix:"PROJECTS_"`
-	People struct {
-		APIURL string `env:"API_URL"`
-		APIKey string `env:"API_KEY"`
-	} `envPrefix:"PEOPLE_"`
 	// Feature flags
 	FF struct {
 		FilePath     string `env:"FILE_PATH"`
@@ -94,4 +91,7 @@ type Config struct {
 		GitHubBranch string `env:"GITHUB_BRANCH" envDefault:"main"`
 		GitHubPath   string `env:"GITHUB_PATH"`
 	} `envPrefix:"FF_"`
+	People struct {
+		DeactivationPeriod time.Duration `env:"DEACTIVATION_PERIOD"`
+	} `envPrefix:"PEOPLE_"`
 }
