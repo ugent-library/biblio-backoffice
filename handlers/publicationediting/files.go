@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/leonelquinteros/gotext"
@@ -67,21 +69,23 @@ func (h *Handler) RefreshFiles(w http.ResponseWriter, r *http.Request, ctx Conte
 }
 
 func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context) {
-	// 2GB limit on request body
-	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
+	fileSize, _ := strconv.ParseInt(r.Header.Get("Content-Length"), 10, 64)
 
-	file, handler, err := r.FormFile("file")
-	if err != nil {
-		h.Logger.Errorf("publication upload file: could not process file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.file_upload_error"),
-		})
-		return
-	}
-	defer file.Close()
+	// request header only accepts ISO-8859-1 so we had to escape it
+	fileName, _ := url.QueryUnescape(r.Header.Get("X-Upload-Filename"))
+
+	// server side limit on request body
+	r.Body = http.MaxBytesReader(w, r.Body, int64(h.MaxFileSize))
 
 	// add file to filestore
-	checksum, err := h.FileStore.Add(r.Context(), file, "")
+	checksum, err := h.FileStore.Add(r.Context(), r.Body, "")
+
+	maxBytesErr := &http.MaxBytesError{}
+	if errors.As(err, &maxBytesErr) {
+		h.Logger.Errorf("publication upload file: could not save file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		http.Error(w, http.StatusText(http.StatusRequestEntityTooLarge), http.StatusRequestEntityTooLarge)
+		return
+	}
 
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not save file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
@@ -91,14 +95,19 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
+	contentType := r.Header.Get("Content-Type")
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+
 	// save publication
 	// TODO check if file with same checksum is already present
 	pubFile := models.PublicationFile{
 		Relation:    "main_file",
 		AccessLevel: "info:eu-repo/semantics/restrictedAccess",
-		Name:        handler.Filename,
-		Size:        int(handler.Size),
-		ContentType: handler.Header.Get("Content-Type"),
+		Name:        fileName,
+		Size:        int(fileSize),
+		ContentType: contentType,
 		SHA256:      checksum,
 	}
 	/*
