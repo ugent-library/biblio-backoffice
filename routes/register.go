@@ -131,15 +131,13 @@ func Register(c Config) {
 		PublicationSearchIndex: c.Services.PublicationSearchIndex,
 	}
 	frontofficeHandler := &frontoffice.Handler{
-		BaseHandler:      baseHandler,
-		Repo:             c.Services.Repo,
-		FileStore:        c.Services.FileStore,
-		PeopleRepo:       c.Services.PeopleRepo,
-		PeopleIndex:      c.Services.PeopleIndex,
-		ProjectsIndex:    c.Services.ProjectsIndex,
-		FrontendUsername: c.FrontendUsername,
-		FrontendPassword: c.FrontendPassword,
-		IPRanges:         c.IPRanges,
+		BaseHandler:   baseHandler,
+		Repo:          c.Services.Repo,
+		FileStore:     c.Services.FileStore,
+		PeopleRepo:    c.Services.PeopleRepo,
+		PeopleIndex:   c.Services.PeopleIndex,
+		ProjectsIndex: c.Services.ProjectsIndex,
+		IPRanges:      c.IPRanges,
 		IPFilter: ipfilter.New(ipfilter.Options{
 			AllowedIPs:     strings.Split(c.IPRanges, ","),
 			BlockByDefault: true,
@@ -224,21 +222,25 @@ func Register(c Config) {
 	}
 
 	// frontoffice data exchange api
-	c.Router.Get("/frontoffice/publication/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetPublication))
-	c.Router.Get("/frontoffice/publication", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllPublications))
-	c.Router.Get("/frontoffice/dataset/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetDataset))
-	c.Router.Get("/frontoffice/dataset", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllDatasets))
-	c.Router.Get("/frontoffice/organization/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetOrganization))
-	c.Router.Get("/frontoffice/organization", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllOrganizations))
-	c.Router.Get("/frontoffice/organization-trees", frontofficeHandler.BasicAuth(frontofficeHandler.GetAllOrganizationTrees))
-	c.Router.Get("/frontoffice/user/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetUser))
-	c.Router.Get("/frontoffice/user/username/{username}", frontofficeHandler.BasicAuth(frontofficeHandler.GetUserByUsername))
-	c.Router.Get("/frontoffice/person/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetPerson))
-	c.Router.Get("/frontoffice/person/list", frontofficeHandler.BasicAuth(frontofficeHandler.GetPeople))
-	c.Router.Get("/frontoffice/person", frontofficeHandler.BasicAuth(frontofficeHandler.SearchPeople))
-	c.Router.Get("/frontoffice/project/{id}", frontofficeHandler.BasicAuth(frontofficeHandler.GetProject))
-	c.Router.Get("/frontoffice/project/browse", frontofficeHandler.BasicAuth(frontofficeHandler.BrowseProjects))
-	// frontoffice file download
+	c.Router.Group(func(r *ich.Mux) {
+		r.Use(httpx.BasicAuth(c.FrontendUsername, c.FrontendPassword))
+		r.Get("/frontoffice/publication/{id}", frontofficeHandler.GetPublication)
+		r.Get("/frontoffice/publication", frontofficeHandler.GetAllPublications)
+		r.Get("/frontoffice/dataset/{id}", frontofficeHandler.GetDataset)
+		r.Get("/frontoffice/dataset", frontofficeHandler.GetAllDatasets)
+		r.Get("/frontoffice/organization/{id}", frontofficeHandler.GetOrganization)
+		r.Get("/frontoffice/organization", frontofficeHandler.GetAllOrganizations)
+	  r.Get("/frontoffice/organization-trees", frontofficeHandler.GetAllOrganizationTrees)
+		r.Get("/frontoffice/user/{id}", frontofficeHandler.GetUser)
+		r.Get("/frontoffice/user/username/{username}", frontofficeHandler.GetUserByUsername)
+		r.Get("/frontoffice/person/{id}", frontofficeHandler.GetPerson)
+		r.Get("/frontoffice/person/list", frontofficeHandler.GetPeople)
+		r.Get("/frontoffice/person", frontofficeHandler.SearchPeople)
+		r.Get("/frontoffice/project/{id}", frontofficeHandler.GetProject)
+		r.Get("/frontoffice/project/browse", frontofficeHandler.BrowseProjects)
+	})
+
+  // frontoffice file download
 	c.Router.Get("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
 	c.Router.Head("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
 

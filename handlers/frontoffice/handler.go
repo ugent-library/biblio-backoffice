@@ -1,8 +1,6 @@
 package frontoffice
 
 import (
-	"crypto/sha256"
-	"crypto/subtle"
 	"fmt"
 	"io"
 	"net"
@@ -26,39 +24,13 @@ import (
 
 type Handler struct {
 	handlers.BaseHandler
-	Repo             *repositories.Repo
-	FileStore        backends.FileStore
-	PeopleRepo       *people.Repo
-	PeopleIndex      *people.Index
-	ProjectsIndex    *projects.Index
-	IPRanges         string
-	IPFilter         *ipfilter.IPFilter
-	FrontendUsername string
-	FrontendPassword string
-}
-
-// safe basic auth handling
-// see https://www.alexedwards.net/blog/basic-authentication-in-go
-func (h *Handler) BasicAuth(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if username, password, ok := r.BasicAuth(); ok {
-			usernameHash := sha256.Sum256([]byte(username))
-			passwordHash := sha256.Sum256([]byte(password))
-			expectedUsernameHash := sha256.Sum256([]byte(h.FrontendUsername))
-			expectedPasswordHash := sha256.Sum256([]byte(h.FrontendPassword))
-
-			usernameMatch := (subtle.ConstantTimeCompare(usernameHash[:], expectedUsernameHash[:]) == 1)
-			passwordMatch := (subtle.ConstantTimeCompare(passwordHash[:], expectedPasswordHash[:]) == 1)
-
-			if usernameMatch && passwordMatch {
-				fn(w, r)
-				return
-			}
-		}
-
-		w.Header().Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
-		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-	}
+	Repo          *repositories.Repo
+	FileStore     backends.FileStore
+	PeopleRepo    *people.Repo
+	PeopleIndex   *people.Index
+	ProjectsIndex *projects.Index
+	IPRanges      string
+	IPFilter      *ipfilter.IPFilter
 }
 
 type Hits[T any] struct {

@@ -30,18 +30,19 @@ func (s *AddPersonRequest) SetPerson(val AddPersonRequestPerson) {
 }
 
 type AddPersonRequestPerson struct {
-	Identifiers         []Identifier `json:"identifiers"`
-	Name                string       `json:"name"`
-	PreferredName       OptString    `json:"preferredName"`
-	GivenName           OptString    `json:"givenName"`
-	PreferredGivenName  OptString    `json:"preferredGivenName"`
-	FamilyName          OptString    `json:"familyName"`
-	PreferredFamilyName OptString    `json:"preferredFamilyName"`
-	HonorificPrefix     OptString    `json:"honorificPrefix"`
-	Email               OptString    `json:"email"`
-	Username            OptString    `json:"username"`
-	Active              OptBool      `json:"active"`
-	Attributes          []Attribute  `json:"attributes"`
+	Identifiers         []Identifier        `json:"identifiers"`
+	Name                string              `json:"name"`
+	PreferredName       OptString           `json:"preferredName"`
+	GivenName           OptString           `json:"givenName"`
+	PreferredGivenName  OptString           `json:"preferredGivenName"`
+	FamilyName          OptString           `json:"familyName"`
+	PreferredFamilyName OptString           `json:"preferredFamilyName"`
+	HonorificPrefix     OptString           `json:"honorificPrefix"`
+	Email               OptString           `json:"email"`
+	Username            OptString           `json:"username"`
+	Active              OptBool             `json:"active"`
+	Attributes          []Attribute         `json:"attributes"`
+	Affiliations        []AffiliationParams `json:"affiliations"`
 }
 
 // GetIdentifiers returns the value of Identifiers.
@@ -104,6 +105,11 @@ func (s *AddPersonRequestPerson) GetAttributes() []Attribute {
 	return s.Attributes
 }
 
+// GetAffiliations returns the value of Affiliations.
+func (s *AddPersonRequestPerson) GetAffiliations() []AffiliationParams {
+	return s.Affiliations
+}
+
 // SetIdentifiers sets the value of Identifiers.
 func (s *AddPersonRequestPerson) SetIdentifiers(val []Identifier) {
 	s.Identifiers = val
@@ -162,6 +168,11 @@ func (s *AddPersonRequestPerson) SetActive(val OptBool) {
 // SetAttributes sets the value of Attributes.
 func (s *AddPersonRequestPerson) SetAttributes(val []Attribute) {
 	s.Attributes = val
+}
+
+// SetAffiliations sets the value of Affiliations.
+func (s *AddPersonRequestPerson) SetAffiliations(val []AffiliationParams) {
+	s.Affiliations = val
 }
 
 // AddProjectOK is response for AddProject operation.

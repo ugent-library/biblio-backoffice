@@ -112,6 +112,20 @@ func (r *Repo) ImportPerson(ctx context.Context, p ImportPersonParams) error {
 	return tx.Commit(ctx)
 }
 
+func (r *Repo) CountOrganizations(ctx context.Context) (int64, error) {
+	var count int64
+	err := r.conn.QueryRow(ctx, "SELECT COUNT(*) FROM organizations").Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *Repo) DeleteAllOrganizations(ctx context.Context) error {
+	_, err := r.conn.Exec(ctx, "TRUNCATE organizations CASCADE")
+	return err
+}
+
 func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
@@ -156,6 +170,20 @@ func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value stri
 	}
 
 	return org, nil
+}
+
+func (r *Repo) CountPeople(ctx context.Context) (int64, error) {
+	var count int64
+	err := r.conn.QueryRow(ctx, "SELECT COUNT(*) FROM people").Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (r *Repo) DeleteAllPeople(ctx context.Context) error {
+	_, err := r.conn.Exec(ctx, "TRUNCATE people CASCADE")
+	return err
 }
 
 func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
@@ -339,6 +367,7 @@ type AddPersonParams struct {
 	Active              bool
 	Username            string
 	Attributes          []Attribute
+	Affiliations        []AffiliationParams
 }
 
 func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
