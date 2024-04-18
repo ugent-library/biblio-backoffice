@@ -230,6 +230,7 @@ func Register(c Config) {
 		r.Get("/frontoffice/dataset", frontofficeHandler.GetAllDatasets)
 		r.Get("/frontoffice/organization/{id}", frontofficeHandler.GetOrganization)
 		r.Get("/frontoffice/organization", frontofficeHandler.GetAllOrganizations)
+	  r.Get("/frontoffice/organization-trees", frontofficeHandler.GetAllOrganizationTrees)
 		r.Get("/frontoffice/user/{id}", frontofficeHandler.GetUser)
 		r.Get("/frontoffice/user/username/{username}", frontofficeHandler.GetUserByUsername)
 		r.Get("/frontoffice/person/{id}", frontofficeHandler.GetPerson)
@@ -238,7 +239,8 @@ func Register(c Config) {
 		r.Get("/frontoffice/project/{id}", frontofficeHandler.GetProject)
 		r.Get("/frontoffice/project/browse", frontofficeHandler.BrowseProjects)
 	})
-	// frontoffice file download
+
+  // frontoffice file download
 	c.Router.Get("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
 	c.Router.Head("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
 
