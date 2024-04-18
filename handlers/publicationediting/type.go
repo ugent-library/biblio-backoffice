@@ -29,47 +29,44 @@ func (h *Handler) ConfirmUpdateType(w http.ResponseWriter, r *http.Request) {
 	publication.ConfirmUpdateType(c, ctx.GetPublication(r), r.URL.Query().Get("type")).Render(r.Context(), w)
 }
 
-func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, legacyContext Context) {
-	c := ctx.Get(r)
-	publication := ctx.GetPublication(r)
-
+func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindType{}
 	if err := bind.Body(r, &b); err != nil {
-		h.Logger.Warnw("update publication type: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		h.Logger.Warnw("update publication type: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	publication.ChangeType(b.Type)
+	ctx.Publication.ChangeType(b.Type)
 
-	if validationErrs := publication.Validate(); validationErrs != nil {
-		form := detailsForm(c.User, c.Loc, publication, validationErrs.(*okay.Errors))
+	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
+		form := detailsForm(ctx.User, ctx.Loc, ctx.Publication, validationErrs.(*okay.Errors))
 
 		// TODO: refactor to templ
 		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
-			Context: legacyContext,
+			Context: ctx,
 			Form:    form,
 		})
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), publication, c.User)
+	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		// TODO: refactor to templ
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: c.Loc.Get("publication.conflict_error_reload"),
+			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update publication type: Could not save the publication:", "error", err, "publication", publication.ID, "user", c.User.ID)
+		h.Logger.Errorf("update publication type: Could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	redirectURL := h.PathFor("publication", "id", publication.ID)
+	redirectURL := h.PathFor("publication", "id", ctx.Publication.ID)
 	w.Header().Set("HX-Redirect", redirectURL.String())
 }

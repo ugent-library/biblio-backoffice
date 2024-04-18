@@ -321,7 +321,6 @@ func Register(c Config) {
 
 					// edit publication type
 					r.Get("/type/confirm", publicationEditingHandler.ConfirmUpdateType).Name("publication_confirm_update_type")
-					r.Put("/type", publicationEditingHandler.Wrap(publicationEditingHandler.UpdateType)).Name("publication_update_type")
 
 					// curator actions
 					r.Group(func(r *ich.Mux) {
@@ -782,6 +781,11 @@ func Register(c Config) {
 		r.Put("/publication/{id}/details",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateDetails)).
 			Name("publication_update_details")
+
+		// edit publication type
+		r.Put("/publication/{id}/type",
+			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateType)).
+			Name("publication_update_type")
 
 		// edit publication conference
 		r.Get("/publication/{id}/conference/edit",
