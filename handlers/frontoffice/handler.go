@@ -87,6 +87,22 @@ func (h *Handler) GetAllOrganizations(w http.ResponseWriter, r *http.Request) {
 	httpx.RenderJSON(w, 200, recs)
 }
 
+func (h *Handler) GetAllOrganizationTrees(w http.ResponseWriter, r *http.Request) {
+	results, err := h.PeopleIndex.SearchOrganizations(r.Context(), people.SearchParams{Limit: 1000})
+	if err != nil {
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	recs := make([]*frontoffice.Organization, len(results.Hits))
+	for i, o := range results.Hits {
+		recs[i] = frontoffice.MapOrganization(o)
+	}
+
+	treeNodes := frontoffice.ToOrganizationTrees(recs)
+	httpx.RenderJSON(w, 200, treeNodes)
+}
+
 func (h *Handler) GetOrganization(w http.ResponseWriter, r *http.Request) {
 	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
 	if err != nil {

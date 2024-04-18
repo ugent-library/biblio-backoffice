@@ -121,6 +121,11 @@ func (r *Repo) CountOrganizations(ctx context.Context) (int64, error) {
 	return count, nil
 }
 
+func (r *Repo) DeleteAllOrganizations(ctx context.Context) error {
+	_, err := r.conn.Exec(ctx, "TRUNCATE organizations CASCADE")
+	return err
+}
+
 func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
@@ -174,6 +179,11 @@ func (r *Repo) CountPeople(ctx context.Context) (int64, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+func (r *Repo) DeleteAllPeople(ctx context.Context) error {
+	_, err := r.conn.Exec(ctx, "TRUNCATE people CASCADE")
+	return err
 }
 
 func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
