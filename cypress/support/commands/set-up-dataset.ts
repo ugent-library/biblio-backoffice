@@ -81,8 +81,8 @@ export default function setUpDataset({
     cy.updateFields(
       "Creators",
       () => {
-        cy.setFieldByLabel("First name", "Dries");
-        cy.setFieldByLabel("Last name", "Moreels");
+        cy.setFieldByLabel("First name", "John");
+        cy.setFieldByLabel("Last name", "Doe");
 
         cy.contains(".btn", "Add creator", NO_LOG).click(NO_LOG);
       },

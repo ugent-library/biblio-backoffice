@@ -2,12 +2,14 @@ package frontoffice
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 
 	"slices"
 
 	"github.com/caltechlibrary/doitools"
 	"github.com/iancoleman/strcase"
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/people"
@@ -1107,6 +1109,69 @@ type Organization struct {
 	Name     string               `json:"name"`
 	Tree     []ParentOrganization `json:"tree"`
 	Position int                  `json:"position"`
+}
+
+type OrganizationNode struct {
+	ID       string              `json:"id"`
+	Name     string              `json:"name"`
+	Position int                 `json:"position"`
+	Children []*OrganizationNode `json:"children,omitempty"`
+}
+
+type ByOrganizationNode []*OrganizationNode
+
+func (nodes ByOrganizationNode) Len() int {
+	return len(nodes)
+}
+
+func (nodes ByOrganizationNode) Swap(i, j int) {
+	nodes[i], nodes[j] = nodes[j], nodes[i]
+}
+
+func (nodes ByOrganizationNode) Less(i, j int) bool {
+	return nodes[i].Position < nodes[j].Position
+}
+
+func sortOrganizationTrees(trees []*OrganizationNode) []*OrganizationNode {
+	sort.Sort(ByOrganizationNode(trees))
+	for _, tree := range trees {
+		if len(tree.Children) > 0 {
+			tree.Children = sortOrganizationTrees(tree.Children)
+		}
+	}
+	return trees
+}
+
+func ToOrganizationTrees(orgs []*Organization) []*OrganizationNode {
+	treeNodes := make([]*OrganizationNode, 0)
+	treeNodesP := &treeNodes
+
+	for _, org := range orgs {
+		tnp := treeNodesP
+		for _, pOrg := range lo.Reverse(org.Tree) {
+			var thisParentOrgNode *OrganizationNode
+			for _, o := range *tnp {
+				if o.ID == pOrg.ID {
+					thisParentOrgNode = o
+					break
+				}
+			}
+			if thisParentOrgNode == nil {
+				thisParentOrgNode = &OrganizationNode{
+					ID:   pOrg.ID,
+					Name: pOrg.ID,
+				}
+				*tnp = append(*tnp, thisParentOrgNode)
+			}
+			if thisParentOrgNode.ID == org.ID {
+				thisParentOrgNode.Position = org.Position
+				thisParentOrgNode.Name = org.Name
+			}
+			tnp = &thisParentOrgNode.Children
+		}
+	}
+
+	return sortOrganizationTrees(*treeNodesP)
 }
 
 func MapOrganization(o *people.Organization) *Organization {

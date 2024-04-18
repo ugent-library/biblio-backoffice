@@ -70,6 +70,14 @@ var resetCmd = &cobra.Command{
 			return err
 		}
 
+		if err := services.PeopleRepo.DeleteAllPeople(ctx); err != nil {
+			return err
+		}
+
+		if err := services.PeopleRepo.DeleteAllOrganizations(ctx); err != nil {
+			return err
+		}
+
 		return nil
 	},
 }
