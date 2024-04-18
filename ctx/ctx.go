@@ -72,11 +72,23 @@ func Set(config Config) func(http.Handler) http.Handler {
 				return
 			}
 			user, err := c.getUserFromSession(r, session, UserIDKey)
+			if errors.Is(err, models.ErrNotFound) {
+				if err := c.clearSession(session, r, w); err != nil {
+					c.HandleError(w, r, fmt.Errorf("unable to clear session: %w", err))
+					return
+				}
+			}
 			if err != nil {
 				c.HandleError(w, r, fmt.Errorf("could not get user from session: %w", err))
 				return
 			}
 			originalUser, err := c.getUserFromSession(r, session, OriginalUserIDKey)
+			if errors.Is(err, models.ErrNotFound) {
+				if err := c.clearSession(session, r, w); err != nil {
+					c.HandleError(w, r, fmt.Errorf("unable to clear session: %w", err))
+					return
+				}
+			}
 			if err != nil {
 				c.HandleError(w, r, fmt.Errorf("could not get original user from session: %w", err))
 				return
@@ -237,4 +249,12 @@ func (c *Ctx) getUserRoleFromSession(session *sessions.Session) string {
 		return ""
 	}
 	return role.(string)
+}
+
+func (c *Ctx) clearSession(session *sessions.Session, r *http.Request, w http.ResponseWriter) error {
+	delete(session.Values, UserIDKey)
+	delete(session.Values, OriginalUserIDKey)
+	delete(session.Values, OriginalUserRoleKey)
+	delete(session.Values, UserRoleKey)
+	return session.Save(r, w)
 }

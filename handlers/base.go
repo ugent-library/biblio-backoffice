@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -95,12 +96,20 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 	}
 
 	user, err := h.getUserFromSession(session, r, UserIDKey)
-	if err != nil {
+	if errors.Is(err, models.ErrNotFound) {
+		if err := h.clearSession(session, r, w); err != nil {
+			return BaseContext{}, err
+		}
+	} else if err != nil {
 		return BaseContext{}, fmt.Errorf("could not get user from session: %w", err)
 	}
 
 	originalUser, err := h.getUserFromSession(session, r, OriginalUserIDKey)
-	if err != nil {
+	if errors.Is(err, models.ErrNotFound) {
+		if err := h.clearSession(session, r, w); err != nil {
+			return BaseContext{}, err
+		}
+	} else if err != nil {
 		return BaseContext{}, fmt.Errorf("could not get original user from session: %w", err)
 	}
 
@@ -210,4 +219,12 @@ func (h BaseHandler) ActionError(w http.ResponseWriter, r *http.Request, ctx Bas
 	errMsg := fmt.Sprintf("[error: %s] %s", errID, msg)
 	h.Logger.Errorw(errMsg, "errors", err, "publication", ID, "user", ctx.User.ID)
 	h.ErrorModal(w, r, errID, ctx)
+}
+
+func (h BaseHandler) clearSession(session *sessions.Session, r *http.Request, w http.ResponseWriter) error {
+	delete(session.Values, UserIDKey)
+	delete(session.Values, OriginalUserIDKey)
+	delete(session.Values, OriginalUserRoleKey)
+	delete(session.Values, UserRoleKey)
+	return session.Save(r, w)
 }
