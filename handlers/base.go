@@ -189,7 +189,7 @@ func (h BaseHandler) getFlashFromCookies(r *http.Request, w http.ResponseWriter)
 	return flashes, nil
 }
 
-func (h BaseHandler) getUserFromSession(session *sessions.Session, r *http.Request, sessionKey string) (*models.Person, error) {
+func (h BaseHandler) getUserFromSession(session *sessions.Session, _ *http.Request, sessionKey string) (*models.Person, error) {
 	userID := session.Values[sessionKey]
 	if userID == nil {
 		return nil, nil
