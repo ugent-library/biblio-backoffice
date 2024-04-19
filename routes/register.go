@@ -319,7 +319,7 @@ func Register(c Config) {
 				r.Route("/publication/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetPublication(c.Services.Repo))
 
-          // delete
+					// delete
 					r.Get("/confirm-delete", publicationEditingHandler.ConfirmDelete).Name("publication_confirm_delete")
 					r.Delete("/", publicationEditingHandler.Delete).Name("publication_delete")
 
@@ -332,7 +332,7 @@ func Register(c Config) {
 					// publish
 					r.Get("/publish/confirm", publicationEditingHandler.ConfirmPublish).Name("publication_confirm_publish")
 					r.Post("/publish", publicationEditingHandler.Publish).Name("publication_publish")
-          
+
 					// withdraw
 					r.Get("/withdraw/confirm", publicationEditingHandler.ConfirmWithdraw).Name("publication_confirm_withdraw")
 					r.Post("/withdraw", publicationEditingHandler.Withdraw).Name("publication_withdraw")
@@ -369,7 +369,7 @@ func Register(c Config) {
 
 					// contributor actions
 					r.Get("/contributors/{role}/{position}/confirm-delete", datasetEditingHandler.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
-          
+
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
