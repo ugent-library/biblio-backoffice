@@ -9,6 +9,41 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
     cy.document().find("body").contains("h4", "Overview").click();
   const ACTION_HIT_ESCAPE_KEY = () => cy.document().find("body").type("{esc}");
 
+  before(() => {
+    cy.loginAsLibrarian();
+
+    cy.setUpPublication();
+    cy.visitPublication();
+    cy.updateFields(
+      "Publication details",
+      () => {
+        cy.setFieldByLabel(
+          "Publication year",
+          new Date().getFullYear().toString(),
+        );
+        cy.setFieldByLabel("Web of Science type", "dummy WoS type");
+      },
+      true,
+    );
+    cy.updateFields(
+      "Librarian tags",
+      () => {
+        cy.setFieldByLabel("Librarian tags", "dummy librarian tag");
+      },
+      true,
+    );
+
+    cy.setUpDataset();
+    cy.visitDataset();
+    cy.updateFields(
+      "Librarian tags",
+      () => {
+        cy.setFieldByLabel("Librarian tags", "dummy librarian tag");
+      },
+      true,
+    );
+  });
+
   describe("as researcher", () => {
     beforeEach(() => {
       cy.loginAsResearcher();
@@ -219,16 +254,17 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
 
     cy.get("@facetField").prop("value").as("facetValue", { type: "static" });
   }
+
+  function getRandomTextFieldValue() {
+    return Cypress._.chain([
+      "2024-03-02",
+      "2023",
+      "yesterday",
+      "today",
+      "tomorrow",
+    ])
+      .shuffle()
+      .first()
+      .value();
+  }
 });
-function getRandomTextFieldValue() {
-  return Cypress._.chain([
-    "2024-03-02",
-    "2023",
-    "yesterday",
-    "today",
-    "tomorrow",
-  ])
-    .shuffle()
-    .first()
-    .value();
-}

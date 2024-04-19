@@ -4,9 +4,11 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/okay"
 )
@@ -20,12 +22,11 @@ type YieldUpdateType struct {
 	Type string
 }
 
-func (h *Handler) ConfirmUpdateType(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) ConfirmUpdateType(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	// TODO validate type
-	render.Layout(w, "show_modal", "publication/confirm_update_type", YieldUpdateType{
-		Context: ctx,
-		Type:    r.URL.Query().Get("type"),
-	})
+	publication.ConfirmUpdateType(c, ctx.GetPublication(r), r.URL.Query().Get("type")).Render(r.Context(), w)
 }
 
 func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -38,14 +39,10 @@ func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, ctx Context
 
 	ctx.Publication.ChangeType(b.Type)
 
-	// TODO This breaks converting the record type.
-	//  e.g. moving from "conference" to "dissertation" is not possible. Dissertation requires a
-	//  a "supervisor". This block will revert the record back to conference. The "supervisors" table
-	//  won't become available and the user won't be able to set a supervisor, therefor being unable
-	//  to satisfy the validation rule. (circular logic)
 	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
 		form := detailsForm(ctx.User, ctx.Loc, ctx.Publication, validationErrs.(*okay.Errors))
 
+		// TODO: refactor to templ
 		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
 			Context: ctx,
 			Form:    form,
@@ -57,6 +54,7 @@ func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		// TODO: refactor to templ
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
 			Message: ctx.Loc.Get("publication.conflict_error_reload"),
 		})
