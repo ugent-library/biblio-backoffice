@@ -843,8 +843,8 @@ describe("Issue #1237: Accessibility and mark-up: make sure labels are clickable
       testFocusForLabel("First name", 'input[name="first_name"]', true);
       testFocusForLabel("Last name", 'input[name="last_name"]');
 
-      cy.setFieldByLabel("First name", "Dries");
-      cy.setFieldByLabel("Last name", "Moreels");
+      cy.setFieldByLabel("First name", "John");
+      cy.setFieldByLabel("Last name", "Doe");
 
       cy.contains(".btn", "Add author").click();
 
