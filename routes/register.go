@@ -336,6 +336,10 @@ func Register(c Config) {
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 
+					// delete
+					r.Get("/confirm-delete", datasetEditingHandler.ConfirmDelete).Name("dataset_confirm_delete")
+					r.Delete("/", datasetEditingHandler.Delete).Name("dataset_delete")
+
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
@@ -470,14 +474,6 @@ func Register(c Config) {
 		r.Post("/dataset/{id}/unlock",
 			datasetEditingHandler.Wrap(datasetEditingHandler.Unlock)).
 			Name("dataset_unlock")
-
-		// delete dataset
-		r.Get("/dataset/{id}/confirm-delete",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDelete)).
-			Name("dataset_confirm_delete")
-		r.Delete("/dataset/{id}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Delete)).
-			Name("dataset_delete")
 
 		// edit dataset activity
 		r.Get("/dataset/{id}/message/edit",
