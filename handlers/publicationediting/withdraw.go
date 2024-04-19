@@ -5,38 +5,38 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/okay"
 )
 
-type YieldWithdraw struct {
-	Context
-	RedirectURL string
+func (h *Handler) ConfirmWithdraw(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	redirectUrl := r.URL.Query().Get("redirect-url")
+
+	publication.ConfirmWithdraw(c, ctx.GetPublication(r), redirectUrl).Render(r.Context(), w)
 }
 
-func (h *Handler) ConfirmWithdraw(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "show_modal", "publication/confirm_withdraw", YieldWithdraw{
-		Context:     ctx,
-		RedirectURL: r.URL.Query().Get("redirect-url"),
-	})
-}
+func (h *Handler) Withdraw(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	publication := ctx.GetPublication(r)
 
-func (h *Handler) Withdraw(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanWithdrawPublication(ctx.Publication) {
-		h.Logger.Warnw("witdraw publication: user has no permission to withdraw", "user", ctx.User.ID, "publication", ctx.Publication.ID)
+	if !c.User.CanWithdrawPublication(publication) {
+		h.Logger.Warnw("witdraw publication: user has no permission to withdraw", "user", c.User.ID, "publication", publication.ID)
 		render.Forbidden(w, r)
 		return
 	}
 
-	ctx.Publication.Status = "returned"
+	publication.Status = "returned"
 
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(*okay.Errors)))
+	if validationErrs := publication.Validate(); validationErrs != nil {
+		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
 		render.Layout(w, "refresh_modal", "form_errors_dialog", struct {
 			Title  string
 			Errors form.Errors
@@ -47,19 +47,19 @@ func (h *Handler) Withdraw(w http.ResponseWriter, r *http.Request, ctx Context) 
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), publication, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message:     ctx.Loc.Get("publication.conflict_error"),
+			Message:     c.Loc.Get("publication.conflict_error"),
 			RedirectURL: r.URL.Query().Get("redirect-url"),
 		})
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("withdraw publication: could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		h.Logger.Errorf("withdraw publication: could not save the publication:", "error", err, "publication", publication.ID, "user", c.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

@@ -68,7 +68,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
 
         cy.contains(".btn", "Add author").click();
       },
-      /^Save$/,
+      true,
     );
 
     cy.contains(".btn", "Complete Description").click();
@@ -156,7 +156,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
 
         cy.contains(".btn", "Add creator").click();
       },
-      /^Save$/,
+      true,
     );
 
     cy.contains(".btn", "Complete Description").click();
