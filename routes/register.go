@@ -345,6 +345,9 @@ func Register(c Config) {
 						r.Use(ctx.RequireCurator)
 					})
 				})
+
+				// media types
+				r.Get("/media_type/suggestions", mediaTypesHandler.Suggest).Name("suggest_media_types")
 			})
 		})
 		// END NEW STYLE HANDLERS
@@ -965,10 +968,5 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/files/{file_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteFile)).
 			Name("publication_delete_file")
-
-		// media types
-		r.Get("/media_type/suggestions",
-			mediaTypesHandler.Wrap(mediaTypesHandler.Suggest)).
-			Name("suggest_media_types")
 	})
 }
