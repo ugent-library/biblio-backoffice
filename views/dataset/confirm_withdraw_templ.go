@@ -11,6 +11,7 @@ import "io"
 import "bytes"
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -47,7 +48,7 @@ func ConfirmWithdraw(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) te
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(views.ToJSON("If-Match", dataset.SnapshotID)))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -43,7 +43,7 @@ func Suggest(c *ctx.Ctx, query string, hits []models.Completion) templ.Component
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("suggest_custom_data_format"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `media_types/suggest.templ`, Line: 12, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `media_types/suggest.templ`, Line: 12, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -56,7 +56,7 @@ func Suggest(c *ctx.Ctx, query string, hits []models.Completion) templ.Component
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(query)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `media_types/suggest.templ`, Line: 12, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `media_types/suggest.templ`, Line: 12, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -82,7 +82,7 @@ func Suggest(c *ctx.Ctx, query string, hits []models.Completion) templ.Component
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(hit.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `media_types/suggest.templ`, Line: 17, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `media_types/suggest.templ`, Line: 17, Col: 13}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -100,7 +100,7 @@ func Suggest(c *ctx.Ctx, query string, hits []models.Completion) templ.Component
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(hit.Description)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `media_types/suggest.templ`, Line: 19, Col: 38}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `media_types/suggest.templ`, Line: 19, Col: 24}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -118,7 +118,7 @@ func Suggest(c *ctx.Ctx, query string, hits []models.Completion) templ.Component
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(hit.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `media_types/suggest.templ`, Line: 21, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `media_types/suggest.templ`, Line: 21, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

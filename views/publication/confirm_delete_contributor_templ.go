@@ -11,6 +11,7 @@ import "io"
 import "bytes"
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -43,7 +44,7 @@ func ConfirmDeleteContributor(c *ctx.Ctx, publication *models.Publication, role 
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.contributor.role." + role))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/confirm_delete_contributor.templ`, Line: 17, Col: 111}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/confirm_delete_contributor.templ`, Line: 18, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -61,7 +62,7 @@ func ConfirmDeleteContributor(c *ctx.Ctx, publication *models.Publication, role 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(views.ToJSON("If-Match", publication.SnapshotID)))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

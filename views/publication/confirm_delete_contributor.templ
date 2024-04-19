@@ -1,37 +1,39 @@
 package publication
 
 import (
+	"fmt"
 	"strconv"
-    "github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 )
 
 templ ConfirmDeleteContributor(c *ctx.Ctx, publication *models.Publication, role string, position int) {
-    @views.ShowModalLayout(c, nil) {
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">Are you sure?</h2>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to remove this { c.Loc.Get("publication.contributor.role." + role) }?</p>
-                </div>
-                <div class="modal-footer">
-                    <div class="bc-toolbar">
-                        <div class="bc-toolbar-left">
-                            <button class="btn btn-link modal-close">Cancel</button>
-                        </div>
-                        <div class="bc-toolbar-right">
-                            <button class="btn btn-danger"
-                                hx-delete={ c.PathTo("publication_delete_contributor", "id", publication.ID, "role", role, "position", strconv.Itoa(position)).String() }
-                                hx-headers={ views.ToJSON("If-Match", publication.SnapshotID) }
-                                hx-swap="none"
-                            >Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
+	@views.ShowModalLayout(c, nil) {
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2 class="modal-title">Are you sure?</h2>
+				</div>
+				<div class="modal-body">
+					<p>Are you sure you want to remove this { c.Loc.Get("publication.contributor.role." + role) }?</p>
+				</div>
+				<div class="modal-footer">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<button class="btn btn-link modal-close">Cancel</button>
+						</div>
+						<div class="bc-toolbar-right">
+							<button
+								class="btn btn-danger"
+								hx-delete={ c.PathTo("publication_delete_contributor", "id", publication.ID, "role", role, "position", strconv.Itoa(position)).String() }
+								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
+								hx-swap="none"
+							>Delete</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
 }

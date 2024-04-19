@@ -1,27 +1,27 @@
 package media_types
 
-import  (
-    "github.com/ugent-library/biblio-backoffice/ctx"
-    "github.com/ugent-library/biblio-backoffice/models"
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 templ Suggest(c *ctx.Ctx, query string, hits []models.Completion) {
-    <div class="card">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center autocomplete-hit" data-value={ query }>
-                <span>
-                    { c.Loc.Get("suggest_custom_data_format") } &#34;<b>{ query }</b>&#34;
-                </span>
-            </li>
-            for _, hit := range hits {
-            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center autocomplete-hit" data-value={ hit.ID }>
-                { hit.ID }
-                if hit.Description != "" {                
-                    ({ hit.Description })
-                }
-                <span class="badge rounded-pill badge-default">{ hit.ID }</span>
-            </li>
-            }
-        </ul>
-    </div>
+	<div class="card">
+		<ul class="list-group list-group-flush">
+			<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center autocomplete-hit" data-value={ query }>
+				<span>
+					{ c.Loc.Get("suggest_custom_data_format") } &#34;<b>{ query }</b>&#34;
+				</span>
+			</li>
+			for _, hit := range hits {
+				<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center autocomplete-hit" data-value={ hit.ID }>
+					{ hit.ID }
+					if hit.Description != "" {
+						({ hit.Description })
+					}
+					<span class="badge rounded-pill badge-default">{ hit.ID }</span>
+				</li>
+			}
+		</ul>
+	</div>
 }

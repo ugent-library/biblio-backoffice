@@ -11,6 +11,7 @@ import "io"
 import "bytes"
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -43,7 +44,7 @@ func ConfirmDeleteContributor(c *ctx.Ctx, dataset *models.Dataset, role string, 
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.contributor.role." + role))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/confirm_delete_contributor.templ`, Line: 17, Col: 110}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/confirm_delete_contributor.templ`, Line: 18, Col: 95}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -61,7 +62,7 @@ func ConfirmDeleteContributor(c *ctx.Ctx, dataset *models.Dataset, role string, 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(views.ToJSON("If-Match", dataset.SnapshotID)))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
