@@ -319,7 +319,11 @@ func Register(c Config) {
 				r.Route("/publication/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetPublication(c.Services.Repo))
 
-					// edit publication type
+					// delete
+					r.Get("/confirm-delete", publicationEditingHandler.ConfirmDelete).Name("publication_confirm_delete")
+					r.Delete("/", publicationEditingHandler.Delete).Name("publication_delete")
+
+          // edit publication type
 					r.Get("/type/confirm", publicationEditingHandler.ConfirmUpdateType).Name("publication_confirm_update_type")
 
 					// curator actions
@@ -745,14 +749,6 @@ func Register(c Config) {
 		r.Post("/publication/{id}/unlock",
 			publicationEditingHandler.Wrap(publicationEditingHandler.Unlock)).
 			Name("publication_unlock")
-
-		// delete publication
-		r.Get("/publication/{id}/confirm-delete",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDelete)).
-			Name("publication_confirm_delete")
-		r.Delete("/publication/{id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.Delete)).
-			Name("publication_delete")
 
 		// edit publication activity
 		r.Get("/publication/{id}/message/edit",
