@@ -6,11 +6,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views/dataset"
 )
 
 type YieldConfirmDelete struct {
@@ -19,35 +21,37 @@ type YieldConfirmDelete struct {
 	RedirectURL string
 }
 
-func (h *Handler) ConfirmDelete(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "show_modal", "dataset/confirm_delete", YieldConfirmDelete{
-		Context:     ctx,
-		Dataset:     ctx.Dataset,
-		RedirectURL: r.URL.Query().Get("redirect-url"),
-	})
+func (h *Handler) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	dataset.ConfirmDelete(c, ctx.GetDataset(r), r.URL.Query().Get("redirect-url")).Render(r.Context(), w)
 }
 
-func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanDeleteDataset(ctx.Dataset) {
-		h.Logger.Warnw("delete dataset: user isn't allowed to delete dataset", "dataset", ctx.Dataset.ID, "user", ctx.User.ID, "user", ctx.User.ID)
+func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
+	if !c.User.CanDeleteDataset(dataset) {
+		h.Logger.Warnw("delete dataset: user isn't allowed to delete dataset", "dataset", dataset.ID, "user", c.User.ID, "user", c.User.ID)
 		render.Forbidden(w, r)
 		return
 	}
 
-	ctx.Dataset.Status = "deleted"
+	dataset.Status = "deleted"
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), dataset, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		// TODO: refactor to templ
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
+			Message: c.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete dataset: Could not save the dataset:", "error", err, "identifier", ctx.Dataset.ID, "user", ctx.User.ID)
+		h.Logger.Errorf("delete dataset: Could not save the dataset:", "error", err, "identifier", dataset.ID, "user", c.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
