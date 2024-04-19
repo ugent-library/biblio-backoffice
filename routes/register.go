@@ -32,6 +32,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationexporting"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/httpx"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
@@ -101,6 +102,10 @@ func Register(c Config) {
 		UserService:     c.Services.UserService,
 		BaseURL:         c.BaseURL,
 		FrontendBaseUrl: c.FrontendURL,
+	}
+	baseHandler.ErrorHandlers = map[error]func(http.ResponseWriter, *http.Request, handlers.BaseContext){
+		models.ErrNotFound:     baseHandler.NotFound,
+		models.ErrUserNotFound: baseHandler.UserNotFound,
 	}
 	authenticatingHandler := &authenticating.Handler{
 		BaseHandler:   baseHandler,
@@ -247,9 +252,13 @@ func Register(c Config) {
 				Timezone: c.Timezone,
 				Loc:      c.Loc,
 				Env:      c.Env,
-				ErrorHandlers: map[int]http.HandlerFunc{
+				StatusErrorHandlers: map[int]http.HandlerFunc{
 					http.StatusNotFound:            handlers.NotFound,
 					http.StatusInternalServerError: handlers.InternalServerError,
+				},
+				ErrorHandlers: map[error]http.HandlerFunc{
+					models.ErrUserNotFound: handlers.UserNotFound,
+					models.ErrNotFound:     handlers.NotFound,
 				},
 				SessionName:  c.SessionName,
 				SessionStore: c.SessionStore,
