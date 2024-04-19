@@ -509,8 +509,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.updateFields(
           "Authors",
           () => {
+            cy.intercept("/publication/*/contributors/author/suggestions?*").as(
+              "suggestContributor",
+            );
+
             cy.setFieldByLabel("First name", "Jane");
+            cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
+            cy.wait("@suggestContributor");
 
             cy.contains(".btn", "Add external author").click();
           },
@@ -542,16 +548,20 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.updateFields(
           "Authors",
           () => {
+            cy.intercept("/publication/*/contributors/author/suggestions?*").as(
+              "suggestContributor",
+            );
+
             cy.setFieldByLabel("First name", "Jane");
+            cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
+            cy.wait("@suggestContributor");
             cy.contains(".btn", "Add external author").click();
           },
           true,
         );
 
-        cy.contains("#authors tr", "Dries Moreels")
-          .find(".btn .if-delete")
-          .click();
+        cy.contains("#authors tr", "John Doe").find(".btn .if-delete").click();
         cy.ensureModal("Are you sure?").closeModal("Delete");
 
         cy.ensureModal(
@@ -571,8 +581,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.updateFields(
           "Editors",
           () => {
+            cy.intercept("/publication/*/contributors/editor/suggestions?*").as(
+              "suggestContributor",
+            );
+
             cy.setFieldByLabel("First name", "Jane");
+            cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
+            cy.wait("@suggestContributor");
 
             cy.contains(".btn", "Add external editor").click();
           },
@@ -600,8 +616,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.updateFields(
           "Supervisors",
           () => {
+            cy.intercept(
+              "/publication/*/contributors/supervisor/suggestions?*",
+            ).as("suggestContributor");
+
             cy.setFieldByLabel("First name", "Jane");
+            cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
+            cy.wait("@suggestContributor");
 
             cy.contains(".btn", "Add external supervisor").click();
           },
@@ -633,20 +655,12 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.get("#departments").contains(".btn", "Add department").click();
 
         cy.ensureModal("Select departments").within(() => {
-          cy.getLabel("Search").next("input").type("LW");
+          cy.intercept("/publication/*/departments/suggestions?*").as(
+            "suggestDepartment",
+          );
 
-          cy.contains(".btn", "Add department").click();
-        });
-        cy.ensureNoModal();
-
-        cy.get("#departments-body .list-group-item-text h4")
-          .map("textContent")
-          .should("have.ordered.members", ["Faculty of Arts and Philosophy"]);
-
-        cy.get("#departments").contains(".btn", "Add department").click();
-
-        cy.ensureModal("Select departments").within(() => {
-          cy.getLabel("Search").next("input").type("DI");
+          cy.getLabel("Search").next("input").type("LW17");
+          cy.wait("@suggestDepartment");
 
           cy.contains(".btn", "Add department").click();
         });
@@ -655,11 +669,30 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.get("#departments-body .list-group-item-text h4")
           .map("textContent")
           .should("have.ordered.members", [
-            "Faculty of Arts and Philosophy",
-            "Faculty of Veterinary Medicine",
+            "Department of Art, music and theatre sciences",
           ]);
 
-        cy.contains("#departments-body tr", "Faculty of Arts and Philosophy")
+        cy.get("#departments").contains(".btn", "Add department").click();
+
+        cy.ensureModal("Select departments").within(() => {
+          cy.getLabel("Search").next("input").type("DI62");
+          cy.wait("@suggestDepartment");
+
+          cy.contains(".btn", "Add department").click();
+        });
+        cy.ensureNoModal();
+
+        cy.get("#departments-body .list-group-item-text h4")
+          .map("textContent")
+          .should("have.ordered.members", [
+            "Department of Art, music and theatre sciences",
+            "Biocenter AgriVet",
+          ]);
+
+        cy.contains(
+          "#departments-body tr",
+          "Department of Art, music and theatre sciences",
+        )
           .find(".if-more")
           .click();
         cy.contains(".dropdown-item", "Remove from publication").click();
@@ -669,7 +702,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.get("#departments-body .list-group-item-text h4")
           .map("textContent")
-          .should("have.ordered.members", ["Faculty of Veterinary Medicine"]);
+          .should("have.ordered.members", ["Biocenter AgriVet"]);
       });
 
       it("should be possible to add and edit Biblio message", () => {
@@ -1030,8 +1063,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.updateFields(
           "Creators",
           () => {
+            cy.intercept("/dataset/*/contributors/author/suggestions?*").as(
+              "suggestContributor",
+            );
+
             cy.setFieldByLabel("First name", "Jane");
+            cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
+            cy.wait("@suggestContributor");
 
             cy.contains(".btn", "Add external creator").click();
           },
@@ -1063,16 +1102,20 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.updateFields(
           "Creators",
           () => {
+            cy.intercept("/dataset/*/contributors/author/suggestions?*").as(
+              "suggestContributor",
+            );
+
             cy.setFieldByLabel("First name", "Jane");
+            cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
+            cy.wait("@suggestContributor");
             cy.contains(".btn", "Add external creator").click();
           },
           true,
         );
 
-        cy.contains("#authors tr", "Dries Moreels")
-          .find(".btn .if-delete")
-          .click();
+        cy.contains("#authors tr", "John Doe").find(".btn .if-delete").click();
         cy.ensureModal("Are you sure?").closeModal("Delete");
 
         cy.ensureModal(
@@ -1091,20 +1134,12 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.get("#departments").contains(".btn", "Add department").click();
 
         cy.ensureModal("Select departments").within(() => {
-          cy.getLabel("Search").next("input").type("LW");
+          cy.intercept("/dataset/*/departments/suggestions?*").as(
+            "suggestDepartment",
+          );
 
-          cy.contains(".btn", "Add department").click();
-        });
-        cy.ensureNoModal();
-
-        cy.get("#departments-body .list-group-item-text h4")
-          .map("textContent")
-          .should("have.ordered.members", ["Faculty of Arts and Philosophy"]);
-
-        cy.get("#departments").contains(".btn", "Add department").click();
-
-        cy.ensureModal("Select departments").within(() => {
-          cy.getLabel("Search").next("input").type("DI");
+          cy.getLabel("Search").next("input").type("LW17");
+          cy.wait("@suggestDepartment");
 
           cy.contains(".btn", "Add department").click();
         });
@@ -1113,11 +1148,30 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.get("#departments-body .list-group-item-text h4")
           .map("textContent")
           .should("have.ordered.members", [
-            "Faculty of Arts and Philosophy",
-            "Faculty of Veterinary Medicine",
+            "Department of Art, music and theatre sciences",
           ]);
 
-        cy.contains("#departments-body tr", "Faculty of Arts and Philosophy")
+        cy.get("#departments").contains(".btn", "Add department").click();
+
+        cy.ensureModal("Select departments").within(() => {
+          cy.getLabel("Search").next("input").type("DI62");
+          cy.wait("@suggestDepartment");
+
+          cy.contains(".btn", "Add department").click();
+        });
+        cy.ensureNoModal();
+
+        cy.get("#departments-body .list-group-item-text h4")
+          .map("textContent")
+          .should("have.ordered.members", [
+            "Department of Art, music and theatre sciences",
+            "Biocenter AgriVet",
+          ]);
+
+        cy.contains(
+          "#departments-body tr",
+          "Department of Art, music and theatre sciences",
+        )
           .find(".if-more")
           .click();
         cy.contains(".dropdown-item", "Remove from dataset").click();
@@ -1127,7 +1181,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.get("#departments-body .list-group-item-text h4")
           .map("textContent")
-          .should("have.ordered.members", ["Faculty of Veterinary Medicine"]);
+          .should("have.ordered.members", ["Biocenter AgriVet"]);
       });
 
       it("should be possible to add and edit Biblio message", () => {
@@ -1336,7 +1390,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .should("contains.text", "application/vnd.google-earth.kmz")
           .parent()
           .prop("innerText")
-          .should("contain", "application/vnd.google-earth.kmz");
+          .should("contain", "application/vnd.google-earth.kmz")
+          .should("not.contain", "(")
+          .should("not.contain", ")");
 
         cy.get("@items")
           .eq(2)

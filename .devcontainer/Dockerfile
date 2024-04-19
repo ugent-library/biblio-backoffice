@@ -24,17 +24,17 @@ RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && cat /etc/motd' \
 \n\
 Here are some useful commands to get you started:\n\
 \n\
+Purge all data from the database (publications/datasets only):\n\
+    go run main.go reset --force\n\
+\n\
+Seed the app with dummy organizations:\n\
+    go run main.go seed organizations < .devcontainer/people/organizations.json\n\
+\n\
+Seed the app with dummy people:\n\
+    go run main.go seed people < .devcontainer/people/people.json\n\
+\n\
 Start the app:\n\
     reflex -d none -c reflex.docker.conf\n\
-\n\
-Seed the app with dummy data:\n\
-    go run main.go seed\n\
-\n\
-If you already have data in the database, you can force seeding:\n\
-    go run main.go seed --force\n\
-\n\
-Purge all data from the database:\n\
-    go run main.go reset --force\n\
 \n\
 Happy hacking!\n"\
     > /etc/motd
