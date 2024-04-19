@@ -1,0 +1,36 @@
+package publication
+
+import (
+    "github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+)
+
+templ ConfirmWithdraw(c *ctx.Ctx, publication *models.Publication, redirectURL string) {
+    @views.ShowModalLayout(c, nil) {
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Are you sure?</h2>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to withdraw this publication from Biblio?</p>
+                </div>
+                <div class="modal-footer">
+                    <div class="bc-toolbar">
+                        <div class="bc-toolbar-left">
+                            <button class="btn btn-link modal-close">Cancel</button>
+                        </div>
+                        <div class="bc-toolbar-right">
+                            <button class="btn btn-danger"
+                                hx-post={ c.PathTo("publication_withdraw", "id", publication.ID,"redirect-url", redirectURL).String() }
+                                hx-headers={ views.ToJSON("If-Match", publication.SnapshotID) }
+                                hx-swap="none"
+                            >Withdraw</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

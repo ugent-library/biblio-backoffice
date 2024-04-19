@@ -319,7 +319,7 @@ func Register(c Config) {
 				r.Route("/publication/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetPublication(c.Services.Repo))
 
-					// delete
+          // delete
 					r.Get("/confirm-delete", publicationEditingHandler.ConfirmDelete).Name("publication_confirm_delete")
 					r.Delete("/", publicationEditingHandler.Delete).Name("publication_delete")
 
@@ -333,6 +333,10 @@ func Register(c Config) {
 					r.Get("/publish/confirm", publicationEditingHandler.ConfirmPublish).Name("publication_confirm_publish")
 					r.Post("/publish", publicationEditingHandler.Publish).Name("publication_publish")
           
+					// withdraw
+					r.Get("/withdraw/confirm", publicationEditingHandler.ConfirmWithdraw).Name("publication_confirm_withdraw")
+					r.Post("/withdraw", publicationEditingHandler.Withdraw).Name("publication_withdraw")
+
 					// re-publish
 					r.Get("/republish/confirm", publicationEditingHandler.ConfirmRepublish).Name("publication_confirm_republish")
 					r.Post("/republish", publicationEditingHandler.Republish).Name("publication_republish")
@@ -715,14 +719,6 @@ func Register(c Config) {
 		r.Get("/publication/{id}/files/{file_id}",
 			publicationViewingHandler.Wrap(publicationViewingHandler.DownloadFile)).
 			Name("publication_download_file")
-
-		// withdraw publication
-		r.Get("/publication/{id}/withdraw/confirm",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmWithdraw)).
-			Name("publication_confirm_withdraw")
-		r.Post("/publication/{id}/withdraw",
-			publicationEditingHandler.Wrap(publicationEditingHandler.Withdraw)).
-			Name("publication_withdraw")
 
 		// lock publication
 		r.Post("/publication/{id}/lock",
