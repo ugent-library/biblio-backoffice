@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/okay"
 )
@@ -603,19 +605,17 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	})
 }
 
-func (h *Handler) ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	b := BindDeleteContributor{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("confirm delete publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+		h.Logger.Warnw("confirm delete publication contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	render.Layout(w, "show_modal", "publication/confirm_delete_contributor", YieldDeleteContributor{
-		Context:  ctx,
-		Role:     b.Role,
-		Position: b.Position,
-	})
+	publication.ConfirmDeleteContributor(c, ctx.GetPublication(r), b.Role, b.Position).Render(r.Context(), w)
 }
 
 func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx Context) {

@@ -230,6 +230,7 @@ func Register(c Config) {
 		r.Get("/frontoffice/dataset", frontofficeHandler.GetAllDatasets)
 		r.Get("/frontoffice/organization/{id}", frontofficeHandler.GetOrganization)
 		r.Get("/frontoffice/organization", frontofficeHandler.GetAllOrganizations)
+		r.Get("/frontoffice/organization-trees", frontofficeHandler.GetAllOrganizationTrees)
 		r.Get("/frontoffice/user/{id}", frontofficeHandler.GetUser)
 		r.Get("/frontoffice/user/username/{username}", frontofficeHandler.GetUserByUsername)
 		r.Get("/frontoffice/person/{id}", frontofficeHandler.GetPerson)
@@ -238,6 +239,7 @@ func Register(c Config) {
 		r.Get("/frontoffice/project/{id}", frontofficeHandler.GetProject)
 		r.Get("/frontoffice/project/browse", frontofficeHandler.BrowseProjects)
 	})
+
 	// frontoffice file download
 	c.Router.Get("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
 	c.Router.Head("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
@@ -317,9 +319,27 @@ func Register(c Config) {
 				r.Route("/publication/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetPublication(c.Services.Repo))
 
+          // delete
+					r.Get("/confirm-delete", publicationEditingHandler.ConfirmDelete).Name("publication_confirm_delete")
+					r.Delete("/", publicationEditingHandler.Delete).Name("publication_delete")
+
+					// edit publication type
+					r.Get("/type/confirm", publicationEditingHandler.ConfirmUpdateType).Name("publication_confirm_update_type")
+
+					// contributor actions
+					r.Get("/contributors/{role}/{position}/confirm-delete", publicationEditingHandler.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
+
+					// publish
+					r.Get("/publish/confirm", publicationEditingHandler.ConfirmPublish).Name("publication_confirm_publish")
+					r.Post("/publish", publicationEditingHandler.Publish).Name("publication_publish")
+          
 					// withdraw
 					r.Get("/withdraw/confirm", publicationEditingHandler.ConfirmWithdraw).Name("publication_confirm_withdraw")
 					r.Post("/withdraw", publicationEditingHandler.Withdraw).Name("publication_withdraw")
+
+					// re-publish
+					r.Get("/republish/confirm", publicationEditingHandler.ConfirmRepublish).Name("publication_confirm_republish")
+					r.Post("/republish", publicationEditingHandler.Republish).Name("publication_republish")
 
 					// curator actions
 					r.Group(func(r *ich.Mux) {
@@ -331,11 +351,33 @@ func Register(c Config) {
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 
+					// delete
+					r.Get("/confirm-delete", datasetEditingHandler.ConfirmDelete).Name("dataset_confirm_delete")
+					r.Delete("/", datasetEditingHandler.Delete).Name("dataset_delete")
+
+					// publish
+					r.Get("/publish/confirm", datasetEditingHandler.ConfirmPublish).Name("dataset_confirm_publish")
+					r.Post("/publish", datasetEditingHandler.Publish).Name("dataset_publish")
+
+					// withdraw
+					r.Get("/withdraw/confirm", datasetEditingHandler.ConfirmWithdraw).Name("dataset_confirm_withdraw")
+					r.Post("/withdraw", datasetEditingHandler.Withdraw).Name("dataset_withdraw")
+
+					// re-publish
+					r.Get("/republish/confirm", datasetEditingHandler.ConfirmRepublish).Name("dataset_confirm_republish")
+					r.Post("/republish", datasetEditingHandler.Republish).Name("dataset_republish")
+
+					// contributor actions
+					r.Get("/contributors/{role}/{position}/confirm-delete", datasetEditingHandler.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
+          
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
 					})
 				})
+
+				// media types
+				r.Get("/media_type/suggestions", mediaTypesHandler.Suggest).Name("suggest_media_types")
 			})
 		})
 		// END NEW STYLE HANDLERS
@@ -434,30 +476,6 @@ func Register(c Config) {
 			datasetViewingHandler.Wrap(datasetViewingHandler.ShowActivity)).
 			Name("dataset_activity")
 
-		// publish dataset
-		r.Get("/dataset/{id}/publish/confirm",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmPublish)).
-			Name("dataset_confirm_publish")
-		r.Post("/dataset/{id}/publish",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Publish)).
-			Name("dataset_publish")
-
-		// withdraw dataset
-		r.Get("/dataset/{id}/publish/withdraw",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmWithdraw)).
-			Name("dataset_confirm_withdraw")
-		r.Post("/dataset/{id}/withdraw",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Withdraw)).
-			Name("dataset_withdraw")
-
-		// re-publish dataset
-		r.Get("/dataset/{id}/republish/confirm",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmRepublish)).
-			Name("dataset_confirm_republish")
-		r.Post("/dataset/{id}/republish",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Republish)).
-			Name("dataset_republish")
-
 		// lock dataset
 		r.Post("/dataset/{id}/lock",
 			datasetEditingHandler.Wrap(datasetEditingHandler.Lock)).
@@ -465,14 +483,6 @@ func Register(c Config) {
 		r.Post("/dataset/{id}/unlock",
 			datasetEditingHandler.Wrap(datasetEditingHandler.Unlock)).
 			Name("dataset_unlock")
-
-		// delete dataset
-		r.Get("/dataset/{id}/confirm-delete",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDelete)).
-			Name("dataset_confirm_delete")
-		r.Delete("/dataset/{id}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Delete)).
-			Name("dataset_delete")
 
 		// edit dataset activity
 		r.Get("/dataset/{id}/message/edit",
@@ -624,9 +634,6 @@ func Register(c Config) {
 		r.Put("/dataset/{id}/contributors/{role}/{position}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateContributor)).
 			Name("dataset_update_contributor")
-		r.Get("/dataset/{id}/contributors/{role}/{position}/confirm-delete",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteContributor)).
-			Name("dataset_confirm_delete_contributor")
 		r.Delete("/dataset/{id}/contributors/{role}/{position}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteContributor)).
 			Name("dataset_delete_contributor")
@@ -713,22 +720,6 @@ func Register(c Config) {
 			publicationViewingHandler.Wrap(publicationViewingHandler.DownloadFile)).
 			Name("publication_download_file")
 
-		// publish publication
-		r.Get("/publication/{id}/publish/confirm",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmPublish)).
-			Name("publication_confirm_publish")
-		r.Post("/publication/{id}/publish",
-			publicationEditingHandler.Wrap(publicationEditingHandler.Publish)).
-			Name("publication_publish")
-
-		// re-publish publication
-		r.Get("/publication/{id}/republish/confirm",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmRepublish)).
-			Name("publication_confirm_republish")
-		r.Post("/publication/{id}/republish",
-			publicationEditingHandler.Wrap(publicationEditingHandler.Republish)).
-			Name("publication_republish")
-
 		// lock publication
 		r.Post("/publication/{id}/lock",
 			publicationEditingHandler.Wrap(publicationEditingHandler.Lock)).
@@ -736,14 +727,6 @@ func Register(c Config) {
 		r.Post("/publication/{id}/unlock",
 			publicationEditingHandler.Wrap(publicationEditingHandler.Unlock)).
 			Name("publication_unlock")
-
-		// delete publication
-		r.Get("/publication/{id}/confirm-delete",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDelete)).
-			Name("publication_confirm_delete")
-		r.Delete("/publication/{id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.Delete)).
-			Name("publication_delete")
 
 		// edit publication activity
 		r.Get("/publication/{id}/message/edit",
@@ -774,9 +757,6 @@ func Register(c Config) {
 			Name("publication_update_details")
 
 		// edit publication type
-		r.Get("/publication/{id}/type/confirm",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateType)).
-			Name("publication_confirm_update_type")
 		r.Put("/publication/{id}/type",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateType)).
 			Name("publication_update_type")
@@ -938,9 +918,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/contributors/{role}/{position}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateContributor)).
 			Name("publication_update_contributor")
-		r.Get("/publication/{id}/contributors/{role}/{position}/confirm-delete",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteContributor)).
-			Name("publication_confirm_delete_contributor")
 		r.Delete("/publication/{id}/contributors/{role}/{position}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteContributor)).
 			Name("publication_delete_contributor")
@@ -967,10 +944,5 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/files/{file_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteFile)).
 			Name("publication_delete_file")
-
-		// media types
-		r.Get("/media_type/suggestions",
-			mediaTypesHandler.Wrap(mediaTypesHandler.Suggest)).
-			Name("suggest_media_types")
 	})
 }

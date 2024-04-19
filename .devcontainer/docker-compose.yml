@@ -10,6 +10,8 @@ services:
     volumes:
       - ../..:/src:cached
       - ./tmp/files:/data/files:cached
+    depends_on:
+      - db-app
     command: 
       - bash
       - -c
@@ -74,6 +76,31 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+
+  #  es:
+  #    image: elyalvarado/elasticsearch-arm64:6.8.16
+  #    environment:
+  #      - http.host=0.0.0.0
+  #      - http.port=3061
+  #      - ES_JAVA_OPTS=-Xmx512m -Xms512m -server
+  #      - discovery.type=single-node
+  #      - xpack.ml.enabled=false
+  #      - bootstrap.system_call_filter=false
+  #    volumes:
+  #      - ../tmp/backoffice/es_data:/usr/share/elasticsearch/data
+  #    ulimits:
+  #      nofile:
+  #        soft: 65536
+  #        hard: 65536
+  #    command: >
+  #        /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-icu
+  #        || ./bin/elasticsearch-plugin install https://artifacts.elastic.co/downloads/elasticsearch-plugins/analysis-icu/analysis-icu-6.8.16.zip;
+  #        /usr/local/bin/docker-entrypoint.sh"
+  #    healthcheck:
+  #      test: curl -s -f es:9200/_cat/health >/dev/null || exit 1
+  #      interval: 10s
+  #      timeout: 5s
+  #      retries: 5
 
 volumes:
   biblio-backoffice-esdata:
