@@ -351,6 +351,14 @@ func Register(c Config) {
 					r.Get("/confirm-delete", datasetEditingHandler.ConfirmDelete).Name("dataset_confirm_delete")
 					r.Delete("/", datasetEditingHandler.Delete).Name("dataset_delete")
 
+					// publish
+					r.Get("/publish/confirm", datasetEditingHandler.ConfirmPublish).Name("dataset_confirm_publish")
+					r.Post("/publish", datasetEditingHandler.Publish).Name("dataset_publish")
+
+					// re-publish
+					r.Get("/republish/confirm", datasetEditingHandler.ConfirmRepublish).Name("dataset_confirm_republish")
+					r.Post("/republish", datasetEditingHandler.Republish).Name("dataset_republish")
+
 					// contributor actions
 					r.Get("/contributors/{role}/{position}/confirm-delete", datasetEditingHandler.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
           
@@ -460,14 +468,6 @@ func Register(c Config) {
 			datasetViewingHandler.Wrap(datasetViewingHandler.ShowActivity)).
 			Name("dataset_activity")
 
-		// publish dataset
-		r.Get("/dataset/{id}/publish/confirm",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmPublish)).
-			Name("dataset_confirm_publish")
-		r.Post("/dataset/{id}/publish",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Publish)).
-			Name("dataset_publish")
-
 		// withdraw dataset
 		r.Get("/dataset/{id}/publish/withdraw",
 			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmWithdraw)).
@@ -475,14 +475,6 @@ func Register(c Config) {
 		r.Post("/dataset/{id}/withdraw",
 			datasetEditingHandler.Wrap(datasetEditingHandler.Withdraw)).
 			Name("dataset_withdraw")
-
-		// re-publish dataset
-		r.Get("/dataset/{id}/republish/confirm",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmRepublish)).
-			Name("dataset_confirm_republish")
-		r.Post("/dataset/{id}/republish",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Republish)).
-			Name("dataset_republish")
 
 		// lock dataset
 		r.Post("/dataset/{id}/lock",
