@@ -6,11 +6,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
 type YieldConfirmDelete struct {
@@ -19,36 +21,38 @@ type YieldConfirmDelete struct {
 	RedirectURL string
 }
 
-func (h *Handler) ConfirmDelete(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "show_modal", "publication/confirm_delete", YieldConfirmDelete{
-		Context:     ctx,
-		Publication: ctx.Publication,
-		RedirectURL: r.URL.Query().Get("redirect-url"),
-	})
+func (h *Handler) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	publication.ConfirmDelete(c, ctx.GetPublication(r), r.URL.Query().Get("redirect-url")).Render(r.Context(), w)
 }
 
-func (h *Handler) Delete(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanDeletePublication(ctx.Publication) {
-		h.Logger.Warnw("delete publication: user is unauthorized", "publication", ctx.Publication.ID, "user", ctx.User.ID)
+func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	publication := ctx.GetPublication(r)
+
+	if !c.User.CanDeletePublication(publication) {
+		h.Logger.Warnw("delete publication: user is unauthorized", "publication", publication.ID, "user", c.User.ID)
 		render.Forbidden(w, r)
 		return
 	}
 
-	ctx.Publication.Status = "deleted"
+	publication.Status = "deleted"
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), publication, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		// TODO: refactor to templ
 		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message:     ctx.Loc.Get("publication.conflict_error_reload"),
+			Message:     c.Loc.Get("publication.conflict_error_reload"),
 			RedirectURL: r.URL.Query().Get("redirect-url"),
 		})
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete publication: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		h.Logger.Errorf("delete publication: Could not save the publication:", "errors", err, "publication", publication.ID, "user", c.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

@@ -13,10 +13,10 @@ describe('Issue #1309: Cannot return to profile after using "view as"', () => {
     cy.contains("View as").click();
 
     cy.ensureModal("View as other user").within(() => {
-      cy.setFieldByLabel("First name", "Dries");
-      cy.setFieldByLabel("Last name", "Moreels");
+      cy.setFieldByLabel("First name", "John");
+      cy.setFieldByLabel("Last name", "Doe");
 
-      cy.contains("802001088860")
+      cy.contains("800000000001")
         .should("be.visible")
         .closest(".list-group-item")
         .contains(".btn", "Change user")
@@ -25,13 +25,8 @@ describe('Issue #1309: Cannot return to profile after using "view as"', () => {
 
     cy.ensureNoModal();
 
-    cy.contains("Viewing the perspective of Dries Moreels.").should(
-      "be.visible",
-    );
-    cy.get(".bc-avatar-and-text:visible").should(
-      "contain.text",
-      "Dries Moreels",
-    );
+    cy.contains("Viewing the perspective of John Doe.").should("be.visible");
+    cy.get(".bc-avatar-and-text:visible").should("contain.text", "John Doe");
 
     cy.contains(".btn", `return to ${LIBRARIAN_NAME}`).click();
 
