@@ -230,7 +230,7 @@ func Register(c Config) {
 		r.Get("/frontoffice/dataset", frontofficeHandler.GetAllDatasets)
 		r.Get("/frontoffice/organization/{id}", frontofficeHandler.GetOrganization)
 		r.Get("/frontoffice/organization", frontofficeHandler.GetAllOrganizations)
-	  r.Get("/frontoffice/organization-trees", frontofficeHandler.GetAllOrganizationTrees)
+		r.Get("/frontoffice/organization-trees", frontofficeHandler.GetAllOrganizationTrees)
 		r.Get("/frontoffice/user/{id}", frontofficeHandler.GetUser)
 		r.Get("/frontoffice/user/username/{username}", frontofficeHandler.GetUserByUsername)
 		r.Get("/frontoffice/person/{id}", frontofficeHandler.GetPerson)
@@ -240,7 +240,7 @@ func Register(c Config) {
 		r.Get("/frontoffice/project/browse", frontofficeHandler.BrowseProjects)
 	})
 
-  // frontoffice file download
+	// frontoffice file download
 	c.Router.Get("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
 	c.Router.Head("/download/{id}/{file_id}", frontofficeHandler.DownloadFile)
 
@@ -322,6 +322,9 @@ func Register(c Config) {
 					// delete
 					r.Get("/confirm-delete", publicationEditingHandler.ConfirmDelete).Name("publication_confirm_delete")
 					r.Delete("/", publicationEditingHandler.Delete).Name("publication_delete")
+
+					// edit publication type
+					r.Get("/type/confirm", publicationEditingHandler.ConfirmUpdateType).Name("publication_confirm_update_type")
 
 					// curator actions
 					r.Group(func(r *ich.Mux) {
@@ -776,9 +779,6 @@ func Register(c Config) {
 			Name("publication_update_details")
 
 		// edit publication type
-		r.Get("/publication/{id}/type/confirm",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateType)).
-			Name("publication_confirm_update_type")
 		r.Put("/publication/{id}/type",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateType)).
 			Name("publication_update_type")
