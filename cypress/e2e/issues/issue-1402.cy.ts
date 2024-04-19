@@ -1235,8 +1235,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .within(() => {
             cy.get(".modal-content").should(
               "contain",
-              "Are you sure you want to withdraw this dataset to Biblio?",
-            ); // TODO: "from Biblio"
+              "Are you sure you want to withdraw this dataset from Biblio?",
+            );
           })
           .closeModal("Withdraw");
         cy.ensureNoModal();
