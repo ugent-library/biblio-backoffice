@@ -1,6 +1,7 @@
 package publication
 
 import (
+    "fmt"
     "github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -24,8 +25,8 @@ templ ConfirmUpdateType(c *ctx.Ctx, publication *models.Publication, publication
                         <div class="bc-toolbar-right">
                             <button class="btn btn-danger"
                                 hx-put={ c.PathTo("publication_update_type", "id", publication.ID).String() }
-                                hx-headers={ views.ToJSON("If-Match", publication.SnapshotID) }
-                                hx-vals={ views.ToJSON("type", publicationType) }
+                                hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
+                                hx-vals={ fmt.Sprintf(`{"type": "%s"}`, publicationType) }
                                 hx-swap="none"
                             >Proceed</button>
                         </div>
