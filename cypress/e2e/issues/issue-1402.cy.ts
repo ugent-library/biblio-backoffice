@@ -874,8 +874,13 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.updateFields(
           "Authors",
           () => {
+            cy.intercept("/publication/*/contributors/author/suggestions?*").as(
+              "suggestContributor",
+            );
             cy.setFieldByLabel("First name", "John");
+            cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
+            cy.wait("@suggestContributor");
             cy.contains(".btn", "Add external author").click();
           },
           true,
@@ -1376,8 +1381,13 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.updateFields(
           "Creators",
           () => {
+            cy.intercept("/dataset/*/contributors/author/suggestions?*").as(
+              "suggestContributor",
+            );
             cy.setFieldByLabel("First name", "John");
+            cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
+            cy.wait("@suggestContributor");
             cy.contains(".btn", "Add external creator").click();
           },
           true,
