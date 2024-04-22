@@ -326,6 +326,9 @@ func Register(c Config) {
 					// edit publication type
 					r.Get("/type/confirm", publicationEditingHandler.ConfirmUpdateType).Name("publication_confirm_update_type")
 
+					// links
+					r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", publicationEditingHandler.ConfirmDeleteLink).Name("publication_confirm_delete_link")
+
 					// contributor actions
 					r.Get("/contributors/{role}/{position}/confirm-delete", publicationEditingHandler.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
 
@@ -809,9 +812,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/links/{link_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLink)).
 			Name("publication_update_link")
-		r.Get("/publication/{id}/{snapshot_id}/links/{link_id}/confirm-delete",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteLink)).
-			Name("publication_confirm_delete_link")
 		r.Delete("/publication/{id}/links/{link_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLink)).
 			Name("publication_delete_link")

@@ -6,12 +6,14 @@ import (
 	"net/http"
 
 	"github.com/leonelquinteros/gotext"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	views "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/okay"
 )
@@ -41,10 +43,6 @@ type YieldEditLink struct {
 	LinkID   string
 	Form     *form.Form
 	Conflict bool
-}
-type YieldDeleteLink struct {
-	Context
-	LinkID string
 }
 
 func (h *Handler) AddLink(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -187,26 +185,26 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	})
 }
 
-func (h *Handler) ConfirmDeleteLink(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	publication := ctx.GetPublication(r)
+
 	var b BindDeleteLink
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Errorw("confirm delete publication link: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+		h.Logger.Errorw("confirm delete publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	// TODO catch non-existing item in UI
-	if b.SnapshotID != ctx.Publication.SnapshotID {
+	if b.SnapshotID != publication.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.conflict_error_reload"),
+			Message: c.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
 
-	render.Layout(w, "show_modal", "publication/confirm_delete_link", YieldDeleteLink{
-		Context: ctx,
-		LinkID:  b.LinkID,
-	})
+	views.ConfirmDeleteLink(c, publication, b.LinkID).Render(r.Context(), w)
 }
 
 func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context) {
