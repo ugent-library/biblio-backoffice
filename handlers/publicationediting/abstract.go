@@ -185,13 +185,13 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	})
 }
 
-func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
+func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	publication := ctx.GetPublication(r)
 
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("confirm delete publication abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.Log.Warnw("confirm delete publication abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
