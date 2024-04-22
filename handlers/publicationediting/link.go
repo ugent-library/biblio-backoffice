@@ -185,13 +185,13 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	})
 }
 
-func (h *Handler) ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
+func ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	publication := ctx.GetPublication(r)
 
 	var b BindDeleteLink
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Errorw("confirm delete publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.Log.Errorw("confirm delete publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
