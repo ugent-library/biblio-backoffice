@@ -179,11 +179,6 @@ func Register(c Config) {
 		PublicationSearchIndex: c.Services.PublicationSearchIndex,
 		FileStore:              c.Services.FileStore,
 	}
-	publicationExportingHandler := &publicationexporting.Handler{
-		BaseHandler:              baseHandler,
-		PublicationListExporters: c.Services.PublicationListExporters,
-		PublicationSearchIndex:   c.Services.PublicationSearchIndex,
-	}
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
 		Repo:        c.Services.Repo,
@@ -313,6 +308,9 @@ func Register(c Config) {
 					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
 					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
 					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
+
+					// export publications
+					r.Get("/publication.{format}", publicationexporting.ExportByCurationSearch).Name("export_publications")
 				})
 
 				// publications
@@ -683,11 +681,6 @@ func Register(c Config) {
 		r.Get("/publication",
 			publicationSearchingHandler.Wrap(publicationSearchingHandler.Search)).
 			Name("publications")
-
-		// export publications
-		r.Get("/publication.{format}",
-			publicationExportingHandler.Wrap(publicationExportingHandler.ExportByCurationSearch)).
-			Name("export_publications")
 
 		// publication batch operations
 		r.Get("/publication/batch",
