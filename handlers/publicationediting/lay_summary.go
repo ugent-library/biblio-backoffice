@@ -43,10 +43,6 @@ type YieldEditLaySummary struct {
 	Form         *form.Form
 	Conflict     bool
 }
-type YieldDeleteLaySummary struct {
-	Context
-	LaySummaryID string
-}
 
 func (h *Handler) AddLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "show_modal", "publication/add_lay_summary", YieldAddLaySummary{
