@@ -43,11 +43,6 @@ type YieldEditAbstract struct {
 	Form       *form.Form
 	Conflict   bool
 }
-type YieldDeleteAbstract struct {
-	Context
-	AbstractID string
-	Conflict   bool
-}
 
 func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "show_modal", "publication/add_abstract", YieldAddAbstract{
