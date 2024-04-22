@@ -213,7 +213,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.contains("button", "Delete").click();
         });
 
-        cy.ensureModal("Are you sure").closeModal("Delete");
+        cy.ensureModal("Are you sure")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to remove this abstract?",
+            );
+          })
+          .closeModal("Delete");
         cy.ensureNoModal();
 
         cy.get("#abstracts").find("table tbody tr").should("have.length", 0);
@@ -274,7 +281,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.contains("button", "Delete").click();
         });
 
-        cy.ensureModal("Are you sure").closeModal("Delete");
+        cy.ensureModal("Are you sure")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to remove this link?",
+            );
+          })
+          .closeModal("Delete");
         cy.ensureNoModal();
 
         cy.get("#links").find("table tbody tr").should("have.length", 0);
@@ -362,7 +376,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.contains("button", "Delete").click();
         });
 
-        cy.ensureModal("Are you sure").closeModal("Delete");
+        cy.ensureModal("Are you sure")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to remove this lay summary?",
+            );
+          })
+          .closeModal("Delete");
         cy.ensureNoModal();
 
         cy.get("#lay-summaries")
@@ -697,7 +718,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .click();
         cy.contains(".dropdown-item", "Remove from publication").click();
 
-        cy.ensureModal("Are you sure").closeModal("Delete");
+        cy.ensureModal("Are you sure")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to remove this department from the publication?",
+            );
+          })
+          .closeModal("Delete");
         cy.ensureNoModal();
 
         cy.get("#departments-body .list-group-item-text h4")
@@ -745,7 +773,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Publish to Biblio").click();
         cy.ensureModal("Are you sure?")
           .within(() => {
-            cy.get(".modal-content").should(
+            cy.get(".modal-body").should(
               "contain",
               "Are you sure you want to publish this publication to Biblio?",
             );
@@ -757,7 +785,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-outline-danger", "Withdraw").click();
         cy.ensureModal("Are you sure?")
           .within(() => {
-            cy.get(".modal-content").should(
+            cy.get(".modal-body").should(
               "contain",
               "Are you sure you want to withdraw this publication from Biblio?",
             );
@@ -769,7 +797,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Republish to Biblio").click();
         cy.ensureModal("Are you sure?")
           .within(() => {
-            cy.get(".modal-content").should(
+            cy.get(".modal-body").should(
               "contain",
               "Are you sure you want to republish this publication to Biblio?",
             );
@@ -786,7 +814,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Publish to Biblio").click();
         cy.ensureModal("Are you sure?")
           .within(() => {
-            cy.get(".modal-content").should(
+            cy.get(".modal-body").should(
               "contain",
               "Are you sure you want to publish this publication to Biblio?",
             );
@@ -856,7 +884,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Republish to Biblio").click();
         cy.ensureModal("Are you sure?")
           .within(() => {
-            cy.get(".modal-content").should(
+            cy.get(".modal-body").should(
               "contain",
               "Are you sure you want to republish this publication to Biblio?",
             );
@@ -992,7 +1020,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.contains("button", "Delete").click();
         });
 
-        cy.ensureModal("Are you sure").closeModal("Delete");
+        cy.ensureModal("Are you sure")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to remove this abstract?",
+            );
+          })
+          .closeModal("Delete");
         cy.ensureNoModal();
 
         cy.get("#abstracts").find("table tbody tr").should("have.length", 0);
@@ -1050,7 +1085,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.contains("button", "Delete").click();
         });
 
-        cy.ensureModal("Are you sure").closeModal("Delete");
+        cy.ensureModal("Are you sure")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to remove this link?",
+            );
+          })
+          .closeModal("Delete");
         cy.ensureNoModal();
 
         cy.get("#links").find("table tbody tr").should("have.length", 0);
@@ -1176,7 +1218,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .click();
         cy.contains(".dropdown-item", "Remove from dataset").click();
 
-        cy.ensureModal("Are you sure").closeModal("Delete");
+        cy.ensureModal("Are you sure")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to remove this department from the dataset?",
+            );
+          })
+          .closeModal("Delete");
         cy.ensureNoModal();
 
         cy.get("#departments-body .list-group-item-text h4")
@@ -1221,7 +1270,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Publish to Biblio").click();
         cy.ensureModal("Are you sure?")
           .within(() => {
-            cy.get(".modal-content").should(
+            cy.get(".modal-body").should(
               "contain",
               "Are you sure you want to publish this dataset to Biblio?",
             );
@@ -1233,7 +1282,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-outline-danger", "Withdraw").click();
         cy.ensureModal("Are you sure?")
           .within(() => {
-            cy.get(".modal-content").should(
+            cy.get(".modal-body").should(
               "contain",
               "Are you sure you want to withdraw this dataset from Biblio?",
             );
@@ -1245,7 +1294,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Republish to Biblio").click();
         cy.ensureModal("Are you sure?")
           .within(() => {
-            cy.get(".modal-content").should(
+            cy.get(".modal-body").should(
               "contain",
               "Are you sure you want to republish this dataset to Biblio?",
             );
@@ -1262,7 +1311,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Publish to Biblio").click();
         cy.ensureModal("Are you sure?")
           .within(() => {
-            cy.get(".modal-content").should(
+            cy.get(".modal-body").should(
               "contain",
               "Are you sure you want to publish this dataset to Biblio?",
             );
@@ -1337,7 +1386,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn-success", "Republish to Biblio").click();
         cy.ensureModal("Are you sure?")
           .within(() => {
-            cy.get(".modal-content").should(
+            cy.get(".modal-body").should(
               "contain",
               "Are you sure you want to republish this dataset to Biblio?",
             );
