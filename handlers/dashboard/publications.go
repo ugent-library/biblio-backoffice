@@ -6,42 +6,23 @@ import (
 	"net/url"
 
 	"github.com/ugent-library/biblio-backoffice/backends"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
 )
-
-type YieldPublications struct {
-	Context
-	PageTitle            string
-	ActiveNav            string
-	ActiveSubNav         string
-	UPublications        map[string]map[string][]string
-	APublications        map[string]map[string][]string
-	UFaculties           []string
-	AFaculties           []string
-	PTypes               map[string]string
-	UYear                string
-	AYear                string
-	AllUPublicationYears []string
-	AllAPublicationYears []string
-}
 
 type BindPublications struct {
 	UYear string `query:"uyear" form:"uyear"`
 	AYear string `query:"ayear" form:"ayear"`
 }
 
-type YieldTblPublications struct {
-	Context
-	Publications map[string]map[string][]string
-	Faculties    []string
-	PTypes       map[string]string
-}
-
-func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Context) {
+func CuratorPublications(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	typ := bind.PathValue(r, "type") //TODO: bind via middleware
 	var faculties []string
 
 	var activeSubNav string
@@ -49,7 +30,7 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	socs := vocabularies.Map["faculties_socs"]
 	core := vocabularies.Map["faculties_core"]
 
-	switch ctx.Type {
+	switch typ {
 	case "socs":
 		faculties = socs
 		activeSubNav = "dashboard_publications_socs"
@@ -63,33 +44,33 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	ptypes := vocabularies.Map["publication_types"]
 	ptypes = append([]string{"all"}, ptypes...)
 
-	locptypes := localize.VocabularyTerms(ctx.Loc, "publication_types")
+	locptypes := localize.VocabularyTerms(c.Loc, "publication_types")
 	locptypes["all"] = "All"
 
-	allUPublicationYears, err := h.allUPublicationYears()
+	allUPublicationYears, err := allUPublicationYears(c.PublicationSearchIndex)
 	if err != nil {
-		h.Logger.Errorw("Dashboard: could not execute search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
-	allAPublicationYears, err := h.allAPublicationYears()
+	allAPublicationYears, err := allAPublicationYears(c.PublicationSearchIndex)
 	if err != nil {
-		h.Logger.Errorw("Dashboard: could not execute search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
-		h.Logger.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 
 	// Publications with classification U
 	uFacultyCols := append(aFacultyCols, []string{"UGent", "-"}...)
 
-	uSearcher := h.PublicationSearchIndex
-	baseSearchUrl := h.PathFor("publications")
+	uSearcher := c.PublicationSearchIndex
+	baseSearchUrl := c.PathTo("publications")
 
 	uPublications, err := generatePublicationsDashboard(uFacultyCols, ptypes, uSearcher, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("classification", "U")
@@ -113,14 +94,14 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	})
 
 	if err != nil {
-		h.Logger.Errorw("Dashboard: could not execute search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 
 	// Publications with publication status "accepted"
 
-	aSearcher := h.PublicationSearchIndex
+	aSearcher := c.PublicationSearchIndex
 
 	aPublications, err := generatePublicationsDashboard(aFacultyCols, ptypes, aSearcher, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("publication_status", "accepted")
@@ -142,15 +123,13 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 	})
 
 	if err != nil {
-		h.Logger.Errorw("Dashboard: could not execute search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 
-	render.Layout(w, "layouts/default", "dashboard/pages/publications", YieldPublications{
-		Context:              ctx,
-		PageTitle:            "Dashboard - Publications - Biblio",
-		ActiveNav:            "dashboard",
+	views.CuratorDashboardPublications(c, &views.CuratorDashboardPublicationsArgs{
+		Type:                 typ,
 		ActiveSubNav:         activeSubNav,
 		UPublications:        uPublications,
 		APublications:        aPublications,
@@ -161,13 +140,16 @@ func (h *Handler) Publications(w http.ResponseWriter, r *http.Request, ctx Conte
 		AYear:                bindPublications.AYear,
 		AllUPublicationYears: allUPublicationYears,
 		AllAPublicationYears: allAPublicationYears,
-	})
+	}).Render(r.Context(), w)
 }
 
-func (h *Handler) RefreshAPublications(w http.ResponseWriter, r *http.Request, ctx Context) {
+func RefreshAPublications(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	typ := bind.PathValue(r, "type") //TODO: bind via middleware
+
 	var faculties []string
 
-	switch ctx.Type {
+	switch typ {
 	case "socs":
 		faculties = vocabularies.Map["faculties_socs"]
 	default:
@@ -179,20 +161,20 @@ func (h *Handler) RefreshAPublications(w http.ResponseWriter, r *http.Request, c
 	ptypes := vocabularies.Map["publication_types"]
 	ptypes = append([]string{"all"}, ptypes...)
 
-	locptypes := localize.VocabularyTerms(ctx.Loc, "publication_types")
+	locptypes := localize.VocabularyTerms(c.Loc, "publication_types")
 	locptypes["all"] = "All"
 
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
-		h.Logger.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 
-	baseSearchUrl := h.PathFor("publications")
+	baseSearchUrl := c.PathTo("publications")
 
 	// Publications with publication status "accepted"
-	publications, err := generatePublicationsDashboard(facultyCols, ptypes, h.PublicationSearchIndex, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
+	publications, err := generatePublicationsDashboard(facultyCols, ptypes, c.PublicationSearchIndex, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("publication_status", "accepted")
 		args.WithFilter("status", "private", "public", "returned")
 		if bindPublications.AYear != "" {
@@ -211,33 +193,30 @@ func (h *Handler) RefreshAPublications(w http.ResponseWriter, r *http.Request, c
 		return args
 	})
 	if err != nil {
-		h.Logger.Errorw("Dashboard: could not execute search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 
 	w.Header().Add(
 		"HX-Push-Url",
-		h.URLFor(
+		c.URLTo(
 			"dashboard_publications",
-			"type", ctx.Type,
+			"type", typ,
 			"uyear", bindPublications.UYear,
 			"ayear", bindPublications.AYear,
 		).String(),
 	)
 
-	render.Partial(w, "dashboard/partials/tbl_publications", YieldTblPublications{
-		Context:      ctx,
-		Publications: publications,
-		Faculties:    facultyCols,
-		PTypes:       locptypes,
-	})
+	views.CuratorDashboardTblPublications(c, facultyCols, publications, locptypes).Render(r.Context(), w)
 }
 
-func (h *Handler) RefreshUPublications(w http.ResponseWriter, r *http.Request, ctx Context) {
+func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	typ := bind.PathValue(r, "type") //TODO: bind via middleware
 	var faculties []string
 
-	switch ctx.Type {
+	switch typ {
 	case "socs":
 		faculties = vocabularies.Map["faculties_socs"]
 	default:
@@ -248,19 +227,19 @@ func (h *Handler) RefreshUPublications(w http.ResponseWriter, r *http.Request, c
 	facultyCols = append(facultyCols, "UGent", "-")
 	ptypes := append([]string{"all"}, vocabularies.Map["publication_types"]...)
 
-	locptypes := localize.VocabularyTerms(ctx.Loc, "publication_types")
+	locptypes := localize.VocabularyTerms(c.Loc, "publication_types")
 	locptypes["all"] = "All"
 
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
-		h.Logger.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+		c.Log.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
 	// Publications with classification U
-	baseSearchUrl := h.PathFor("publications")
-	publications, err := generatePublicationsDashboard(facultyCols, ptypes, h.PublicationSearchIndex, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
+	baseSearchUrl := c.PathTo("publications")
+	publications, err := generatePublicationsDashboard(facultyCols, ptypes, c.PublicationSearchIndex, baseSearchUrl, func(fac string, args *models.SearchArgs) *models.SearchArgs {
 		args.WithFilter("classification", "U")
 		args.WithFilter("status", "public")
 		if bindPublications.UYear != "" {
@@ -281,27 +260,17 @@ func (h *Handler) RefreshUPublications(w http.ResponseWriter, r *http.Request, c
 		return args
 	})
 	if err != nil {
-		h.Logger.Errorw("Dashboard: could not execute search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 
 	w.Header().Add(
 		"HX-Push-Url",
-		h.URLFor(
-			"dashboard_publications",
-			"type", ctx.Type,
-			"uyear", bindPublications.UYear,
-			"ayear", bindPublications.AYear,
-		).String(),
+		c.URLTo("dashboard_publications", "type", typ, "uyear", bindPublications.UYear, "ayear", bindPublications.AYear).String(),
 	)
 
-	render.Partial(w, "dashboard/partials/tbl_publications", YieldTblPublications{
-		Context:      ctx,
-		Publications: publications,
-		Faculties:    facultyCols,
-		PTypes:       locptypes,
-	})
+	views.CuratorDashboardTblPublications(c, facultyCols, publications, locptypes).Render(r.Context(), w)
 }
 
 func generatePublicationsDashboard(faculties []string, ptypes []string, searcher backends.PublicationIndex, baseSearchUrl *url.URL, fn func(fac string, args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
@@ -344,8 +313,8 @@ func generatePublicationsDashboard(faculties []string, ptypes []string, searcher
 	return publications, nil
 }
 
-func (h *Handler) allUPublicationYears() ([]string, error) {
-	return getFilteredTokenValues(h.PublicationSearchIndex, "year", &models.SearchArgs{
+func allUPublicationYears(idx backends.PublicationIndex) ([]string, error) {
+	return getFilteredTokenValues(idx, "year", &models.SearchArgs{
 		Filters: map[string][]string{
 			"status":         {"public"},
 			"classification": {"U"},
@@ -353,8 +322,8 @@ func (h *Handler) allUPublicationYears() ([]string, error) {
 	})
 }
 
-func (h *Handler) allAPublicationYears() ([]string, error) {
-	return getFilteredTokenValues(h.PublicationSearchIndex, "year", &models.SearchArgs{
+func allAPublicationYears(idx backends.PublicationIndex) ([]string, error) {
+	return getFilteredTokenValues(idx, "year", &models.SearchArgs{
 		Filters: map[string][]string{
 			"status":             {"private", "public", "returned"},
 			"publication_status": {"accepted"},

@@ -6,27 +6,21 @@ import (
 	"net/url"
 
 	"github.com/ugent-library/biblio-backoffice/backends"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/bind"
 )
 
-type YieldDatasets struct {
-	Context
-	PageTitle    string
-	ActiveNav    string
-	ActiveSubNav string
-	Datasets     map[string]map[string][]string
-	Faculties    []string
-	PTypes       map[string]string
-}
-
-func (h *Handler) Datasets(w http.ResponseWriter, r *http.Request, ctx Context) {
+func CuratorDatasets(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	typ := bind.PathValue(r, "type") //TODO: bind via middleware
 	var faculties []string
 
 	var activeSubNav string
 
-	switch ctx.Type {
+	switch typ {
 	case "socs":
 		faculties = vocabularies.Map["faculties_socs"]
 		activeSubNav = "dashboard_datasets_socs"
@@ -41,36 +35,28 @@ func (h *Handler) Datasets(w http.ResponseWriter, r *http.Request, ctx Context) 
 	locptypes := make(map[string]string)
 	locptypes["all"] = "All"
 
-	aSearcher := h.DatasetSearchIndex.WithScope("status", "private", "public", "returned")
-	baseSearchUrl := h.PathFor("datasets")
+	aSearcher := c.DatasetSearchIndex.WithScope("status", "private", "public", "returned")
+	baseSearchUrl := c.PathTo("datasets")
 
 	datasets, err := generateDatasetsDashboard(faculties, ptypes, aSearcher, baseSearchUrl, func(args *models.SearchArgs) *models.SearchArgs {
 		return args
 	})
 
 	if err != nil {
-		h.Logger.Errorw("Dashboard: could not execute search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
-
-	render.Layout(w, "layouts/default", "dashboard/pages/datasets", YieldDatasets{
-		Context:      ctx,
-		PageTitle:    "Dashboard - Datasets - Biblio",
-		ActiveNav:    "dashboard",
+	views.CuratorDashboardDatasets(c, &views.CuratorDashboardDatasetsArgs{
 		ActiveSubNav: activeSubNav,
 		PTypes:       locptypes,
 		Datasets:     datasets,
 		Faculties:    faculties,
-	})
+	}).Render(r.Context(), w)
 }
 
 func generateDatasetsDashboard(faculties []string, ptypes []string, searcher backends.DatasetIndex, baseSearchUrl *url.URL, fn func(args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
 	var datasets = make(map[string]map[string][]string)
-
-	// pool := pond.New(100, 300)
-	// defer pool.StopAndWait()
-	// group := pool.Group()
 
 	for _, fac := range faculties {
 		datasets[fac] = map[string][]string{}
@@ -102,27 +88,8 @@ func generateDatasetsDashboard(faculties []string, ptypes []string, searcher bac
 			} else {
 				datasets[fac][ptype] = []string{fmt.Sprint(hits.Total), searchUrl.String()}
 			}
-
-			// f := fac
-			// p := ptype
-
-			// var lock sync.Mutex
-			// group.Submit(func(f string, pt string, p map[string]map[string][]string, searchUrl string) func() {
-			// 	return func() {
-			// 		lock.Lock()
-			// 		hits, err := searcher.Search(searchArgs)
-			// 		if err != nil {
-			// 			p[f][pt] = []string{"Error", ""}
-			// 		} else {
-			// 			p[f][pt] = []string{fmt.Sprint(hits.Total), searchUrl}
-			// 		}
-			// 		lock.Unlock()
-			// 	}
-			// }(f, p, publications, searchUrl.String()))
 		}
 	}
-
-	// group.Wait()
 
 	return datasets, nil
 }

@@ -1,0 +1,39 @@
+package views
+
+import(
+    "github.com/ugent-library/biblio-backoffice/ctx"
+)
+
+func enableNavClass(expected string, got string) string {
+    if expected == got {
+        return "c-sub-sidebar__item c-sub-sidebar__item--active";
+    }
+    return "c-sub-sidebar__item";
+}
+
+templ curatorDashboardShowNav(c *ctx.Ctx, nav string) {
+    <nav>
+        <ul class="c-sub-sidebar-menu">
+            <li class={enableNavClass(nav, "dashboard_publications_faculties")}>
+                <a href={templ.URL(c.PathTo("dashboard_publications","type","faculties").String())}>
+                    <span class="c-sidebar__label">Publications - Faculties</span>
+                </a>
+            </li>
+            <li class={enableNavClass(nav, "dashboard_publications_socs")}>
+                <a href={templ.URL(c.PathTo("dashboard_publications", "type", "socs").String())}>
+                    <span class="c-sidebar__label">Publications - SOCs</span>
+                </a>
+            </li>
+            <li class={enableNavClass(nav, "dashboard_datasets_faculties")}>
+                <a href={templ.URL(c.PathTo("dashboard_datasets", "type", "faculties").String())}>
+                    <span class="c-sidebar__label">Datasets - Faculties</span>
+                </a>
+            </li>
+            <li class={enableNavClass(nav, "dashboard_datasets_socs")}>
+                <a href={templ.URL(c.PathTo("dashboard_datasets", "type", "socs").String())}>
+                    <span class="c-sidebar__label">Datasets - SOCs</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+}

@@ -1,0 +1,167 @@
+package views
+
+import(
+    "github.com/ugent-library/biblio-backoffice/ctx"
+)
+
+type CuratorDashboardPublicationsArgs struct {
+    Type                 string
+	ActiveSubNav         string
+	UPublications        map[string]map[string][]string
+	APublications        map[string]map[string][]string
+	UFaculties           []string
+	AFaculties           []string
+	PTypes               map[string]string
+	UYear                string
+	AYear                string
+	AllUPublicationYears []string
+	AllAPublicationYears []string
+}
+
+templ CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublicationsArgs) {
+    @pageLayout(c, "Dashboard - Publications - Biblio", nil) {
+        <div class="c-sub-sidebar c-sidebar--bordered">
+            <div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom">
+                <div class="bc-toolbar">
+                    <div class="bc-toolbar-left">
+                        <div class="bc-toolbar-item">
+                            <h4 class="bc-toolbar-title">Dashboard</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="c-sub-sidebar__menu my-6">
+            @curatorDashboardShowNav(c, args.ActiveSubNav)
+            </div>
+        </div>
+
+        <div class="w-100 u-scroll-wrapper">
+            <div class="bg-white">
+                <div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
+                    <div class="bc-toolbar bc-toolbar--auto">
+                        <div class="bc-toolbar-left">
+                            <div class="bc-toolbar-item">
+                                <h4 class="bc-toolbar-title">Publications</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="u-scroll-wrapper__body w-100 p-6">
+                <div class="pb-5">
+                    <p><strong>Why are the totals wrong?</strong></p>
+                    <p>Some publications are associated with more than 1 faculty.</p>
+                    <p>The category "all" in the table header may contain less publications, as it only counts each publication once.</p>
+                </div>
+
+                <div class="card w-100 mb-6">
+                    <div class="card-header card-header--auto ">
+                        <div class="bc-toolbar bc-toolbar--auto">
+                            <div class="bc-toolbar-left">
+                                <div class="bc-toolbar-item">
+                                    <h3 class="card-title">Public with classification U</h3>
+                                </div>
+                            </div>
+                            <div class="bc-toolbar-right text-align-right">
+                                <div>
+                                    <select class="form-select w-100"
+                                        name="uyear"
+                                        hx-post={c.PathTo("dashboard_refresh_upublications", "type", args.Type).String()}
+                                        hx-target="#tbl-upublications"
+                                        hx-include="[name='ayear']"
+                                        hx-indicator="#tbl-upublications .spinner-card-backdrop">
+                                        <option value="">All years</option>
+                                        for _, uyear := range args.AllUPublicationYears {
+                                            if uyear == args.UYear {
+                                                <option value={uyear} selected>{uyear}</option>
+                                            } else {
+                                                <option value={uyear}>{uyear}</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body w-100 p-0 position-relative">
+                        <div class="table-responsive" id="tbl-upublications">
+                        @CuratorDashboardTblPublications(c, args.UFaculties, args.UPublications, args.PTypes)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card w-100 mb-6">
+                    <div class="card-header">
+                        <div class="bc-toolbar">
+                            <div class="bc-toolbar-left">
+                                <h3 class="card-title">Accepted</h3>
+                            </div>
+                            <div class="bc-toolbar-right text-align-right">
+                                <div>
+                                    <select
+                                        name="ayear"
+                                        class="form-select w-100"
+                                        hx-post={c.PathTo("dashboard_refresh_apublications", "type", args.Type).String()}
+                                        hx-target="#tbl-apublications"
+                                        hx-include="[name='uyear']"
+                                        hx-indicator="#tbl-apublications .spinner-card-backdrop">
+                                        <option value="">All years</option>
+                                        for _, ayear := range args.AllUPublicationYears {
+                                            if ayear == args.AYear {
+                                                <option value={ayear} selected>{ayear}</option>
+                                            } else {
+                                                <option value={ayear}>{ayear}</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body w-100 p-0 position-relative">
+                        <div class="table-responsive" id="tbl-apublications">
+                        @CuratorDashboardTblPublications(c, args.AFaculties, args.APublications, args.PTypes)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+templ CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publications map[string]map[string][]string, pTypes map[string]string) {
+    <div class="spinner-card-backdrop">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <table class="table table-sm table-bordered">
+        <thead>
+            <tr>
+                <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col"></th>
+                for _, f := range faculties {
+                <th scope="col">{f}</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+        for pti, pt := range pTypes {
+            <tr>
+                <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col">{pt}</th>
+                for _, f := range faculties {
+                    if cell, ok := publications[f][pti]; ok {
+                        <td>
+                        if cell[1] == "" {
+                            <span>{cell[0]}</span>
+                        } else {
+                            <a href={templ.URL(cell[1])}>{cell[0]}</a>
+                        }
+                        </td>
+                    }
+                }
+            </tr>
+        }
+        </tbody>
+    </table>
+}
