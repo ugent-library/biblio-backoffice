@@ -147,11 +147,6 @@ func Register(c Config) {
 		BaseHandler:        baseHandler,
 		DatasetSearchIndex: c.Services.DatasetSearchIndex,
 	}
-	datasetExportingHandler := &datasetexporting.Handler{
-		BaseHandler:          baseHandler,
-		DatasetListExporters: c.Services.DatasetListExporters,
-		DatasetSearchIndex:   c.Services.DatasetSearchIndex,
-	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
 		Repo:        c.Services.Repo,
@@ -313,6 +308,9 @@ func Register(c Config) {
 					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
 					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
 					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
+
+					// export datasets
+					r.Get("/dataset.{format}", datasetexporting.ExportByCurationSearch).Name("export_datasets")
 				})
 
 				// publications
@@ -453,11 +451,6 @@ func Register(c Config) {
 		r.Get("/dataset/{id}/add/finish",
 			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddFinish)).
 			Name("dataset_add_finish")
-
-		// export datasets
-		r.Get("/dataset.{format}",
-			datasetExportingHandler.Wrap(datasetExportingHandler.ExportByCurationSearch)).
-			Name("export_datasets")
 
 		// view dataset
 		r.Get("/dataset/{id}",
