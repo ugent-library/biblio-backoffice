@@ -5,41 +5,52 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
+	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 )
 
-func (h *Handler) ExportByCurationSearch(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurate() {
-		render.Forbidden(w, r)
-		return
+func ExportByCurationSearch(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	format := bind.PathValue(r, "format")
+	if format == "" {
+		format = "xlsx"
 	}
 
-	exporterFactory, exporterFactoryFound := h.DatasetListExporters[ctx.ExportArgs.Format]
+	exporterFactory, exporterFactoryFound := c.DatasetListExporters[format]
 	if !exporterFactoryFound {
-		e := fmt.Errorf("unable to find exporter %s", ctx.ExportArgs.Format)
-		h.Logger.Errorw(
+		e := fmt.Errorf("unable to find exporter %s", format)
+		c.Log.Errorw(
 			"dataset search: could not find exporter",
 			"errors", e,
-			"user", ctx.User.ID,
+			"user", c.User.ID,
 		)
-		render.InternalServerError(w, r, e)
+		c.HandleError(w, r, httperror.NotFound)
 		return
 	}
 	exporter := exporterFactory(w)
 
-	searcher := h.DatasetSearchIndex.WithScope("status", "private", "public", "returned")
-	searcherErr := searcher.Each(ctx.SearchArgs, 10000, func(dataset *models.Dataset) {
+	searchArgs := models.NewSearchArgs()
+	if err := bind.Request(r, searchArgs); err != nil {
+		c.Log.Warnw("publication search: could not bind search arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, err)
+		return
+	}
+
+	searcher := c.DatasetSearchIndex.WithScope("status", "private", "public", "returned")
+	searcherErr := searcher.Each(searchArgs, 10000, func(dataset *models.Dataset) {
 		exporter.Add(dataset)
 	})
 
 	if searcherErr != nil {
-		h.Logger.Errorw(
+		c.Log.Errorw(
 			"dataset search: unable to execute search",
 			"errors", searcherErr,
-			"user", ctx.User.ID,
+			"user", c.User.ID,
 		)
-		render.InternalServerError(w, r, fmt.Errorf("unable to execute search"))
+		c.HandleError(w, r, fmt.Errorf("unable to execute search: %w", searcherErr))
 		return
 	}
 
@@ -59,8 +70,8 @@ func (h *Handler) ExportByCurationSearch(w http.ResponseWriter, r *http.Request,
 	w.Header().Set("Content-Disposition", contentDisposition)
 
 	if err := exporter.Flush(); err != nil {
-		h.Logger.Errorw("dataset search: could not export search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("dataset search: could not export search", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 

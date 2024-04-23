@@ -1,6 +1,6 @@
-<div{{if .DismissAfter}} hx-ext="remove-me"{{end}}>
+<div{{if .DismissAfter}} hx-ext="remove-me" remove-me="{{.DismissAfter}}ms"{{end}}>
     {{if eq .Type "simple"}}
-    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false"{{if .DismissAfter}} remove-me="{{.DismissAfter}}ms"{{end}}>
+    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
         <div class="toast-body">
             {{if eq .Level "success"}}
             <i class="if if--success if-check-circle-fill"></i>
@@ -26,7 +26,7 @@
     {{end}}
 
     {{if eq .Type "complex"}}
-    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false"{{if .DismissAfter}} remove-me="{{.DismissAfter}}ms"{{end}}>
+    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
         <div class="toast-header">
             <div class="u-divide-x">
                 <span class="c-subline">{{.Application}}</span>
