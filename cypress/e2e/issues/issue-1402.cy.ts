@@ -14,7 +14,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.get(".btn .if-more").click();
         cy.contains(".dropdown-item", "Delete").click();
 
-        cy.ensureModal("Are you sure?")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.get(".modal-body").should(
               "contain",

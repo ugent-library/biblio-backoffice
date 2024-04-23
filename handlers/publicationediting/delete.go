@@ -12,7 +12,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/views/publication"
+	"github.com/ugent-library/biblio-backoffice/views"
 )
 
 type YieldConfirmDelete struct {
@@ -23,8 +23,14 @@ type YieldConfirmDelete struct {
 
 func (h *Handler) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
+	publication := ctx.GetPublication(r)
 
-	publication.ConfirmDelete(c, ctx.GetPublication(r), r.URL.Query().Get("redirect-url")).Render(r.Context(), w)
+	views.ConfirmDelete(views.ConfirmDeleteArgs{
+		Context:    c,
+		Question:   "Are you sure you want to delete this publication?",
+		DeleteUrl:  c.PathTo("publication_delete", "id", publication.ID, "redirect-url", r.URL.Query().Get("redirect-url")),
+		SnapshotID: publication.SnapshotID,
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
