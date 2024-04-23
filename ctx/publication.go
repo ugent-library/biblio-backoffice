@@ -40,7 +40,20 @@ func RequireViewPublication(next http.Handler) http.Handler {
 		c := Get(r)
 
 		if !c.User.CanViewPublication(GetPublication(r)) {
-			c.HandleError(w, r, httperror.Unauthorized)
+			c.HandleError(w, r, httperror.Forbidden)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func RequireEditPublication(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c := Get(r)
+
+		if !c.User.CanEditPublication(GetPublication(r)) {
+			c.HandleError(w, r, httperror.Forbidden)
 			return
 		}
 
