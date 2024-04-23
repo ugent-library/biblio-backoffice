@@ -339,8 +339,8 @@ func Register(c Config) {
 					r.Get("/contributors/{role}/{position}/confirm-delete", publicationEditingHandler.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
 
 					// publish
-					r.Get("/publish/confirm", publicationEditingHandler.ConfirmPublish).Name("publication_confirm_publish")
-					r.Post("/publish", publicationEditingHandler.Publish).Name("publication_publish")
+					r.Get("/publish/confirm", publicationediting.ConfirmPublish).Name("publication_confirm_publish")
+					r.Post("/publish", publicationediting.Publish).Name("publication_publish")
 
 					// withdraw
 					r.Get("/withdraw/confirm", publicationEditingHandler.ConfirmWithdraw).Name("publication_confirm_withdraw")
