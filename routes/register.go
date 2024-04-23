@@ -326,9 +326,6 @@ func Register(c Config) {
 					// edit publication type
 					r.Get("/type/confirm", publicationEditingHandler.ConfirmUpdateType).Name("publication_confirm_update_type")
 
-					// links
-					r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", publicationediting.ConfirmDeleteLink).Name("publication_confirm_delete_link")
-
 					// contributor actions
 					r.Get("/contributors/{role}/{position}/confirm-delete", publicationEditingHandler.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
 
@@ -347,6 +344,14 @@ func Register(c Config) {
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
+					})
+
+					// edit only
+					r.Group(func(r *ich.Mux) {
+						r.Use(ctx.RequireEditPublication)
+
+						// links
+						r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", publicationediting.ConfirmDeleteLink).Name("publication_confirm_delete_link")
 					})
 				})
 
