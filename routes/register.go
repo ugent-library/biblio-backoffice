@@ -352,6 +352,14 @@ func Register(c Config) {
 						r.Use(ctx.RequireCurator)
 					})
 
+					// edit only
+					r.Group(func(r *ich.Mux) {
+						r.Use(ctx.RequireEditPublication)
+
+						// links
+						r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", publicationediting.ConfirmDeleteLink).Name("publication_confirm_delete_link")
+					})
+
 					// view only functions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireViewPublication)
@@ -770,9 +778,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/links/{link_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLink)).
 			Name("publication_update_link")
-		r.Get("/publication/{id}/{snapshot_id}/links/{link_id}/confirm-delete",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteLink)).
-			Name("publication_confirm_delete_link")
 		r.Delete("/publication/{id}/links/{link_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLink)).
 			Name("publication_delete_link")
