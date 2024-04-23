@@ -116,11 +116,6 @@ func Register(c Config) {
 		BaseURL:         c.BaseURL,
 		FrontendBaseUrl: c.FrontendURL,
 	}
-	authenticatingHandler := &authenticating.Handler{
-		BaseHandler:   baseHandler,
-		OIDCAuth:      c.OIDCAuth,
-		UsernameClaim: c.UsernameClaim,
-	}
 	impersonatingHandler := &impersonating.Handler{
 		BaseHandler:       baseHandler,
 		UserSearchService: c.Services.UserSearchService,
@@ -270,14 +265,21 @@ func Register(c Config) {
 					http.StatusNotFound:            handlers.NotFound,
 					http.StatusInternalServerError: handlers.InternalServerError,
 				},
-				SessionName:  c.SessionName,
-				SessionStore: c.SessionStore,
-				BaseURL:      c.BaseURL,
-				FrontendURL:  c.FrontendURL,
-				CSRFName:     "csrf-token",
+				SessionName:   c.SessionName,
+				SessionStore:  c.SessionStore,
+				BaseURL:       c.BaseURL,
+				FrontendURL:   c.FrontendURL,
+				CSRFName:      "csrf-token",
+				OIDCAuth:      c.OIDCAuth,
+				UsernameClaim: c.UsernameClaim,
 			}))
 
 			r.NotFound(handlers.NotFound)
+
+			// authentication
+			r.Get("/auth/openid-connect/callback", authenticating.Callback)
+			r.Get("/login", authenticating.Login).Name("login")
+			r.Get("/logout", authenticating.Logout).Name("logout")
 
 			// home
 			r.Get("/", handlers.Home).Name("home")
@@ -303,6 +305,9 @@ func Register(c Config) {
 					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
 					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
 					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
+
+					// change user role
+					r.Put("/role/{role}", authenticating.UpdateRole).Name("update_role")
 
 					// export publications
 					r.Get("/publication.{format}", publicationexporting.ExportByCurationSearch).Name("export_publications")
@@ -377,20 +382,6 @@ func Register(c Config) {
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// authenticate user
-		r.Get("/auth/openid-connect/callback",
-			authenticatingHandler.Wrap(authenticatingHandler.Callback))
-		r.Get("/login",
-			authenticatingHandler.Wrap(authenticatingHandler.Login)).
-			Name("login")
-		r.Get("/logout",
-			authenticatingHandler.Wrap(authenticatingHandler.Logout)).
-			Name("logout")
-		// change user role
-		r.Put("/role/{role}",
-			authenticatingHandler.Wrap(authenticatingHandler.UpdateRole)).
-			Name("update_role")
 
 		// impersonate user
 		r.Get("/impersonation/add",
