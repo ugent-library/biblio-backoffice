@@ -387,8 +387,8 @@ func Register(c Config) {
 					r.Post("/publish", datasetediting.Publish).Name("dataset_publish")
 
 					// withdraw
-					r.Get("/withdraw/confirm", datasetEditingHandler.ConfirmWithdraw).Name("dataset_confirm_withdraw")
-					r.Post("/withdraw", datasetEditingHandler.Withdraw).Name("dataset_withdraw")
+					r.Get("/withdraw/confirm", datasetediting.ConfirmWithdraw).Name("dataset_confirm_withdraw")
+					r.Post("/withdraw", datasetediting.Withdraw).Name("dataset_withdraw")
 
 					// re-publish
 					r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
