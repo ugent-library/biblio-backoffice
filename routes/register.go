@@ -116,11 +116,6 @@ func Register(c Config) {
 		BaseURL:         c.BaseURL,
 		FrontendBaseUrl: c.FrontendURL,
 	}
-	dashboardHandler := &dashboard.Handler{
-		BaseHandler:            baseHandler,
-		DatasetSearchIndex:     c.Services.DatasetSearchIndex,
-		PublicationSearchIndex: c.Services.PublicationSearchIndex,
-	}
 	frontofficeHandler := &frontoffice.Handler{
 		BaseHandler:   baseHandler,
 		Repo:          c.Services.Repo,
@@ -287,10 +282,17 @@ func Register(c Config) {
 				// dashboard recent activity component
 				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
 
-				// candidate records
+				// curator only routes
 				r.Group(func(r *ich.Mux) {
 					r.Use(ctx.RequireCurator)
 
+					r.Group(func(r *ich.Mux) {
+						r.Use(ctx.SetNav("dashboard"))
+						r.Get("/dashboard/datasets/{type}", dashboard.CuratorDatasets).Name("dashboard_datasets")
+						r.Get("/dashboard/publications/{type}", dashboard.CuratorPublications).Name("dashboard_publications")
+					})
+					r.Post("/dashboard/refresh-apublications/{type}", dashboard.RefreshAPublications).Name("dashboard_refresh_apublications")
+					r.Post("/dashboard/refresh-upublications/{type}", dashboard.RefreshUPublications).Name("dashboard_refresh_upublications")
 					r.With(ctx.SetNav("candidate_records")).Get("/candidate-records", candidaterecords.CandidateRecords).Name("candidate_records")
 					r.Get("/candidate-records-icon", candidaterecords.CandidateRecordsIcon).Name("candidate_records_icon")
 					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
@@ -392,16 +394,6 @@ func Register(c Config) {
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// dashboard
-		r.Get("/dashboard/publications/{type}", dashboardHandler.Wrap(dashboardHandler.Publications)).
-			Name("dashboard_publications")
-		r.Get("/dashboard/datasets/{type}", dashboardHandler.Wrap(dashboardHandler.Datasets)).
-			Name("dashboard_datasets")
-		r.Post("/dashboard/refresh-apublications/{type}", dashboardHandler.Wrap(dashboardHandler.RefreshAPublications)).
-			Name("dashboard_refresh_apublications")
-		r.Post("/dashboard/refresh-upublications/{type}", dashboardHandler.Wrap(dashboardHandler.RefreshUPublications)).
-			Name("dashboard_refresh_upublications")
 
 		// search datasets
 		r.Get("/dataset",
