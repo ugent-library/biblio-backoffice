@@ -116,12 +116,6 @@ func Register(c Config) {
 		BaseURL:         c.BaseURL,
 		FrontendBaseUrl: c.FrontendURL,
 	}
-
-  authenticatingHandler := &authenticating.Handler{
-		BaseHandler:   baseHandler,
-		OIDCAuth:      c.OIDCAuth,
-		UsernameClaim: c.UsernameClaim,
-	}
 	dashboardHandler := &dashboard.Handler{
 		BaseHandler:            baseHandler,
 		DatasetSearchIndex:     c.Services.DatasetSearchIndex,
@@ -308,10 +302,10 @@ func Register(c Config) {
 					r.Get("/impersonation/suggestions", impersonating.AddImpersonationSuggest).Name("suggest_impersonations")
 					r.Post("/impersonation", impersonating.CreateImpersonation).Name("create_impersonation")
 
-          // export datasets
+					// export datasets
 					r.Get("/dataset.{format}", datasetexporting.ExportByCurationSearch).Name("export_datasets")
 
-          // change user role
+					// change user role
 					r.Put("/role/{role}", authenticating.UpdateRole).Name("update_role")
 
 					// export publications
@@ -398,20 +392,6 @@ func Register(c Config) {
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// authenticate user
-		r.Get("/auth/openid-connect/callback",
-			authenticatingHandler.Wrap(authenticatingHandler.Callback))
-		r.Get("/login",
-			authenticatingHandler.Wrap(authenticatingHandler.Login)).
-			Name("login")
-		r.Get("/logout",
-			authenticatingHandler.Wrap(authenticatingHandler.Logout)).
-			Name("logout")
-		// change user role
-		r.Put("/role/{role}",
-			authenticatingHandler.Wrap(authenticatingHandler.UpdateRole)).
-			Name("update_role")
 
 		// dashboard
 		r.Get("/dashboard/publications/{type}", dashboardHandler.Wrap(dashboardHandler.Publications)).
