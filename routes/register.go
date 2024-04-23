@@ -787,7 +787,7 @@ func Register(c Config) {
 			Name("publication_delete_project")
 
 		// edit publication links
-		r.Get("/publicaton/{id}/links/add",
+		r.Get("/publication/{id}/links/add",
 			publicationEditingHandler.Wrap(publicationEditingHandler.AddLink)).
 			Name("publication_add_link")
 		r.Post("/publication/{id}/links",
