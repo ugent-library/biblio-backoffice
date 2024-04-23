@@ -15,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	views "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
@@ -192,7 +193,7 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
 		c.Log.Warnw("confirm delete publication abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		render.BadRequest(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
