@@ -83,8 +83,14 @@ export default function setUpDataset({
     cy.updateFields(
       "Creators",
       () => {
+        cy.intercept("/dataset/*/contributors/author/suggestions?*").as(
+          "suggestCreator",
+        );
+
         cy.setFieldByLabel("First name", "John");
+        cy.wait("@suggestCreator", NO_LOG);
         cy.setFieldByLabel("Last name", "Doe");
+        cy.wait("@suggestCreator", NO_LOG);
 
         cy.contains(".btn", "Add creator", NO_LOG).click(NO_LOG);
       },
