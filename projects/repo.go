@@ -66,6 +66,15 @@ func (r *Repo) EachProject(ctx context.Context, fn func(*Project) bool) error {
 	return rows.Err()
 }
 
+func (r *Repo) CountProjects(ctx context.Context) (int64, error) {
+	var count int64
+	err := r.conn.QueryRow(ctx, "SELECT COUNT(*) FROM projects").Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 func (r *Repo) ImportProject(ctx context.Context, p ImportProjectParams) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {

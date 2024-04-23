@@ -6,6 +6,7 @@ import (
 
 	"slices"
 
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
@@ -13,45 +14,28 @@ import (
 	"github.com/ugent-library/oidc"
 )
 
-type Handler struct {
-	handlers.BaseHandler
-	OIDCAuth      *oidc.Auth
-	UsernameClaim string
-}
-
-type Context struct {
-	handlers.BaseContext
-}
-
-func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
-	return h.BaseHandler.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
-		fn(w, r, Context{
-			BaseContext: ctx,
-		})
-	})
-}
-
-func (h *Handler) Callback(w http.ResponseWriter, r *http.Request, ctx Context) {
+func Callback(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
 	claims := &oidc.Claims{}
-	if err := h.OIDCAuth.CompleteAuth(w, r, &claims); err != nil {
-		h.Logger.Errorw("authentication: OIDC client could not complete exchange:", "errors", err)
-		h.InternalServerError(w, r, ctx.BaseContext)
+	if err := c.OIDCAuth.CompleteAuth(w, r, &claims); err != nil {
+		c.Log.Errorw("authentication: OIDC client could not complete exchange:", "errors", err)
+		c.HandleError(w, r, err)
 		return
 	}
 
-	username := claims.GetString(h.UsernameClaim)
+	username := claims.GetString(c.UsernameClaim)
 
-	user, err := h.UserService.GetUserByUsername(username)
+	user, err := c.UserService.GetUserByUsername(username)
 	if err != nil {
-		h.Logger.Warnw("authentication: No user with that name could be found:", "errors", err, "user", username)
-		h.InternalServerError(w, r, ctx.BaseContext)
+		c.Log.Warnw("authentication: No user with that name could be found:", "errors", err, "user", username)
+		c.HandleError(w, r, err)
 		return
 	}
 
-	session, err := h.SessionStore.Get(r, h.SessionName)
+	session, err := c.SessionStore.Get(r, c.SessionName)
 	if err != nil {
-		h.Logger.Errorw("authentication: session could not be retrieved:", "errors", err)
-		h.InternalServerError(w, r, ctx.BaseContext)
+		c.Log.Errorw("authentication: session could not be retrieved:", "errors", err)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -61,27 +45,29 @@ func (h *Handler) Callback(w http.ResponseWriter, r *http.Request, ctx Context) 
 	}
 
 	if err := session.Save(r, w); err != nil {
-		h.Logger.Errorw("authentication: session could not be saved:", "errors", err)
-		h.InternalServerError(w, r, ctx.BaseContext)
+		c.Log.Errorw("authentication: session could not be saved:", "errors", err)
+		c.HandleError(w, r, err)
 		return
 	}
 
-	http.Redirect(w, r, h.PathFor("home").String(), http.StatusFound)
+	http.Redirect(w, r, c.PathTo("home").String(), http.StatusFound)
 }
 
-func (h *Handler) Login(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if err := h.OIDCAuth.BeginAuth(w, r); err != nil {
-		h.Logger.Errorw("authentication: OIDC client could not begin exchange:", "errors", err)
-		h.InternalServerError(w, r, ctx.BaseContext)
+func Login(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	if err := c.OIDCAuth.BeginAuth(w, r); err != nil {
+		c.Log.Errorw("authentication: OIDC client could not begin exchange:", "errors", err)
+		c.HandleError(w, r, err)
 		return
 	}
 }
 
-func (h *Handler) Logout(w http.ResponseWriter, r *http.Request, ctx Context) {
-	session, err := h.SessionStore.Get(r, h.SessionName)
+func Logout(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	session, err := c.SessionStore.Get(r, c.SessionName)
 	if err != nil {
-		h.Logger.Errorw("authentication: session could not be retrieved:", "errors", err)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("authentication: session could not be retrieved:", "errors", err)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -90,19 +76,16 @@ func (h *Handler) Logout(w http.ResponseWriter, r *http.Request, ctx Context) {
 	delete(session.Values, handlers.OriginalUserIDKey)
 	delete(session.Values, handlers.OriginalUserRoleKey)
 	if err := session.Save(r, w); err != nil {
-		h.Logger.Errorw("authentication: session could not be saved:", "errors", err)
-		h.InternalServerError(w, r, ctx.BaseContext)
+		c.Log.Errorw("authentication: session could not be saved:", "errors", err)
+		c.HandleError(w, r, err)
 		return
 	}
 
-	http.Redirect(w, r, h.PathFor("home").String(), http.StatusFound)
+	http.Redirect(w, r, c.PathTo("home").String(), http.StatusFound)
 }
 
-func (h *Handler) UpdateRole(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if ctx.User == nil || !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
-		return
-	}
+func UpdateRole(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
 
 	role := bind.PathValue(r, "role")
 
@@ -111,20 +94,20 @@ func (h *Handler) UpdateRole(w http.ResponseWriter, r *http.Request, ctx Context
 		return
 	}
 
-	session, err := h.SessionStore.Get(r, h.SessionName)
+	session, err := c.SessionStore.Get(r, c.SessionName)
 	if err != nil {
-		h.Logger.Errorw("authentication: session could not be retrieved:", "errors", err)
-		h.InternalServerError(w, r, ctx.BaseContext)
+		c.Log.Errorw("authentication: session could not be retrieved:", "errors", err)
+		c.HandleError(w, r, err)
 		return
 	}
 
 	session.Values[handlers.UserRoleKey] = role
 
 	if err := session.Save(r, w); err != nil {
-		h.Logger.Errorw("authentication: session could not be saved:", "errors", err)
-		h.InternalServerError(w, r, ctx.BaseContext)
+		c.Log.Errorw("authentication: session could not be saved:", "errors", err)
+		c.HandleError(w, r, err)
 		return
 	}
 
-	w.Header().Set("HX-Redirect", h.PathFor("dashboard").String())
+	w.Header().Set("HX-Redirect", c.PathTo("dashboard").String())
 }
