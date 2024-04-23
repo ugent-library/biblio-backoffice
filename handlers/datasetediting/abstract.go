@@ -6,13 +6,16 @@ import (
 	"net/http"
 
 	"github.com/leonelquinteros/gotext"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	views "github.com/ugent-library/biblio-backoffice/views/dataset"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
@@ -39,11 +42,6 @@ type YieldEditAbstract struct {
 	Context
 	AbstractID string
 	Form       *form.Form
-	Conflict   bool
-}
-type YieldDeleteAbstract struct {
-	Context
-	AbstractID string
 	Conflict   bool
 }
 
@@ -195,26 +193,25 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	})
 }
 
-func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
+func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("confirm delete dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("confirm delete dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	if b.SnapshotID != ctx.Dataset.SnapshotID {
+	if b.SnapshotID != dataset.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
+			Message: c.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
 
-	render.Layout(w, "show_modal", "dataset/confirm_delete_abstract", YieldDeleteAbstract{
-		Context:    ctx,
-		AbstractID: b.AbstractID,
-		Conflict:   false,
-	})
+	views.ConfirmDeleteAbstract(c, dataset, b.AbstractID).Render(r.Context(), w)
 }
 
 func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
