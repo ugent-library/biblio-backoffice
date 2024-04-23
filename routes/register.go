@@ -363,8 +363,8 @@ func Register(c Config) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 
 					// delete
-					r.Get("/confirm-delete", datasetEditingHandler.ConfirmDelete).Name("dataset_confirm_delete")
-					r.Delete("/", datasetEditingHandler.Delete).Name("dataset_delete")
+					r.Get("/confirm-delete", datasetediting.ConfirmDelete).Name("dataset_confirm_delete")
+					r.Delete("/", datasetediting.Delete).Name("dataset_delete")
 
 					// publish
 					r.Get("/publish/confirm", datasetEditingHandler.ConfirmPublish).Name("dataset_confirm_publish")
