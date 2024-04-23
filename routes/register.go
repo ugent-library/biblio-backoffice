@@ -367,8 +367,8 @@ func Register(c Config) {
 					r.Delete("/", datasetediting.Delete).Name("dataset_delete")
 
 					// publish
-					r.Get("/publish/confirm", datasetEditingHandler.ConfirmPublish).Name("dataset_confirm_publish")
-					r.Post("/publish", datasetEditingHandler.Publish).Name("dataset_publish")
+					r.Get("/publish/confirm", datasetediting.ConfirmPublish).Name("dataset_confirm_publish")
+					r.Post("/publish", datasetediting.Publish).Name("dataset_publish")
 
 					// withdraw
 					r.Get("/withdraw/confirm", datasetEditingHandler.ConfirmWithdraw).Name("dataset_confirm_withdraw")
