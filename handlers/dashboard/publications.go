@@ -9,10 +9,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 )
 
 type BindPublications struct {
@@ -50,19 +50,19 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 	allUPublicationYears, err := allUPublicationYears(c.PublicationSearchIndex)
 	if err != nil {
 		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 	allAPublicationYears, err := allAPublicationYears(c.PublicationSearchIndex)
 	if err != nil {
 		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
 		c.Log.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -95,7 +95,7 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
@@ -124,7 +124,7 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
@@ -167,7 +167,7 @@ func RefreshAPublications(w http.ResponseWriter, r *http.Request) {
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
 		c.Log.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -194,7 +194,7 @@ func RefreshAPublications(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
@@ -233,7 +233,7 @@ func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
 		c.Log.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		render.BadRequest(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -261,7 +261,7 @@ func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
