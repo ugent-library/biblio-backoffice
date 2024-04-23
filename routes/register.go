@@ -347,8 +347,8 @@ func Register(c Config) {
 					r.Post("/withdraw", publicationediting.Withdraw).Name("publication_withdraw")
 
 					// re-publish
-					r.Get("/republish/confirm", publicationEditingHandler.ConfirmRepublish).Name("publication_confirm_republish")
-					r.Post("/republish", publicationEditingHandler.Republish).Name("publication_republish")
+					r.Get("/republish/confirm", publicationediting.ConfirmRepublish).Name("publication_confirm_republish")
+					r.Post("/republish", publicationediting.Republish).Name("publication_republish")
 
 					// curator actions
 					r.Group(func(r *ich.Mux) {
