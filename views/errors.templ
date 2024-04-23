@@ -47,3 +47,26 @@ templ InternalServerError(c *ctx.Ctx) {
     </div>
     }
 }
+
+templ UserNotFound(c *ctx.Ctx) {
+    @pageLayout(c, "Biblio", nil) {
+    <div class="w-100 u-scroll-wrapper">
+        <div class="u-scroll-wrapper__body p-6">
+            <div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
+                <div class="bc-avatar bc-avatar--medium">
+                    ?
+                </div>
+                <h3 class="c-blank-slate-title">User record not found</h3>
+                <p>Your account does not exist (anymore) or has been made inactive</p>
+
+                <div class="c-button-toolbar">
+                    <a class="btn btn-outline-primary" href={ templ.URL(c.PathTo("home").String()) }>
+                        <i class="if if-arrow-left"></i>
+                        <span class="btn-text">Take me home</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+}
