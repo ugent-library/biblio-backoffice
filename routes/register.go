@@ -121,10 +121,6 @@ func Register(c Config) {
 		OIDCAuth:      c.OIDCAuth,
 		UsernameClaim: c.UsernameClaim,
 	}
-	impersonatingHandler := &impersonating.Handler{
-		BaseHandler:       baseHandler,
-		UserSearchService: c.Services.UserSearchService,
-	}
 	dashboardHandler := &dashboard.Handler{
 		BaseHandler:            baseHandler,
 		DatasetSearchIndex:     c.Services.DatasetSearchIndex,
@@ -313,7 +309,16 @@ func Register(c Config) {
 					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
 					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
 					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
+
+					// impersonate user
+					r.Get("/impersonation/add", impersonating.AddImpersonation).Name("add_impersonation")
+					r.Get("/impersonation/suggestions", impersonating.AddImpersonationSuggest).Name("suggest_impersonations")
+					r.Post("/impersonation", impersonating.CreateImpersonation).Name("create_impersonation")
 				})
+
+				// delete impersonation
+				// TODO why doesn't a DELETE with methodoverride work here?
+				r.Post("/delete-impersonation", impersonating.DeleteImpersonation).Name("delete_impersonation")
 
 				// publications
 				r.Route("/publication/{id}", func(r *ich.Mux) {
@@ -395,21 +400,6 @@ func Register(c Config) {
 		r.Put("/role/{role}",
 			authenticatingHandler.Wrap(authenticatingHandler.UpdateRole)).
 			Name("update_role")
-
-		// impersonate user
-		r.Get("/impersonation/add",
-			impersonatingHandler.Wrap(impersonatingHandler.AddImpersonation)).
-			Name("add_impersonation")
-		r.Get("/impersonation/suggestions",
-			impersonatingHandler.Wrap(impersonatingHandler.AddImpersonationSuggest)).
-			Name("suggest_impersonations")
-		r.Post("/impersonation",
-			impersonatingHandler.Wrap(impersonatingHandler.CreateImpersonation)).
-			Name("create_impersonation")
-		// TODO why doesn't a DELETE with methodoverride work here?
-		r.Post("/delete-impersonation",
-			impersonatingHandler.Wrap(impersonatingHandler.DeleteImpersonation)).
-			Name("delete_impersonation")
 
 		// dashboard
 		r.Get("/dashboard/publications/{type}", dashboardHandler.Wrap(dashboardHandler.Publications)).

@@ -4,35 +4,13 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/backends"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
-	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
 )
-
-type Handler struct {
-	handlers.BaseHandler
-	UserSearchService backends.UserSearchService
-}
-
-type Context struct {
-	handlers.BaseContext
-}
-
-func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
-	return h.BaseHandler.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
-		if ctx.User == nil {
-			render.Unauthorized(w, r)
-			return
-		}
-
-		fn(w, r, Context{
-			BaseContext: ctx,
-		})
-	})
-}
 
 type BindAddCImpersonationSuggest struct {
 	FirstName string `query:"first_name"`
@@ -43,65 +21,42 @@ type BindCreateImpersonation struct {
 	ID string `form:"id"`
 }
 
-type YieldAddImpersonation struct {
-	Context
-	Form *form.Form
-}
-
-type YieldAddImpersonationSuggest struct {
-	Context
-	FirstName string
-	LastName  string
-	Hits      []*models.Person
-}
-
-func (h *Handler) AddImpersonation(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if ctx.OriginalUser != nil {
-		h.Logger.Warn("add impersonation: already impersonating", "user", ctx.OriginalUser.ID)
-		render.BadRequest(w, r, errors.New("already impersonating"))
-	}
-
-	if !ctx.User.CanImpersonateUser() {
-		h.Logger.Warn("add impersonation: user does not have permission to impersonate", "user", ctx.User.ID)
-		render.Unauthorized(w, r)
+func AddImpersonation(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	if c.OriginalUser != nil {
+		c.Log.Warn("add impersonation: already impersonating", "user", c.OriginalUser.ID)
+		c.HandleError(w, r, errors.New("already impersonating"))
 		return
 	}
 
-	render.Layout(w, "show_modal", "impersonation/add", YieldAddImpersonation{
-		Context: ctx,
-		Form:    h.addImpersonationForm(),
-	})
+	views.AddImpersonation(c, addImpersonationForm(c)).Render(r.Context(), w)
 }
 
-func (h *Handler) AddImpersonationSuggest(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if ctx.OriginalUser != nil {
-		h.Logger.Warn("add impersonation: already impersonating", "user", ctx.OriginalUser.ID)
-		render.BadRequest(w, r, errors.New("already impersonating"))
-	}
-
-	if !ctx.User.CanImpersonateUser() {
-		h.Logger.Warn("add impersonation: user does not have permission to impersonate", "user", ctx.User.ID)
-		render.Unauthorized(w, r)
+func AddImpersonationSuggest(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	if c.OriginalUser != nil {
+		c.Log.Warn("add impersonation: already impersonating", "user", c.OriginalUser.ID)
+		c.HandleError(w, r, errors.New("already impersonating"))
 		return
 	}
 
 	b := BindAddCImpersonationSuggest{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("suggest impersonation: could not bind request arguments:", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("suggest impersonation: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 
-	hits, err := h.UserSearchService.SuggestUsers(b.FirstName + " " + b.LastName)
+	hits, err := c.UserSearchService.SuggestUsers(b.FirstName + " " + b.LastName)
 	if err != nil {
-		h.Logger.Errorw("suggest impersonation: could not suggest users:", "errors", err, "request", r, "user", ctx.User.ID)
+		c.Log.Errorw("suggest impersonation: could not suggest users:", "errors", err, "request", r, "user", c.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
 	// exclude the current user
 	for i, hit := range hits {
-		if hit.ID == ctx.User.ID {
+		if hit.ID == c.User.ID {
 			if i == 0 {
 				hits = hits[1:]
 			} else {
@@ -111,71 +66,66 @@ func (h *Handler) AddImpersonationSuggest(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	render.Partial(w, "impersonation/suggest", YieldAddImpersonationSuggest{
-		Context:   ctx,
-		FirstName: b.FirstName,
-		LastName:  b.LastName,
-		Hits:      hits,
-	})
+	views.AddImpersonationSuggest(c, b.FirstName, b.LastName, hits).Render(r.Context(), w)
 }
 
-func (h *Handler) CreateImpersonation(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if ctx.OriginalUser != nil {
-		h.Logger.Warn("create impersonation: already impersonating", "user", ctx.OriginalUser.ID)
-		render.BadRequest(w, r, errors.New("already impersonating"))
-	}
-
-	if !ctx.User.CanImpersonateUser() {
-		h.Logger.Warn("create impersonation: user does not have permission to impersonate", "user", ctx.User.ID)
-		render.Unauthorized(w, r)
+func CreateImpersonation(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	if c.OriginalUser != nil {
+		c.Log.Warn("create impersonation: already impersonating", "user", c.OriginalUser.ID)
+		c.HandleError(w, r, errors.New("already impersonating"))
 		return
 	}
 
 	b := BindCreateImpersonation{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("create impersonation: could not bind request arguments", "errors", err, "request", r)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("create impersonation: could not bind request arguments", "errors", err, "request", r)
+		c.HandleError(w, r, err)
 		return
 	}
 
-	user, err := h.UserService.GetUser(b.ID)
+	user, err := c.UserService.GetUser(b.ID)
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("create impersonation: unable to fetch user %s: %w", b.ID, err)
+		c.HandleError(w, r, err)
 		return
 	}
 
 	// TODO handle user not found
 
-	session, err := h.SessionStore.Get(r, h.SessionName)
+	session, err := c.SessionStore.Get(r, c.SessionName)
 	if err != nil {
-		h.Logger.Errorw("create impersonation: session could not be retrieved:", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("create impersonation: session could not be retrieved:", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 
-	session.Values[handlers.OriginalUserIDKey] = ctx.User.ID
-	session.Values[handlers.OriginalUserRoleKey] = ctx.UserRole
+	session.Values[handlers.OriginalUserIDKey] = c.User.ID
+	session.Values[handlers.OriginalUserRoleKey] = c.UserRole
 	session.Values[handlers.UserIDKey] = user.ID
 	session.Values[handlers.UserRoleKey] = "user"
 
 	if err = session.Save(r, w); err != nil {
-		h.Logger.Errorw("create impersonation: session could not be saved:", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("create impersonation: session could not be saved:", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 
-	http.Redirect(w, r, h.PathFor("home").String(), http.StatusFound)
+	http.Redirect(w, r, c.PathTo("home").String(), http.StatusFound)
 }
 
-func (h *Handler) DeleteImpersonation(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if ctx.OriginalUser == nil {
-		render.BadRequest(w, r, errors.New("no impersonation"))
+func DeleteImpersonation(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	if c.OriginalUser == nil {
+		c.Log.Warnf("delete impersonation: %w", errors.New("no impersonation"))
+		c.HandleError(w, r, errors.New("no impersonation"))
+		return
 	}
 
-	session, err := h.SessionStore.Get(r, h.SessionName)
+	session, err := c.SessionStore.Get(r, c.SessionName)
 	if err != nil {
-		h.Logger.Errorw("delete impersonation: session could not be retrieved:", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("delete impersonation: session could not be retrieved:", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -185,16 +135,16 @@ func (h *Handler) DeleteImpersonation(w http.ResponseWriter, r *http.Request, ct
 	delete(session.Values, handlers.OriginalUserRoleKey)
 
 	if err = session.Save(r, w); err != nil {
-		h.Logger.Errorw("delete impersonation: session could not be saved:", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("delete impersonation: session could not be saved:", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, err)
 		return
 	}
 
-	http.Redirect(w, r, h.PathFor("home").String(), http.StatusFound)
+	http.Redirect(w, r, c.PathTo("home").String(), http.StatusFound)
 }
 
-func (h *Handler) addImpersonationForm() *form.Form {
-	suggestURL := h.PathFor("suggest_impersonations").String()
+func addImpersonationForm(c *ctx.Ctx) *form.Form {
+	suggestURL := c.PathTo("suggest_impersonations").String()
 
 	return form.New().
 		WithTheme("cols").
