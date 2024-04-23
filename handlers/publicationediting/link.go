@@ -15,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	views "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
@@ -192,7 +193,7 @@ func ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
 	var b BindDeleteLink
 	if err := bind.Request(r, &b); err != nil {
 		c.Log.Errorw("confirm delete publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		render.BadRequest(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
