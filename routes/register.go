@@ -375,8 +375,8 @@ func Register(c Config) {
 					r.Post("/withdraw", datasetEditingHandler.Withdraw).Name("dataset_withdraw")
 
 					// re-publish
-					r.Get("/republish/confirm", datasetEditingHandler.ConfirmRepublish).Name("dataset_confirm_republish")
-					r.Post("/republish", datasetEditingHandler.Republish).Name("dataset_republish")
+					r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
+					r.Post("/republish", datasetediting.Republish).Name("dataset_republish")
 
 					// contributor actions
 					r.Get("/contributors/{role}/{position}/confirm-delete", datasetediting.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")

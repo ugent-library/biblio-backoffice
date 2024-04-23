@@ -13,23 +13,24 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views/dataset"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
-func (h *Handler) ConfirmRepublish(w http.ResponseWriter, r *http.Request) {
+func ConfirmRepublish(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	redirectUrl := r.URL.Query().Get("redirect-url")
 
 	dataset.ConfirmRepublish(c, ctx.GetDataset(r), redirectUrl).Render(r.Context(), w)
 }
 
-func (h *Handler) Republish(w http.ResponseWriter, r *http.Request) {
+func Republish(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	dataset := ctx.GetDataset(r)
 
 	if !c.User.CanPublishDataset(dataset) {
-		h.Logger.Warnw("republish dataset: user has no permission to republish", "dataset", dataset.ID, "user", c.User.ID)
-		render.Forbidden(w, r)
+		c.Log.Warnw("republish dataset: user has no permission to republish", "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
 
@@ -47,7 +48,7 @@ func (h *Handler) Republish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), dataset, c.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), dataset, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -59,8 +60,8 @@ func (h *Handler) Republish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		h.Logger.Errorf("republish dataset: could not save the dataset:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("republish dataset: could not save the dataset:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
@@ -68,7 +69,7 @@ func (h *Handler) Republish(w http.ResponseWriter, r *http.Request) {
 		WithLevel("success").
 		WithBody(template.HTML("<p>Dataset was successfully republished.</p>"))
 
-	h.AddFlash(r, w, *flash)
+	c.PersistFlash(w, *flash)
 
 	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))
 }
