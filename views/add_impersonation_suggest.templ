@@ -16,7 +16,7 @@ templ AddImpersonationSuggest(c *ctx.Ctx, firstName string, lastName string, hit
                     @contributorShowSummary(c, models.ContributorFromPerson(hit))
                     </div>
                     <div class="c-button-toolbar">
-                        <form action={c.PathTo("create_impersonation").String()} method="POST">
+                        <form action={templ.URL(c.PathTo("create_impersonation").String())} method="POST">
                             @csrfField(c)
                             <input type="hidden" name="id" value={hit.ID}/>
                             <button type="submit" class="btn btn-primary">Change user</button>
