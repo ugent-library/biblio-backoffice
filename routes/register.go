@@ -216,11 +216,6 @@ func Register(c Config) {
 		Repo:        c.Services.Repo,
 	}
 
-	mediaTypesHandler := &mediatypes.Handler{
-		BaseHandler:            baseHandler,
-		MediaTypeSearchService: c.Services.MediaTypeSearchService,
-	}
-
 	// frontoffice data exchange api
 	c.Router.Group(func(r *ich.Mux) {
 		r.Use(httpx.BasicAuth(c.FrontendUsername, c.FrontendPassword))
@@ -377,7 +372,7 @@ func Register(c Config) {
 				})
 
 				// media types
-				r.Get("/media_type/suggestions", mediaTypesHandler.Suggest).Name("suggest_media_types")
+				r.Get("/media_type/suggestions", mediatypes.Suggest).Name("suggest_media_types")
 			})
 		})
 		// END NEW STYLE HANDLERS
