@@ -344,6 +344,13 @@ func Register(c Config) {
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
 					})
+
+					// view only functions
+					r.Group(func(r *ich.Mux) {
+						r.Use(ctx.RequireViewPublication)
+
+						r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
+					})
 				})
 
 				// datasets
@@ -691,9 +698,6 @@ func Register(c Config) {
 		r.Get("/publication/{id}/activity",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowActivity)).
 			Name("publication_activity")
-		r.Get("/publication/{id}/files/{file_id}",
-			publicationViewingHandler.Wrap(publicationViewingHandler.DownloadFile)).
-			Name("publication_download_file")
 
 		// lock publication
 		r.Post("/publication/{id}/lock",
