@@ -343,8 +343,8 @@ func Register(c Config) {
 					r.Post("/publish", publicationediting.Publish).Name("publication_publish")
 
 					// withdraw
-					r.Get("/withdraw/confirm", publicationEditingHandler.ConfirmWithdraw).Name("publication_confirm_withdraw")
-					r.Post("/withdraw", publicationEditingHandler.Withdraw).Name("publication_withdraw")
+					r.Get("/withdraw/confirm", publicationediting.ConfirmWithdraw).Name("publication_confirm_withdraw")
+					r.Post("/withdraw", publicationediting.Withdraw).Name("publication_withdraw")
 
 					// re-publish
 					r.Get("/republish/confirm", publicationEditingHandler.ConfirmRepublish).Name("publication_confirm_republish")
