@@ -379,7 +379,7 @@ func Register(c Config) {
 					r.Post("/republish", datasetEditingHandler.Republish).Name("dataset_republish")
 
 					// contributor actions
-					r.Get("/contributors/{role}/{position}/confirm-delete", datasetEditingHandler.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
+					r.Get("/contributors/{role}/{position}/confirm-delete", datasetediting.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
 
 					// curator actions
 					r.Group(func(r *ich.Mux) {
