@@ -14,6 +14,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
@@ -147,12 +148,6 @@ type YieldConfirmUpdateContributor struct {
 	Active      bool
 	Form        *form.Form
 	EditNext    bool
-}
-
-type YieldDeleteContributor struct {
-	Context
-	Role     string
-	Position int
 }
 
 func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -605,13 +600,13 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 	})
 }
 
-func (h *Handler) ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request) {
+func ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
 	b := BindDeleteContributor{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("confirm delete publication contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("confirm delete publication contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
