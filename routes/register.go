@@ -116,11 +116,6 @@ func Register(c Config) {
 		BaseURL:         c.BaseURL,
 		FrontendBaseUrl: c.FrontendURL,
 	}
-	authenticatingHandler := &authenticating.Handler{
-		BaseHandler:   baseHandler,
-		OIDCAuth:      c.OIDCAuth,
-		UsernameClaim: c.UsernameClaim,
-	}
 	dashboardHandler := &dashboard.Handler{
 		BaseHandler:            baseHandler,
 		DatasetSearchIndex:     c.Services.DatasetSearchIndex,
@@ -142,11 +137,6 @@ func Register(c Config) {
 	datasetSearchingHandler := &datasetsearching.Handler{
 		BaseHandler:        baseHandler,
 		DatasetSearchIndex: c.Services.DatasetSearchIndex,
-	}
-	datasetExportingHandler := &datasetexporting.Handler{
-		BaseHandler:          baseHandler,
-		DatasetListExporters: c.Services.DatasetListExporters,
-		DatasetSearchIndex:   c.Services.DatasetSearchIndex,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
@@ -174,11 +164,6 @@ func Register(c Config) {
 		BaseHandler:            baseHandler,
 		PublicationSearchIndex: c.Services.PublicationSearchIndex,
 		FileStore:              c.Services.FileStore,
-	}
-	publicationExportingHandler := &publicationexporting.Handler{
-		BaseHandler:              baseHandler,
-		PublicationListExporters: c.Services.PublicationListExporters,
-		PublicationSearchIndex:   c.Services.PublicationSearchIndex,
 	}
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
@@ -210,11 +195,6 @@ func Register(c Config) {
 	publicationBatchHandler := &publicationbatch.Handler{
 		BaseHandler: baseHandler,
 		Repo:        c.Services.Repo,
-	}
-
-	mediaTypesHandler := &mediatypes.Handler{
-		BaseHandler:            baseHandler,
-		MediaTypeSearchService: c.Services.MediaTypeSearchService,
 	}
 
 	// frontoffice data exchange api
@@ -276,14 +256,21 @@ func Register(c Config) {
 					http.StatusNotFound:            handlers.NotFound,
 					http.StatusInternalServerError: handlers.InternalServerError,
 				},
-				SessionName:  c.SessionName,
-				SessionStore: c.SessionStore,
-				BaseURL:      c.BaseURL,
-				FrontendURL:  c.FrontendURL,
-				CSRFName:     "csrf-token",
+				SessionName:   c.SessionName,
+				SessionStore:  c.SessionStore,
+				BaseURL:       c.BaseURL,
+				FrontendURL:   c.FrontendURL,
+				CSRFName:      "csrf-token",
+				OIDCAuth:      c.OIDCAuth,
+				UsernameClaim: c.UsernameClaim,
 			}))
 
 			r.NotFound(handlers.NotFound)
+
+			// authentication
+			r.Get("/auth/openid-connect/callback", authenticating.Callback)
+			r.Get("/login", authenticating.Login).Name("login")
+			r.Get("/logout", authenticating.Logout).Name("logout")
 
 			// home
 			r.Get("/", handlers.Home).Name("home")
@@ -314,6 +301,15 @@ func Register(c Config) {
 					r.Get("/impersonation/add", impersonating.AddImpersonation).Name("add_impersonation")
 					r.Get("/impersonation/suggestions", impersonating.AddImpersonationSuggest).Name("suggest_impersonations")
 					r.Post("/impersonation", impersonating.CreateImpersonation).Name("create_impersonation")
+
+					// export datasets
+					r.Get("/dataset.{format}", datasetexporting.ExportByCurationSearch).Name("export_datasets")
+
+					// change user role
+					r.Put("/role/{role}", authenticating.UpdateRole).Name("update_role")
+
+					// export publications
+					r.Get("/publication.{format}", publicationexporting.ExportByCurationSearch).Name("export_publications")
 				})
 
 				// delete impersonation
@@ -330,6 +326,9 @@ func Register(c Config) {
 
 					// edit publication type
 					r.Get("/type/confirm", publicationEditingHandler.ConfirmUpdateType).Name("publication_confirm_update_type")
+
+					// abstracts
+					r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", publicationediting.ConfirmDeleteAbstract).Name("publication_confirm_delete_abstract")
 
 					// contributor actions
 					r.Get("/contributors/{role}/{position}/confirm-delete", publicationEditingHandler.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
@@ -349,6 +348,13 @@ func Register(c Config) {
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
+					})
+
+					// view only functions
+					r.Group(func(r *ich.Mux) {
+						r.Use(ctx.RequireViewPublication)
+
+						r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 					})
 				})
 
@@ -382,24 +388,10 @@ func Register(c Config) {
 				})
 
 				// media types
-				r.Get("/media_type/suggestions", mediaTypesHandler.Suggest).Name("suggest_media_types")
+				r.Get("/media_type/suggestions", mediatypes.Suggest).Name("suggest_media_types")
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// authenticate user
-		r.Get("/auth/openid-connect/callback",
-			authenticatingHandler.Wrap(authenticatingHandler.Callback))
-		r.Get("/login",
-			authenticatingHandler.Wrap(authenticatingHandler.Login)).
-			Name("login")
-		r.Get("/logout",
-			authenticatingHandler.Wrap(authenticatingHandler.Logout)).
-			Name("logout")
-		// change user role
-		r.Put("/role/{role}",
-			authenticatingHandler.Wrap(authenticatingHandler.UpdateRole)).
-			Name("update_role")
 
 		// dashboard
 		r.Get("/dashboard/publications/{type}", dashboardHandler.Wrap(dashboardHandler.Publications)).
@@ -443,11 +435,6 @@ func Register(c Config) {
 		r.Get("/dataset/{id}/add/finish",
 			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddFinish)).
 			Name("dataset_add_finish")
-
-		// export datasets
-		r.Get("/dataset.{format}",
-			datasetExportingHandler.Wrap(datasetExportingHandler.ExportByCurationSearch)).
-			Name("export_datasets")
 
 		// view dataset
 		r.Get("/dataset/{id}",
@@ -674,11 +661,6 @@ func Register(c Config) {
 			publicationSearchingHandler.Wrap(publicationSearchingHandler.Search)).
 			Name("publications")
 
-		// export publications
-		r.Get("/publication.{format}",
-			publicationExportingHandler.Wrap(publicationExportingHandler.ExportByCurationSearch)).
-			Name("export_publications")
-
 		// publication batch operations
 		r.Get("/publication/batch",
 			publicationBatchHandler.Wrap(publicationBatchHandler.Show)).
@@ -706,9 +688,6 @@ func Register(c Config) {
 		r.Get("/publication/{id}/activity",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowActivity)).
 			Name("publication_activity")
-		r.Get("/publication/{id}/files/{file_id}",
-			publicationViewingHandler.Wrap(publicationViewingHandler.DownloadFile)).
-			Name("publication_download_file")
 
 		// lock publication
 		r.Post("/publication/{id}/lock",
@@ -836,9 +815,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/abstracts/{abstract_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateAbstract)).
 			Name("publication_update_abstract")
-		r.Get("/publication/{id}/{snapshot_id}/abstracts/{abstract_id}/confirm-delete",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteAbstract)).
-			Name("publication_confirm_delete_abstract")
 		r.Delete("/publication/{id}/abstracts/{abstract_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteAbstract)).
 			Name("publication_delete_abstract")
