@@ -23,6 +23,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/mix"
+	"github.com/ugent-library/oidc"
 	"github.com/ugent-library/zaphttp"
 	"github.com/unrolled/secure"
 	"go.uber.org/zap"
@@ -115,6 +116,8 @@ type Config struct {
 	BaseURL       *url.URL
 	FrontendURL   string
 	CSRFName      string
+	OIDCAuth      *oidc.Auth
+	UsernameClaim string
 }
 
 type Ctx struct {
