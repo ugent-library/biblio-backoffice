@@ -39,13 +39,14 @@
         {{end}}
         {{end}}
         <div class="dropdown-menu__body">
-            {{$last := sub (len .Hits.Facets.has_files) 1}}
-            {{range $i, $f := .Hits.Facets.has_files}}
-            <div class="custom-control custom-checkbox{{if lt $i $last}} mb-4{{end}}">
-                <input class="custom-control-input" id="filter-has-files-{{$i}}" type="checkbox" name="f[has_files]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "has_files" $f.Value}} checked{{end}}>
-                <label class="custom-control-label" for="filter-has-files-{{$i}}">{{$.Loc.Get (print "has_files." $f.Value)}} ({{$f.Count}})</label>
+            <div class="d-flex flex-column gap-4">
+                {{range $i, $f := .Hits.Facets.has_files}}
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" id="filter-has-files-{{$i}}" type="checkbox" name="f[has_files]" value="{{$f.Value}}"{{if $.SearchArgs.HasFilter "has_files" $f.Value}} checked{{end}}>
+                    <label class="custom-control-label" for="filter-has-files-{{$i}}">{{$.Loc.Get (print "has_files." $f.Value)}} ({{$f.Count}})</label>
+                </div>
+                {{end}}
             </div>
-            {{end}}
         </div>
         <div class="bc-navbar bc-navbar--large">
             <button class="btn btn-primary btn-block" type="submit">Apply filter</button>

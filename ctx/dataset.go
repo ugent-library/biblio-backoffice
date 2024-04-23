@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/repositories"
+	"github.com/ugent-library/httperror"
 )
 
 const DatasetKey = contextKey("dataset")
@@ -32,4 +33,30 @@ func SetDataset(repo *repositories.Repo) func(http.Handler) http.Handler {
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
+}
+
+func RequireViewDataset(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c := Get(r)
+
+		if !c.User.CanViewDataset(GetDataset(r)) {
+			c.HandleError(w, r, httperror.Forbidden)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func RequireEditDataset(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c := Get(r)
+
+		if !c.User.CanEditDataset(GetDataset(r)) {
+			c.HandleError(w, r, httperror.Forbidden)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }

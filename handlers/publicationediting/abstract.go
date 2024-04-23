@@ -6,12 +6,14 @@ import (
 	"net/http"
 
 	"github.com/leonelquinteros/gotext"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	views "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/okay"
 )
@@ -39,11 +41,6 @@ type YieldEditAbstract struct {
 	Context
 	AbstractID string
 	Form       *form.Form
-	Conflict   bool
-}
-type YieldDeleteAbstract struct {
-	Context
-	AbstractID string
 	Conflict   bool
 }
 
@@ -188,25 +185,25 @@ func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	})
 }
 
-func (h *Handler) ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
+func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	publication := ctx.GetPublication(r)
+
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("confirm delete publication abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+		c.Log.Warnw("confirm delete publication abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	if b.SnapshotID != ctx.Publication.SnapshotID {
+	if b.SnapshotID != publication.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.conflict_error_reload"),
+			Message: c.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
 
-	render.Layout(w, "show_modal", "publication/confirm_delete_abstract", YieldDeleteAbstract{
-		Context:    ctx,
-		AbstractID: b.AbstractID,
-	})
+	views.ConfirmDeleteAbstract(c, publication, b.AbstractID).Render(r.Context(), w)
 }
 
 func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {

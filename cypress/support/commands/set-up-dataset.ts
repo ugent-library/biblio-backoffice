@@ -54,24 +54,26 @@ export default function setUpDataset({
       cy.setFieldByLabel("Identifier", "10.5072/test/t");
 
       if (prepareForPublishing) {
-        cy.intercept("PUT", "/dataset/*/details/edit/refresh-form").as(
-          "refreshForm",
-        );
-
-        cy.setFieldByLabel("Access level", "Open access");
-        cy.wait("@refreshForm");
-
-        cy.setFieldByLabel("Data format", "text/csv")
-          .next(".autocomplete-hits", NO_LOG)
-          .contains(".badge", "text/csv", NO_LOG)
-          .click(NO_LOG);
         cy.setFieldByLabel("Publisher", "UGent");
         cy.setFieldByLabel(
           "Publication year",
           new Date().getFullYear().toString(),
         );
 
+        cy.intercept("PUT", "/dataset/*/details/edit/refresh-form").as(
+          "refreshForm",
+        );
+
+        cy.setFieldByLabel("Data format", "text/csv")
+          .next(".autocomplete-hits", NO_LOG)
+          .contains(".badge", "text/csv", NO_LOG)
+          .click(NO_LOG);
+
         cy.setFieldByLabel("License", "CC0 (1.0)");
+        cy.wait("@refreshForm", NO_LOG);
+
+        cy.setFieldByLabel("Access level", "Open access");
+        cy.wait("@refreshForm", NO_LOG);
       }
     },
     true,

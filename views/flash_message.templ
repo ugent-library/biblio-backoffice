@@ -9,14 +9,11 @@ templ flashMessage(f flash.Flash) {
     <div
         if f.DismissAfter != 0 {
             hx-ext="remove-me"
+            remove-me={ fmt.Sprintf("%dms", f.DismissAfter) }
         }
     >
         if f.Type == "simple" {
-        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false"
-            if f.DismissAfter != 0 {
-                remove-me={ fmt.Sprintf("%dms", f.DismissAfter) }
-            }
-        >
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
             <div class="toast-body">
                 switch f.Type {
                 case "success":
@@ -44,11 +41,7 @@ templ flashMessage(f flash.Flash) {
         }
 
         if f.Type  == "complex" {
-        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false"
-            if f.DismissAfter != 0 {
-                remove-me={ fmt.Sprintf("%dms", f.DismissAfter) }
-            }
-        >
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
             <div class="toast-header">
                 <div class="u-divide-x">
                     <span class="c-subline">{ f.Application }</span>
