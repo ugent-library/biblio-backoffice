@@ -382,9 +382,6 @@ func Register(c Config) {
 					// abstracts
 					r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", datasetediting.ConfirmDeleteAbstract).Name("dataset_confirm_delete_abstract")
 
-					// abstracts
-					r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", datasetediting.ConfirmDeleteAbstract).Name("dataset_confirm_delete_abstract")
-
 					// publish
 					r.Get("/publish/confirm", datasetediting.ConfirmPublish).Name("dataset_confirm_publish")
 					r.Post("/publish", datasetediting.Publish).Name("dataset_publish")
