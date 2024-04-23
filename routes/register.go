@@ -323,8 +323,8 @@ func Register(c Config) {
 					r.Use(ctx.SetPublication(c.Services.Repo))
 
 					// delete
-					r.Get("/confirm-delete", publicationEditingHandler.ConfirmDelete).Name("publication_confirm_delete")
-					r.Delete("/", publicationEditingHandler.Delete).Name("publication_delete")
+					r.Get("/confirm-delete", publicationediting.ConfirmDelete).Name("publication_confirm_delete")
+					r.Delete("/", publicationediting.Delete).Name("publication_delete")
 
 					// edit publication type
 					r.Get("/type/confirm", publicationEditingHandler.ConfirmUpdateType).Name("publication_confirm_update_type")
