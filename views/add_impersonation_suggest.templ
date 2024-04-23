@@ -1,0 +1,44 @@
+package views
+
+import (
+    "github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+templ AddImpersonationSuggest(c *ctx.Ctx, firstName string, lastName string, hits []*models.Person) {
+    if len(hits) > 0 {
+        <h3 class="mt-6">Search results</h3>
+        <ul class="list-group">
+            for _, hit := range hits {
+            <li class="list-group-item">
+                <div class="list-group-item-inner">
+                    <div class="list-group-item-main">
+                    @contributorShowSummary(c, models.ContributorFromPerson(hit))
+                    </div>
+                    <div class="c-button-toolbar">
+                        <form action={c.PathTo("create_impersonation").String()} method="POST">
+                            @csrfField(c)
+                            <input type="hidden" name="id" value={hit.ID}/>
+                            <button type="submit" class="btn btn-primary">Change user</button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+            }
+        </ul>
+    } else if firstName != "" || lastName != "" {
+        <div class="c-blank-slate c-blank-slate-muted c-blank-slate-large">
+            <div class="bc-avatar bc-avatar--small">
+                <i class="if if-info-circle"></i>
+            </div>
+            <p>No users found.</p>
+        </div>
+    } else {
+        <div class="c-blank-slate c-blank-slate-muted c-blank-slate-large">
+            <div class="bc-avatar bc-avatar--small">
+                <i class="if if-info-circle"></i>
+            </div>
+            <p>Type a first or last name above.</p>
+        </div>
+    }
+}
