@@ -13,23 +13,24 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
-func (h *Handler) ConfirmRepublish(w http.ResponseWriter, r *http.Request) {
+func ConfirmRepublish(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	redirectUrl := r.URL.Query().Get("redirect-url")
 
 	publication.ConfirmRepublish(c, ctx.GetPublication(r), redirectUrl).Render(r.Context(), w)
 }
 
-func (h *Handler) Republish(w http.ResponseWriter, r *http.Request) {
+func Republish(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	publication := ctx.GetPublication(r)
 
 	if !c.User.CanPublishPublication(publication) {
-		h.Logger.Warnw("republish publication: user has no permission to republish", "user", c.User.ID, "publication", publication.ID)
-		render.Forbidden(w, r)
+		c.Log.Warnw("republish publication: user has no permission to republish", "user", c.User.ID, "publication", publication.ID)
+		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
 
@@ -47,7 +48,7 @@ func (h *Handler) Republish(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), publication, c.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), publication, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -59,8 +60,8 @@ func (h *Handler) Republish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		h.Logger.Errorf("republish publication: could not save the publication:", "error", err, "publication", publication.ID, "user", c.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("republish publication: could not save the publication:", "error", err, "publication", publication.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
@@ -68,7 +69,7 @@ func (h *Handler) Republish(w http.ResponseWriter, r *http.Request) {
 		WithLevel("success").
 		WithBody(template.HTML("<p>Publication was successfully republished.</p>"))
 
-	h.AddFlash(r, w, *flash)
+	c.PersistFlash(w, *flash)
 
 	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))
 }

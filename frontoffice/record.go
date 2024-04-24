@@ -2,8 +2,10 @@ package frontoffice
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
 	"strconv"
+	"time"
 
 	"slices"
 
@@ -15,10 +17,11 @@ import (
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/repositories"
-	"github.com/ugent-library/biblio-backoffice/util"
 )
 
 const timestampFmt = "2006-01-02 15:04:05"
+
+var reYear = regexp.MustCompile("^[0-9]{4}$")
 
 var licenses = map[string]string{
 	"CC0-1.0":          "Creative Commons Public Domain Dedication (CC0 1.0)",
@@ -517,7 +520,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		rec.Language = []string{"und"}
 	}
 
-	if util.IsYear(p.Year) {
+	if reYear.MatchString(p.Year) {
 		rec.Year = p.Year
 	}
 
@@ -618,7 +621,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 		rec.Conference.Organizer = p.ConferenceOrganizer
 	}
 
-	if util.IsDate(p.DefenseDate) {
+	if _, err := time.Parse("2006-01-02", p.DefenseDate); err == nil {
 		if rec.Defense == nil {
 			rec.Defense = &Defense{}
 		}

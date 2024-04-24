@@ -13,7 +13,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	views "github.com/ugent-library/biblio-backoffice/views/publication"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -208,7 +208,12 @@ func ConfirmDeleteLaySummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDeleteLaySummary(c, publication, b.LaySummaryID).Render(r.Context(), w)
+	views.ConfirmDelete(views.ConfirmDeleteArgs{
+		Context:    c,
+		Question:   "Are you sure you want to remove this lay summary?",
+		DeleteUrl:  c.PathTo("publication_delete_lay_summary", "id", publication.ID, "lay_summary_id", b.LaySummaryID),
+		SnapshotID: publication.SnapshotID,
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) DeleteLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {

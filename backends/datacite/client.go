@@ -14,7 +14,6 @@ import (
 	"github.com/caltechlibrary/doitools"
 	"github.com/tidwall/gjson"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/util"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"golang.org/x/text/language"
 )
@@ -134,8 +133,8 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 	if res := attrs.Get(`rightsList.#(rightsIdentifierScheme="SPDX").rightsIdentifier`); res.Exists() {
 		license := strings.ToUpper(res.String())
 
-		// @todo Clean IsDatasetLicense() up.
-		if util.IsDatasetLicense(license) {
+		// @todo Clean this up.
+		if slices.Contains(vocabularies.Map["dataset_licenses"], license) {
 			d.License = license
 		} else {
 			d.License = "LicenseNotListed"

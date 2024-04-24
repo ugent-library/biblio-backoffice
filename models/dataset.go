@@ -3,16 +3,18 @@ package models
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"time"
 
 	"slices"
 
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/pagination"
-	"github.com/ugent-library/biblio-backoffice/util"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/okay"
 )
+
+var reYear = regexp.MustCompile("^[0-9]{4}$")
 
 type DatasetHits struct {
 	pagination.Pagination
@@ -273,14 +275,14 @@ func (d *Dataset) Validate() error {
 
 	if d.Status == "" {
 		errs.Add(okay.NewError("/status", "dataset.status.required"))
-	} else if !util.IsStatus(d.Status) {
+	} else if !slices.Contains(vocabularies.Map["publication_statuses"], d.Status) {
 		errs.Add(okay.NewError("/status", "dataset.status.invalid"))
 	}
 
 	if d.Status == "public" && d.AccessLevel == "" {
 		errs.Add(okay.NewError("/access_level", "dataset.access_level.required"))
 	}
-	if d.AccessLevel != "" && !util.IsDatasetAccessLevel(d.AccessLevel) {
+	if d.AccessLevel != "" && !slices.Contains(vocabularies.Map["dataset_access_levels"], d.AccessLevel) {
 		errs.Add(okay.NewError("/access_level", "dataset.access_level.invalid"))
 	}
 
@@ -291,7 +293,7 @@ func (d *Dataset) Validate() error {
 		if key == "" {
 			errs.Add(okay.NewError("/identifier", "dataset.identifier.required"))
 			break
-		} else if !util.IsDatasetIdentifierType(key) {
+		} else if !slices.Contains(vocabularies.Map["dataset_identifier_types"], key) {
 			errs.Add(okay.NewError("/identifier", "dataset.identifier.invalid"))
 			break
 		}
@@ -329,7 +331,7 @@ func (d *Dataset) Validate() error {
 	if d.Status == "public" && d.Year == "" {
 		errs.Add(okay.NewError("/year", "dataset.year.required"))
 	}
-	if d.Year != "" && !util.IsYear(d.Year) {
+	if d.Year != "" && reYear.MatchString(d.Year) {
 		errs.Add(okay.NewError("/year", "dataset.year.invalid"))
 	}
 
@@ -393,11 +395,11 @@ func (d *Dataset) Validate() error {
 		}
 	}
 
-	// TODO IsDate and co. are only checked when dataset is public
+	// TODO dates and co. are only checked when dataset is public
 	if d.Status == "public" && d.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
 		if d.EmbargoDate == "" {
 			errs.Add(okay.NewError("/embargo_date", "dataset.embargo_date.required"))
-		} else if !util.IsDate(d.EmbargoDate) {
+		} else if _, err := time.Parse("2006-01-02", d.EmbargoDate); err != nil {
 			errs.Add(okay.NewError("/embargo_date", "dataset.embargo_date.invalid"))
 		}
 
@@ -412,7 +414,7 @@ func (d *Dataset) Validate() error {
 			errs.Add(okay.NewError("/access_level_after_embargo", "dataset.access_level_after_embargo.similar"))
 		}
 
-		if !util.IsDatasetAccessLevel(d.AccessLevelAfterEmbargo) && !invalid {
+		if !slices.Contains(vocabularies.Map["dataset_access_levels"], d.AccessLevelAfterEmbargo) && !invalid {
 			errs.Add(okay.NewError("/access_level_after_embargo", "dataset.access_level_after_embargo.invalid"))
 		}
 	}

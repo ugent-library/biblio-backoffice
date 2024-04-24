@@ -5,11 +5,13 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
-	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	views "github.com/ugent-library/biblio-backoffice/views/dataset"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 )
 
 type BindSuggestDepartments struct {
@@ -29,49 +31,42 @@ type YieldDepartments struct {
 	Context
 }
 
-type YieldAddDepartment struct {
-	Context
-	Hits []models.Completion
-}
-
 type YieldDeleteDepartment struct {
 	Context
 	DepartmentID string
 }
 
-func (h *Handler) AddDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
-	hits, err := h.OrganizationSearchService.SuggestOrganizations("")
+func AddDepartment(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	hits, err := c.OrganizationSearchService.SuggestOrganizations("")
 	if err != nil {
-		h.Logger.Errorw("add dataset department: could not suggest organization", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("add dataset department: could not suggest organization", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.Layout(w, "show_modal", "dataset/add_department", YieldAddDepartment{
-		Context: ctx,
-		Hits:    hits,
-	})
+	views.AddDepartment(c, ctx.GetDataset(r), hits).Render(r.Context(), w)
 }
 
-func (h *Handler) SuggestDepartments(w http.ResponseWriter, r *http.Request, ctx Context) {
+func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	b := BindSuggestDepartments{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("suggest dataset departments could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("suggest dataset departments could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	hits, err := h.OrganizationSearchService.SuggestOrganizations(b.Query)
+	hits, err := c.OrganizationSearchService.SuggestOrganizations(b.Query)
 	if err != nil {
-		h.Logger.Errorw("add dataset department: could not suggest organization", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("add dataset department: could not suggest organization", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.Partial(w, "dataset/suggest_departments", YieldAddDepartment{
-		Context: ctx,
-		Hits:    hits,
-	})
+	views.SuggestDepartments(c, ctx.GetDataset(r), hits).Render(r.Context(), w)
 }
 
 func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {

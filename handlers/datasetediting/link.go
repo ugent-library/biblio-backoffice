@@ -6,13 +6,16 @@ import (
 	"net/http"
 
 	"github.com/leonelquinteros/gotext"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
@@ -41,10 +44,6 @@ type YieldEditLink struct {
 	LinkID   string
 	Form     *form.Form
 	Conflict bool
-}
-type YieldDeleteLink struct {
-	Context
-	LinkID string
 }
 
 func (h *Handler) AddLink(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -187,26 +186,31 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	})
 }
 
-func (h *Handler) ConfirmDeleteLink(w http.ResponseWriter, r *http.Request, ctx Context) {
+func ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	var b BindDeleteLink
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Errorw("confirm delete dataset link: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Errorw("confirm delete dataset link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
 	// TODO catch non-existing item in UI
-	if b.SnapshotID != ctx.Dataset.SnapshotID {
+	if b.SnapshotID != dataset.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
+			Message: c.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
 
-	render.Layout(w, "show_modal", "dataset/confirm_delete_link", YieldDeleteLink{
-		Context: ctx,
-		LinkID:  b.LinkID,
-	})
+	views.ConfirmDelete(views.ConfirmDeleteArgs{
+		Context:    c,
+		Question:   "Are you sure you want to remove this link?",
+		DeleteUrl:  c.PathTo("dataset_delete_link", "id", dataset.ID, "link_id", b.LinkID),
+		SnapshotID: dataset.SnapshotID,
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context) {

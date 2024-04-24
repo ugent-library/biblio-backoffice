@@ -14,7 +14,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.get(".btn .if-more").click();
         cy.contains(".dropdown-item", "Delete").click();
 
-        cy.ensureModal("Are you sure?")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.get(".modal-body").should(
               "contain",
@@ -213,7 +213,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.contains("button", "Delete").click();
         });
 
-        cy.ensureModal("Are you sure")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.get(".modal-body").should(
               "contain",
@@ -281,7 +281,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.contains("button", "Delete").click();
         });
 
-        cy.ensureModal("Are you sure")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.get(".modal-body").should(
               "contain",
@@ -376,7 +376,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.contains("button", "Delete").click();
         });
 
-        cy.ensureModal("Are you sure")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.get(".modal-body").should(
               "contain",
@@ -546,7 +546,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.contains("#authors tr", "Jane Doe").find(".btn .if-delete").click();
 
-        cy.ensureModal("Are you sure?")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.contains("Are you sure you want to remove this author?").should(
               "be.visible",
@@ -583,7 +583,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         );
 
         cy.contains("#authors tr", "John Doe").find(".btn .if-delete").click();
-        cy.ensureModal("Are you sure?").closeModal("Delete");
+        cy.ensureModal("Confirm deletion").closeModal("Delete");
 
         cy.ensureModal(
           "Can't delete this contributor due to the following errors",
@@ -618,7 +618,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.contains("#editors tr", "Jane Doe").find(".btn .if-delete").click();
 
-        cy.ensureModal("Are you sure?")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.contains("Are you sure you want to remove this editor?").should(
               "be.visible",
@@ -655,7 +655,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .find(".btn .if-delete")
           .click();
 
-        cy.ensureModal("Are you sure?")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.contains(
               "Are you sure you want to remove this supervisor?",
@@ -683,7 +683,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.getLabel("Search").next("input").type("LW17");
           cy.wait("@suggestDepartment");
 
-          cy.contains(".btn", "Add department").click();
+          cy.contains(".list-group-item", "Department ID: LW17")
+            .contains(".btn", "Add department")
+            .click();
         });
         cy.ensureNoModal();
 
@@ -699,7 +701,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.getLabel("Search").next("input").type("DI62");
           cy.wait("@suggestDepartment");
 
-          cy.contains(".btn", "Add department").click();
+          cy.contains(".list-group-item", "Department ID: DI62")
+            .contains(".btn", "Add department")
+            .click();
         });
         cy.ensureNoModal();
 
@@ -718,7 +722,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .click();
         cy.contains(".dropdown-item", "Remove from publication").click();
 
-        cy.ensureModal("Are you sure")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.get(".modal-body").should(
               "contain",
@@ -870,7 +874,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         // Delete interal author
         cy.get("#authors button:has(.if-delete)").click();
-        cy.ensureModal("Are you sure?").closeModal("Delete");
+        cy.ensureModal("Confirm deletion").closeModal("Delete");
 
         // Add external author
         cy.updateFields(
@@ -932,7 +936,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.get(".btn .if-more").click();
         cy.contains(".dropdown-item", "Delete").click();
 
-        cy.ensureModal("Are you sure?")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.get(".modal-body").should(
               "contain",
@@ -1027,7 +1031,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.contains("button", "Delete").click();
         });
 
-        cy.ensureModal("Are you sure")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.get(".modal-body").should(
               "contain",
@@ -1092,7 +1096,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.contains("button", "Delete").click();
         });
 
-        cy.ensureModal("Are you sure")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.get(".modal-body").should(
               "contain",
@@ -1128,7 +1132,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.contains("#authors tr", "Jane Doe").find(".btn .if-delete").click();
 
-        cy.ensureModal("Are you sure?")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.contains("Are you sure you want to remove this creator?").should(
               "be.visible",
@@ -1165,7 +1169,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         );
 
         cy.contains("#authors tr", "John Doe").find(".btn .if-delete").click();
-        cy.ensureModal("Are you sure?").closeModal("Delete");
+        cy.ensureModal("Confirm deletion").closeModal("Delete");
 
         cy.ensureModal(
           "Can't delete this contributor due to the following errors",
@@ -1190,7 +1194,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.getLabel("Search").next("input").type("LW17");
           cy.wait("@suggestDepartment");
 
-          cy.contains(".btn", "Add department").click();
+          cy.contains(".list-group-item", "Department ID: LW17")
+            .contains(".btn", "Add department")
+            .click();
         });
         cy.ensureNoModal();
 
@@ -1206,7 +1212,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.getLabel("Search").next("input").type("DI62");
           cy.wait("@suggestDepartment");
 
-          cy.contains(".btn", "Add department").click();
+          cy.contains(".list-group-item", "Department ID: DI62")
+            .contains(".btn", "Add department")
+            .click();
         });
         cy.ensureNoModal();
 
@@ -1225,7 +1233,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .click();
         cy.contains(".dropdown-item", "Remove from dataset").click();
 
-        cy.ensureModal("Are you sure")
+        cy.ensureModal("Confirm deletion")
           .within(() => {
             cy.get(".modal-body").should(
               "contain",
@@ -1377,7 +1385,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         // Delete interal author
         cy.get("#authors button:has(.if-delete)").click();
-        cy.ensureModal("Are you sure?").closeModal("Delete");
+        cy.ensureModal("Confirm deletion").closeModal("Delete");
 
         // Add external author
         cy.updateFields(

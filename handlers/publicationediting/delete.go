@@ -8,38 +8,38 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
-	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/views/publication"
+	"github.com/ugent-library/httperror"
+	"github.com/ugent-library/biblio-backoffice/views"
 )
 
-type YieldConfirmDelete struct {
-	Context
-	Publication *models.Publication
-	RedirectURL string
-}
-
-func (h *Handler) ConfirmDelete(w http.ResponseWriter, r *http.Request) {
+func ConfirmDelete(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
+	publication := ctx.GetPublication(r)
 
-	publication.ConfirmDelete(c, ctx.GetPublication(r), r.URL.Query().Get("redirect-url")).Render(r.Context(), w)
+	views.ConfirmDelete(views.ConfirmDeleteArgs{
+		Context:    c,
+		Question:   "Are you sure you want to delete this publication?",
+		DeleteUrl:  c.PathTo("publication_delete", "id", publication.ID, "redirect-url", r.URL.Query().Get("redirect-url")),
+		SnapshotID: publication.SnapshotID,
+	}).Render(r.Context(), w)
 }
 
-func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
+func Delete(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	publication := ctx.GetPublication(r)
 
 	if !c.User.CanDeletePublication(publication) {
-		h.Logger.Warnw("delete publication: user is unauthorized", "publication", publication.ID, "user", c.User.ID)
-		render.Forbidden(w, r)
+		c.Log.Warnw("delete publication: user is unauthorized", "publication", publication.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
 
 	publication.Status = "deleted"
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), publication, c.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), publication, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -52,8 +52,8 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete publication: Could not save the publication:", "errors", err, "publication", publication.ID, "user", c.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("delete publication: Could not save the publication:", "errors", err, "publication", publication.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
@@ -61,7 +61,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		WithLevel("success").
 		WithBody(template.HTML("<p>Publication was successfully deleted.</p>"))
 
-	h.AddFlash(r, w, *flash)
+	c.PersistFlash(w, *flash)
 
 	// TODO temporary fix until we can figure out a way let ES notify this handler that it did its thing.
 	// see: https://github.com/ugent-library/biblio-backoffice/issues/590
