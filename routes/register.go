@@ -117,7 +117,7 @@ func Register(c Config) {
 		FrontendBaseUrl: c.FrontendURL,
 	}
 	frontofficeHandler := &frontoffice.Handler{
-		BaseHandler:   baseHandler,
+		Log:           c.Logger,
 		Repo:          c.Services.Repo,
 		FileStore:     c.Services.FileStore,
 		PeopleRepo:    c.Services.PeopleRepo,

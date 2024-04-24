@@ -11,19 +11,18 @@ import (
 	"github.com/jpillora/ipfilter"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/frontoffice"
-	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httpx"
+	"go.uber.org/zap"
 )
 
 type Handler struct {
-	handlers.BaseHandler
+	Log           *zap.SugaredLogger
 	Repo          *repositories.Repo
 	FileStore     backends.FileStore
 	PeopleRepo    *people.Repo
@@ -41,12 +40,14 @@ type Hits[T any] struct {
 }
 
 func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
-	p, err := h.Repo.GetPublication(bind.PathValue(r, "id"))
+	id := bind.PathValue(r, "id")
+	p, err := h.Repo.GetPublication(id)
 	if err != nil {
 		if err == models.ErrNotFound {
-			render.NotFound(w, r, err)
+			http.NotFound(w, r)
 		} else {
-			render.InternalServerError(w, r, err)
+			h.Log.Errorw("unable to fetch publication %s: %w", id, err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
 		return
 	}
@@ -55,12 +56,14 @@ func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
-	p, err := h.Repo.GetDataset(bind.PathValue(r, "id"))
+	id := bind.PathValue(r, "id")
+	p, err := h.Repo.GetDataset(id)
 	if err != nil {
 		if err == models.ErrNotFound {
-			render.NotFound(w, r, err)
+			http.NotFound(w, r)
 		} else {
-			render.InternalServerError(w, r, err)
+			h.Log.Errorw("unable to fetch dataset %s: %w", id, err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
 		return
 	}
@@ -75,7 +78,8 @@ func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetAllOrganizations(w http.ResponseWriter, r *http.Request) {
 	results, err := h.PeopleIndex.SearchOrganizations(r.Context(), people.SearchParams{Limit: 1000})
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to search organizations: %w", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -90,7 +94,8 @@ func (h *Handler) GetAllOrganizations(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetAllOrganizationTrees(w http.ResponseWriter, r *http.Request) {
 	results, err := h.PeopleIndex.SearchOrganizations(r.Context(), people.SearchParams{Limit: 1000})
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to search organizations: %w", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -106,17 +111,19 @@ func (h *Handler) GetAllOrganizationTrees(w http.ResponseWriter, r *http.Request
 func (h *Handler) GetOrganization(w http.ResponseWriter, r *http.Request) {
 	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to decode identifier: %w", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	o, err := h.PeopleIndex.GetOrganizationByIdentifier(r.Context(), ident.Kind, ident.Value)
 	if err == people.ErrNotFound {
-		render.NotFound(w, r, err)
+		http.NotFound(w, r)
 		return
 	}
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to get organization by identifier: %w", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -126,17 +133,19 @@ func (h *Handler) GetOrganization(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetPerson(w http.ResponseWriter, r *http.Request) {
 	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to decode identifier: %w", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	p, err := h.PeopleIndex.GetPersonByIdentifier(r.Context(), ident.Kind, ident.Value)
 	if err == people.ErrNotFound {
-		render.NotFound(w, r, err)
+		http.NotFound(w, r)
 		return
 	}
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to get person by identifier: %w", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -150,17 +159,19 @@ func (h *Handler) GetPeople(w http.ResponseWriter, r *http.Request) {
 	for _, id := range ids {
 		ident, err := people.NewIdentifier(id)
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			h.Log.Errorw("unable to decode identifier: %w", err)
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
 
 		p, err := h.PeopleIndex.GetPersonByIdentifier(r.Context(), ident.Kind, ident.Value)
 		if err == people.ErrNotFound {
-			h.Logger.Warnf("unable to find person with identifier %s", ident.String())
+			h.Log.Warnf("unable to find person with identifier %s", ident.String())
 			continue
 		}
 		if err != nil {
-			render.InternalServerError(w, r, err)
+			h.Log.Errorw("unable to get person with identifier %s: %w", ident.String(), err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
 		recs = append(recs, frontoffice.MapPerson(p))
@@ -170,20 +181,23 @@ func (h *Handler) GetPeople(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
-	ident, err := people.NewIdentifier(bind.PathValue(r, "id"))
+	id := bind.PathValue(r, "id")
+	ident, err := people.NewIdentifier(id)
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to decode identifier %s: %w", id, err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	p, err := h.PeopleRepo.GetActivePersonByIdentifier(r.Context(), ident.Kind, ident.Value)
 
 	if err == people.ErrNotFound {
-		render.NotFound(w, r, err)
+		http.NotFound(w, r)
 		return
 	}
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to get person by identifier: %w", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -193,11 +207,12 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 	p, err := h.PeopleRepo.GetActivePersonByUsername(r.Context(), bind.PathValue(r, "username"))
 	if err == people.ErrNotFound {
-		render.NotFound(w, r, err)
+		http.NotFound(w, r)
 		return
 	}
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to get person by username: %w", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -215,7 +230,8 @@ type BindQuery struct {
 func (h *Handler) SearchPeople(w http.ResponseWriter, r *http.Request) {
 	b := BindQuery{}
 	if err := bind.Query(r, &b); err != nil {
-		render.BadRequest(w, r, err)
+		h.Log.Errorw("unable to decode query: %w", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
@@ -227,14 +243,16 @@ func (h *Handler) SearchPeople(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, f := range b.Filters {
 		if err := params.AddFilter(f); err != nil {
-			render.BadRequest(w, r, err)
+			h.Log.Errorw("unable to add filter from query: %w", err)
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
 	}
 
 	results, err := h.PeopleIndex.SearchPeople(r.Context(), params)
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable search people: %w", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -252,19 +270,22 @@ func (h *Handler) SearchPeople(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
-	ident, err := projects.NewIdentifier(bind.PathValue(r, "id")) // TODO don't use function from people ns
+	id := bind.PathValue(r, "id")
+	ident, err := projects.NewIdentifier(id) // TODO don't use function from people ns
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to decode identifier %s: %w", id, err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	p, err := h.ProjectsIndex.GetProjectByIdentifier(r.Context(), ident.Kind, ident.Value)
 	if err == projects.ErrNotFound {
-		render.NotFound(w, r, err)
+		http.NotFound(w, r)
 		return
 	}
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to get project by identifier: %w", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -275,7 +296,8 @@ func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) BrowseProjects(w http.ResponseWriter, r *http.Request) {
 	b := BindQuery{}
 	if err := bind.Query(r, &b); err != nil {
-		render.BadRequest(w, r, err)
+		h.Log.Errorw("unable to decode query: %w", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
@@ -285,7 +307,8 @@ func (h *Handler) BrowseProjects(w http.ResponseWriter, r *http.Request) {
 		Offset: b.Offset,
 	})
 	if err != nil {
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to search projects: %w", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -311,7 +334,8 @@ type BindGetAll struct {
 func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 	b := BindGetAll{}
 	if err := bind.Query(r, &b); err != nil {
-		render.BadRequest(w, r, err)
+		h.Log.Errorw("unable to decode query: %w", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
@@ -319,8 +343,8 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 	if b.UpdatedSince != "" {
 		t, err := internal_time.ParseTimeUTC(b.UpdatedSince)
 		if err != nil {
-			h.Logger.Errorw("updatedSince error", err)
-			render.InternalServerError(w, r, err)
+			h.Log.Errorw("unable to parse updatedSince: %w", err)
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
 		updatedSince = t.Local()
@@ -328,8 +352,8 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 
 	n, publications, err := h.Repo.PublicationsAfter(updatedSince, b.Limit, b.Offset)
 	if err != nil {
-		h.Logger.Errorw("select error", err)
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to retrieve publications after %s: %w", updatedSince.String(), err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -350,7 +374,8 @@ func (h *Handler) GetAllPublications(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 	b := BindGetAll{}
 	if err := bind.Query(r, &b); err != nil {
-		render.BadRequest(w, r, err)
+		h.Log.Errorw("unable to decode query: %w", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
@@ -358,8 +383,8 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 	if b.UpdatedSince != "" {
 		t, err := internal_time.ParseTimeUTC(b.UpdatedSince)
 		if err != nil {
-			h.Logger.Errorw("updatedSince error", err)
-			render.InternalServerError(w, r, err)
+			h.Log.Errorw("unable to parse updatedSince: %w", err)
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
 		updatedSince = t.Local()
@@ -367,8 +392,8 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 
 	n, datasets, err := h.Repo.DatasetsAfter(updatedSince, b.Limit, b.Offset)
 	if err != nil {
-		h.Logger.Errorw("select error", err)
-		render.InternalServerError(w, r, err)
+		h.Log.Errorw("unable to retrieve datasets after %s: %w", updatedSince.String(), err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -387,24 +412,27 @@ func (h *Handler) GetAllDatasets(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
-	p, err := h.Repo.GetPublication(bind.PathValue(r, "id"))
+	id := bind.PathValue(r, "id")
+	p, err := h.Repo.GetPublication(id)
 	if err != nil {
 		if err == models.ErrNotFound {
-			render.NotFound(w, r, err)
+			http.NotFound(w, r)
 		} else {
-			render.InternalServerError(w, r, err)
+			h.Log.Errorw("unable to get publication %s: %w", id, err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
 		return
 	}
 
 	if p.Status != "public" {
-		render.Forbidden(w, r)
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 		return
 	}
 
-	f := p.GetFile(bind.PathValue(r, "file_id"))
+	fileID := bind.PathValue(r, "file_id")
+	f := p.GetFile(fileID)
 	if f == nil {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		http.NotFound(w, r)
 		return
 	}
 
@@ -424,12 +452,12 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 			ip = remoteIP
 		}
 		if !h.IPFilter.Allowed(ip) {
-			h.Logger.Warnw("ip not allowed, allowed", "ip", ip, "allowed", h.IPRanges)
-			render.Forbidden(w, r)
+			h.Log.Warnw("ip not allowed, allowed", "ip", ip, "allowed", h.IPRanges)
+			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}
 	default:
-		render.Forbidden(w, r)
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 		return
 	}
 
@@ -439,6 +467,7 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		reader, readerErr = h.FileStore.Get(r.Context(), f.SHA256)
 		if readerErr != nil {
+			h.Log.Errorw("unable get file %s for publication %s: %w", fileID, id, err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -464,6 +493,7 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("If-Modified-Since") != "" {
 		sinceTime, err := time.Parse(http.TimeFormat, r.Header.Get("If-Modified-Since"))
 		if err != nil {
+			h.Log.Errorw("unable parse header If-Modified-Since: %w", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
