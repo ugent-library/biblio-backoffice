@@ -312,9 +312,5 @@ The application and its dependencies run on these ports:
 | -------------------- | ---- |
 | Biblio Backoffice    | 3001 |
 | Mock OIDC            | 3002 |
-| People Application   | 3003 |
-| Projects Application | 3004 |
 | DB Application       | 3051 |
-| DB People            | 3052 |
-| DB Projects          | 3053 |
 | Elastic Search       | 3061 |

@@ -13,7 +13,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	views "github.com/ugent-library/biblio-backoffice/views/publication"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -205,7 +205,12 @@ func ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDeleteLink(c, publication, b.LinkID).Render(r.Context(), w)
+	views.ConfirmDelete(views.ConfirmDeleteArgs{
+		Context:    c,
+		Question:   "Are you sure you want to remove this link?",
+		DeleteUrl:  c.PathTo("publication_delete_link", "id", publication.ID, "link_id", b.LinkID),
+		SnapshotID: publication.SnapshotID,
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context) {

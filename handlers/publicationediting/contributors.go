@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
@@ -12,7 +13,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/views/publication"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -602,6 +603,7 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 
 func ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
+	publication := ctx.GetPublication(r)
 
 	b := BindDeleteContributor{}
 	if err := bind.Request(r, &b); err != nil {
@@ -610,7 +612,12 @@ func ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publication.ConfirmDeleteContributor(c, ctx.GetPublication(r), b.Role, b.Position).Render(r.Context(), w)
+	views.ConfirmDelete(views.ConfirmDeleteArgs{
+		Context:    c,
+		Question:   fmt.Sprintf("Are you sure you want to remove this %s?", c.Loc.Get("publication.contributor.role."+b.Role)),
+		DeleteUrl:  c.PathTo("publication_delete_contributor", "id", publication.ID, "role", b.Role, "position", strconv.Itoa(b.Position)),
+		SnapshotID: publication.SnapshotID,
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx Context) {

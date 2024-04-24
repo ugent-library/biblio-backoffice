@@ -187,10 +187,6 @@ func Register(c Config) {
 		FileStore:                 c.Services.FileStore,
 		MaxFileSize:               c.MaxFileSize,
 	}
-	publicationBatchHandler := &publicationbatch.Handler{
-		BaseHandler: baseHandler,
-		Repo:        c.Services.Repo,
-	}
 
 	// frontoffice data exchange api
 	c.Router.Group(func(r *ich.Mux) {
@@ -312,6 +308,10 @@ func Register(c Config) {
 
 					// export publications
 					r.Get("/publication.{format}", publicationexporting.ExportByCurationSearch).Name("export_publications")
+
+					// publication batch operations
+					r.With(ctx.SetNav("batch")).Get("/publication/batch", publicationbatch.Show).Name("publication_batch")
+					r.Post("/publication/batch", publicationbatch.Process).Name("publication_process_batch")
 				})
 
 				// delete impersonation
@@ -663,14 +663,6 @@ func Register(c Config) {
 		r.Get("/publication",
 			publicationSearchingHandler.Wrap(publicationSearchingHandler.Search)).
 			Name("publications")
-
-		// publication batch operations
-		r.Get("/publication/batch",
-			publicationBatchHandler.Wrap(publicationBatchHandler.Show)).
-			Name("publication_batch")
-		r.Post("/publication/batch",
-			publicationBatchHandler.Wrap(publicationBatchHandler.Process)).
-			Name("publication_process_batch")
 
 		// view publication
 		r.Get("/publication/{id}",
