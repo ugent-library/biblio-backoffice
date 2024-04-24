@@ -7,7 +7,6 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/helpers"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -68,28 +67,28 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 				continue
 			}
 			if v, ok := fundRecords[0]["gewicht"]; ok {
-				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "weight"), util.ParseString(v))
+				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "weight"), parseString(v))
 			}
 			if v, ok := fundRecords[0]["css"]; ok {
-				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "css"), util.ParseString(v))
+				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "css"), parseString(v))
 			}
 			if v, ok := fundRecords[0]["internationale_samenwerking"]; ok {
-				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "international-collaboration"), helpers.FormatBool(util.ParseBoolean(v), "true", "false"))
+				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "international-collaboration"), helpers.FormatBool(parseBoolean(v), "true", "false"))
 			}
-			if v, ok := fundRecords[0]["hoger_onderwijs"]; ok && util.ParseBoolean(v) {
+			if v, ok := fundRecords[0]["hoger_onderwijs"]; ok && parseBoolean(v) {
 				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "sector"), "higher-education")
 			}
-			if v, ok := fundRecords[0]["met_ziekenhuis"]; ok && util.ParseBoolean(v) {
+			if v, ok := fundRecords[0]["met_ziekenhuis"]; ok && parseBoolean(v) {
 				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "sector"), "hospital")
 			}
-			if v, ok := fundRecords[0]["met_publieke_instelling"]; ok && util.ParseBoolean(v) {
+			if v, ok := fundRecords[0]["met_publieke_instelling"]; ok && parseBoolean(v) {
 				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "sector"), "government")
 			}
-			if v, ok := fundRecords[0]["met_private_instelling"]; ok && util.ParseBoolean(v) {
+			if v, ok := fundRecords[0]["met_private_instelling"]; ok && parseBoolean(v) {
 				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "sector"), "private")
 			}
 			if v, ok := fundRecords[len(fundRecords)-1]["year"]; ok {
-				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "validation"), util.ParseString(v))
+				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "validation"), parseString(v))
 			}
 		}
 
@@ -104,4 +103,42 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 
 		return nil
 	}
+}
+
+func parseBoolean(v any) bool {
+	switch b := v.(type) {
+	case int32:
+		return b == 1
+	case int64:
+		return b == 1
+	case string:
+		return b == "true" || b == "1"
+	case bool:
+		return b
+	}
+	return false
+}
+
+func parseString(v any) string {
+	switch s := v.(type) {
+	case int:
+		return fmt.Sprintf("%d", s)
+	case int32:
+		return fmt.Sprintf("%d", s)
+	case int64:
+		return fmt.Sprintf("%d", s)
+	case float32:
+		return fmt.Sprintf("%g", s)
+	case float64:
+		return fmt.Sprintf("%g", s)
+	case string:
+		return s
+	case bool:
+		if s {
+			return "true"
+		} else {
+			return "false"
+		}
+	}
+	return ""
 }
