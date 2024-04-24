@@ -13,7 +13,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	views "github.com/ugent-library/biblio-backoffice/views/publication"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/okay"
 )
@@ -203,7 +203,12 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDeleteAbstract(c, publication, b.AbstractID).Render(r.Context(), w)
+	views.ConfirmDelete(views.ConfirmDeleteArgs{
+		Context:    c,
+		Question:   "Are you sure you want to remove this abstract?",
+		DeleteUrl:  c.PathTo("publication_delete_abstract", "id", publication.ID, "abstract_id", b.AbstractID),
+		SnapshotID: publication.SnapshotID,
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
