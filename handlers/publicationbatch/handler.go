@@ -7,64 +7,26 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ugent-library/biblio-backoffice/handlers"
-	"github.com/ugent-library/biblio-backoffice/render"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/repositories"
+	"github.com/ugent-library/biblio-backoffice/views"
 )
 
-type Handler struct {
-	handlers.BaseHandler
-	Repo *repositories.Repo
+func Show(w http.ResponseWriter, r *http.Request) {
+	views.PublicationbatchShow(ctx.Get(r)).Render(r.Context(), w)
 }
 
-type Context struct {
-	handlers.BaseContext
-}
-
-func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) http.HandlerFunc {
-	return h.BaseHandler.Wrap(func(w http.ResponseWriter, r *http.Request, ctx handlers.BaseContext) {
-		if ctx.User == nil {
-			render.Unauthorized(w, r)
-			return
-		}
-
-		if !ctx.User.CanCurate() {
-			render.Forbidden(w, r)
-			return
-		}
-
-		context := Context{
-			BaseContext: ctx,
-		}
-
-		fn(w, r, context)
-	})
-}
-
-type YieldShow struct {
-	Context
-	PageTitle string
-	ActiveNav string
-}
-
-func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "layouts/default", "publication/batch/show", YieldShow{
-		Context:   ctx,
-		PageTitle: "Batch",
-		ActiveNav: "batch",
-	})
-}
-
-func (h *Handler) Process(w http.ResponseWriter, r *http.Request, ctx Context) {
+func Process(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
 	lines := strings.Split(strings.ReplaceAll(r.FormValue("ops"), "\r\n", "\n"), "\n")
 
 	if len(lines) > 500 {
-		h.AddFlash(r, w, *flash.SimpleFlash().
+		c.PersistFlash(w, *flash.SimpleFlash().
 			WithLevel("error").
 			WithBody("No more than 500 operations can be processed at one time.").
 			DismissedAfter(0))
-		http.Redirect(w, r, h.PathFor("publication_batch").String(), http.StatusFound)
+		http.Redirect(w, r, c.PathTo("publication_batch").String(), http.StatusFound)
 		return
 	}
 
@@ -96,7 +58,7 @@ func (h *Handler) Process(w http.ResponseWriter, r *http.Request, ctx Context) {
 			args[i] = strings.TrimSpace(arg)
 		}
 
-		err = h.Repo.MutatePublication(id, ctx.User, repositories.Mutation{
+		err = c.Repo.MutatePublication(id, c.User, repositories.Mutation{
 			Op:   op,
 			Args: args,
 		})
@@ -110,16 +72,16 @@ func (h *Handler) Process(w http.ResponseWriter, r *http.Request, ctx Context) {
 	}
 
 	if done > 0 {
-		h.AddFlash(r, w, *flash.SimpleFlash().
+		c.PersistFlash(w, *flash.SimpleFlash().
 			WithLevel("success").
 			WithBody(template.HTML(fmt.Sprintf("<p>Successfully processed %d publications.</p>", done))))
 	}
 	if len(errorMsgs) > 0 {
-		h.AddFlash(r, w, *flash.SimpleFlash().
+		c.PersistFlash(w, *flash.SimpleFlash().
 			WithLevel("error").
 			WithBody(template.HTML(strings.Join(errorMsgs, ""))).
 			DismissedAfter(0))
 	}
 
-	http.Redirect(w, r, h.PathFor("publication_batch").String(), http.StatusFound)
+	http.Redirect(w, r, c.PathTo("publication_batch").String(), http.StatusFound)
 }
