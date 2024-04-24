@@ -397,6 +397,10 @@ func Register(c Config) {
 					// contributor actions
 					r.Get("/contributors/{role}/{position}/confirm-delete", datasetEditingHandler.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
 
+					// departments
+					r.Get("/departments/add", datasetediting.AddDepartment).Name("dataset_add_department")
+					r.Get("/departments/suggestions", datasetediting.SuggestDepartments).Name("dataset_suggest_departments")
+
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
@@ -536,12 +540,6 @@ func Register(c Config) {
 			Name("dataset_delete_link")
 
 		// edit dataset departments
-		r.Get("/dataset/{id}/departments/add",
-			datasetEditingHandler.Wrap(datasetEditingHandler.AddDepartment)).
-			Name("dataset_add_department")
-		r.Get("/dataset/{id}/departments/suggestions",
-			datasetEditingHandler.Wrap(datasetEditingHandler.SuggestDepartments)).
-			Name("dataset_suggest_departments")
 		r.Post("/dataset/{id}/departments",
 			datasetEditingHandler.Wrap(datasetEditingHandler.CreateDepartment)).
 			Name("dataset_create_department")
