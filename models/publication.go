@@ -11,7 +11,6 @@ import (
 
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/pagination"
-	"github.com/ugent-library/biblio-backoffice/util"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/okay"
 )
@@ -863,7 +862,7 @@ func (p *Publication) Validate() error {
 	}
 	if p.Type == "" {
 		errs.Add(okay.NewError("/type", "publication.type.required"))
-	} else if !util.IsPublicationType(p.Type) {
+	} else if !slices.Contains(vocabularies.Map["publication_types"], p.Type) {
 		errs.Add(okay.NewError("/type", "publication.type.invalid"))
 	}
 	// TODO check classification validity
@@ -874,7 +873,7 @@ func (p *Publication) Validate() error {
 	}
 	if p.Status == "" {
 		errs.Add(okay.NewError("/status", "publication.status.required"))
-	} else if !util.IsStatus(p.Status) {
+	} else if !slices.Contains(vocabularies.Map["publication_statuses"], p.Status) {
 		errs.Add(okay.NewError("/status", "publication.status.invalid"))
 	}
 
@@ -885,7 +884,7 @@ func (p *Publication) Validate() error {
 	if p.Status == "public" && !p.Legacy && p.Year == "" {
 		errs.Add(okay.NewError("/year", "publication.year.required"))
 	}
-	if p.Year != "" && !util.IsYear(p.Year) {
+	if p.Year != "" && reYear.MatchString(p.Year) {
 		errs.Add(okay.NewError("/year", "publication.year.invalid"))
 	}
 
@@ -1081,8 +1080,11 @@ func (p *Publication) validateDissertation() error {
 	if p.Status == "public" && !p.Legacy && p.DefenseDate == "" {
 		errs.Add(okay.NewError("/defense_date", "publication.defense_date.required"))
 	}
-	if p.DefenseDate != "" && !util.IsDate(p.DefenseDate) {
-		errs.Add(okay.NewError("/defense_date", "publication.defense_date.invalid"))
+
+	if p.DefenseDate != "" {
+		if _, err := time.Parse("2006-01-02", p.DefenseDate); err != nil {
+			errs.Add(okay.NewError("/defense_date", "publication.defense_date.invalid"))
+		}
 	}
 
 	return errs.ErrorOrNil()
@@ -1124,7 +1126,7 @@ func (pf *PublicationFile) Validate() error {
 	}
 
 	if pf.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
-		if !util.IsDate(pf.EmbargoDate) {
+		if _, err := time.Parse("2006-01-02", pf.EmbargoDate); err == nil {
 			errs.Add(okay.NewError("/embargo_date", "embargo_date.invalid"))
 		}
 
