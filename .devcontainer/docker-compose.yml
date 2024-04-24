@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file:
-        - ./.env
+        - ../.devcontainer.env
     volumes:
       - ../..:/src:cached
       - ./tmp/files:/data/files:cached
@@ -29,7 +29,7 @@ services:
     volumes:
       - ./oidc:/dist/.data
     env_file:
-      - .env
+      - ../.devcontainer.env
     network_mode: service:app
 
   db-app:

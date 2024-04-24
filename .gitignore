@@ -25,8 +25,7 @@ go.work.sum
 reflex.conf
 
 # Dotenv
-.env
-!.devcontainer/.env
+*.env
 
 # Local feature flags config
 feature-flags.yml

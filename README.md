@@ -288,6 +288,11 @@ that logs into a Docker container. This will allow you to write and interact wit
 2. Go to the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension page.
 3. Click the `install` button to install the extension in VS Code.
 
+**Add configuration**
+
+1. `cp .devcontainer.env.example .devcontainer.env`
+
+
 **Open in Dev Containers**
 
 1. Open the project directory in VS Code.
