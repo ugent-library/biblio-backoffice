@@ -7,7 +7,6 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
-	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
@@ -30,11 +29,6 @@ type BindDeleteDepartment struct {
 
 type YieldDepartments struct {
 	Context
-}
-
-type YieldAddDepartment struct {
-	Context
-	Hits []models.Completion
 }
 
 type YieldDeleteDepartment struct {
