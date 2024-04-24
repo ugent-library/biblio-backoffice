@@ -9,7 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/views/publication"
+	views "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 )
@@ -46,7 +46,7 @@ func AddDepartment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publication.AddDepartment(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
+	views.AddDepartment(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
 }
 
 func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +66,7 @@ func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publication.SuggestDepartments(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
+	views.SuggestDepartments(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
 }
 
 func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
