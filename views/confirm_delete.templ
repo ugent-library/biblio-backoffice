@@ -8,7 +8,6 @@ import (
 
 type ConfirmDeleteArgs struct {
 	Context    *ctx.Ctx
-	Title      string
 	Question   string
 	DeleteUrl  *url.URL
 	SnapshotID string
@@ -20,11 +19,7 @@ templ ConfirmDelete(args ConfirmDeleteArgs) {
 			<div class="modal-content">
 				<div class="modal-header">
 					<h2 class="modal-title">
-						if  args.Title != "" {
-							{ args.Title }
-						} else {
-							Confirm deletion
-						}
+						Confirm deletion
 					</h2>
 				</div>
 				<div class="modal-body">
