@@ -323,11 +323,11 @@ func Register(c Config) {
 					r.Use(ctx.SetPublication(c.Services.Repo))
 
 					// delete
-					r.Get("/confirm-delete", publicationEditingHandler.ConfirmDelete).Name("publication_confirm_delete")
-					r.Delete("/", publicationEditingHandler.Delete).Name("publication_delete")
+					r.Get("/confirm-delete", publicationediting.ConfirmDelete).Name("publication_confirm_delete")
+					r.Delete("/", publicationediting.Delete).Name("publication_delete")
 
 					// edit publication type
-					r.Get("/type/confirm", publicationEditingHandler.ConfirmUpdateType).Name("publication_confirm_update_type")
+					r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
 
 					// abstracts
 					r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", publicationediting.ConfirmDeleteAbstract).Name("publication_confirm_delete_abstract")
@@ -336,19 +336,19 @@ func Register(c Config) {
 					r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
 
 					// contributor actions
-					r.Get("/contributors/{role}/{position}/confirm-delete", publicationEditingHandler.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
+					r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
 
 					// publish
-					r.Get("/publish/confirm", publicationEditingHandler.ConfirmPublish).Name("publication_confirm_publish")
-					r.Post("/publish", publicationEditingHandler.Publish).Name("publication_publish")
+					r.Get("/publish/confirm", publicationediting.ConfirmPublish).Name("publication_confirm_publish")
+					r.Post("/publish", publicationediting.Publish).Name("publication_publish")
 
 					// withdraw
-					r.Get("/withdraw/confirm", publicationEditingHandler.ConfirmWithdraw).Name("publication_confirm_withdraw")
-					r.Post("/withdraw", publicationEditingHandler.Withdraw).Name("publication_withdraw")
+					r.Get("/withdraw/confirm", publicationediting.ConfirmWithdraw).Name("publication_confirm_withdraw")
+					r.Post("/withdraw", publicationediting.Withdraw).Name("publication_withdraw")
 
 					// re-publish
-					r.Get("/republish/confirm", publicationEditingHandler.ConfirmRepublish).Name("publication_confirm_republish")
-					r.Post("/republish", publicationEditingHandler.Republish).Name("publication_republish")
+					r.Get("/republish/confirm", publicationediting.ConfirmRepublish).Name("publication_confirm_republish")
+					r.Post("/republish", publicationediting.Republish).Name("publication_republish")
 
 					// curator actions
 					r.Group(func(r *ich.Mux) {
@@ -376,26 +376,26 @@ func Register(c Config) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 
 					// delete
-					r.Get("/confirm-delete", datasetEditingHandler.ConfirmDelete).Name("dataset_confirm_delete")
-					r.Delete("/", datasetEditingHandler.Delete).Name("dataset_delete")
+					r.Get("/confirm-delete", datasetediting.ConfirmDelete).Name("dataset_confirm_delete")
+					r.Delete("/", datasetediting.Delete).Name("dataset_delete")
 
 					// abstracts
 					r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", datasetediting.ConfirmDeleteAbstract).Name("dataset_confirm_delete_abstract")
 
 					// publish
-					r.Get("/publish/confirm", datasetEditingHandler.ConfirmPublish).Name("dataset_confirm_publish")
-					r.Post("/publish", datasetEditingHandler.Publish).Name("dataset_publish")
+					r.Get("/publish/confirm", datasetediting.ConfirmPublish).Name("dataset_confirm_publish")
+					r.Post("/publish", datasetediting.Publish).Name("dataset_publish")
 
 					// withdraw
-					r.Get("/withdraw/confirm", datasetEditingHandler.ConfirmWithdraw).Name("dataset_confirm_withdraw")
-					r.Post("/withdraw", datasetEditingHandler.Withdraw).Name("dataset_withdraw")
+					r.Get("/withdraw/confirm", datasetediting.ConfirmWithdraw).Name("dataset_confirm_withdraw")
+					r.Post("/withdraw", datasetediting.Withdraw).Name("dataset_withdraw")
 
 					// re-publish
-					r.Get("/republish/confirm", datasetEditingHandler.ConfirmRepublish).Name("dataset_confirm_republish")
-					r.Post("/republish", datasetEditingHandler.Republish).Name("dataset_republish")
+					r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
+					r.Post("/republish", datasetediting.Republish).Name("dataset_republish")
 
 					// contributor actions
-					r.Get("/contributors/{role}/{position}/confirm-delete", datasetEditingHandler.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
+					r.Get("/contributors/{role}/{position}/confirm-delete", datasetediting.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
 
 					// curator actions
 					r.Group(func(r *ich.Mux) {

@@ -22,7 +22,7 @@ type YieldUpdateType struct {
 	Type string
 }
 
-func (h *Handler) ConfirmUpdateType(w http.ResponseWriter, r *http.Request) {
+func ConfirmUpdateType(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
 	// TODO validate type
