@@ -338,6 +338,10 @@ func Register(c Config) {
 					// contributor actions
 					r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
 
+					// departments
+					r.Get("/departments/add", publicationediting.AddDepartment).Name("publication_add_department")
+					r.Get("/departments/suggestions", publicationediting.SuggestDepartments).Name("publication_suggest_departments")
+
 					// publish
 					r.Get("/publish/confirm", publicationediting.ConfirmPublish).Name("publication_confirm_publish")
 					r.Post("/publish", publicationediting.Publish).Name("publication_publish")
@@ -775,13 +779,7 @@ func Register(c Config) {
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLink)).
 			Name("publication_delete_link")
 
-		// edit publication departments
-		r.Get("/publication/{id}/departments/add",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddDepartment)).
-			Name("publication_add_department")
-		r.Get("/publication/{id}/departments/suggestions",
-			publicationEditingHandler.Wrap(publicationEditingHandler.SuggestDepartments)).
-			Name("publication_suggest_departments")
+			// edit publication departments
 		r.Post("/publication/{id}/departments",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateDepartment)).
 			Name("publication_create_department")

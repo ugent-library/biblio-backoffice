@@ -1,0 +1,41 @@
+package publication
+
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+templ SuggestDepartments(c *ctx.Ctx,  publication *models.Publication, hits []models.Completion) {
+	<ul class="list-group mt-6">
+		for _, hit := range hits {
+			<li class="list-group-item">
+				<div class="d-flex w-100">
+					<div class="w-100">
+						<div class="d-flex align-items-start">
+							<div class="list-group-item-content">
+								<div class="list-group-item-text">
+									<h4 class="c-h4">{ hit.Heading }</h4>
+									<div class="c-body-small text-muted">{ hit.Description }</div>
+									<div class="text-muted c-body-small">Department ID: { hit.ID }</div>
+								</div>
+								<div class="list-group-item-meta mt-2">
+									<div class="list-group-item-meta-left"></div>
+									<div class="list-group-item-meta-right">
+										<button
+											class="btn btn-primary"
+											hx-post={ c.PathTo("publication_create_department", "id", publication.ID).String() }
+											hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
+											hx-vals={ fmt.Sprintf(`{"department_id": "%s"}`, hit.ID) }
+											hx-swap="none"
+										>Add department</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</li>
+		}
+	</ul>
+}
