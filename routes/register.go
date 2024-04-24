@@ -322,56 +322,56 @@ func Register(c Config) {
 				r.Route("/publication/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetPublication(c.Services.Repo))
 
-					// delete
-					r.Get("/confirm-delete", publicationediting.ConfirmDelete).Name("publication_confirm_delete")
-					r.Delete("/", publicationediting.Delete).Name("publication_delete")
-
-					// edit publication type
-					r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
-
-					// abstracts
-					r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", publicationediting.ConfirmDeleteAbstract).Name("publication_confirm_delete_abstract")
-
-					// lay summaries
-					r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
-
-					// contributor actions
-					r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
-
-					// departments
-					r.Get("/departments/add", publicationediting.AddDepartment).Name("publication_add_department")
-					r.Get("/departments/suggestions", publicationediting.SuggestDepartments).Name("publication_suggest_departments")
-
-					// publish
-					r.Get("/publish/confirm", publicationediting.ConfirmPublish).Name("publication_confirm_publish")
-					r.Post("/publish", publicationediting.Publish).Name("publication_publish")
-
-					// withdraw
-					r.Get("/withdraw/confirm", publicationediting.ConfirmWithdraw).Name("publication_confirm_withdraw")
-					r.Post("/withdraw", publicationediting.Withdraw).Name("publication_withdraw")
-
-					// re-publish
-					r.Get("/republish/confirm", publicationediting.ConfirmRepublish).Name("publication_confirm_republish")
-					r.Post("/republish", publicationediting.Republish).Name("publication_republish")
-
-					// curator actions
+					// view only functions
 					r.Group(func(r *ich.Mux) {
-						r.Use(ctx.RequireCurator)
+						r.Use(ctx.RequireViewPublication)
+
+						r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 					})
 
 					// edit only
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireEditPublication)
 
+						// delete
+						r.Get("/confirm-delete", publicationediting.ConfirmDelete).Name("publication_confirm_delete")
+						r.Delete("/", publicationediting.Delete).Name("publication_delete")
+
+						// edit publication type
+						r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
+
+						// abstracts
+						r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", publicationediting.ConfirmDeleteAbstract).Name("publication_confirm_delete_abstract")
+
 						// links
 						r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", publicationediting.ConfirmDeleteLink).Name("publication_confirm_delete_link")
+
+						// lay summaries
+						r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
+
+						// contributors
+						r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
+
+						// departments
+						r.Get("/departments/add", publicationediting.AddDepartment).Name("publication_add_department")
+						r.Get("/departments/suggestions", publicationediting.SuggestDepartments).Name("publication_suggest_departments")
+
+						// publish
+						r.Get("/publish/confirm", publicationediting.ConfirmPublish).Name("publication_confirm_publish")
+						r.Post("/publish", publicationediting.Publish).Name("publication_publish")
+
+						// withdraw
+						r.Get("/withdraw/confirm", publicationediting.ConfirmWithdraw).Name("publication_confirm_withdraw")
+						r.Post("/withdraw", publicationediting.Withdraw).Name("publication_withdraw")
+
+						// re-publish
+						r.Get("/republish/confirm", publicationediting.ConfirmRepublish).Name("publication_confirm_republish")
+						r.Post("/republish", publicationediting.Republish).Name("publication_republish")
 					})
 
-					// view only functions
+					// curator actions
 					r.Group(func(r *ich.Mux) {
-						r.Use(ctx.RequireViewPublication)
-
-						r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
+						r.Use(ctx.RequireCurator)
 					})
 				})
 
@@ -379,31 +379,41 @@ func Register(c Config) {
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 
-					// delete
-					r.Get("/confirm-delete", datasetediting.ConfirmDelete).Name("dataset_confirm_delete")
-					r.Delete("/", datasetediting.Delete).Name("dataset_delete")
+					// view only functions
+					r.Group(func(r *ich.Mux) {
+						r.Use(ctx.RequireViewDataset)
+					})
 
-					// abstracts
-					r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", datasetediting.ConfirmDeleteAbstract).Name("dataset_confirm_delete_abstract")
+					// edit only
+					r.Group(func(r *ich.Mux) {
+						r.Use(ctx.RequireEditDataset)
 
-					// publish
-					r.Get("/publish/confirm", datasetediting.ConfirmPublish).Name("dataset_confirm_publish")
-					r.Post("/publish", datasetediting.Publish).Name("dataset_publish")
+						// delete
+						r.Get("/confirm-delete", datasetediting.ConfirmDelete).Name("dataset_confirm_delete")
+						r.Delete("/", datasetediting.Delete).Name("dataset_delete")
 
-					// withdraw
-					r.Get("/withdraw/confirm", datasetediting.ConfirmWithdraw).Name("dataset_confirm_withdraw")
-					r.Post("/withdraw", datasetediting.Withdraw).Name("dataset_withdraw")
+						// abstracts
+						r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", datasetediting.ConfirmDeleteAbstract).Name("dataset_confirm_delete_abstract")
 
-					// re-publish
-					r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
-					r.Post("/republish", datasetediting.Republish).Name("dataset_republish")
+						// publish
+						r.Get("/publish/confirm", datasetediting.ConfirmPublish).Name("dataset_confirm_publish")
+						r.Post("/publish", datasetediting.Publish).Name("dataset_publish")
 
-					// contributor actions
-					r.Get("/contributors/{role}/{position}/confirm-delete", datasetediting.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
+						// withdraw
+						r.Get("/withdraw/confirm", datasetediting.ConfirmWithdraw).Name("dataset_confirm_withdraw")
+						r.Post("/withdraw", datasetediting.Withdraw).Name("dataset_withdraw")
 
-					// departments
-					r.Get("/departments/add", datasetediting.AddDepartment).Name("dataset_add_department")
-					r.Get("/departments/suggestions", datasetediting.SuggestDepartments).Name("dataset_suggest_departments")
+						// re-publish
+						r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
+						r.Post("/republish", datasetediting.Republish).Name("dataset_republish")
+
+						// contributor actions
+						r.Get("/contributors/{role}/{position}/confirm-delete", datasetediting.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
+
+						// departments
+						r.Get("/departments/add", datasetediting.AddDepartment).Name("dataset_add_department")
+						r.Get("/departments/suggestions", datasetediting.SuggestDepartments).Name("dataset_suggest_departments")
+					})
 
 					// curator actions
 					r.Group(func(r *ich.Mux) {
