@@ -395,6 +395,9 @@ func Register(c Config) {
 						// abstracts
 						r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", datasetediting.ConfirmDeleteAbstract).Name("dataset_confirm_delete_abstract")
 
+						// links
+						r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", datasetediting.ConfirmDeleteLink).Name("dataset_confirm_delete_link")
+
 						// publish
 						r.Get("/publish/confirm", datasetediting.ConfirmPublish).Name("dataset_confirm_publish")
 						r.Post("/publish", datasetediting.Publish).Name("dataset_publish")
@@ -546,9 +549,6 @@ func Register(c Config) {
 		r.Put("/dataset/{id}/links/{link_id}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateLink)).
 			Name("dataset_update_link")
-		r.Get("/dataset/{id}/{snapshot_id}/links/{link_id}/confirm-delete",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteLink)).
-			Name("dataset_confirm_delete_link")
 		r.Delete("/dataset/{id}/links/{link_id}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteLink)).
 			Name("dataset_delete_link")
