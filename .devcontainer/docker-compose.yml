@@ -36,12 +36,14 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     volumes:
-      - ../tmp/backoffice/db_data:/var/lib/postgresql/data
+      - biblio-backoffice-dbdata:/var/lib/postgresql/data
     environment:
       POSTGRES_DATABASE: biblio
       POSTGRES_USER: biblio
       POSTGRES_PASSWORD: biblio
       PGPORT: 3051
+      # see section on PGDATA in https://hub.docker.com/_/postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U biblio -d biblio"]
       interval: 30s
@@ -103,5 +105,7 @@ services:
   #      retries: 5
 
 volumes:
-  biblio-backoffice-esdata:
+  dbdata:
+    driver: local
+  esdata:
     driver: local
