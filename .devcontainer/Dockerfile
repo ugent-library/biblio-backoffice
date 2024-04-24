@@ -33,6 +33,9 @@ Seed the app with dummy organizations:\n\
 Seed the app with dummy people:\n\
     go run main.go seed people < .devcontainer/people/people.json\n\
 \n\
+Seed the app with dummy projects:\n\
+    go run main.go seed projects < .devcontainer/projects/projects.json\n\
+\n\
 Start the app:\n\
     reflex -d none -c reflex.docker.conf\n\
 \n\

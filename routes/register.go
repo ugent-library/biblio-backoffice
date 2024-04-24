@@ -116,20 +116,6 @@ func Register(c Config) {
 		BaseURL:         c.BaseURL,
 		FrontendBaseUrl: c.FrontendURL,
 	}
-	authenticatingHandler := &authenticating.Handler{
-		BaseHandler:   baseHandler,
-		OIDCAuth:      c.OIDCAuth,
-		UsernameClaim: c.UsernameClaim,
-	}
-	impersonatingHandler := &impersonating.Handler{
-		BaseHandler:       baseHandler,
-		UserSearchService: c.Services.UserSearchService,
-	}
-	dashboardHandler := &dashboard.Handler{
-		BaseHandler:            baseHandler,
-		DatasetSearchIndex:     c.Services.DatasetSearchIndex,
-		PublicationSearchIndex: c.Services.PublicationSearchIndex,
-	}
 	frontofficeHandler := &frontoffice.Handler{
 		BaseHandler:   baseHandler,
 		Repo:          c.Services.Repo,
@@ -146,11 +132,6 @@ func Register(c Config) {
 	datasetSearchingHandler := &datasetsearching.Handler{
 		BaseHandler:        baseHandler,
 		DatasetSearchIndex: c.Services.DatasetSearchIndex,
-	}
-	datasetExportingHandler := &datasetexporting.Handler{
-		BaseHandler:          baseHandler,
-		DatasetListExporters: c.Services.DatasetListExporters,
-		DatasetSearchIndex:   c.Services.DatasetSearchIndex,
 	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
@@ -178,11 +159,6 @@ func Register(c Config) {
 		BaseHandler:            baseHandler,
 		PublicationSearchIndex: c.Services.PublicationSearchIndex,
 		FileStore:              c.Services.FileStore,
-	}
-	publicationExportingHandler := &publicationexporting.Handler{
-		BaseHandler:              baseHandler,
-		PublicationListExporters: c.Services.PublicationListExporters,
-		PublicationSearchIndex:   c.Services.PublicationSearchIndex,
 	}
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
@@ -214,11 +190,6 @@ func Register(c Config) {
 	publicationBatchHandler := &publicationbatch.Handler{
 		BaseHandler: baseHandler,
 		Repo:        c.Services.Repo,
-	}
-
-	mediaTypesHandler := &mediatypes.Handler{
-		BaseHandler:            baseHandler,
-		MediaTypeSearchService: c.Services.MediaTypeSearchService,
 	}
 
 	// frontoffice data exchange api
@@ -280,14 +251,21 @@ func Register(c Config) {
 					http.StatusNotFound:            handlers.NotFound,
 					http.StatusInternalServerError: handlers.InternalServerError,
 				},
-				SessionName:  c.SessionName,
-				SessionStore: c.SessionStore,
-				BaseURL:      c.BaseURL,
-				FrontendURL:  c.FrontendURL,
-				CSRFName:     "csrf-token",
+				SessionName:   c.SessionName,
+				SessionStore:  c.SessionStore,
+				BaseURL:       c.BaseURL,
+				FrontendURL:   c.FrontendURL,
+				CSRFName:      "csrf-token",
+				OIDCAuth:      c.OIDCAuth,
+				UsernameClaim: c.UsernameClaim,
 			}))
 
 			r.NotFound(handlers.NotFound)
+
+			// authentication
+			r.Get("/auth/openid-connect/callback", authenticating.Callback)
+			r.Get("/login", authenticating.Login).Name("login")
+			r.Get("/logout", authenticating.Logout).Name("logout")
 
 			// home
 			r.Get("/", handlers.Home).Name("home")
@@ -304,16 +282,41 @@ func Register(c Config) {
 				// dashboard recent activity component
 				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
 
-				// candidate records
+				// curator only routes
 				r.Group(func(r *ich.Mux) {
 					r.Use(ctx.RequireCurator)
 
+					r.Group(func(r *ich.Mux) {
+						r.Use(ctx.SetNav("dashboard"))
+						r.Get("/dashboard/datasets/{type}", dashboard.CuratorDatasets).Name("dashboard_datasets")
+						r.Get("/dashboard/publications/{type}", dashboard.CuratorPublications).Name("dashboard_publications")
+					})
+					r.Post("/dashboard/refresh-apublications/{type}", dashboard.RefreshAPublications).Name("dashboard_refresh_apublications")
+					r.Post("/dashboard/refresh-upublications/{type}", dashboard.RefreshUPublications).Name("dashboard_refresh_upublications")
 					r.With(ctx.SetNav("candidate_records")).Get("/candidate-records", candidaterecords.CandidateRecords).Name("candidate_records")
 					r.Get("/candidate-records-icon", candidaterecords.CandidateRecordsIcon).Name("candidate_records_icon")
 					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
 					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
 					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
+
+					// impersonate user
+					r.Get("/impersonation/add", impersonating.AddImpersonation).Name("add_impersonation")
+					r.Get("/impersonation/suggestions", impersonating.AddImpersonationSuggest).Name("suggest_impersonations")
+					r.Post("/impersonation", impersonating.CreateImpersonation).Name("create_impersonation")
+
+					// export datasets
+					r.Get("/dataset.{format}", datasetexporting.ExportByCurationSearch).Name("export_datasets")
+
+					// change user role
+					r.Put("/role/{role}", authenticating.UpdateRole).Name("update_role")
+
+					// export publications
+					r.Get("/publication.{format}", publicationexporting.ExportByCurationSearch).Name("export_publications")
 				})
+
+				// delete impersonation
+				// TODO why doesn't a DELETE with methodoverride work here?
+				r.Post("/delete-impersonation", impersonating.DeleteImpersonation).Name("delete_impersonation")
 
 				// publications
 				r.Route("/publication/{id}", func(r *ich.Mux) {
@@ -325,6 +328,12 @@ func Register(c Config) {
 
 					// edit publication type
 					r.Get("/type/confirm", publicationEditingHandler.ConfirmUpdateType).Name("publication_confirm_update_type")
+
+					// abstracts
+					r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", publicationediting.ConfirmDeleteAbstract).Name("publication_confirm_delete_abstract")
+
+					// lay summaries
+					r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
 
 					// contributor actions
 					r.Get("/contributors/{role}/{position}/confirm-delete", publicationEditingHandler.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
@@ -345,6 +354,21 @@ func Register(c Config) {
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
 					})
+
+					// edit only
+					r.Group(func(r *ich.Mux) {
+						r.Use(ctx.RequireEditPublication)
+
+						// links
+						r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", publicationediting.ConfirmDeleteLink).Name("publication_confirm_delete_link")
+					})
+
+					// view only functions
+					r.Group(func(r *ich.Mux) {
+						r.Use(ctx.RequireViewPublication)
+
+						r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
+					})
 				})
 
 				// datasets
@@ -354,6 +378,9 @@ func Register(c Config) {
 					// delete
 					r.Get("/confirm-delete", datasetEditingHandler.ConfirmDelete).Name("dataset_confirm_delete")
 					r.Delete("/", datasetEditingHandler.Delete).Name("dataset_delete")
+
+					// abstracts
+					r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", datasetediting.ConfirmDeleteAbstract).Name("dataset_confirm_delete_abstract")
 
 					// publish
 					r.Get("/publish/confirm", datasetEditingHandler.ConfirmPublish).Name("dataset_confirm_publish")
@@ -377,49 +404,10 @@ func Register(c Config) {
 				})
 
 				// media types
-				r.Get("/media_type/suggestions", mediaTypesHandler.Suggest).Name("suggest_media_types")
+				r.Get("/media_type/suggestions", mediatypes.Suggest).Name("suggest_media_types")
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// authenticate user
-		r.Get("/auth/openid-connect/callback",
-			authenticatingHandler.Wrap(authenticatingHandler.Callback))
-		r.Get("/login",
-			authenticatingHandler.Wrap(authenticatingHandler.Login)).
-			Name("login")
-		r.Get("/logout",
-			authenticatingHandler.Wrap(authenticatingHandler.Logout)).
-			Name("logout")
-		// change user role
-		r.Put("/role/{role}",
-			authenticatingHandler.Wrap(authenticatingHandler.UpdateRole)).
-			Name("update_role")
-
-		// impersonate user
-		r.Get("/impersonation/add",
-			impersonatingHandler.Wrap(impersonatingHandler.AddImpersonation)).
-			Name("add_impersonation")
-		r.Get("/impersonation/suggestions",
-			impersonatingHandler.Wrap(impersonatingHandler.AddImpersonationSuggest)).
-			Name("suggest_impersonations")
-		r.Post("/impersonation",
-			impersonatingHandler.Wrap(impersonatingHandler.CreateImpersonation)).
-			Name("create_impersonation")
-		// TODO why doesn't a DELETE with methodoverride work here?
-		r.Post("/delete-impersonation",
-			impersonatingHandler.Wrap(impersonatingHandler.DeleteImpersonation)).
-			Name("delete_impersonation")
-
-		// dashboard
-		r.Get("/dashboard/publications/{type}", dashboardHandler.Wrap(dashboardHandler.Publications)).
-			Name("dashboard_publications")
-		r.Get("/dashboard/datasets/{type}", dashboardHandler.Wrap(dashboardHandler.Datasets)).
-			Name("dashboard_datasets")
-		r.Post("/dashboard/refresh-apublications/{type}", dashboardHandler.Wrap(dashboardHandler.RefreshAPublications)).
-			Name("dashboard_refresh_apublications")
-		r.Post("/dashboard/refresh-upublications/{type}", dashboardHandler.Wrap(dashboardHandler.RefreshUPublications)).
-			Name("dashboard_refresh_upublications")
 
 		// search datasets
 		r.Get("/dataset",
@@ -453,11 +441,6 @@ func Register(c Config) {
 		r.Get("/dataset/{id}/add/finish",
 			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddFinish)).
 			Name("dataset_add_finish")
-
-		// export datasets
-		r.Get("/dataset.{format}",
-			datasetExportingHandler.Wrap(datasetExportingHandler.ExportByCurationSearch)).
-			Name("export_datasets")
 
 		// view dataset
 		r.Get("/dataset/{id}",
@@ -582,9 +565,6 @@ func Register(c Config) {
 		r.Put("/dataset/{id}/abstracts/{abstract_id}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateAbstract)).
 			Name("dataset_update_abstract")
-		r.Get("/dataset/{id}/{snapshot_id}/abstracts/{abstract_id}/confirm-delete",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteAbstract)).
-			Name("dataset_confirm_delete_abstract")
 		r.Delete("/dataset/{id}/abstracts/{abstract_id}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteAbstract)).
 			Name("dataset_delete_abstract")
@@ -684,11 +664,6 @@ func Register(c Config) {
 			publicationSearchingHandler.Wrap(publicationSearchingHandler.Search)).
 			Name("publications")
 
-		// export publications
-		r.Get("/publication.{format}",
-			publicationExportingHandler.Wrap(publicationExportingHandler.ExportByCurationSearch)).
-			Name("export_publications")
-
 		// publication batch operations
 		r.Get("/publication/batch",
 			publicationBatchHandler.Wrap(publicationBatchHandler.Show)).
@@ -716,9 +691,6 @@ func Register(c Config) {
 		r.Get("/publication/{id}/activity",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowActivity)).
 			Name("publication_activity")
-		r.Get("/publication/{id}/files/{file_id}",
-			publicationViewingHandler.Wrap(publicationViewingHandler.DownloadFile)).
-			Name("publication_download_file")
 
 		// lock publication
 		r.Post("/publication/{id}/lock",
@@ -809,9 +781,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/links/{link_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLink)).
 			Name("publication_update_link")
-		r.Get("/publication/{id}/{snapshot_id}/links/{link_id}/confirm-delete",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteLink)).
-			Name("publication_confirm_delete_link")
 		r.Delete("/publication/{id}/links/{link_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLink)).
 			Name("publication_delete_link")
@@ -846,9 +815,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/abstracts/{abstract_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateAbstract)).
 			Name("publication_update_abstract")
-		r.Get("/publication/{id}/{snapshot_id}/abstracts/{abstract_id}/confirm-delete",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteAbstract)).
-			Name("publication_confirm_delete_abstract")
 		r.Delete("/publication/{id}/abstracts/{abstract_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteAbstract)).
 			Name("publication_delete_abstract")
@@ -866,9 +832,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/lay_summaries/{lay_summary_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLaySummary)).
 			Name("publication_update_lay_summary")
-		r.Get("/publication/{id}/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteLaySummary)).
-			Name("publication_confirm_delete_lay_summary")
 		r.Delete("/publication/{id}/lay_summaries/{lay_summary_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLaySummary)).
 			Name("publication_delete_lay_summary")
