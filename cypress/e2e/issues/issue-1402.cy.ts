@@ -1190,7 +1190,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.getLabel("Search").next("input").type("LW17");
           cy.wait("@suggestDepartment");
 
-          cy.contains(".btn", "Add department").click();
+          cy.contains(".list-group-item", "Department ID: LW17")
+            .contains(".btn", "Add department")
+            .click();
         });
         cy.ensureNoModal();
 
@@ -1206,7 +1208,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           cy.getLabel("Search").next("input").type("DI62");
           cy.wait("@suggestDepartment");
 
-          cy.contains(".btn", "Add department").click();
+          cy.contains(".list-group-item", "Department ID: DI62")
+            .contains(".btn", "Add department")
+            .click();
         });
         cy.ensureNoModal();
 
