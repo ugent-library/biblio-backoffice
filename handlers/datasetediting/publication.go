@@ -86,12 +86,18 @@ func (h *Handler) CreatePublication(w http.ResponseWriter, r *http.Request, ctx 
 
 	// TODO handle validation errors
 	// TODO pass If-Match
-	err = h.Repo.AddPublicationDataset(p, ctx.Dataset, ctx.User)
-
 	// TODO handle conflict
-
+	err = h.Repo.AddPublicationDataset(p, ctx.Dataset, ctx.User)
 	if err != nil {
 		h.Logger.Errorw("create dataset publication: could not add the publication", "error", err, "dataset", ctx.Dataset.ID, "publication", p.ID)
+		render.InternalServerError(w, r, err)
+		return
+	}
+
+	// Refresh the ctx.Dataset: it still carries the old snapshotID
+	ctx.Dataset, err = h.Repo.GetDataset(ctx.Dataset.ID)
+	if err != nil {
+		h.Logger.Errorw("create dataset publication: could not get dataset", "errors", err, "dataset", ctx.Dataset.ID, "publication", b.PublicationID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}

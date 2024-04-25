@@ -36,7 +36,7 @@ type YieldDeleteDataset struct {
 func (h *Handler) AddDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
 	hits, err := h.searchRelatedDatasets(ctx.User, ctx.Publication, "")
 	if err != nil {
-		h.Logger.Errorw("add dataset publication: could not execute search", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		h.Logger.Errorw("add publication dataset: could not execute search", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -57,7 +57,7 @@ func (h *Handler) SuggestDatasets(w http.ResponseWriter, r *http.Request, ctx Co
 
 	hits, err := h.searchRelatedDatasets(ctx.User, ctx.Publication, b.Query)
 	if err != nil {
-		h.Logger.Errorw("add dataset publication: could not execute search", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		h.Logger.Errorw("add publication dataset: could not execute search", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -79,7 +79,7 @@ func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	// TODO reduce calls to repository
 	d, err := h.Repo.GetDataset(b.DatasetID)
 	if err != nil {
-		h.Logger.Errorw("create dataset publication: could not get dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
+		h.Logger.Errorw("create publication dataset: could not get dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -97,14 +97,14 @@ func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	// Refresh the ctx.Publication: it still carries the old snapshotID
 	ctx.Publication, err = h.Repo.GetPublication(ctx.Publication.ID)
 	if err != nil {
-		h.Logger.Errorw("create dataset publication: could not get publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
+		h.Logger.Errorw("create publication dataset: could not get publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
 	relatedDatasets, err := h.Repo.GetVisiblePublicationDatasets(ctx.User, ctx.Publication)
 	if err != nil {
-		h.Logger.Errorw("create dataset publication: could not get related datasets", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		h.Logger.Errorw("create publication dataset: could not get related datasets", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -154,7 +154,7 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	// TODO reduce calls to repository
 	d, err := h.Repo.GetDataset(b.DatasetID)
 	if err != nil {
-		h.Logger.Errorw("delete dataset publication: could not get dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
+		h.Logger.Errorw("delete publication dataset: could not get dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -165,7 +165,7 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	err = h.Repo.RemovePublicationDataset(ctx.Publication, d, ctx.User)
 
 	if err != nil {
-		h.Logger.Errorw("delete dataset publication: could not remove dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
+		h.Logger.Errorw("delete publication dataset: could not remove dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
@@ -173,14 +173,14 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	// Refresh the ctx.Publication: it still carries the old snapshotID
 	ctx.Publication, err = h.Repo.GetPublication(ctx.Publication.ID)
 	if err != nil {
-		h.Logger.Errorw("delete dataset publication: could not get publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
+		h.Logger.Errorw("delete publication dataset: could not get publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
 	relatedDatasets, err := h.Repo.GetVisiblePublicationDatasets(ctx.User, ctx.Publication)
 	if err != nil {
-		h.Logger.Errorw("create dataset publication: could not get related datasets", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		h.Logger.Errorw("create publication dataset: could not get related datasets", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
