@@ -3,10 +3,13 @@ package datasetediting
 import (
 	"net/http"
 
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 )
 
 type BindSuggestPublications struct {
@@ -27,10 +30,6 @@ type YieldAddPublication struct {
 type YieldPublications struct {
 	Context
 	RelatedPublications []*models.Publication
-}
-type YieldDeletePublication struct {
-	Context
-	PublicationID string
 }
 
 func (h *Handler) AddPublication(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -115,25 +114,30 @@ func (h *Handler) CreatePublication(w http.ResponseWriter, r *http.Request, ctx 
 	})
 }
 
-func (h *Handler) ConfirmDeletePublication(w http.ResponseWriter, r *http.Request, ctx Context) {
+func ConfirmDeletePublication(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindDeletePublication{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("confirm delete dataset publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("confirm delete dataset publication: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	if b.SnapshotID != ctx.Dataset.SnapshotID {
+	if b.SnapshotID != dataset.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
+			Message: c.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
 
-	render.Layout(w, "show_modal", "dataset/confirm_delete_publication", YieldDeletePublication{
-		Context:       ctx,
-		PublicationID: b.PublicationID,
-	})
+	views.ConfirmDelete(views.ConfirmDeleteArgs{
+		Context:    c,
+		Question:   "Are you sure you want to remove this publication from the dataset?",
+		DeleteUrl:  c.PathTo("dataset_delete_publication", "id", dataset.ID, "publication_id", b.PublicationID),
+		SnapshotID: dataset.SnapshotID,
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) DeletePublication(w http.ResponseWriter, r *http.Request, ctx Context) {
