@@ -1,5 +1,7 @@
 // https://github.com/ugent-library/biblio-backoffice/issues/1402
 
+import { getRandomText } from "support/util";
+
 describe("Issue #1402: Gohtml conversion to Templ", () => {
   describe("as researcher", () => {
     beforeEach(() => {
@@ -737,6 +739,55 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .should("have.ordered.members", ["Biocenter AgriVet"]);
       });
 
+      it("should be possible to add and delete related datasets", () => {
+        const title = getRandomText();
+        cy.setUpDataset({ title, prepareForPublishing: true });
+        cy.visitDataset();
+        cy.contains(".btn", "Publish to Biblio").click();
+        cy.ensureModal("Are you sure?").closeModal("Publish");
+
+        cy.setUpPublication();
+        cy.visitPublication();
+
+        cy.contains(".nav .nav-item", "Datasets").click();
+
+        cy.contains(".card", "Related datasets")
+          .contains(".btn", "Add dataset")
+          .click();
+
+        cy.ensureModal("Select datasets").within(() => {
+          cy.intercept("/publication/*/datasets/suggestions?*").as(
+            "suggestDataset",
+          );
+
+          cy.getLabel("Search").next("input").type(title);
+          cy.wait("@suggestDataset");
+
+          cy.contains(".list-group-item", title)
+            .contains(".btn", "Add dataset")
+            .click();
+        });
+        cy.ensureNoModal();
+
+        cy.get("#datasets-body")
+          .contains(".list-group-item", title)
+          .find(".if-more")
+          .click();
+        cy.contains(".dropdown-item", "Remove from publication").click();
+
+        cy.ensureModal("Confirm deletion")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to remove this dataset from the publication?",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.get("#datasets-body").find(".list-group-item-").should("not.exist");
+      });
+
       it("should be possible to add and edit Biblio message", () => {
         cy.setUpPublication();
         cy.visitPublication();
@@ -1246,6 +1297,60 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.get("#departments-body .list-group-item-text h4")
           .map("textContent")
           .should("have.ordered.members", ["Biocenter AgriVet"]);
+      });
+
+      it("should be possible to add and delete related publications", () => {
+        const title = getRandomText();
+        cy.setUpPublication("Miscellaneous", {
+          title,
+          prepareForPublishing: true,
+        });
+        cy.visitPublication();
+        cy.contains(".btn", "Publish to Biblio").click();
+        cy.ensureModal("Are you sure?").closeModal("Publish");
+
+        cy.setUpDataset();
+        cy.visitDataset();
+
+        cy.contains(".nav .nav-item", "Publications").click();
+
+        cy.contains(".card", "Related publications")
+          .contains(".btn", "Add publication")
+          .click();
+
+        cy.ensureModal("Select publications").within(() => {
+          cy.intercept("/dataset/*/publications/suggestions?*").as(
+            "suggestPublication",
+          );
+
+          cy.getLabel("Search").next("input").type(title);
+          cy.wait("@suggestPublication");
+
+          cy.contains(".list-group-item", title)
+            .contains(".btn", "Add publication")
+            .click();
+        });
+        cy.ensureNoModal();
+
+        cy.get("#publications-body")
+          .contains(".list-group-item", title)
+          .find(".if-more")
+          .click();
+        cy.contains(".dropdown-item", "Remove from dataset").click();
+
+        cy.ensureModal("Confirm deletion")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to remove this publication from the dataset?",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.get("#publications-body")
+          .find(".list-group-item-")
+          .should("not.exist");
       });
 
       it("should be possible to add and edit Biblio message", () => {
