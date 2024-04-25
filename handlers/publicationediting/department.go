@@ -9,7 +9,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	views "github.com/ugent-library/biblio-backoffice/views/publication"
+	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 )
@@ -31,11 +32,6 @@ type YieldDepartments struct {
 	Context
 }
 
-type YieldDeleteDepartment struct {
-	Context
-	DepartmentID string
-}
-
 func AddDepartment(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
@@ -46,7 +42,7 @@ func AddDepartment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.AddDepartment(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
+	publicationviews.AddDepartment(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
 }
 
 func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +62,7 @@ func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.SuggestDepartments(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
+	publicationviews.SuggestDepartments(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
 }
 
 func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -113,11 +109,14 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 	})
 }
 
-func (h *Handler) ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
+func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	publication := ctx.GetPublication(r)
+
 	b := BindDeleteDepartment{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("confirm delete publication department: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("confirm delete publication department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -125,17 +124,19 @@ func (h *Handler) ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request
 	depID, _ := url.QueryUnescape(b.DepartmentID)
 	b.DepartmentID = depID
 
-	if b.SnapshotID != ctx.Publication.SnapshotID {
+	if b.SnapshotID != publication.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.conflict_error_reload"),
+			Message: c.Loc.Get("publication.conflict_error_reload"),
 		})
 		return
 	}
 
-	render.Layout(w, "show_modal", "publication/confirm_delete_department", YieldDeleteDepartment{
-		Context:      ctx,
-		DepartmentID: b.DepartmentID,
-	})
+	views.ConfirmDelete(views.ConfirmDeleteArgs{
+		Context:    c,
+		Question:   "Are you sure you want to remove this department from the publication?",
+		DeleteUrl:  c.PathTo("publication_delete_department", "id", publication.ID, "department_id", b.DepartmentID),
+		SnapshotID: b.SnapshotID,
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
