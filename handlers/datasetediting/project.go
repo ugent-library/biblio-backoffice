@@ -5,11 +5,14 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 )
 
 type BindSuggestProjects struct {
@@ -29,10 +32,6 @@ type YieldProjects struct {
 type YieldAddProject struct {
 	Context
 	Hits []*models.Project
-}
-type YieldDeleteProject struct {
-	Context
-	ProjectID string
 }
 
 func (h *Handler) AddProject(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -110,27 +109,32 @@ func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Cont
 	})
 }
 
-func (h *Handler) ConfirmDeleteProject(w http.ResponseWriter, r *http.Request, ctx Context) {
+func ConfirmDeleteProject(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindDeleteProject{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("confirm delete dataset project: could not bind request arguments:", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("confirm delete dataset project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	if b.SnapshotID != ctx.Dataset.SnapshotID {
+	if b.SnapshotID != dataset.SnapshotID {
 		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
+			Message: c.Loc.Get("dataset.conflict_error_reload"),
 		})
 		return
 	}
 
 	projectID, _ := url.PathUnescape(b.ProjectID)
 
-	render.Layout(w, "show_modal", "dataset/confirm_delete_project", YieldDeleteProject{
-		Context:   ctx,
-		ProjectID: projectID,
-	})
+	views.ConfirmDelete(views.ConfirmDeleteArgs{
+		Context:    c,
+		Question:   "Are you sure you want to remove this project from the dataset?",
+		DeleteUrl:  c.PathTo("dataset_delete_project", "id", dataset.ID, "project_id", projectID),
+		SnapshotID: dataset.SnapshotID,
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Context) {
