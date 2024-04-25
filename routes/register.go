@@ -340,6 +340,10 @@ func Register(c Config) {
 						// edit publication type
 						r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
 
+						// projects
+						// project_id is last part of url because some id's contain slashes
+						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", publicationediting.ConfirmDeleteProject).Name("publication_confirm_delete_project")
+
 						// abstracts
 						r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", publicationediting.ConfirmDeleteAbstract).Name("publication_confirm_delete_abstract")
 
@@ -765,10 +769,6 @@ func Register(c Config) {
 		r.Post("/publication/{id}/projects",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
 			Name("publication_create_project")
-		// project_id is last part of url because some id's contain slashes
-		r.Get("/publication/{id}/{snapshot_id}/projects/confirm-delete/{project_id:.+}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteProject)).
-			Name("publication_confirm_delete_project")
 		// project_id is last part of url because some id's contain slashes
 		r.Delete("/publication/{id}/projects/{project_id:.+}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
