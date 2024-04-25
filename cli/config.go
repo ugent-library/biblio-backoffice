@@ -63,6 +63,11 @@ type Config struct {
 		ClientSecret string `env:"CLIENT_SECRET"`
 		Sandbox      bool   `env:"SANDBOX"`
 	} `envPrefix:"ORCID_"`
+	Plato struct {
+		URL      string `env:"URL"`
+		Username string `env:"USERNAME"`
+		Password string `env:"PASSWORD"`
+	} `envPrefix:"PLATO_"`
 	OIDC struct {
 		URL           string `env:"URL"`
 		ClientID      string `env:"CLIENT_ID"`

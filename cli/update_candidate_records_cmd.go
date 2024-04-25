@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/ugent-library/biblio-backoffice/recordsources"
-	_ "github.com/ugent-library/biblio-backoffice/recordsources/plato"
+	"github.com/ugent-library/biblio-backoffice/recordsources/plato"
 )
 
 func init() {
@@ -19,7 +19,11 @@ var updateCandidateRecords = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		services := newServices()
 
-		src, err := recordsources.New("plato", "https://plato.ea.ugent.be/service/dr/2biblio.jsp")
+		src, err := recordsources.New("plato", plato.Config{
+			Url:      config.Plato.URL,
+			Username: config.Plato.Username,
+			Password: config.Plato.Password,
+		})
 		if err != nil {
 			return err
 		}
