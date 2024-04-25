@@ -11,8 +11,9 @@ import (
 )
 
 func (r *Repo) AddCandidateRecord(ctx context.Context, rec *models.CandidateRecord) error {
+	rec.ID = ulid.Make().String()
 	params := db.AddCandidateRecordParams{
-		ID:             ulid.Make().String(),
+		ID:             rec.ID,
 		SourceName:     rec.SourceName,
 		SourceID:       rec.SourceID,
 		SourceMetadata: rec.SourceMetadata,
