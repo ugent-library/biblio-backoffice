@@ -8,8 +8,7 @@
 	// Override default workspace folder to be consistent and accessible in the
 	// Dockerfile
 	"mounts": [
-		"source=${localWorkspaceFolder},target=/src,type=bind,consistency=cached",
-		"source=${localWorkspaceFolder}/tmp/files,target=/data/files,type=bind,consistency=cached"
+		"source=${localWorkspaceFolder},target=/src,type=bind,consistency=cached"
 	],
 	"workspaceFolder": "/src",
 
@@ -20,7 +19,7 @@
 	// "customizations": {}
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [3002, "db-app:3051", "es:3061"],
+	"forwardPorts": [3002, "db:3051", "es:3061", "minio:3071", "minio:3072"],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// 
