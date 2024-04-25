@@ -137,11 +137,52 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         });
       });
 
+      it("should be possible to add and delete projects", () => {
+        cy.setUpPublication();
+        cy.visitPublication();
+
+        cy.get("#projects-body").should("contain", "No projects");
+
+        cy.contains(".card", "Project").contains(".btn", "Add project").click();
+
+        cy.ensureModal("Select projects").within(() => {
+          cy.intercept("/publication/*/projects/suggestions?*").as(
+            "suggestProject",
+          );
+
+          cy.getLabel("Search project").next("input").type("001D07903");
+          cy.wait("@suggestProject");
+
+          cy.contains(".list-group-item", "001D07903")
+            .contains(".btn", "Add project")
+            .click();
+        });
+        cy.ensureNoModal();
+
+        cy.get("#projects-body")
+          .contains(".list-group-item", "001D07903")
+          .find(".if-more")
+          .click();
+        cy.contains(".dropdown-item", "Remove from publication").click();
+
+        cy.ensureModal("Confirm deletion")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to remove this project from the publication?",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.get("#projects-body").should("contain", "No projects");
+      });
+
       it("should be possible to add, edit and delete abstracts", () => {
         cy.setUpPublication();
         cy.visitPublication();
 
-        cy.get("#abstracts").find("table tbody tr").should("have.length", 0);
+        cy.get("#abstracts-body").should("contain", "No abstracts");
 
         cy.contains(".btn", "Add abstract").click();
         cy.ensureModal("Add abstract")
@@ -166,7 +207,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .closeModal("Add abstract");
         cy.ensureNoModal();
 
-        cy.get("#abstracts")
+        cy.get("#abstracts-body")
           .find("table tbody tr")
           .as("row")
           .should("have.length", 1);
@@ -225,14 +266,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .closeModal("Delete");
         cy.ensureNoModal();
 
-        cy.get("#abstracts").find("table tbody tr").should("have.length", 0);
+        cy.get("#abstracts-body").should("contain", "No abstracts");
       });
 
       it("should be possible to add, edit and delete links", () => {
         cy.setUpPublication();
         cy.visitPublication();
 
-        cy.get("#links").find("table tbody tr").should("have.length", 0);
+        cy.get("#links-body").should("contain", "No links");
 
         cy.contains(".btn", "Add link").click();
         cy.ensureModal("Add link")
@@ -244,7 +285,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .closeModal("Add link");
         cy.ensureNoModal();
 
-        cy.get("#links")
+        cy.get("#links-body")
           .find("table tbody tr")
           .as("row")
           .should("have.length", 1);
@@ -293,16 +334,14 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .closeModal("Delete");
         cy.ensureNoModal();
 
-        cy.get("#links").find("table tbody tr").should("have.length", 0);
+        cy.get("#links-body").should("contain", "No links");
       });
 
       it("should be possible to add, edit and delete lay summaries", () => {
         cy.setUpPublication("Dissertation");
         cy.visitPublication();
 
-        cy.get("#lay-summaries")
-          .find("table tbody tr")
-          .should("have.length", 0);
+        cy.get("#lay-summaries-body").should("contain", "No lay summaries");
 
         cy.contains(".btn", "Add lay summary").click();
         cy.ensureModal("Add lay summary")
@@ -328,7 +367,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .closeModal("Add lay summary");
         cy.ensureNoModal();
 
-        cy.get("#lay-summaries")
+        cy.get("#lay-summaries-body")
           .find("table tbody tr")
           .as("row")
           .should("have.length", 1);
@@ -388,9 +427,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .closeModal("Delete");
         cy.ensureNoModal();
 
-        cy.get("#lay-summaries")
-          .find("table tbody tr")
-          .should("have.length", 0);
+        cy.get("#lay-summaries-body").should("contain", "No lay summaries");
       });
 
       it("should be possible to add and edit conference details", () => {
@@ -525,9 +562,16 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .should("have.ordered.members", ["the", "keywords", "updated"]);
       });
 
-      it("should be possible to delete authors", () => {
+      it("should be possible to add and delete authors", () => {
         cy.setUpPublication();
         cy.visitPublication();
+
+        cy.contains(".nav-link", "People & Affiliations").click();
+
+        cy.get("#authors .card-body").should(
+          "contain",
+          "Add at least one UGent author.",
+        );
 
         cy.updateFields(
           "Authors",
@@ -558,6 +602,10 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.ensureNoModal();
 
         cy.contains("#authors", "Jane Doe").should("not.exist");
+        cy.get("#authors .card-body").should(
+          "contain",
+          "Add at least one UGent author.",
+        );
       });
 
       it("should not be possible to delete the last UGent author of a published publication", () => {
@@ -597,9 +645,12 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         });
       });
 
-      it("should be possible to delete editors", () => {
+      it("should be possible to add and delete editors", () => {
         cy.setUpPublication("Book");
         cy.visitPublication();
+
+        cy.contains(".nav-link", "People & Affiliations").click();
+        cy.get("#editors .card-body").should("contain", "No editors.");
 
         cy.updateFields(
           "Editors",
@@ -630,11 +681,15 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.ensureNoModal();
 
         cy.contains("#editors", "Jane Doe").should("not.exist");
+        cy.get("#editors .card-body").should("contain", "No editors.");
       });
 
-      it("should be possible to delete supervisors", () => {
+      it("should be possible to add and delete supervisors", () => {
         cy.setUpPublication("Dissertation");
         cy.visitPublication();
+
+        cy.contains(".nav-link", "People & Affiliations").click();
+        cy.get("#supervisors .card-body").should("contain", "No supervisors.");
 
         cy.updateFields(
           "Supervisors",
@@ -667,6 +722,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.ensureNoModal();
 
         cy.contains("#supervisors", "Jane Doe").should("not.exist");
+        cy.get("#supervisors .card-body").should("contain", "No supervisors.");
       });
 
       it("should be possible to add and delete departments", () => {
@@ -674,6 +730,11 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.visitPublication();
 
         cy.contains(".nav .nav-item", "People & Affiliations").click();
+
+        cy.get("#departments .card-body").should(
+          "contain",
+          "Add at least one department.",
+        );
 
         cy.get("#departments").contains(".btn", "Add department").click();
 
@@ -751,6 +812,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.contains(".nav .nav-item", "Datasets").click();
 
+        cy.get("#datasets-body").should("contain", "No datasets");
+
         cy.contains(".card", "Related datasets")
           .contains(".btn", "Add dataset")
           .click();
@@ -785,7 +848,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .closeModal("Delete");
         cy.ensureNoModal();
 
-        cy.get("#datasets-body").find(".list-group-item-").should("not.exist");
+        cy.get("#datasets-body").should("contain", "No datasets");
       });
 
       it("should be possible to add and edit Biblio message", () => {
@@ -1007,8 +1070,46 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         });
       });
 
+      it("should be possible to add and delete projects", () => {
+        cy.get("#projects-body").should("contain", "No projects");
+
+        cy.contains(".card", "Project").contains(".btn", "Add project").click();
+
+        cy.ensureModal("Select projects").within(() => {
+          cy.intercept("/dataset/*/projects/suggestions?*").as(
+            "suggestProject",
+          );
+
+          cy.getLabel("Search project").next("input").type("001D07903");
+          cy.wait("@suggestProject");
+
+          cy.contains(".list-group-item", "001D07903")
+            .contains(".btn", "Add project")
+            .click();
+        });
+        cy.ensureNoModal();
+
+        cy.get("#projects-body")
+          .contains(".list-group-item", "001D07903")
+          .find(".if-more")
+          .click();
+        cy.contains(".dropdown-item", "Remove from dataset").click();
+
+        cy.ensureModal("Confirm deletion")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to remove this project from the dataset?",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.get("#projects-body").should("contain", "No projects");
+      });
+
       it("should be possible to add, edit and delete abstracts", () => {
-        cy.get("#abstracts").find("table tbody tr").should("have.length", 0);
+        cy.get("#abstracts-body").should("contain", "No abstracts");
 
         cy.contains(".btn", "Add abstract").click();
         cy.ensureModal("Add abstract")
@@ -1033,7 +1134,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .closeModal("Add abstract");
         cy.ensureNoModal();
 
-        cy.get("#abstracts")
+        cy.get("#abstracts-body")
           .find("table tbody tr")
           .as("row")
           .should("have.length", 1);
@@ -1092,11 +1193,11 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .closeModal("Delete");
         cy.ensureNoModal();
 
-        cy.get("#abstracts").find("table tbody tr").should("have.length", 0);
+        cy.get("#abstracts-body").should("contain", "No abstracts");
       });
 
       it("should be possible to add, edit and delete links", () => {
-        cy.get("#links").find("table tbody tr").should("have.length", 0);
+        cy.get("#links-body").should("contain", "No links");
 
         cy.contains(".btn", "Add link").click();
         cy.ensureModal("Add link")
@@ -1108,7 +1209,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .closeModal("Add link");
         cy.ensureNoModal();
 
-        cy.get("#links")
+        cy.get("#links-body")
           .find("table tbody tr")
           .as("row")
           .should("have.length", 1);
@@ -1157,12 +1258,18 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .closeModal("Delete");
         cy.ensureNoModal();
 
-        cy.get("#links").find("table tbody tr").should("have.length", 0);
+        cy.get("#links-body").should("contain", "No links");
       });
 
-      it("should be possible to delete creators", () => {
+      it("should be possible to add and delete creators", () => {
         cy.setUpDataset();
         cy.visitDataset();
+
+        cy.contains(".nav-link", "People & Affiliations").click();
+        cy.get("#authors .card-body").should(
+          "contain",
+          "Add at least one UGent creator.",
+        );
 
         cy.updateFields(
           "Creators",
@@ -1193,6 +1300,10 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.ensureNoModal();
 
         cy.contains("#authors", "Jane Doe").should("not.exist");
+        cy.get("#authors .card-body").should(
+          "contain",
+          "Add at least one UGent creator.",
+        );
       });
 
       it("should not be possible to delete the last UGent creator of a published dataset", () => {
@@ -1234,6 +1345,11 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
       it("should be possible to add and delete departments", () => {
         cy.contains(".nav .nav-item", "People & Affiliations").click();
+
+        cy.get("#departments .card-body").should(
+          "contain",
+          "Add at least one department.",
+        );
 
         cy.get("#departments").contains(".btn", "Add department").click();
 
@@ -1314,6 +1430,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.contains(".nav .nav-item", "Publications").click();
 
+        cy.get("#publications-body").should("contain", "No publications");
+
         cy.contains(".card", "Related publications")
           .contains(".btn", "Add publication")
           .click();
@@ -1348,9 +1466,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .closeModal("Delete");
         cy.ensureNoModal();
 
-        cy.get("#publications-body")
-          .find(".list-group-item-")
-          .should("not.exist");
+        cy.get("#publications-body").should("contain", "No publications");
       });
 
       it("should be possible to add and edit Biblio message", () => {
