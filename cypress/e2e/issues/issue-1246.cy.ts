@@ -19,7 +19,7 @@ describe("Issue #1246: Close button on toast does not work", () => {
 
     cy.contains(".dropdown-item", "Delete").click();
 
-    cy.ensureModal("Are you sure?").closeModal("Delete");
+    cy.ensureModal("Confirm deletion").closeModal("Delete");
 
     cy.ensureNoModal();
 

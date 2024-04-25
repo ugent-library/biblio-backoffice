@@ -178,7 +178,7 @@ function deletePublication(title) {
     .contains("button", "Delete")
     .click();
 
-  cy.ensureModal("Are you sure?")
+  cy.ensureModal("Confirm deletion")
     .within(() => {
       cy.get(".modal-body > p").should(
         "have.text",
