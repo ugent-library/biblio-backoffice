@@ -406,6 +406,9 @@ func Register(c Config) {
 						r.Get("/departments/suggestions", datasetediting.SuggestDepartments).Name("dataset_suggest_departments")
 						r.Get("/{snapshot_id}/departments/{department_id}/confirm-delete", datasetediting.ConfirmDeleteDepartment).Name("dataset_confirm_delete_department")
 
+						// publications
+						r.Get("/{snapshot_id}/publications/{publication_id}/confirm-delete", datasetediting.ConfirmDeletePublication).Name("dataset_confirm_delete_publication")
+
 						// publish
 						r.Get("/publish/confirm", datasetediting.ConfirmPublish).Name("dataset_confirm_publish")
 						r.Post("/publish", datasetediting.Publish).Name("dataset_publish")
@@ -589,9 +592,6 @@ func Register(c Config) {
 		r.Post("/dataset/{id}/publications",
 			datasetEditingHandler.Wrap(datasetEditingHandler.CreatePublication)).
 			Name("dataset_create_publication")
-		r.Get("/dataset/{id}/{snapshot_id}/publications/{publication_id}/confirm-delete",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeletePublication)).
-			Name("dataset_confirm_delete_publication")
 		r.Delete("/dataset/{id}/publications/{publication_id}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeletePublication)).
 			Name("dataset_delete_publication")
