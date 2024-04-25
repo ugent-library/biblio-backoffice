@@ -398,6 +398,14 @@ func Register(c Config) {
 						// links
 						r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", datasetediting.ConfirmDeleteLink).Name("dataset_confirm_delete_link")
 
+						// contributors
+						r.Get("/contributors/{role}/{position}/confirm-delete", datasetediting.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
+
+						// departments
+						r.Get("/departments/add", datasetediting.AddDepartment).Name("dataset_add_department")
+						r.Get("/departments/suggestions", datasetediting.SuggestDepartments).Name("dataset_suggest_departments")
+						r.Get("/{snapshot_id}/departments/{department_id}/confirm-delete", datasetediting.ConfirmDeleteDepartment).Name("dataset_confirm_delete_department")
+
 						// publish
 						r.Get("/publish/confirm", datasetediting.ConfirmPublish).Name("dataset_confirm_publish")
 						r.Post("/publish", datasetediting.Publish).Name("dataset_publish")
@@ -409,13 +417,6 @@ func Register(c Config) {
 						// re-publish
 						r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
 						r.Post("/republish", datasetediting.Republish).Name("dataset_republish")
-
-						// contributor actions
-						r.Get("/contributors/{role}/{position}/confirm-delete", datasetediting.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
-
-						// departments
-						r.Get("/departments/add", datasetediting.AddDepartment).Name("dataset_add_department")
-						r.Get("/departments/suggestions", datasetediting.SuggestDepartments).Name("dataset_suggest_departments")
 					})
 
 					// curator actions
@@ -557,9 +558,6 @@ func Register(c Config) {
 		r.Post("/dataset/{id}/departments",
 			datasetEditingHandler.Wrap(datasetEditingHandler.CreateDepartment)).
 			Name("dataset_create_department")
-		r.Get("/dataset/{id}/{snapshot_id}/departments/{department_id}/confirm-delete",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteDepartment)).
-			Name("dataset_confirm_delete_department")
 		r.Delete("/dataset/{id}/departments/{department_id}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteDepartment)).
 			Name("dataset_delete_department")
