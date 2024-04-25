@@ -331,7 +331,7 @@ func (d *Dataset) Validate() error {
 	if d.Status == "public" && d.Year == "" {
 		errs.Add(okay.NewError("/year", "dataset.year.required"))
 	}
-	if d.Year != "" && reYear.MatchString(d.Year) {
+	if d.Year != "" && !reYear.MatchString(d.Year) {
 		errs.Add(okay.NewError("/year", "dataset.year.invalid"))
 	}
 

@@ -884,7 +884,7 @@ func (p *Publication) Validate() error {
 	if p.Status == "public" && !p.Legacy && p.Year == "" {
 		errs.Add(okay.NewError("/year", "publication.year.required"))
 	}
-	if p.Year != "" && reYear.MatchString(p.Year) {
+	if p.Year != "" && !reYear.MatchString(p.Year) {
 		errs.Add(okay.NewError("/year", "publication.year.invalid"))
 	}
 
@@ -1126,7 +1126,7 @@ func (pf *PublicationFile) Validate() error {
 	}
 
 	if pf.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
-		if _, err := time.Parse("2006-01-02", pf.EmbargoDate); err == nil {
+		if _, err := time.Parse("2006-01-02", pf.EmbargoDate); err != nil {
 			errs.Add(okay.NewError("/embargo_date", "embargo_date.invalid"))
 		}
 
