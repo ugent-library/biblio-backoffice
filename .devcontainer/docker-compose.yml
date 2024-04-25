@@ -12,7 +12,7 @@ services:
       - ./tmp/files:/data/files:cached
     depends_on:
       - db-app
-    command: 
+    command:
       - bash
       - -c
       - |
@@ -36,7 +36,7 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     volumes:
-      - biblio-backoffice-dbdata:/var/lib/postgresql/data
+      - dbdata:/var/lib/postgresql/data
     environment:
       POSTGRES_DATABASE: biblio
       POSTGRES_USER: biblio
@@ -64,7 +64,7 @@ services:
       - xpack.ml.enabled=false
       - bootstrap.system_call_filter=false
     volumes:
-      - biblio-backoffice-esdata:/usr/share/elasticsearch/data
+      - esdata:/usr/share/elasticsearch/data
     ulimits:
       nofile:
         soft: 65536
