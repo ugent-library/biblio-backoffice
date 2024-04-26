@@ -19,7 +19,7 @@ type Record interface {
 	ToCandidateRecord(*backends.Services) (*models.CandidateRecord, error)
 }
 
-type Factory func(any) (Source, error)
+type Factory func() (Source, error)
 
 var factories = make(map[string]Factory)
 var mu sync.RWMutex
@@ -30,12 +30,12 @@ func Register(name string, factory Factory) {
 	factories[name] = factory
 }
 
-func New(name string, config any) (Source, error) {
+func New(name string) (Source, error) {
 	mu.RLock()
 	factory, ok := factories[name]
 	mu.RUnlock()
 	if !ok {
 		return nil, fmt.Errorf("unknown source '%s'", name)
 	}
-	return factory(config)
+	return factory()
 }

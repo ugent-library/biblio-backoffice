@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/caarlos0/env/v10"
 	"github.com/tidwall/gjson"
 	"github.com/ugent-library/biblio-backoffice/recordsources"
 )
@@ -17,17 +18,23 @@ func init() {
 }
 
 type Config struct {
-	Url      string
-	Username string
-	Password string
+	Plato struct {
+		URL      string `env:"URL"`
+		Username string `env:"USERNAME"`
+		Password string `env:"PASSWORD"`
+	} `envPrefix:"PLATO_"`
 }
 
-func NewSource(config any) (recordsources.Source, error) {
-	c := config.(Config)
+func NewSource() (recordsources.Source, error) {
+	c := &Config{}
+	env.ParseWithOptions(c, env.Options{
+		Prefix: "BIBLIO_BACKOFFICE_",
+	})
+
 	return &platoSource{
-		url:      c.Url,
-		username: c.Username,
-		password: c.Password,
+		url:      c.Plato.URL,
+		username: c.Plato.Username,
+		password: c.Plato.Password,
 	}, nil
 }
 
