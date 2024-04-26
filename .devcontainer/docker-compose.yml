@@ -9,7 +9,6 @@ services:
         - ../.devcontainer.env
     volumes:
       - ../..:/src:cached
-      - ./tmp/files:/data/files:cached
     depends_on:
       - db
       - minio
@@ -121,7 +120,6 @@ services:
 
   mc:
     image: minio/mc
-    
     depends_on:
       - minio
     command: >
