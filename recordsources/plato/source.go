@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/caarlos0/env/v10"
 	"github.com/tidwall/gjson"
 	"github.com/ugent-library/biblio-backoffice/recordsources"
 )
@@ -16,14 +17,31 @@ func init() {
 	recordsources.Register("plato", NewSource)
 }
 
-func NewSource(conn string) (recordsources.Source, error) {
+type Config struct {
+	Plato struct {
+		URL      string `env:"URL"`
+		Username string `env:"USERNAME"`
+		Password string `env:"PASSWORD"`
+	} `envPrefix:"PLATO_"`
+}
+
+func NewSource() (recordsources.Source, error) {
+	c := &Config{}
+	env.ParseWithOptions(c, env.Options{
+		Prefix: "BIBLIO_BACKOFFICE_",
+	})
+
 	return &platoSource{
-		url: conn,
+		url:      c.Plato.URL,
+		username: c.Plato.Username,
+		password: c.Plato.Password,
 	}, nil
 }
 
 type platoSource struct {
-	url string
+	url      string
+	username string
+	password string
 }
 
 func (s *platoSource) GetRecords(ctx context.Context, cb func(recordsources.Record) error) error {
@@ -50,12 +68,42 @@ func (s *platoSource) GetRecords(ctx context.Context, cb func(recordsources.Reco
 		if err != nil {
 			return err
 		}
+
+		req.SetBasicAuth(s.username, s.password)
+
 		res, err := c.Do(req)
 		if err != nil {
 			return err
 		}
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
+			return err
+		}
+
+		statusOK := res.StatusCode >= http.StatusOK && res.StatusCode <= http.StatusPermanentRedirect
+		if !statusOK {
+			var err error
+			switch res.StatusCode {
+			// 4xx
+			case http.StatusBadRequest:
+				err = fmt.Errorf("[plato] a bad http request was sent to the server: %s", res.Status)
+			case http.StatusUnauthorized:
+				err = fmt.Errorf("[plato] the client wasn't authorized by the server, check credentials: %s", res.Status)
+			case http.StatusNotFound:
+				err = fmt.Errorf("[plato] the API endpoint URL could not be found: %s", res.Status)
+			case http.StatusForbidden:
+				err = fmt.Errorf("[plato] authorized but access forbidden: %s", res.Status)
+			// 5xx
+			case http.StatusInternalServerError:
+				err = fmt.Errorf("[plato] internal server error: %s", res.Status)
+			case http.StatusBadGateway:
+				err = fmt.Errorf("[plato] bad gateway error: %s", res.Status)
+			case http.StatusServiceUnavailable:
+				err = fmt.Errorf("[plato] service unavailable error: %s", res.Status)
+			default:
+				err = fmt.Errorf("[plato] server returned an error: %s", res.Status)
+			}
+
 			return err
 		}
 

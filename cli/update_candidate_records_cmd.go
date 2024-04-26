@@ -2,9 +2,11 @@ package cli
 
 import (
 	"context"
+	"errors"
 
 	"github.com/spf13/cobra"
 
+	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/recordsources"
 	_ "github.com/ugent-library/biblio-backoffice/recordsources/plato"
 )
@@ -19,19 +21,22 @@ var updateCandidateRecords = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		services := newServices()
 
-		src, err := recordsources.New("plato", "https://plato.ea.ugent.be/service/dr/2biblio.jsp")
+		src, err := recordsources.New("plato")
 		if err != nil {
 			return err
 		}
 
 		err = src.GetRecords(context.Background(), func(srcRec recordsources.Record) error {
 			oldCandidateRec, err := services.Repo.GetCandidateRecordBySource(context.TODO(), srcRec.SourceName(), srcRec.SourceID())
+			if err != nil {
+				if !errors.Is(err, models.ErrNotFound) {
+					return err
+				}
+			}
+
 			if oldCandidateRec != nil {
 				zapLogger.Warnf("skipping duplicate candidate record from source %s/%s: already found in %s", srcRec.SourceName(), srcRec.SourceID(), oldCandidateRec.ID)
 				return nil
-			}
-			if err != nil {
-				return err
 			}
 
 			candidateRec, err := srcRec.ToCandidateRecord(services)
