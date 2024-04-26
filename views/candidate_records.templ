@@ -149,12 +149,11 @@ templ candidateRecordPublicationAccessLevel(c *ctx.Ctx, p *models.Publication) {
 }
 
 templ candidateRecordSummary(c *ctx.Ctx, rec *models.CandidateRecord) {
-    if p := rec.AsPublication(); p != nil {
     <div class="w-100">
         <div class="c-thumbnail-and-text align-items-start w-100">
             <div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-small c-thumbnail-lg-large">
                 <div class="c-thumbnail-inner">
-                    <img src={ c.AssetPath("/images/plato-logo-temporary-white.svg") }/>
+                    <img src={ c.AssetPath("/images/plato-logo.svg") }/>
                 </div>
             </div>
             <div class="c-thumbnail-text">
@@ -164,7 +163,7 @@ templ candidateRecordSummary(c *ctx.Ctx, rec *models.CandidateRecord) {
                             <div class="d-inline-flex align-items-center flex-wrap">
                                 <span class="badge rounded-pill badge-default me-3 my-2">
                                     <span class="badge-circle"></span>
-                                    <span class="badge-text">Biblio suggestion</span>
+                                    <span class="badge-text">Biblio suggestion via {rec.SourceName}</span>
                                 </span>
                                 <span class="c-subline text-nowrap me-2 pe-3 my-2 border-end">Dissertation</span>
                                 @candidateRecordPublicationAccessLevel(c, p)
@@ -198,5 +197,4 @@ templ candidateRecordSummary(c *ctx.Ctx, rec *models.CandidateRecord) {
             </div>
         </div>
     </div>
-    }
 }
