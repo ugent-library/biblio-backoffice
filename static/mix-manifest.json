@@ -1,7 +1,7 @@
 {
     "/js/app.js": "/js/app.js?id=e4dde0497da66a7ed85bc1a466fb62ae",
     "/css/app.css": "/css/app.css?id=df0e3262da3e3f8356307c17766ccd25",
-    "/images/plato-logo-temporary-white.svg": "/images/plato-logo-temporary-white.svg?id=b4649cf9b354abb13dd34f23be22b78e",
+    "/images/plato-logo.svg": "/images/plato-logo.svg?id=b4649cf9b354abb13dd34f23be22b78e",
     "/images/avatar.svg": "/images/avatar.svg?id=265201ed339321aafc418c219c37a0b6",
     "/images/avatar-1.jpg": "/images/avatar-1.jpg?id=84ffa51f94bc134c1a8d66e92b21ae7d",
     "/images/avatar-2.jpg": "/images/avatar-2.jpg?id=dc83363414aaee091813171be3d35f76",
@@ -21,6 +21,7 @@
     "/images/logo-ugent-white.svg": "/images/logo-ugent-white.svg?id=c944c2b9b6d753f8c013494c88ebe816",
     "/images/logo-ugent.svg": "/images/logo-ugent.svg?id=6e7f2021f3f25b58e0326f793db07d14",
     "/images/mark-ugent-white.svg": "/images/mark-ugent-white.svg?id=943b1246c689e7ab13709d4b0f22f276",
+    "/images/plato-logo-temporary-white.svg": "/images/plato-logo-temporary-white.svg?id=b4649cf9b354abb13dd34f23be22b78e",
     "/images/plato-logo-temporary.svg": "/images/plato-logo-temporary.svg?id=e6fcf4c144acf7a6fb21e6a528aa43e3",
     "/images/test-image.jpeg": "/images/test-image.jpeg?id=3457ae8d77ef1353a8f560b78509964a",
     "/images/thumbnail-placeholder.png": "/images/thumbnail-placeholder.png?id=7c001d0e8a890a2d5c6215b9cd01e095",

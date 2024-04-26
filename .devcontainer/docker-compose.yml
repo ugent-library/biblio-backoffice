@@ -122,14 +122,12 @@ services:
     image: minio/mc
     depends_on:
       - minio
-    command: >
-      /bin/sh -c "sleep infinity"
-    entrypoint: >
-      /bin/sh -c "
-      /usr/bin/mc config host add devcontainer http://minio:3071 minioadmin minioadmin;
-      /usr/bin/mc mb devcontainer/biblio --ignore-existing;
-      exit 0;
-      "
+    entrypoint:
+      - sh
+      - -c
+      - |
+        mc alias set devcontainer http://minio:3171 minioadmin minioadmin
+        mc mb devcontainer/biblio --ignore-existing
 
 volumes:
   dbdata:

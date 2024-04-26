@@ -21,11 +21,6 @@ type bindCandidateRecord struct {
 func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-	if !c.User.CanCurate() {
-		c.HandleError(w, r, httperror.Unauthorized)
-		return
-	}
-
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Request(r, searchArgs); err != nil {
 		c.Log.Warnw("could not bind search arguments", "errors", err, "request", r, "user", c.User.ID)

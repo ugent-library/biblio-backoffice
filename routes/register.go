@@ -341,6 +341,10 @@ func Register(c Config) {
 						// edit publication type
 						r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
 
+						// projects
+						// project_id is last part of url because some id's contain slashes
+						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", publicationediting.ConfirmDeleteProject).Name("publication_confirm_delete_project")
+
 						// abstracts
 						r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", publicationediting.ConfirmDeleteAbstract).Name("publication_confirm_delete_abstract")
 
@@ -349,6 +353,9 @@ func Register(c Config) {
 
 						// lay summaries
 						r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
+
+						// files
+						r.Get("/{snapshot_id}/files/{file_id}/confirm-delete", publicationediting.ConfirmDeleteFile).Name("publication_confirm_delete_file")
 
 						// contributors
 						r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
@@ -396,6 +403,9 @@ func Register(c Config) {
 						// delete
 						r.Get("/confirm-delete", datasetediting.ConfirmDelete).Name("dataset_confirm_delete")
 						r.Delete("/", datasetediting.Delete).Name("dataset_delete")
+
+						// projects
+						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", datasetediting.ConfirmDeleteProject).Name("dataset_confirm_delete_project")
 
 						// abstracts
 						r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", datasetediting.ConfirmDeleteAbstract).Name("dataset_confirm_delete_abstract")
@@ -538,9 +548,6 @@ func Register(c Config) {
 		r.Post("/dataset/{id}/projects",
 			datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
 			Name("dataset_create_project")
-		r.Get("/dataset/{id}/{snapshot_id}/projects/confirm-delete/{project_id:.+}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmDeleteProject)).
-			Name("dataset_confirm_delete_project")
 		r.Delete("/dataset/{id}/projects/{project_id:.+}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
 			Name("dataset_delete_project")
@@ -767,10 +774,6 @@ func Register(c Config) {
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
 			Name("publication_create_project")
 		// project_id is last part of url because some id's contain slashes
-		r.Get("/publication/{id}/{snapshot_id}/projects/confirm-delete/{project_id:.+}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteProject)).
-			Name("publication_confirm_delete_project")
-		// project_id is last part of url because some id's contain slashes
 		r.Delete("/publication/{id}/projects/{project_id:.+}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
 			Name("publication_delete_project")
@@ -896,9 +899,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/files/{file_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateFile)).
 			Name("publication_update_file")
-		r.Get("/publication/{id}/{snapshot_id}/files/{file_id}/confirm-delete",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteFile)).
-			Name("publication_confirm_delete_file")
 		r.Delete("/publication/{id}/files/{file_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteFile)).
 			Name("publication_delete_file")
