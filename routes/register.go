@@ -349,6 +349,9 @@ func Register(c Config) {
 						// lay summaries
 						r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
 
+						// files
+						r.Get("/{snapshot_id}/files/{file_id}/confirm-delete", publicationediting.ConfirmDeleteFile).Name("publication_confirm_delete_file")
+
 						// contributors
 						r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
 
@@ -895,9 +898,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/files/{file_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateFile)).
 			Name("publication_update_file")
-		r.Get("/publication/{id}/{snapshot_id}/files/{file_id}/confirm-delete",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmDeleteFile)).
-			Name("publication_confirm_delete_file")
 		r.Delete("/publication/{id}/files/{file_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteFile)).
 			Name("publication_delete_file")
