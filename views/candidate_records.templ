@@ -149,6 +149,7 @@ templ candidateRecordPublicationAccessLevel(c *ctx.Ctx, p *models.Publication) {
 }
 
 templ candidateRecordSummary(c *ctx.Ctx, rec *models.CandidateRecord) {
+    if p := rec.AsPublication(); p != nil {
     <div class="w-100">
         <div class="c-thumbnail-and-text align-items-start w-100">
             <div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-small c-thumbnail-lg-large">
@@ -197,4 +198,5 @@ templ candidateRecordSummary(c *ctx.Ctx, rec *models.CandidateRecord) {
             </div>
         </div>
     </div>
+    }
 }
