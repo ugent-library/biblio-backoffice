@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 
 	"github.com/jackc/pgx/v5"
@@ -97,6 +98,24 @@ func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.Candi
 		DateCreated: row.DateCreated.Time,
 		Status:      row.Status,
 	}, nil
+}
+
+func (r *Repo) GetCandidateRecordAsPublication(ctx context.Context, id string) (*models.Publication, error) {
+	cr, err := r.GetCandidateRecord(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	p := &models.Publication{}
+	if err := json.Unmarshal(cr.Metadata, p); err != nil {
+		return nil, err
+	}
+	for _, fn := range r.config.PublicationLoaders {
+		if err := fn(p); err != nil {
+			return nil, err
+		}
+	}
+	return p, nil
 }
 
 func (r *Repo) RejectCandidateRecord(ctx context.Context, id string) error {

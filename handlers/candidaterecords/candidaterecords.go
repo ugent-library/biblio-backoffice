@@ -54,6 +54,30 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	views.CandidateRecords(c, searchArgs, searchHits, recs).Render(r.Context(), w)
 }
 
+func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	if !c.User.CanCurate() {
+		c.HandleError(w, r, httperror.Unauthorized)
+		return
+	}
+
+	b := bindCandidateRecord{}
+	if err := bind.Request(r, &b); err != nil {
+		c.Log.Warnw("preview candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	p, err := c.Repo.GetCandidateRecordAsPublication(r.Context(), b.ID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	views.CandidateRecordPreview(c, p).Render(r.Context(), w)
+}
+
 func CandidateRecordsIcon(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 

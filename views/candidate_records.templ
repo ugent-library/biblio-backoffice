@@ -81,6 +81,12 @@ templ CandidateRecords(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *mo
     }
 }
 
+templ CandidateRecordPreview(c *ctx.Ctx, p *models.Publication) {
+    @ShowModalLayout(c, nil) {
+        @PublicationPreview(p)
+    }
+}
+
 templ candidateRecordAuthorSummary(c *ctx.Ctx, contributor *models.Contributor){
     <div class="c-author">
         if contributor.Person != nil {
@@ -185,6 +191,12 @@ templ candidateRecordSummary(c *ctx.Ctx, rec *models.CandidateRecord) {
                             hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
                             hx-target="#modals">
                             <div class="btn-text">Remove suggestion</div>
+                        </button>
+                        <button
+                            class="btn btn-link btn-link-muted"
+                            hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
+                            hx-target="#modals">
+                            <div class="btn-text">Preview</div>
                         </button>
                         <button
                             class="btn btn-outline-primary"
