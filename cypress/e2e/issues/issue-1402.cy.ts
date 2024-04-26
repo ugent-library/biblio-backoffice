@@ -1,5 +1,6 @@
 // https://github.com/ugent-library/biblio-backoffice/issues/1402
 
+import * as dayjs from "dayjs";
 import { getRandomText } from "support/util";
 
 describe("Issue #1402: Gohtml conversion to Templ", () => {
@@ -562,6 +563,131 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .should("have.ordered.members", ["the", "keywords", "updated"]);
       });
 
+      it("should be possible to add, edit and delete files", () => {
+        cy.setUpPublication();
+        cy.visitPublication();
+
+        cy.contains(".nav-link", "Full text & Files").click();
+
+        cy.get("#files-body").should("contain", "No files");
+
+        cy.get("input[name=file]").selectFile("cypress/fixtures/empty-pdf.pdf");
+        cy.ensureModal("Document details for file empty-pdf.pdf")
+          .within(() => {
+            cy.intercept("/publication/*/files/*/refresh-form*").as(
+              "refreshForm",
+            );
+
+            cy.setFieldByLabel("Document type", "Peer review report");
+            cy.wait("@refreshForm");
+            cy.contains("label", "Embargoed access").click();
+            cy.wait("@refreshForm");
+            cy.setFieldByLabel(
+              "License granted by the rights holder",
+              "No license (in copyright)",
+            );
+          })
+          .closeModal("Save");
+
+        cy.ensureModal("Document details for file empty-pdf.pdf")
+          .within(() => {
+            cy.get(".alert-danger ul li")
+              .map("textContent")
+              .should("have.members", [
+                "The embargo end date is not a valid date",
+                "The selected access level is not a valid access level value",
+                "The selected access level is not a valid access level value",
+              ]);
+            cy.get("select[name=access_level_during_embargo]")
+              .should("have.class", "is-invalid")
+              .next(".invalid-feedback")
+              .should(
+                "have.text",
+                "The selected access level is not a valid access level value",
+              );
+            cy.get("select[name=access_level_after_embargo]")
+              .should("have.class", "is-invalid")
+              .nextAll(".invalid-feedback")
+              .should(
+                "have.text",
+                "The selected access level is not a valid access level value",
+              );
+            cy.get("input[name=embargo_date]")
+              .should("have.class", "is-invalid")
+              .nextAll(".invalid-feedback")
+              .should("have.text", "The embargo end date is not a valid date");
+
+            cy.setFieldByLabel(
+              "Access level during embargo",
+              "Private access - Closed access",
+            );
+            cy.setFieldByLabel(
+              "Access level after embargo",
+              "Public access - Open access",
+            );
+            cy.setFieldByLabel(
+              "Embargo end",
+              dayjs().add(1, "day").format("YYYY-MM-DD"),
+            );
+          })
+          .closeModal("Save");
+        cy.ensureNoModal();
+
+        cy.get("#files-body .list-group .list-group-item")
+          .as("row")
+          .should("have.length", 1);
+
+        cy.get("@row").should("contain", "empty-pdf.pdf");
+        cy.get("@row").should("contain", "Peer review report");
+        cy.get("@row").should("contain", "Embargoed access");
+        cy.get("@row").should("contain", "Private access - Closed access");
+        cy.get("@row").should(
+          "contain",
+          `Public access - Open access from ${dayjs()
+            .add(1, "day")
+            .format("YYYY-MM-DD")}`,
+        );
+
+        cy.get("@row").find(".if-edit").click();
+
+        cy.ensureModal("Document details for file empty-pdf.pdf")
+          .within(() => {
+            cy.setFieldByLabel("Document type", "Full text");
+            cy.wait("@refreshForm");
+            cy.setFieldByLabel("Publication version", "Author's original (AO)");
+            cy.contains("label", "UGent access - Local access").click();
+            cy.wait("@refreshForm");
+            cy.setFieldByLabel(
+              "License granted by the rights holder",
+              "CC BY (4.0)",
+            );
+          })
+          .closeModal("Save");
+
+        cy.get("@row").should("have.length", 1);
+
+        cy.get("@row")
+          .should("not.contain", "Peer review report")
+          .should("contain", "Full text")
+          .should("not.contain", "Private access - Closed access")
+          .should("not.contain", "Public access - Open access")
+          .should("contain", "UGent access - Local access");
+
+        cy.get("@row").find(".if-delete").click();
+
+        cy.ensureModal("Confirm deletion")
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Are you sure you want to remove empty-pdf.pdf from the publication?",
+            );
+          })
+          .closeModal("Delete");
+        cy.ensureNoModal();
+
+        cy.get("#files-body").should("contain", "No files");
+      });
+
       it("should be possible to add and delete authors", () => {
         cy.setUpPublication();
         cy.visitPublication();
@@ -585,7 +711,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
 
-            cy.contains(".btn", "Add external author").click();
+            cy.contains(".btn", "Add external author").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -627,7 +755,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
-            cy.contains(".btn", "Add external author").click();
+            cy.contains(".btn", "Add external author").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -664,7 +794,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
 
-            cy.contains(".btn", "Add external editor").click();
+            cy.contains(".btn", "Add external editor").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -703,7 +835,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
 
-            cy.contains(".btn", "Add external supervisor").click();
+            cy.contains(".btn", "Add external supervisor").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -1001,7 +1135,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
-            cy.contains(".btn", "Add external author").click();
+            cy.contains(".btn", "Add external author").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -1283,7 +1419,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
 
-            cy.contains(".btn", "Add external creator").click();
+            cy.contains(".btn", "Add external creator").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -1325,7 +1463,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
-            cy.contains(".btn", "Add external creator").click();
+            cy.contains(".btn", "Add external creator").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -1619,7 +1759,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
-            cy.contains(".btn", "Add external creator").click();
+            cy.contains(".btn", "Add external creator").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -1791,12 +1933,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       });
 
       it("should be possible to lock and unlock a publication", () => {
-        cy.setUpPublication(undefined, { prepareForPublishing: true });
+        cy.setUpPublication();
         cy.visitPublication();
-
-        cy.contains(".btn-success", "Publish to Biblio").click();
-        cy.ensureModal("Are you sure?").closeModal("Publish");
-        cy.ensureToast("Publication was successfully published.").closeToast();
 
         cy.contains(".btn-outline-secondary", "Lock").click();
         cy.ensureNoModal();
@@ -1893,12 +2031,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       });
 
       it("should be possible to lock and unlock a dataset", () => {
-        cy.setUpDataset({ prepareForPublishing: true });
+        cy.setUpDataset();
         cy.visitDataset();
-
-        cy.contains(".btn-success", "Publish to Biblio").click();
-        cy.ensureModal("Are you sure?").closeModal("Publish");
-        cy.ensureToast("Dataset was successfully published.").closeToast();
 
         cy.contains(".btn-outline-secondary", "Lock").click();
         cy.ensureNoModal();
