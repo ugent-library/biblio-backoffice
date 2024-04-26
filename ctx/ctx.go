@@ -223,7 +223,7 @@ func (c *Ctx) getFlash(r *http.Request, w http.ResponseWriter) ([]flash.Flash, e
 	return flashes, nil
 }
 
-func (c *Ctx) getUserFromSession(r *http.Request, session *sessions.Session, sessionKey string) (*models.Person, error) {
+func (c *Ctx) getUserFromSession(_ *http.Request, session *sessions.Session, sessionKey string) (*models.Person, error) {
 	userID := session.Values[sessionKey]
 	if userID == nil {
 		return nil, nil
@@ -255,7 +255,7 @@ func (c *Ctx) getFlagContext() ffcontext.Context {
 }
 
 func (c *Ctx) FlagCandidateRecords() bool {
-	flag, err := ffclient.BoolVariation("candidate-records", c.getFlagContext(), false)
+	flag, err := ffclient.BoolVariation("candidate-records", c.getFlagContext(), true)
 	if err != nil {
 		c.Log.Error(err)
 	}

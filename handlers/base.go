@@ -89,7 +89,7 @@ func (c BaseContext) getFlagContext() ffcontext.Context {
 }
 
 func (c BaseContext) FlagCandidateRecords() bool {
-	flag, _ := ffclient.BoolVariation("candidate-records", c.getFlagContext(), false)
+	flag, _ := ffclient.BoolVariation("candidate-records", c.getFlagContext(), true)
 	return flag
 }
 
