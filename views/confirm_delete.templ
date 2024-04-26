@@ -14,7 +14,7 @@ type ConfirmDeleteArgs struct {
 }
 
 templ ConfirmDelete(args ConfirmDeleteArgs) {
-	@ShowModalLayout(args.Context, nil) {
+	@ShowModalLayout(args.Context) {
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 				<div class="modal-header">

@@ -7,7 +7,7 @@ import (
 )
 
 templ AddDepartment(c *ctx.Ctx, dataset *models.Dataset, hits []models.Completion) {
-	@views.ShowModalLayout(c, nil) {
+	@views.ShowModalLayout(c) {
 		<div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
