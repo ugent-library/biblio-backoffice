@@ -23,7 +23,9 @@ templ ConfirmDelete(args ConfirmDeleteArgs) {
 					</h2>
 				</div>
 				<div class="modal-body">
-					<p>{ args.Question }</p>
+					<p>
+						@templ.Raw(args.Question)
+					</p>
 				</div>
 				<div class="modal-footer">
 					<div class="bc-toolbar">
