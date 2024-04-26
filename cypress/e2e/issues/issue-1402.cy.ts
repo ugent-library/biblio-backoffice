@@ -711,7 +711,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
 
-            cy.contains(".btn", "Add external author").click();
+            cy.contains(".btn", "Add external author").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -753,7 +755,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
-            cy.contains(".btn", "Add external author").click();
+            cy.contains(".btn", "Add external author").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -790,7 +794,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
 
-            cy.contains(".btn", "Add external editor").click();
+            cy.contains(".btn", "Add external editor").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -829,7 +835,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
 
-            cy.contains(".btn", "Add external supervisor").click();
+            cy.contains(".btn", "Add external supervisor").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -1127,7 +1135,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
-            cy.contains(".btn", "Add external author").click();
+            cy.contains(".btn", "Add external author").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -1409,7 +1419,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
 
-            cy.contains(".btn", "Add external creator").click();
+            cy.contains(".btn", "Add external creator").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -1451,7 +1463,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
-            cy.contains(".btn", "Add external creator").click();
+            cy.contains(".btn", "Add external creator").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -1745,7 +1759,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
             cy.wait("@suggestContributor");
             cy.setFieldByLabel("Last name", "Doe");
             cy.wait("@suggestContributor");
-            cy.contains(".btn", "Add external creator").click();
+            cy.contains(".btn", "Add external creator").click({
+              scrollBehavior: false,
+            });
           },
           true,
         );
@@ -1917,12 +1933,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       });
 
       it("should be possible to lock and unlock a publication", () => {
-        cy.setUpPublication(undefined, { prepareForPublishing: true });
+        cy.setUpPublication();
         cy.visitPublication();
-
-        cy.contains(".btn-success", "Publish to Biblio").click();
-        cy.ensureModal("Are you sure?").closeModal("Publish");
-        cy.ensureToast("Publication was successfully published.").closeToast();
 
         cy.contains(".btn-outline-secondary", "Lock").click();
         cy.ensureNoModal();
@@ -2019,12 +2031,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       });
 
       it("should be possible to lock and unlock a dataset", () => {
-        cy.setUpDataset({ prepareForPublishing: true });
+        cy.setUpDataset();
         cy.visitDataset();
-
-        cy.contains(".btn-success", "Publish to Biblio").click();
-        cy.ensureModal("Are you sure?").closeModal("Publish");
-        cy.ensureToast("Dataset was successfully published.").closeToast();
 
         cy.contains(".btn-outline-secondary", "Lock").click();
         cy.ensureNoModal();
