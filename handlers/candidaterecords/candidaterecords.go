@@ -10,6 +10,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/views"
+	candidaterecordviews "github.com/ugent-library/biblio-backoffice/views/candidaterecord"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 )
@@ -46,7 +47,7 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 			Total:  countRecs,
 		},
 	}
-	views.CandidateRecords(c, searchArgs, searchHits, recs).Render(r.Context(), w)
+	candidaterecordviews.List(c, searchArgs, searchHits, recs).Render(r.Context(), w)
 }
 
 func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +71,7 @@ func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.CandidateRecordPreview(c, p).Render(r.Context(), w)
+	candidaterecordviews.Preview(c, p).Render(r.Context(), w)
 }
 
 func CandidateRecordsIcon(w http.ResponseWriter, r *http.Request) {

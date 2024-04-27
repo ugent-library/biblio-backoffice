@@ -1,0 +1,110 @@
+package candidaterecordviews
+
+import (
+    "github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+)
+
+templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHits, recs []*models.CandidateRecord) {
+    @views.PageLayout(c, "Biblio", nil) {
+        <div class="w-100 u-scroll-wrapper">
+            <div class="bg-white">
+                <div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom h-auto">
+                    <div class="bc-toolbar h-auto py-4">
+                        <div class="bc-toolbar-left">
+                            <div class="bc-toolbar-item">
+                                <h2 class="bc-toolbar-title">Suggestions</h2>
+                                <p class="c-intro">Import and complete research gathered from other platforms.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            if searchHits.Total > 0 {
+                <div class="u-scroll-wrapper__body w-100 p-6">
+                    <div class="card w-100 mb-6">
+                        <div class="card-header">
+                            <div class="bc-toolbar">
+                                <div class="bc-toolbar-left">
+                                    <div class="bc-toolbar-item">
+                                        <nav>
+                                        @views.Pagination(c, c.URLTo("candidate_records"), searchArgs, searchHits)
+                                        </nav>
+                                    </div>
+                                    <div class="bc-toolbar-item">
+                                        <span class="text-muted c-body-small">
+                                        { views.PaginationCount(c, searchHits) }
+                                         publications
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body w-100 p-0">
+                            <ul class="list-group list-group-flush">
+                            for _, rec := range recs {
+                                <li class="list-group-item bg-transparent">
+                                    @publicationviews.Summary(c, rec.AsPublication(), publicationviews.SummaryOpts{Badge: summaryBadge(rec), Thumbnail: c.AssetPath("/images/plato-logo.svg")}) {
+                                        <button
+                                            class="btn btn-link btn-link-muted"
+                                            hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
+                                            hx-target="#modals">
+                                            <div class="btn-text">Remove suggestion</div>
+                                        </button>
+                                        <button
+                                            class="btn btn-link btn-link-muted"
+                                            hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
+                                            hx-target="#modals">
+                                            <div class="btn-text">Preview</div>
+                                        </button>
+                                        <button
+                                            class="btn btn-outline-primary"
+                                            hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
+                                            hx-swap="none"
+                                        >
+                                            <div class="btn-text">Import as draft</div>
+                                        </button>
+                                    }
+                                </li>
+                            }
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <div class="bc-toolbar">
+                                <div class="bc-toolbar-left">
+                                    <div class="bc-toolbar-item">
+                                        <nav>
+                                        @views.Pagination(c, c.URLTo("candidate_records"), searchArgs, searchHits)
+                                        </nav>
+                                    </div>
+                                    <div class="bc-toolbar-item">
+                                        <span class="text-muted c-body-small">
+                                        { views.PaginationCount(c, searchHits) }
+                                         publications
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            } else {
+                <div class="u-scroll-wrapper__body w-100 p-6">
+                    <div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
+                        <img class="mb-4" src={ c.AssetPath("/images/inbox-illustration.svg") } alt="" width="auto" height="32"/>
+                        <h3 class="c-blank-slate-title">No suggestions, all caught up!</h3>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
+
+templ summaryBadge(rec *models.CandidateRecord) {
+    <span class="badge rounded-pill badge-default me-3 my-2">
+        <span class="badge-circle"></span>
+        <span class="badge-text">Biblio suggestion via {rec.SourceName}</span>
+    </span>
+}

@@ -13,7 +13,7 @@ templ AddImpersonationSuggest(c *ctx.Ctx, firstName string, lastName string, hit
             <li class="list-group-item">
                 <div class="list-group-item-inner">
                     <div class="list-group-item-main">
-                    @contributorShowSummary(c, models.ContributorFromPerson(hit))
+                    @contributorShowSummary(models.ContributorFromPerson(hit))
                     </div>
                     <div class="c-button-toolbar">
                         <form action={templ.URL(c.PathTo("create_impersonation").String())} method="POST">
