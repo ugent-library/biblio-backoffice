@@ -46,7 +46,7 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
                             <ul class="list-group list-group-flush">
                             for _, rec := range recs {
                                 <li class="list-group-item bg-transparent">
-                                    @publicationviews.Summary(c, rec.AsPublication(), publicationviews.SummaryOpts{Badge: summaryBadge(rec), Thumbnail: c.AssetPath("/images/plato-logo.svg")}) {
+                                    @publicationviews.Summary(c, rec.Publication, publicationviews.SummaryOpts{Badge: summaryBadge(rec), Thumbnail: c.AssetPath("/images/plato-logo.svg")}) {
                                         <button
                                             class="btn btn-link btn-link-muted"
                                             hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }

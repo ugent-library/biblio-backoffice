@@ -43,7 +43,17 @@ func (r *Repo) GetCandidateRecords(ctx context.Context, start int, limit int) ([
 			Metadata:    row.Metadata,
 			DateCreated: row.DateCreated.Time,
 			Status:      row.Status,
+			Publication: &models.Publication{},
 		}
+		if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
+			return nil, err
+		}
+		for _, fn := range r.config.PublicationLoaders {
+			if err := fn(rec.Publication); err != nil {
+				return nil, err
+			}
+		}
+
 		recs[i] = rec
 	}
 	return recs, err
@@ -69,7 +79,7 @@ func (r *Repo) GetCandidateRecordBySource(ctx context.Context, sourceName string
 		return nil, err
 	}
 
-	return &models.CandidateRecord{
+	rec := &models.CandidateRecord{
 		ID:          row.ID,
 		SourceName:  row.SourceName,
 		SourceID:    row.SourceID,
@@ -77,7 +87,19 @@ func (r *Repo) GetCandidateRecordBySource(ctx context.Context, sourceName string
 		Metadata:    row.Metadata,
 		DateCreated: row.DateCreated.Time,
 		Status:      row.Status,
-	}, nil
+		Publication: &models.Publication{},
+	}
+
+	if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
+		return nil, err
+	}
+	for _, fn := range r.config.PublicationLoaders {
+		if err := fn(rec.Publication); err != nil {
+			return nil, err
+		}
+	}
+
+	return rec, nil
 }
 
 func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.CandidateRecord, error) {
@@ -89,7 +111,7 @@ func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.Candi
 		return nil, err
 	}
 
-	return &models.CandidateRecord{
+	rec := &models.CandidateRecord{
 		ID:          row.ID,
 		SourceName:  row.SourceName,
 		SourceID:    row.SourceID,
@@ -97,25 +119,19 @@ func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.Candi
 		Metadata:    row.Metadata,
 		DateCreated: row.DateCreated.Time,
 		Status:      row.Status,
-	}, nil
-}
-
-func (r *Repo) GetCandidateRecordAsPublication(ctx context.Context, id string) (*models.Publication, error) {
-	cr, err := r.GetCandidateRecord(ctx, id)
-	if err != nil {
-		return nil, err
+		Publication: &models.Publication{},
 	}
 
-	p := &models.Publication{}
-	if err := json.Unmarshal(cr.Metadata, p); err != nil {
+	if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
 		return nil, err
 	}
 	for _, fn := range r.config.PublicationLoaders {
-		if err := fn(p); err != nil {
+		if err := fn(rec.Publication); err != nil {
 			return nil, err
 		}
 	}
-	return p, nil
+
+	return rec, nil
 }
 
 func (r *Repo) RejectCandidateRecord(ctx context.Context, id string) error {
@@ -131,14 +147,16 @@ func (r *Repo) RejectCandidateRecord(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *Repo) ImportCandidateRecordAsPublication(ctx context.Context, rec *models.CandidateRecord, user *models.Person) (string, error) {
-	var pubID string
+func (r *Repo) ImportCandidateRecordAsPublication(ctx context.Context, id string, user *models.Person) (string, error) {
+	rec, err := r.GetCandidateRecord(ctx, id)
+	if err != nil {
+		return "", err
+	}
 
-	err := r.tx(ctx, func(r *Repo) error {
-		pub := rec.AsPublication()
-		pubID = ulid.Make().String()
-		pub.ID = pubID
-		if err := r.SavePublication(pub, user); err != nil {
+	rec.Publication.ID = ulid.Make().String()
+
+	err = r.tx(ctx, func(r *Repo) error {
+		if err := r.SavePublication(rec.Publication, user); err != nil {
 			return err
 		}
 
@@ -148,6 +166,9 @@ func (r *Repo) ImportCandidateRecordAsPublication(ctx context.Context, rec *mode
 
 		return nil
 	})
+	if err != nil {
+		return "", err
+	}
 
-	return pubID, err
+	return rec.Publication.ID, nil
 }

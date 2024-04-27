@@ -65,13 +65,13 @@ func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p, err := c.Repo.GetCandidateRecordAsPublication(r.Context(), b.ID)
+	rec, err := c.Repo.GetCandidateRecord(r.Context(), b.ID)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
 	}
 
-	candidaterecordviews.Preview(c, p).Render(r.Context(), w)
+	candidaterecordviews.Preview(c, rec.Publication).Render(r.Context(), w)
 }
 
 func CandidateRecordsIcon(w http.ResponseWriter, r *http.Request) {
@@ -154,14 +154,8 @@ func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rec, err := c.Repo.GetCandidateRecord(r.Context(), b.ID)
+	pubID, err := c.Repo.ImportCandidateRecordAsPublication(r.Context(), b.ID, c.User)
 	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
-
-	var pubID string
-	if pubID, err = c.Repo.ImportCandidateRecordAsPublication(r.Context(), rec, c.User); err != nil {
 		c.HandleError(w, r, err)
 		return
 	}

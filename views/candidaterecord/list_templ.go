@@ -110,7 +110,7 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 						}
 						return templ_7745c5c3_Err
 					})
-					templ_7745c5c3_Err = publicationviews.Summary(c, rec.AsPublication(), publicationviews.SummaryOpts{Badge: summaryBadge(rec), Thumbnail: c.AssetPath("/images/plato-logo.svg")}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = publicationviews.Summary(c, rec.Publication, publicationviews.SummaryOpts{Badge: summaryBadge(rec), Thumbnail: c.AssetPath("/images/plato-logo.svg")}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
