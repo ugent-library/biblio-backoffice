@@ -52,6 +52,7 @@ func (r *Repo) EachProject(ctx context.Context, fn func(*Project) bool) error {
 			&r.StartDate,
 			&r.EndDate,
 			&r.Deleted,
+			&r.PublicationCount,
 			&r.Attributes,
 			&r.CreatedAt,
 			&r.UpdatedAt,
@@ -213,4 +214,9 @@ func transferValues(rows []*projectRow, params AddProjectParams) AddProjectParam
 	}
 
 	return params
+}
+
+func (r *Repo) SetProjectPublicationCount(ctx context.Context, idKind, idValue string, n int) error {
+	_, err := r.conn.Exec(ctx, setProjectPublicationCount, idKind, idValue, n)
+	return err
 }
