@@ -59,7 +59,7 @@ services:
     environment:
       - http.host=0.0.0.0
       - http.port=3061
-      - ES_JAVA_OPTS=-Xmx512m -Xms512m -server
+      - ES_JAVA_OPTS=-Xmx1G -Xms1G -server
       - discovery.type=single-node
       - xpack.ml.enabled=false
       - bootstrap.system_call_filter=false
