@@ -36,7 +36,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = publicationviews.Preview(p).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = publicationviews.Preview(c, p).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
