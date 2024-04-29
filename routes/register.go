@@ -405,6 +405,8 @@ func Register(c Config) {
 						r.Delete("/", datasetediting.Delete).Name("dataset_delete")
 
 						// projects
+						r.Get("/projects/add", datasetediting.AddProject).Name("dataset_add_project")
+						r.Get("/projects/suggestions", datasetediting.SuggestProjects).Name("dataset_suggest_projects")
 						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", datasetediting.ConfirmDeleteProject).Name("dataset_confirm_delete_project")
 
 						// abstracts
@@ -539,12 +541,6 @@ func Register(c Config) {
 			Name("dataset_update_details")
 
 		// edit dataset projects
-		r.Get("/dataset/{id}/projects/add",
-			datasetEditingHandler.Wrap(datasetEditingHandler.AddProject)).
-			Name("dataset_add_project")
-		r.Get("/dataset/{id}/projects/suggestions",
-			datasetEditingHandler.Wrap(datasetEditingHandler.SuggestProjects)).
-			Name("dataset_suggest_projects")
 		r.Post("/dataset/{id}/projects",
 			datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
 			Name("dataset_create_project")
