@@ -69,7 +69,7 @@ Cypress.Commands.addAll(
     closeToast,
 
     setField,
-  }
+  },
 );
 
 // Dual commands
@@ -81,5 +81,5 @@ Cypress.Commands.addAll(
     extractBiblioId,
 
     closeModal,
-  }
+  },
 );
