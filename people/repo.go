@@ -439,7 +439,12 @@ func (r *Repo) DeactivatePeople(ctx context.Context) error {
 }
 
 func (r *Repo) SetPersonPublicationCount(ctx context.Context, idKind, idValue string, n int) error {
-	_, err := r.conn.Exec(ctx, setPersonPublicationCount, idKind, idValue, n)
+	_, err := r.conn.Exec(ctx, setPersonPublicationCountQuery, idKind, idValue, n)
+	return err
+}
+
+func (r *Repo) SetPersonPreferredName(ctx context.Context, idKind, idValue, givenName, familyName string) error {
+	_, err := r.conn.Exec(ctx, setPersonPreferredNameQuery, idKind, idValue, givenName, familyName)
 	return err
 }
 

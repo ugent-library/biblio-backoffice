@@ -167,6 +167,11 @@ func (r *Repo) AddProject(ctx context.Context, p AddProjectParams) error {
 	return tx.Commit(ctx)
 }
 
+func (r *Repo) SetProjectPublicationCount(ctx context.Context, idKind, idValue string, n int) error {
+	_, err := r.conn.Exec(ctx, setProjectPublicationCountQuery, idKind, idValue, n)
+	return err
+}
+
 func newID() Identifier {
 	return Identifier{Kind: idKind, Value: uuid.NewString()}
 }
@@ -214,9 +219,4 @@ func transferValues(rows []*projectRow, params AddProjectParams) AddProjectParam
 	}
 
 	return params
-}
-
-func (r *Repo) SetProjectPublicationCount(ctx context.Context, idKind, idValue string, n int) error {
-	_, err := r.conn.Exec(ctx, setProjectPublicationCount, idKind, idValue, n)
-	return err
 }

@@ -365,9 +365,17 @@ UPDATE people SET active = FALSE
 WHERE updated_at < $1;
 `
 
-const setPersonPublicationCount = `
+const setPersonPublicationCountQuery = `
 UPDATE people p
 SET publication_count = $3
+FROM person_identifiers pi
+WHERE p.replaced_by_id IS NULL AND p.id = pi.person_id AND pi.kind = $1 AND pi.value = $2;
+`
+
+const setPersonPreferredNameQuery = `
+UPDATE people p
+SET preferred_given_name = $3,
+    preferred_family_name = $4
 FROM person_identifiers pi
 WHERE p.replaced_by_id IS NULL AND p.id = pi.person_id AND pi.kind = $1 AND pi.value = $2;
 `

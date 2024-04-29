@@ -201,6 +201,7 @@ func Register(c Config) {
 		r.Get("/frontoffice/user/{id}", frontofficeHandler.GetUser)
 		r.Get("/frontoffice/user/username/{username}", frontofficeHandler.GetUserByUsername)
 		r.Get("/frontoffice/person/{id}", frontofficeHandler.GetPerson)
+		r.Put("/frontoffice/person/{id}/preferred-name", frontofficeHandler.SetPersonPreferredName)
 		r.Get("/frontoffice/person/list", frontofficeHandler.GetPeople)
 		r.Get("/frontoffice/person", frontofficeHandler.SearchPeople)
 		r.Get("/frontoffice/project/{id}", frontofficeHandler.GetProject)

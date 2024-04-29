@@ -253,7 +253,7 @@ func setProjectReplacedBy(ctx context.Context, conn Conn, id, replacedByID int64
 	return err
 }
 
-const setProjectPublicationCount = `
+const setProjectPublicationCountQuery = `
 UPDATE projects p
 SET publication_count = $3
 FROM project_identifiers pi
