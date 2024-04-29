@@ -2,11 +2,10 @@ package views
 
 import (
     "strings"
-    "github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-templ contributorShowSummary(c *ctx.Ctx, contributor *models.Contributor) {
+templ contributorShowSummary(contributor *models.Contributor) {
     <div class="bc-avatar-and-text align-items-start">
     if contributor.Person != nil {
         <div class="bc-avatar">

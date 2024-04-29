@@ -38,7 +38,7 @@ func AddImpersonationSuggest(c *ctx.Ctx, firstName string, lastName string, hits
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = contributorShowSummary(c, models.ContributorFromPerson(hit)).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = contributorShowSummary(models.ContributorFromPerson(hit)).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

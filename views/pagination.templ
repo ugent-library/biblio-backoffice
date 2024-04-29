@@ -5,7 +5,7 @@ import "net/url"
 import "github.com/ugent-library/biblio-backoffice/ctx"
 import "github.com/ugent-library/biblio-backoffice/models"
 
-templ pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, searchHits *models.SearchHits) {
+templ Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, searchHits *models.SearchHits) {
     <ul class="pagination">
     if searchHits.HasPreviousPage() {
         <li class="page-item">
@@ -49,4 +49,12 @@ templ pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, se
         </li>
     }
     </ul>    
+}
+
+func PaginationCount(c *ctx.Ctx, searchHits *models.SearchHits) string {
+	if searchHits.TotalPages() > 1 {
+		return fmt.Sprintf("Showing %d-%d of %d", searchHits.FirstOnPage(), searchHits.LastOnPage(), searchHits.Total)
+	} else {
+		return fmt.Sprintf("Showing %d", searchHits.Total)
+	}
 }

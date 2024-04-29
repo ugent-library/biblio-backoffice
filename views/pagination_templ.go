@@ -15,7 +15,7 @@ import "net/url"
 import "github.com/ugent-library/biblio-backoffice/ctx"
 import "github.com/ugent-library/biblio-backoffice/models"
 
-func pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, searchHits *models.SearchHits) templ.Component {
+func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, searchHits *models.SearchHits) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -137,4 +137,12 @@ func pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, sea
 		}
 		return templ_7745c5c3_Err
 	})
+}
+
+func PaginationCount(c *ctx.Ctx, searchHits *models.SearchHits) string {
+	if searchHits.TotalPages() > 1 {
+		return fmt.Sprintf("Showing %d-%d of %d", searchHits.FirstOnPage(), searchHits.LastOnPage(), searchHits.Total)
+	} else {
+		return fmt.Sprintf("Showing %d", searchHits.Total)
+	}
 }

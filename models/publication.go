@@ -234,8 +234,8 @@ func (p *Publication) VABB() string {
 }
 
 // Citation
+// TODO this shouldn't be in the model
 func (p *Publication) SummaryParts() []string {
-
 	tmpParts := make([]string, 0)
 
 	if p.Year != "" {

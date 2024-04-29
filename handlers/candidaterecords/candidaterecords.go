@@ -10,6 +10,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/views"
+	candidaterecordviews "github.com/ugent-library/biblio-backoffice/views/candidaterecord"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 )
@@ -46,7 +47,31 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 			Total:  countRecs,
 		},
 	}
-	views.CandidateRecords(c, searchArgs, searchHits, recs).Render(r.Context(), w)
+	candidaterecordviews.List(c, searchArgs, searchHits, recs).Render(r.Context(), w)
+}
+
+func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	if !c.User.CanCurate() {
+		c.HandleError(w, r, httperror.Unauthorized)
+		return
+	}
+
+	b := bindCandidateRecord{}
+	if err := bind.Request(r, &b); err != nil {
+		c.Log.Warnw("preview candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		render.BadRequest(w, r, err)
+		return
+	}
+
+	rec, err := c.Repo.GetCandidateRecord(r.Context(), b.ID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	candidaterecordviews.Preview(c, rec.Publication).Render(r.Context(), w)
 }
 
 func CandidateRecordsIcon(w http.ResponseWriter, r *http.Request) {
@@ -81,7 +106,7 @@ func ConfirmRejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmRejectCandidateRecord(c, rec).Render(r.Context(), w)
+	candidaterecordviews.ConfirmHide(c, rec).Render(r.Context(), w)
 }
 
 func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
@@ -129,14 +154,8 @@ func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rec, err := c.Repo.GetCandidateRecord(r.Context(), b.ID)
+	pubID, err := c.Repo.ImportCandidateRecordAsPublication(r.Context(), b.ID, c.User)
 	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
-
-	var pubID string
-	if pubID, err = c.Repo.ImportCandidateRecordAsPublication(r.Context(), rec, c.User); err != nil {
 		c.HandleError(w, r, err)
 		return
 	}
