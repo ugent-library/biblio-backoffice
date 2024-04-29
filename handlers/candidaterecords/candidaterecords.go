@@ -106,7 +106,7 @@ func ConfirmRejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmRejectCandidateRecord(c, rec).Render(r.Context(), w)
+	candidaterecordviews.ConfirmHide(c, rec).Render(r.Context(), w)
 }
 
 func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {

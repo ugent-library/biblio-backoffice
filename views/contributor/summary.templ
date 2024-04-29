@@ -29,14 +29,7 @@ templ Summary(c *ctx.Ctx,  role string, contribs []*models.Contributor) {
         }
         </div>
     } else {
-        <i class="if if-edit if--small"></i>
-        <em>UGent 
-        if len(contribs) - 3 > 1 {
-            { role + "s" }
-        } else {
-            { role }
-        }
-        missing</em>
+        <em>UGent { role + "s" } missing</em>
     }
 }
 
