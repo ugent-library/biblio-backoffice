@@ -188,7 +188,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn", "Add abstract").click();
         cy.ensureModal("Add abstract")
           .within(() => {
-            cy.setFieldByLabel("Abstract", " ");
+            cy.setFieldByLabel("Abstract", "");
             cy.setFieldByLabel("Language", "Danish");
           })
           .closeModal("Add abstract");
@@ -347,7 +347,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn", "Add lay summary").click();
         cy.ensureModal("Add lay summary")
           .within(() => {
-            cy.setFieldByLabel("Lay summary", " ");
+            cy.setFieldByLabel("Lay summary", "");
             cy.setFieldByLabel("Language", "Italian");
           })
           .closeModal("Add lay summary");
@@ -1113,7 +1113,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.updateFields(
           "Publication details",
           () => {
-            cy.setFieldByLabel("Publication year", " ");
+            cy.setFieldByLabel("Publication year", "");
           },
           true,
         );
@@ -1250,7 +1250,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn", "Add abstract").click();
         cy.ensureModal("Add abstract")
           .within(() => {
-            cy.setFieldByLabel("Abstract", " ");
+            cy.setFieldByLabel("Abstract", "");
             cy.setFieldByLabel("Language", "Danish");
           })
           .closeModal("Add abstract");
@@ -1736,8 +1736,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.updateFields(
           "Dataset details",
           () => {
-            cy.setFieldByLabel("Publisher", " ");
-            cy.setFieldByLabel("Publication year", " ");
+            cy.setFieldByLabel("Publisher", "");
+            cy.setFieldByLabel("Publication year", "");
           },
           true,
         );
