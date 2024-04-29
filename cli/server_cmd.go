@@ -17,9 +17,6 @@ import (
 	"github.com/ory/graceful"
 	"github.com/riverqueue/river"
 	"github.com/spf13/cobra"
-	ffclient "github.com/thomaspoignant/go-feature-flag"
-	"github.com/thomaspoignant/go-feature-flag/retriever/fileretriever"
-	"github.com/thomaspoignant/go-feature-flag/retriever/githubretriever"
 	"github.com/ugent-library/biblio-backoffice/api/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
@@ -53,34 +50,34 @@ var serverStartCmd = &cobra.Command{
 		// e.LicenseSearchService.IndexAll()
 
 		// feature flags
-		if config.FF.FilePath != "" {
-			err := ffclient.Init(ffclient.Config{
-				PollingInterval: 5 * time.Second,
-				Context:         context.TODO(),
-				Retriever: &fileretriever.Retriever{
-					Path: config.FF.FilePath,
-				},
-			})
-			if err != nil {
-				return err
-			}
-			defer ffclient.Close()
-		} else if config.FF.GitHubRepo != "" {
-			err := ffclient.Init(ffclient.Config{
-				PollingInterval: 5 * time.Second,
-				Context:         context.TODO(),
-				Retriever: &githubretriever.Retriever{
-					GithubToken:    config.FF.GitHubToken,
-					RepositorySlug: config.FF.GitHubRepo,
-					Branch:         config.FF.GitHubBranch,
-					FilePath:       config.FF.GitHubPath,
-				},
-			})
-			if err != nil {
-				return err
-			}
-			defer ffclient.Close()
-		}
+		// if config.FF.FilePath != "" {
+		// 	err := ffclient.Init(ffclient.Config{
+		// 		PollingInterval: 5 * time.Second,
+		// 		Context:         context.TODO(),
+		// 		Retriever: &fileretriever.Retriever{
+		// 			Path: config.FF.FilePath,
+		// 		},
+		// 	})
+		// 	if err != nil {
+		// 		return err
+		// 	}
+		// 	defer ffclient.Close()
+		// } else if config.FF.GitHubRepo != "" {
+		// 	err := ffclient.Init(ffclient.Config{
+		// 		PollingInterval: 5 * time.Second,
+		// 		Context:         context.TODO(),
+		// 		Retriever: &githubretriever.Retriever{
+		// 			GithubToken:    config.FF.GitHubToken,
+		// 			RepositorySlug: config.FF.GitHubRepo,
+		// 			Branch:         config.FF.GitHubBranch,
+		// 			FilePath:       config.FF.GitHubPath,
+		// 		},
+		// 	})
+		// 	if err != nil {
+		// 		return err
+		// 	}
+		// 	defer ffclient.Close()
+		// }
 
 		// start jobs
 		riverClient, err := jobs.Start(context.TODO(), jobs.JobsConfig{

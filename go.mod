@@ -55,13 +55,9 @@ require (
 )
 
 require (
-	github.com/BurntSushi/toml v1.3.2 // indirect
-	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
-	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/jackc/pgconn v1.14.1 // indirect
 	github.com/jackc/pgx/v4 v4.18.1 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
-	github.com/nikunjy/rules v1.5.0 // indirect
 )
 
 require (
@@ -174,7 +170,6 @@ require (
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	github.com/thomaspoignant/go-feature-flag v1.18.0
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/ugent-library/bibtex v0.0.0-20231218123206-c910132512fe
