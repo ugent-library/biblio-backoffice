@@ -342,6 +342,8 @@ func Register(c Config) {
 						r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
 
 						// projects
+						r.Get("/projects/add", publicationediting.AddProject).Name("publication_add_project")
+						r.Get("/projects/suggestions", publicationediting.SuggestProjects).Name("publication_suggest_projects")
 						// project_id is last part of url because some id's contain slashes
 						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", publicationediting.ConfirmDeleteProject).Name("publication_confirm_delete_project")
 
@@ -760,12 +762,6 @@ func Register(c Config) {
 			Name("publication_update_additional_info")
 
 		// edit publication projects
-		r.Get("/publication/{id}/projects/add",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddProject)).
-			Name("publication_add_project")
-		r.Get("/publication/{id}/projects/suggestions",
-			publicationEditingHandler.Wrap(publicationEditingHandler.SuggestProjects)).
-			Name("publication_suggest_projects")
 		r.Post("/publication/{id}/projects",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
 			Name("publication_create_project")
