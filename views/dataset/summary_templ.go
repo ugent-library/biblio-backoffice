@@ -270,12 +270,29 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if c.UserRole == "curator" {
+			if args.Dataset.Title != "" {
+				var templ_7745c5c3_Var12 string
+				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(args.Dataset.Title)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/summary.templ`, Line: 108, Col: 55}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Untitled record")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+		} else {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var12 templ.SafeURL = templ.URL(args.URL.String())
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var12)))
+			var templ_7745c5c3_Var13 templ.SafeURL = templ.URL(args.URL.String())
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var13)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -284,12 +301,12 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if args.Dataset.Title != "" {
-				var templ_7745c5c3_Var13 string
-				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(args.Dataset.Title)
+				var templ_7745c5c3_Var14 string
+				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(args.Dataset.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/summary.templ`, Line: 110, Col: 59}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/summary.templ`, Line: 116, Col: 59}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -302,23 +319,6 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
-			}
-		} else {
-			if args.Dataset.Title != "" {
-				var templ_7745c5c3_Var14 string
-				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(args.Dataset.Title)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/summary.templ`, Line: 118, Col: 55}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Untitled record")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
 			}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><ul class=\"c-meta-list c-meta-list-inline\">")

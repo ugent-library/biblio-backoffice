@@ -17,7 +17,7 @@ func facetShortValue(values []string) templ.Component {
 				break
 			}
 			if i > 0 {
-				w.Write([]byte(","))
+				w.Write([]byte(", "))
 			}
             w.Write([]byte(v))
 		}
@@ -165,7 +165,7 @@ templ FacetSince(c *ctx.Ctx, fieldName string, title string, description string,
             for f, vals := range searchArgs.Filters {
                 if f != fieldName {
                     for _, val := range vals {
-                        <input type="hidden" name={fmt.Sprintf("f[%s]", fieldName)} value={val} />
+                        <input type="hidden" name={fmt.Sprintf("f[%s]", f)} value={val} />
                     }
                 }
             }

@@ -136,7 +136,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -144,7 +144,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -152,7 +152,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -179,7 +179,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -187,7 +187,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -195,7 +195,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -251,7 +251,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if c.User.CanCurate() {
+			if c.UserRole == "curator" {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar-item\"><div class=\"dropdown dropleft\"><button class=\"btn btn-outline-primary btn-icon-only\" type=\"button\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"><i class=\"if if-more\"></i></button><div class=\"dropdown-menu\"><a class=\"dropdown-item\" target=\"_blank\" href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -293,7 +293,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var11 = []any{"nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope"))}
+					var templ_7745c5c3_Var11 = []any{"nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope))}
 					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var11...)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -346,16 +346,31 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if c.UserRole == "curator" {
-				templ_7745c5c3_Err = CurationFacets(c, args.SearchArgs, args.Hits.Facets).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
+			templ_7745c5c3_Var14 := templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+				if !templ_7745c5c3_IsBuffer {
+					templ_7745c5c3_Buffer = templ.GetBuffer()
+					defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 				}
-			} else {
-				templ_7745c5c3_Err = Facets(c, args.SearchArgs, args.Hits.Facets).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
+				if c.UserRole == "curator" {
+					templ_7745c5c3_Err = CurationFacets(c, args.SearchArgs, args.Hits.Facets).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				} else {
+					templ_7745c5c3_Err = Facets(c, args.SearchArgs, args.Hits.Facets).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
 				}
+				if !templ_7745c5c3_IsBuffer {
+					_, templ_7745c5c3_Err = io.Copy(templ_7745c5c3_W, templ_7745c5c3_Buffer)
+				}
+				return templ_7745c5c3_Err
+			})
+			templ_7745c5c3_Err = views.Facets(c, args.SearchArgs).Render(templ.WithChildren(ctx, templ_7745c5c3_Var14), templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"card mb-6\"><div class=\"card-header fw-normal\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><nav aria-label=\"Page navigation\">")
 			if templ_7745c5c3_Err != nil {
@@ -369,12 +384,12 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var14 string
-			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, args.Hits.Pagination))
+			var templ_7745c5c3_Var15 string
+			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, args.Hits.Pagination))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 124, Col: 118}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 126, Col: 118}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -412,12 +427,12 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var15 string
-				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.search.empty.title." + args.CurrentScope))
+				var templ_7745c5c3_Var16 string
+				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.search.empty.title." + args.CurrentScope))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 145, Col: 125}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 147, Col: 125}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -425,12 +440,12 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var16 string
-				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.search.empty.description." + args.CurrentScope))
+				var templ_7745c5c3_Var17 string
+				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.search.empty.description." + args.CurrentScope))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 146, Col: 102}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 148, Col: 102}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -438,8 +453,8 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var17 templ.SafeURL = templ.URL(c.PathTo("dataset_add").String())
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var17)))
+				var templ_7745c5c3_Var18 templ.SafeURL = templ.URL(c.PathTo("dataset_add").String())
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var18)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -452,8 +467,8 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var18 templ.SafeURL = templ.URL(c.PathTo("dataset_add").String())
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var18)))
+				var templ_7745c5c3_Var19 templ.SafeURL = templ.URL(c.PathTo("dataset_add").String())
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var19)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -474,12 +489,12 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var19 string
-			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, args.Hits.Pagination))
+			var templ_7745c5c3_Var20 string
+			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, args.Hits.Pagination))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 179, Col: 118}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 181, Col: 118}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -27,7 +27,7 @@ func facetShortValue(values []string) templ.Component {
 				break
 			}
 			if i > 0 {
-				w.Write([]byte(","))
+				w.Write([]byte(", "))
 			}
 			w.Write([]byte(v))
 		}
@@ -457,7 +457,7 @@ func FacetSince(c *ctx.Ctx, fieldName string, title string, description string, 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("f[%s]", fieldName)))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("f[%s]", f)))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

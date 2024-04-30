@@ -11,7 +11,7 @@ import (
 func CreatedBy(c *ctx.Ctx, createdAt *time.Time, createdBy *models.Person) string {
 	s := fmt.Sprintf("Created %s", createdAt.In(c.Timezone).Format("2006-01-02 15:04"))
 	if createdBy != nil {
-		s += "by " + createdBy.FullName
+		s += " by " + createdBy.FullName
 	}
 	s += "."
 	return s

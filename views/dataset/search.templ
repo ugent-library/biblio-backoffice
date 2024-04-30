@@ -37,15 +37,15 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models
 
 templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.FacetValues) {
     @views.FacetLine() {
-        @views.Facet(c, "status", "Biblio status", "publication_statuses", facets["status"], searchArgs),
-        @views.Facet(c, "faculty_id", "Faculty", "organization", facets["faculty_id"], searchArgs),
-        @views.Facet(c, "locked", "Locked", "locked", facets["locked"], searchArgs),
+        @views.Facet(c, "status", "Biblio status", "publication_statuses", facets["status"], searchArgs)
+        @views.Facet(c, "faculty_id", "Faculty", "organization", facets["faculty_id"], searchArgs)
+        @views.Facet(c, "locked", "Locked", "locked", facets["locked"], searchArgs)
         @views.Facet(c, "identifier_type", "Persistent identifier type", "identifier_type", facets["identifier_type"], searchArgs)
     }
     @views.FacetLine() {
-        @views.Facet(c, "reviewer_tags", "Librarian tags", "reviewer_tags", facets["reviewer_tags"], searchArgs),
-        @views.Facet(c, "has_message", "Message", "has_message", facets["has_message"], searchArgs),
-        @views.FacetSince(c, "created_since", "Created since", "Show records created since", searchArgs),
+        @views.Facet(c, "reviewer_tags", "Librarian tags", "reviewer_tags", facets["reviewer_tags"], searchArgs)
+        @views.Facet(c, "has_message", "Message", "has_message", facets["has_message"], searchArgs)
+        @views.FacetSince(c, "created_since", "Created since", "Show records created since", searchArgs)
         @views.FacetSince(c, "updated_since", "Updated since", "Show records updated since", searchArgs)
     }
 }
@@ -68,7 +68,7 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
                                     <div class="btn-text">Add Dataset</div>
                                 </a>
                             </div>
-                            if c.User.CanCurate() {
+                            if c.UserRole == "curator" {
                                 <div class="bc-toolbar-item">
                                     <div class="dropdown dropleft">
                                         <button class="btn btn-outline-primary btn-icon-only" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -93,7 +93,7 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
                         for _, scope := range args.Scopes {
                         <li class="nav-item">
                             <a
-                                class={"nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope"))}
+                                class={"nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope))}
                                 href={templ.URL(urlviews.Query(c.PathTo("datasets"), args.SearchArgs.Clone().WithFilter("scope", scope)).String())}
                             >
                                 {c.Loc.Get("dataset.search.scopes."+scope)}
@@ -106,10 +106,12 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
             </div>
             <div class="u-scroll-wrapper__body p-6">
                 @views.Query(c, args.SearchArgs)
-                if c.UserRole == "curator" {
-                    @CurationFacets(c, args.SearchArgs, args.Hits.Facets)
-                } else {
-                    @Facets(c, args.SearchArgs, args.Hits.Facets)
+                @views.Facets(c, args.SearchArgs) {
+                    if c.UserRole == "curator" {
+                        @CurationFacets(c, args.SearchArgs, args.Hits.Facets)
+                    } else {
+                        @Facets(c, args.SearchArgs, args.Hits.Facets)
+                    }
                 }
                 
                 <div class="card mb-6">

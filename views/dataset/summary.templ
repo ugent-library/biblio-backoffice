@@ -105,6 +105,12 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
                             </div>
                             <h4 class="mb-0">
                             if c.UserRole == "curator" {
+                                if args.Dataset.Title != "" { 
+                                    {args.Dataset.Title}
+                                } else {
+                                    Untitled record
+                                }
+                            } else {
                                 <a href={templ.URL(args.URL.String())}>
                                     <span class="list-group-item-title">
                                     if args.Dataset.Title != "" { 
@@ -114,12 +120,6 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
                                     }
                                     </span>
                                 </a>
-                            } else {
-                                if args.Dataset.Title != "" { 
-                                    {args.Dataset.Title}
-                                } else {
-                                    Untitled record
-                                }
                             }
                             </h4>
                             <ul class="c-meta-list c-meta-list-inline">
