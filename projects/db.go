@@ -17,16 +17,17 @@ type Conn interface {
 }
 
 type projectRow struct {
-	ID           int64
-	Identifiers  []Identifier
-	Names        []Text
-	Descriptions []Text
-	StartDate    pgtype.Text
-	EndDate      pgtype.Text
-	Deleted      bool
-	Attributes   []Attribute
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ID               int64
+	Identifiers      []Identifier
+	Names            []Text
+	Descriptions     []Text
+	StartDate        pgtype.Text
+	EndDate          pgtype.Text
+	Deleted          bool
+	PublicationCount int
+	Attributes       []Attribute
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 }
 
 type projectRows []*projectRow
@@ -42,15 +43,16 @@ func (rows projectRows) Has(id int64) bool {
 
 func (row *projectRow) toProject() *Project {
 	return &Project{
-		Identifiers:  row.Identifiers,
-		Names:        row.Names,
-		Descriptions: row.Descriptions,
-		StartDate:    row.StartDate.String,
-		EndDate:      row.EndDate.String,
-		Deleted:      row.Deleted,
-		Attributes:   row.Attributes,
-		CreatedAt:    row.CreatedAt,
-		UpdatedAt:    row.UpdatedAt,
+		Identifiers:      row.Identifiers,
+		Names:            row.Names,
+		Descriptions:     row.Descriptions,
+		StartDate:        row.StartDate.String,
+		EndDate:          row.EndDate.String,
+		Deleted:          row.Deleted,
+		PublicationCount: row.PublicationCount,
+		Attributes:       row.Attributes,
+		CreatedAt:        row.CreatedAt,
+		UpdatedAt:        row.UpdatedAt,
 	}
 }
 
@@ -62,6 +64,7 @@ SELECT id,
 	   start_date,
 	   end_date,
 	   deleted,
+	   publication_count,
 	   attributes,
 	   created_at,
 	   updated_at
@@ -83,6 +86,7 @@ func getProjectByIdentifier(ctx context.Context, conn Conn, kind, value string) 
 		&r.StartDate,
 		&r.EndDate,
 		&r.Deleted,
+		&r.PublicationCount,
 		&r.Attributes,
 		&r.CreatedAt,
 		&r.UpdatedAt,
@@ -102,6 +106,7 @@ SELECT id,
 	   start_date,
 	   end_date,
 	   deleted,
+	   publication_count,
 	   attributes,
 	   created_at,
 	   updated_at
@@ -247,3 +252,10 @@ func setProjectReplacedBy(ctx context.Context, conn Conn, id, replacedByID int64
 	_, err := conn.Exec(ctx, setProjectReplacedByQuery, id, replacedByID)
 	return err
 }
+
+const setProjectPublicationCountQuery = `
+UPDATE projects p
+SET publication_count = $3
+FROM project_identifiers pi
+WHERE p.replaced_by_id IS NULL AND p.id = pi.project_id AND pi.kind = $1 AND pi.value = $2;
+`

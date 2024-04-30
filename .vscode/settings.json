@@ -1,8 +1,6 @@
 {
   "protoc": {
-    "options": [
-      "-I ./api/v1"
-    ]
+    "options": ["-I ./api/v1"]
   },
   "cSpell.words": [
     "arxiv",
@@ -27,4 +25,7 @@
   "[templ]": {
     "editor.defaultFormatter": "a-h.templ"
   },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

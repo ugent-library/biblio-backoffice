@@ -197,6 +197,7 @@ func Register(c Config) {
 		r.Get("/frontoffice/user/{id}", frontofficeHandler.GetUser)
 		r.Get("/frontoffice/user/username/{username}", frontofficeHandler.GetUserByUsername)
 		r.Get("/frontoffice/person/{id}", frontofficeHandler.GetPerson)
+		r.Put("/frontoffice/person/{id}/preferred-name", frontofficeHandler.SetPersonPreferredName)
 		r.Get("/frontoffice/person/list", frontofficeHandler.GetPeople)
 		r.Get("/frontoffice/person", frontofficeHandler.SearchPeople)
 		r.Get("/frontoffice/project/{id}", frontofficeHandler.GetProject)
@@ -403,6 +404,8 @@ func Register(c Config) {
 						r.Delete("/", datasetediting.Delete).Name("dataset_delete")
 
 						// projects
+						r.Get("/projects/add", datasetediting.AddProject).Name("dataset_add_project")
+						r.Get("/projects/suggestions", datasetediting.SuggestProjects).Name("dataset_suggest_projects")
 						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", datasetediting.ConfirmDeleteProject).Name("dataset_confirm_delete_project")
 
 						// abstracts
@@ -532,12 +535,6 @@ func Register(c Config) {
 			Name("dataset_update_details")
 
 		// edit dataset projects
-		r.Get("/dataset/{id}/projects/add",
-			datasetEditingHandler.Wrap(datasetEditingHandler.AddProject)).
-			Name("dataset_add_project")
-		r.Get("/dataset/{id}/projects/suggestions",
-			datasetEditingHandler.Wrap(datasetEditingHandler.SuggestProjects)).
-			Name("dataset_suggest_projects")
 		r.Post("/dataset/{id}/projects",
 			datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
 			Name("dataset_create_project")
