@@ -30,12 +30,12 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
                                 <div class="bc-toolbar-left">
                                     <div class="bc-toolbar-item">
                                         <nav>
-                                        @views.Pagination(c, c.URLTo("candidate_records"), searchArgs, searchHits)
+                                        @views.Pagination(c, c.URLTo("candidate_records"), searchArgs, searchHits.Pagination)
                                         </nav>
                                     </div>
                                     <div class="bc-toolbar-item">
                                         <span class="text-muted c-body-small">
-                                        { views.PaginationCount(c, searchHits) }
+                                        { views.PaginationCount(c, searchHits.Pagination) }
                                          publications
                                         </span>
                                     </div>
@@ -76,12 +76,12 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
                                 <div class="bc-toolbar-left">
                                     <div class="bc-toolbar-item">
                                         <nav>
-                                        @views.Pagination(c, c.URLTo("candidate_records"), searchArgs, searchHits)
+                                        @views.Pagination(c, c.URLTo("candidate_records"), searchArgs, searchHits.Pagination)
                                         </nav>
                                     </div>
                                     <div class="bc-toolbar-item">
                                         <span class="text-muted c-body-small">
-                                        { views.PaginationCount(c, searchHits) }
+                                        { views.PaginationCount(c, searchHits.Pagination) }
                                          publications
                                         </span>
                                     </div>

@@ -54,7 +54,7 @@ templ Summary(c *ctx.Ctx,  p *models.Publication, opts SummaryOpts) {
                                 }
                             </ul>
 
-                            @contributorviews.Summary(c, "author", p.Author)
+                            @contributorviews.Summary(c, "author", p.Author, "")
                         </div>
                     </div>
                     <div class="c-button-toolbar flex-row-reverse flex-lg-row">

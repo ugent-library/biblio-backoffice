@@ -45,7 +45,7 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = views.Pagination(c, c.URLTo("candidate_records"), searchArgs, searchHits).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = views.Pagination(c, c.URLTo("candidate_records"), searchArgs, searchHits.Pagination).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -54,9 +54,9 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
-				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, searchHits))
+				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, searchHits.Pagination))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 37, Col: 78}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 37, Col: 89}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -123,7 +123,7 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = views.Pagination(c, c.URLTo("candidate_records"), searchArgs, searchHits).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = views.Pagination(c, c.URLTo("candidate_records"), searchArgs, searchHits.Pagination).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -132,9 +132,9 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var5 string
-				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, searchHits))
+				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, searchHits.Pagination))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 83, Col: 78}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 83, Col: 89}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {

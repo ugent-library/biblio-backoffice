@@ -1,0 +1,204 @@
+package dataset
+
+import (
+    "github.com/ugent-library/biblio-backoffice/ctx"
+    "github.com/ugent-library/biblio-backoffice/models"
+    contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+    relatedorganizationviews "github.com/ugent-library/biblio-backoffice/views/relatedorganization"
+    urlviews "github.com/ugent-library/biblio-backoffice/views/url"
+    "github.com/ugent-library/biblio-backoffice/views"
+    "net/url"
+    "fmt"
+)
+
+type SummaryArgs struct {
+    Dataset *models.Dataset
+    URL *url.URL
+    Actions templ.Component
+    Footer templ.Component
+    Links templ.Component
+}
+ 
+func getFirstDatasetIdentifier(dataset *models.Dataset) (string, []string) {
+    for typ, vals := range dataset.Identifiers {
+        return typ, vals
+    }
+    return "", nil
+}
+
+templ Summary(c *ctx.Ctx, args SummaryArgs) {
+    <div class="w-100">
+        <div class="c-thumbnail-and-text align-items-start w-100">
+            if c.UserRole == "curator" {
+            <div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-md-small c-thumbnail-lg-large d-none d-lg-block">
+                <a href={templ.URL(args.URL.String())}>
+                    <div class="c-thumbnail-inner">
+                        <i class="if if-article"></i>
+                    </div>
+                </a>
+            </div>
+            }
+            <div class="c-thumbnail-text">
+                <div class="hstack-md-responsive align-items-start gap-3 w-100" data-collapsible-card>
+                    <div class="vstack gap-5">
+                        <div class="vstack gap-2">
+                            <div class="d-inline-flex align-items-center flex-wrap">
+                                @status(args.Dataset.Status)
+                                if args.Dataset.Locked {
+                                <span class="c-subline ps-2 me-3 pe-3 border-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Locked for editing">
+                                    <i class="if if-lock if--small if--muted"></i>
+                                    <span class="text-muted c-body-small ms-2">Locked</span>
+                                </span>
+                                }
+                                <span class="c-subline me-3 pe-3 border-end">
+                                if args.Dataset.License != "" {
+                                    <span class="c-subline text-truncate ps-2">{args.Dataset.License}</span>
+                                } else {
+                                    <a href={templ.URL(urlviews.QuerySet(args.URL, "show", "description").String())} class="c-link-muted">
+                                        <i class="if if-edit if--small"></i>
+                                        <em>Add license</em>
+                                    </a>
+                                }
+                                </span>
+                                <span
+                                    class={"c-subline", "me-3", "pe-3", templ.KV("border-end", args.Dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }
+                                >
+                                    if args.Dataset.AccessLevel == "info:eu-repo/semantics/openAccess" {
+                                        <i class="if if-download if--small if--success"></i>
+                                        <span class="c-subline text-truncate ps-2">
+                                        {c.Loc.Get("dataset_access_levels." + args.Dataset.AccessLevel)}
+                                        </span>
+                                    } else if args.Dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+                                        <i class="if if-time if--small if--muted"></i>
+                                        <span class="c-subline text-muted ps-2">
+                                        {c.Loc.Get("dataset_access_levels." + args.Dataset.AccessLevel)}
+                                        </span>
+                                    } else if args.Dataset.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
+                                        <i class="if if-ghent-university if--small if--primary"></i>
+                                        <span class="c-subline text-muted ps-2">
+                                        {c.Loc.Get("dataset_access_levels." + args.Dataset.AccessLevel)}
+                                        </span>
+                                    } else if args.Dataset.AccessLevel == "info:eu-repo/semantics/closedAccess" {
+                                        <i class="if if-eye-off if--small if--muted"></i>
+                                        <span class="c-subline text-muted ps-2">
+                                        {c.Loc.Get("dataset_access_levels." + args.Dataset.AccessLevel)}
+                                        </span>
+                                    } else {
+                                        <a href={templ.URL(urlviews.QuerySet(args.URL, "show", "description").String())} class="c-link-muted">
+                                            <i class="if if-edit if--small"></i>
+                                            <em>Add document access level</em>
+                                        </a>
+                                    }
+                                </span>
+                                if args.Dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+                                <span class="c-subline me-3 pe-3">
+                                    if args.Dataset.AccessLevelAfterEmbargo == "info:eu-repo/semantics/openAccess" {
+                                    <i class="if if-download if--small if--success"></i>
+                                    } else {
+                                    <i class="if if-ghent-university if--small if--primary"></i>
+                                    }
+                                    <span class="c-subline text-truncate ps-2">
+                                    {fmt.Sprintf("%s from %s", c.Loc.Get("dataset_access_levels_after_embargo." + args.Dataset.AccessLevelAfterEmbargo), args.Dataset.EmbargoDate)}
+                                    </span>
+                                </span>
+                                }
+                            </div>
+                            <h4 class="mb-0">
+                            if c.UserRole == "curator" {
+                                <a href={templ.URL(args.URL.String())}>
+                                    <span class="list-group-item-title">
+                                    if args.Dataset.Title != "" { 
+                                        {args.Dataset.Title}
+                                    } else {
+                                        Untitled record
+                                    }
+                                    </span>
+                                </a>
+                            } else {
+                                if args.Dataset.Title != "" { 
+                                    {args.Dataset.Title}
+                                } else {
+                                    Untitled record
+                                }
+                            }
+                            </h4>
+                            <ul class="c-meta-list c-meta-list-inline">
+                            if args.Dataset.Year != "" {
+                                <li class="c-meta-item">{args.Dataset.Year}</li>
+                            }
+                            if args.Dataset.Publisher != "" {
+                                <li class="c-meta-item">{args.Dataset.Publisher}</li>
+                            }
+                            if typ, vals := getFirstDatasetIdentifier(args.Dataset); typ != "" {
+                                <li class="c-meta-item">{typ}</li>
+                                <li class="c-meta-item">{vals[0]}</li>
+                            }
+                            if len(args.Dataset.Format) > 0 {
+                                <li class="c-meta-item">{args.Dataset.Format[0]}</li>
+                            }
+                            </ul>
+
+                            if len(args.Dataset.Author) > 0 {
+                                @contributorviews.Summary(c, "author", args.Dataset.Author, urlviews.QuerySet(args.URL, "show", "contributors").String())
+                            } else {
+                                <a href={templ.URL(urlviews.QuerySet(args.URL, "show", "contributors").String())} class="c-link-muted">
+                                    <i class="if if-edit if--small"></i>
+                                    <em>UGent authors missing</em>
+                                </a>
+                            }
+                        </div>
+                        <div class="collapsible-card-content collapse" data-collapsible-card-content>
+                            <div class="vstack gap-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="if if-building if--small if--muted me-2"></i>
+                                    if len(args.Dataset.RelatedOrganizations) > 0 {
+                                        @relatedorganizationviews.Summary(c, args.Dataset.RelatedOrganizations, urlviews.QuerySet(args.URL, "show", "contributors").String())
+                                    } else {
+                                        <a href={templ.URL(urlviews.QuerySet(args.URL, "show", "contributors").String())} class="c-link-muted">
+                                            <i class="if if-edit if--small"></i>
+                                            <em>Add department</em>
+                                        </a>
+                                    }
+                                </div>
+                                <ul class="c-meta-list c-meta-list-inline">
+                                    if len(args.Dataset.RelatedPublication) > 0 {
+                                    <li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={fmt.Sprintf("%d related publications", len(args.Dataset.RelatedPublication))}>
+                                        <i class="if if-database if--muted if--small"></i>
+                                        <span class="text-muted">{fmt.Sprintf("%d", len(args.Dataset.RelatedPublication))}</span>
+                                    </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+
+                        @args.Footer
+
+                        <div class="d-lg-flex flex-row-reverse align-items-center justify-content-end vstack gap-4 flex-wrap">
+                            <ul class="c-meta-list c-meta-list-inline c-body-small">
+                                <li class="c-meta-item">
+                                { views.CreatedBy(c, args.Dataset.DateCreated, args.Dataset.Creator) }
+                                </li>
+                                <li class="c-meta-item">
+                                { views.UpdatedBy(c, args.Dataset.DateUpdated, args.Dataset.User, args.Dataset.LastUser) }
+                                </li>
+                            </ul>
+                            <div>
+                                <div class="input-group">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm pe-2" data-clipboard={args.Dataset.ID}>
+                                        <i class="if if-copy text-muted "></i>
+                                        <span class="btn-text ms-0 me-1">Biblio ID</span>
+                                    </button>
+                                    <code class="c-code">{args.Dataset.ID}</code>
+                                </div>
+                            </div>
+                        </div>
+                        if c.UserRole == "curator" {
+                            @args.Links
+                        }
+                    </div>
+                    @args.Actions
+                </div>
+            </div>
+        </div>
+    </div>
+}

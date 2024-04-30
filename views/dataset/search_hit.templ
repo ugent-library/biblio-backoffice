@@ -1,0 +1,91 @@
+package dataset
+
+import "github.com/ugent-library/biblio-backoffice/ctx"
+import "github.com/ugent-library/biblio-backoffice/identifiers"
+import "github.com/ugent-library/biblio-backoffice/models"
+import urlviews "github.com/ugent-library/biblio-backoffice/views/url"
+import "github.com/ugent-library/biblio-backoffice/views"
+import "fmt"
+
+templ SummaryActions(c *ctx.Ctx, dataset *models.Dataset, url string) {
+    <div class="c-button-toolbar">
+        <button class="btn btn-tertiary btn-lg-only-responsive pt-0" data-collapsible-card-toggle>
+            <i class="if if-info-circle"></i>
+            <span class="btn-text d-md-none d-lg-inline-block">More info</span>
+            <span class="visually-hidden">View more details</span>
+        </button>
+        <div class="dropdown">
+            <button class="btn btn-tertiary btn-lg-only-responsive pt-0" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="if if-more"></i>
+                <span class="btn-text d-md-none d-lg-inline-block">Actions</span>
+                <span class="visually-hidden">View more actions</span>
+            </button>
+            <div class="dropdown-menu me-3">
+                <a class="dropdown-item" href={templ.URL(url)}>
+                    <i class="if if-eye"></i>
+                    <span>View dataset</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                if dataset.Status == "public" {
+                    <a class="dropdown-item" href={templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, dataset.ID))} target="_blank">
+                        <i class="if if-book"></i>
+                        <span>Public Biblio Location</span>
+                    </a>
+                }
+                if typ, vals := getFirstDatasetIdentifier(dataset); typ != "" {
+                    <a class="dropdown-item" href={templ.URL(identifiers.Resolve(typ, vals[0]))} target="_blank">
+                        <i class="if if-external-link"></i>
+                        <span>View in external repository</span>
+                    </a>
+                }
+                if c.User.CanDeleteDataset(dataset) {
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item"
+                    hx-get={urlviews.QuerySet(c.PathTo("dataset_confirm_delete", "id", dataset.ID), "redirect-url", c.CurrentURL.String()).String()}
+                    hx-target="#modals"
+                >
+                    <i class="if if-delete"></i>
+                    <span>Delete</span>
+                </button>
+                }
+            </div>
+        </div>
+        <a class="btn btn-tertiary btn-lg-only-responsive pt-0" href={templ.URL(url)}>
+            <i class="if if-eye"></i>
+            <span class="btn-text d-md-none d-lg-inline-block">View</span>
+            <span class="visually-hidden">Go to record</span>
+        </a>
+    </div>
+}
+
+templ SummaryFooter(c *ctx.Ctx, dataset *models.Dataset) {
+    if dataset.Message != "" {
+    <div class="alert alert-info mb-0">
+        <i class="if if-message"></i>
+        <div class="alert-content">
+            <h3 class="Biblio message">Biblio message</h3>
+            <p class="mt-2">{views.Linkify(dataset.Message)}</p>
+        </div>
+    </div>
+    }
+}
+
+templ SummaryLinks(c *ctx.Ctx, dataset *models.Dataset, url string) {
+    <ul class="c-meta-list c-meta-list-inline">
+        <li class="c-meta-item">
+            <a class="c-link-muted c-body-small" href={templ.URL(url)}>View dataset</a>
+        </li>
+        if typ, vals := getFirstDatasetIdentifier(dataset); typ != "" {
+        <li class="c-meta-item">
+            <a class="c-link-muted c-body-small" href={templ.URL(identifiers.Resolve(typ, vals[0]))} target="_blank">View in external repository
+            </a>
+        </li>
+        }
+        if dataset.Status == "public" {
+        <li class="c-meta-item">
+            <a class="c-link-muted c-body-small" href={templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, dataset.ID))} target="_blank">Public Biblio Location
+            </a>
+        </li>
+        }
+    </ul>
+}

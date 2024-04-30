@@ -7,7 +7,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-templ Summary(c *ctx.Ctx,  role string, contribs []*models.Contributor) {
+templ Summary(c *ctx.Ctx,  role string, contribs []*models.Contributor, url string) {
     if len(contribs) > 0 {
         <div class="c-author-list">
         if len(contribs) > 3 {
@@ -15,11 +15,22 @@ templ Summary(c *ctx.Ctx,  role string, contribs []*models.Contributor) {
                 @summaryItem(c, role, contrib)
             }
             <div class="c-author">
-            { fmt.Sprint(len(contribs) - 3) } more
-            if len(contribs) - 3 > 1 {
-                { role + "s" }
+            if url != "" {
+                <a class="c-link c-link-muted" href={templ.URL(url)}>
+                { fmt.Sprint(len(contribs) - 3) } more
+                if len(contribs) - 3 > 1 {
+                    { role + "s" }
+                } else {
+                    { role }
+                }
+                </a>
             } else {
-                { role }
+                { fmt.Sprint(len(contribs) - 3) } more
+                if len(contribs) - 3 > 1 {
+                    { role + "s" }
+                } else {
+                    { role }
+                }
             }
             </div>
         } else {

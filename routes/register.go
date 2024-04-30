@@ -129,10 +129,6 @@ func Register(c Config) {
 			BlockByDefault: true,
 		}),
 	}
-	datasetSearchingHandler := &datasetsearching.Handler{
-		BaseHandler:        baseHandler,
-		DatasetSearchIndex: c.Services.DatasetSearchIndex,
-	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
 		Repo:        c.Services.Repo,
@@ -388,6 +384,8 @@ func Register(c Config) {
 				})
 
 				// datasets
+				r.With(ctx.SetNav("datasets")).Get("/dataset", datasetsearching.Search).Name("datasets")
+
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 
@@ -448,11 +446,6 @@ func Register(c Config) {
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// search datasets
-		r.Get("/dataset",
-			datasetSearchingHandler.Wrap(datasetSearchingHandler.Search)).
-			Name("datasets")
 
 		// add dataset
 		r.Get("/dataset/add",

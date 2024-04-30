@@ -1,0 +1,202 @@
+package dataset
+
+import (
+    "github.com/ugent-library/biblio-backoffice/ctx"
+    "github.com/ugent-library/biblio-backoffice/models"
+    urlviews "github.com/ugent-library/biblio-backoffice/views/url"
+    "github.com/ugent-library/biblio-backoffice/views"
+    "github.com/ugent-library/bind"
+    "net/url"
+)
+
+type SearchArgs struct {
+	Scopes       []string
+	Hits         *models.DatasetHits
+	IsFirstUse   bool
+	CurrentScope string
+    SearchArgs   *models.SearchArgs
+}
+
+func datasetSearchExportURL(c *ctx.Ctx, searchArgs *models.SearchArgs) *url.URL {
+    u := c.PathTo("export_datasets", "format", "xlsx")
+    q, _ := bind.EncodeQuery(searchArgs)
+    u.RawQuery = q.Encode()
+    return u
+}
+
+templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.FacetValues) {
+    @views.FacetLine() {
+        @views.Facet(c, "status", "Biblio status", "publication_statuses", facets["status"], searchArgs)
+        @views.Facet(c, "faculty_id", "Faculty", "organization", facets["faculty_id"], searchArgs)
+        @views.Facet(c, "locked", "Locked", "locked", facets["locked"], searchArgs)
+        @views.Facet(c, "has_message", "Message", "has_message", facets["has_message"], searchArgs)
+        @views.FacetSince(c, "created_since", "Created since", "Show records created since", searchArgs)
+        @views.FacetSince(c, "updated_since", "Updated since", "Show records updated since", searchArgs)
+    }
+}
+
+templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.FacetValues) {
+    @views.FacetLine() {
+        @views.Facet(c, "status", "Biblio status", "publication_statuses", facets["status"], searchArgs),
+        @views.Facet(c, "faculty_id", "Faculty", "organization", facets["faculty_id"], searchArgs),
+        @views.Facet(c, "locked", "Locked", "locked", facets["locked"], searchArgs),
+        @views.Facet(c, "identifier_type", "Persistent identifier type", "identifier_type", facets["identifier_type"], searchArgs)
+    }
+    @views.FacetLine() {
+        @views.Facet(c, "reviewer_tags", "Librarian tags", "reviewer_tags", facets["reviewer_tags"], searchArgs),
+        @views.Facet(c, "has_message", "Message", "has_message", facets["has_message"], searchArgs),
+        @views.FacetSince(c, "created_since", "Created since", "Show records created since", searchArgs),
+        @views.FacetSince(c, "updated_since", "Updated since", "Show records updated since", searchArgs)
+    }
+}
+
+templ Search(c *ctx.Ctx, args *SearchArgs) {
+    @views.PageLayout(c, "Overview - Datasets - Biblio", nil) {
+        <div class="w-100 u-scroll-wrapper">
+            <div class="bg-white">
+                <div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom bc-navbar--white h-auto">
+                    <div class="bc-toolbar">
+                        <div class="bc-toolbar-left">
+                            <div class="bc-toolbar-item">
+                                <h4 class="bc-toolbar-title">Overview datasets</h4>
+                            </div>
+                        </div>
+                        <div class="bc-toolbar-right">
+                            <div class="bc-toolbar-item">
+                                <a class="btn btn-primary" href={templ.URL(c.PathTo("dataset_add").String())}>
+                                    <i class="if if-add"></i>
+                                    <div class="btn-text">Add Dataset</div>
+                                </a>
+                            </div>
+                            if c.User.CanCurate() {
+                                <div class="bc-toolbar-item">
+                                    <div class="dropdown dropleft">
+                                        <button class="btn btn-outline-primary btn-icon-only" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="if if-more"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" target="_blank" href={templ.URL(datasetSearchExportURL(c, args.SearchArgs).String())}>
+                                                <i class="if if-download"></i>
+                                                <span>{c.Loc.Get("export_to.xlsx")}</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                if len(args.Scopes) > 0 {
+                <div class="c-divider my-0 mx-6"></div>
+                <div class="bc-navbar bc-navbar--white">
+                    <ul class="nav nav-tabs">
+                        for _, scope := range args.Scopes {
+                        <li class="nav-item">
+                            <a
+                                class={"nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope"))}
+                                href={templ.URL(urlviews.Query(c.PathTo("datasets"), args.SearchArgs.Clone().WithFilter("scope", scope)).String())}
+                            >
+                                {c.Loc.Get("dataset.search.scopes."+scope)}
+                            </a>
+                        </li>
+                        }
+                    </ul>
+                </div>
+                }
+            </div>
+            <div class="u-scroll-wrapper__body p-6">
+                @views.Query(c, args.SearchArgs)
+                if c.UserRole == "curator" {
+                    @CurationFacets(c, args.SearchArgs, args.Hits.Facets)
+                } else {
+                    @Facets(c, args.SearchArgs, args.Hits.Facets)
+                }
+                
+                <div class="card mb-6">
+                    <div class="card-header fw-normal">
+                        <div class="bc-toolbar">
+                            <div class="bc-toolbar-left">
+                                <div class="bc-toolbar-item">
+                                    <nav aria-label="Page navigation">
+                                    @views.Pagination(c, c.PathTo("datasets"), args.SearchArgs, args.Hits.Pagination)
+                                    </nav>
+                                </div>
+                                <div class="bc-toolbar-item">
+                                    <p class="text-muted c-body-small">{views.PaginationCount(c, args.Hits.Pagination)} datasets</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        if len(args.Hits.Hits) > 0 {
+                            <ul class="list-group list-group-flush">
+                                for _, hit := range args.Hits.Hits {
+                                <li class="list-group-item">
+                                    if datasetURL := urlviews.QuerySet(c.PathTo("dataset", "id", hit.ID), "redirect-url", c.CurrentURL.String()); datasetURL != nil {
+                                        @Summary(c, SummaryArgs{Dataset: hit, URL: datasetURL, Actions: SummaryActions(c, hit, datasetURL.String()), Footer: SummaryFooter(c, hit), Links: SummaryLinks(c, hit, datasetURL.String())})
+                                    }
+                                </li>
+                                }
+                            </ul>
+                        } else if args.IsFirstUse {
+                            <div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
+                                <div class="bc-avatar bc-avatar--medium">
+                                    <i class="if if-info-circle"></i>
+                                </div>
+                                <h3 class="c-blank-slate-title">{c.Loc.Get("dataset.search.empty.title." + args.CurrentScope)}</h3>
+                                <p>{c.Loc.Get("dataset.search.empty.description." + args.CurrentScope)}</p>
+                                <div class="c-button-toolbar">
+                                    <a class="btn btn-outline-primary" href={templ.URL(c.PathTo("dataset_add").String())}>
+                                        <i class="if if-add"></i>
+                                        <div class="btn-text">Add dataset</div>
+                                    </a>
+                                </div>
+                            </div>
+                        } else {
+                            <div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
+                                <div class="bc-avatar bc-avatar--medium">
+                                    <i class="if if-info-circle"></i>
+                                </div>
+                                <h3 class="c-blank-slate-title">No records to display.</h3>
+                                <p>Refine your search or add a new record.</p>
+                                <div class="c-button-toolbar">
+                                    <a class="btn btn-outline-primary" href={templ.URL(c.PathTo("dataset_add").String())}>
+                                        <i class="if if-add"></i>
+                                        <div class="btn-text">Add dataset</div>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        <div class="bc-toolbar">
+                            <div class="bc-toolbar-left">
+                                <div class="bc-toolbar-item">
+                                    <nav aria-label="Page navigation">
+                                    @views.Pagination(c, c.PathTo("datasets"), args.SearchArgs, args.Hits.Pagination)
+                                    </nav>
+                                </div>
+                                <div class="bc-toolbar-item">
+                                    <p class="text-muted c-body-small">{views.PaginationCount(c, args.Hits.Pagination)} datasets</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                if !args.Hits.HasNextPage() && args.Hits.UncappedTotalPages() > args.Hits.TotalPages() {
+                <div class="alert alert-info">
+                    <i class="if if-info-circle-filled"></i>
+                    <div>
+                        <h4>Biblio search results have been optimised</h4>
+                        <p class="mb-2">To optimise Biblio's speed, we only show you the most relevant records.</p>
+                        <p class="mb-2">Missing some results? <strong>Refine your search query</strong> and use the
+                        <strong>filters</strong> to get a more precise set of
+                        records.</p>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    }
+}
