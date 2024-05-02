@@ -15,7 +15,6 @@ import "net/url"
 import "github.com/ugent-library/biblio-backoffice/ctx"
 import "github.com/ugent-library/biblio-backoffice/models"
 import pag "github.com/ugent-library/biblio-backoffice/pagination"
-import urlviews "github.com/ugent-library/biblio-backoffice/views/url"
 
 func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, p pag.Pagination) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -39,7 +38,7 @@ func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, p p
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 templ.SafeURL = templ.URL(urlviews.Query(baseURL, searchArgs.Clone().WithPage(p.PreviousPage())).String())
+			var templ_7745c5c3_Var2 templ.SafeURL = URL(baseURL).Query(searchArgs.Clone().WithPage(p.PreviousPage())).SafeURL()
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -73,7 +72,7 @@ func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, p p
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var4 templ.SafeURL = templ.URL(urlviews.Query(baseURL, searchArgs.Clone().WithPage(page)).String())
+				var templ_7745c5c3_Var4 templ.SafeURL = URL(baseURL).Query(searchArgs.Clone().WithPage(page)).SafeURL()
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -93,7 +92,7 @@ func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, p p
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", page))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pagination.templ`, Line: 28, Col: 44}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pagination.templ`, Line: 27, Col: 31}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -115,7 +114,7 @@ func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, p p
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 templ.SafeURL = templ.URL(urlviews.Query(baseURL, searchArgs.Clone().WithPage(p.NextPage())).String())
+			var templ_7745c5c3_Var6 templ.SafeURL = URL(baseURL).Query(searchArgs.Clone().WithPage(p.NextPage())).SafeURL()
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var6)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
