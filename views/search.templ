@@ -4,7 +4,6 @@ import (
     "github.com/ugent-library/biblio-backoffice/ctx"
     "github.com/ugent-library/biblio-backoffice/models"
     "github.com/ugent-library/biblio-backoffice/vocabularies"
-    urlviews "github.com/ugent-library/biblio-backoffice/views/url"
     "fmt"
 )
 
@@ -65,7 +64,7 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, facetV
             }
             <i class="if if-caret-down"></i>
         </a>
-        <form class="dropdown-menu" method="GET" action={templ.URL(urlviews.QueryClear(c.CurrentURL).String())}>
+        <form class="dropdown-menu" method="GET" action={URL(c.CurrentURL).ClearQuery().SafeURL()}>
             <div class="bc-navbar bc-navbar--bordered-bottom">
                 <div class="bc-toolbar bc-toolbar--auto">
                     <div class="bc-toolbar-left">
@@ -142,7 +141,7 @@ templ FacetSince(c *ctx.Ctx, fieldName string, title string, description string,
             }
             <i class="if if-caret-down"></i>
         </a>
-        <form class="dropdown-menu" method="GET" action={templ.URL(urlviews.QueryClear(c.CurrentURL).String())}>
+        <form class="dropdown-menu" method="GET" action={URL(c.CurrentURL).ClearQuery().SafeURL()}>
             <div class="bc-navbar bc-navbar--bordered-bottom">
                 <div class="bc-toolbar bc-toolbar--auto">
                     <div class="bc-toolbar-left">
@@ -217,7 +216,7 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
                     </div>
                     }
 
-                    <form method="GET" action={templ.URL(urlviews.QueryClear(c.CurrentURL).String())}>
+                    <form method="GET" action={URL(c.CurrentURL).ClearQuery().SafeURL()}>
                         <input type="hidden" name="q" value={searchArgs.Query} />
                         for _, sort := range searchArgs.Sort {
                         <input type="hidden" name="sort" value={sort} />
@@ -234,7 +233,7 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 }
 
 templ Query(c *ctx.Ctx, searchArgs *models.SearchArgs) {
-    <form class="mb-6" method="GET" action={templ.URL(urlviews.QueryClear(c.CurrentURL).String())}>
+    <form class="mb-6" method="GET" action={URL(c.CurrentURL).ClearQuery().SafeURL()}>
         for field, values := range searchArgs.Filters {
             for _, val := range values {
                 <input type="hidden" name={fmt.Sprintf("f[%s]", field)} value={val} />
