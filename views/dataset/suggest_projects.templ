@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
 )
 
 templ SuggestProjects(c *ctx.Ctx,  dataset *models.Dataset, hits []*models.Project) {
@@ -43,7 +44,7 @@ templ SuggestProjects(c *ctx.Ctx,  dataset *models.Dataset, hits []*models.Proje
 											<div class="me-43">
 												<a
 													class="c-link c-link-muted"
-													href={ templ.URL("https://biblio.ugent.be/project/" + hit.ID) }
+													href={ views.URLFromString(c.FrontendURL).Path("project", hit.ID).SafeURL() }
 													target="blank"
 												>Read more <i class="if if-external-link if--small"></i></a>
 											</div>

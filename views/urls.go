@@ -15,6 +15,12 @@ func URL(base *url.URL) *URLBuilder {
 	return &URLBuilder{base}
 }
 
+func URLFromString(base string) *URLBuilder {
+	return &URLBuilder{
+		url: Must(url.Parse(base)),
+	}
+}
+
 func (builder *URLBuilder) Path(path ...string) *URLBuilder {
 	builder.url = builder.url.JoinPath(path...)
 
