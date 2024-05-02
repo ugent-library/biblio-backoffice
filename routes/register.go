@@ -387,6 +387,10 @@ func Register(c Config) {
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
+
+						// (un)lock publication
+						r.Post("/lock", publicationediting.Lock).Name("publication_lock")
+						r.Post("/unlock", publicationediting.Unlock).Name("publication_unlock")
 					})
 				})
 
@@ -445,6 +449,10 @@ func Register(c Config) {
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
+
+						// (un)lock dataset
+						r.Post("/lock", datasetediting.Lock).Name("dataset_lock")
+						r.Post("/unlock", datasetediting.Unlock).Name("dataset_unlock")
 					})
 				})
 
@@ -503,14 +511,6 @@ func Register(c Config) {
 		r.Get("/dataset/{id}/activity",
 			datasetViewingHandler.Wrap(datasetViewingHandler.ShowActivity)).
 			Name("dataset_activity")
-
-		// lock dataset
-		r.Post("/dataset/{id}/lock",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Lock)).
-			Name("dataset_lock")
-		r.Post("/dataset/{id}/unlock",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Unlock)).
-			Name("dataset_unlock")
 
 		// edit dataset activity
 		r.Get("/dataset/{id}/message/edit",
@@ -704,14 +704,6 @@ func Register(c Config) {
 		r.Get("/publication/{id}/activity",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowActivity)).
 			Name("publication_activity")
-
-		// lock publication
-		r.Post("/publication/{id}/lock",
-			publicationEditingHandler.Wrap(publicationEditingHandler.Lock)).
-			Name("publication_lock")
-		r.Post("/publication/{id}/unlock",
-			publicationEditingHandler.Wrap(publicationEditingHandler.Unlock)).
-			Name("publication_unlock")
 
 		// edit publication activity
 		r.Get("/publication/{id}/message/edit",
