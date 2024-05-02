@@ -37,7 +37,7 @@ func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, sea
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 templ.SafeURL = URL(baseURL).WithQuery(searchArgs.Clone().WithPage(searchHits.PreviousPage())).SafeURL()
+			var templ_7745c5c3_Var2 templ.SafeURL = URL(baseURL).Query(searchArgs.Clone().WithPage(searchHits.PreviousPage())).SafeURL()
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -71,7 +71,7 @@ func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, sea
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var4 templ.SafeURL = URL(baseURL).WithQuery(searchArgs.Clone().WithPage(page)).SafeURL()
+				var templ_7745c5c3_Var4 templ.SafeURL = URL(baseURL).Query(searchArgs.Clone().WithPage(page)).SafeURL()
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -113,7 +113,7 @@ func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, sea
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 templ.SafeURL = URL(baseURL).WithQuery(searchArgs.Clone().WithPage(searchHits.NextPage())).SafeURL()
+			var templ_7745c5c3_Var6 templ.SafeURL = URL(baseURL).Query(searchArgs.Clone().WithPage(searchHits.NextPage())).SafeURL()
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var6)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

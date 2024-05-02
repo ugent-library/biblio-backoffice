@@ -8,26 +8,26 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestWithPath(t *testing.T) {
+func TestPath(t *testing.T) {
 	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment"))
 
-	u.WithPath("foo", "123", "bar/", "456", "/baz", "789")
+	u.Path("foo", "123", "bar/", "456", "/baz", "789")
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/foo/123/bar/456/baz/789?query=string#fragment", u)
 }
 
-func TestAddQuery(t *testing.T) {
+func TestAddQueryParam(t *testing.T) {
 	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment"))
 
-	u.AddQuery("foo", "123")
+	u.AddQueryParam("foo", "123")
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?foo=123&query=string#fragment", u) // query params are added in alphabetical order
 
-	u.AddQuery("bar", "456")
+	u.AddQueryParam("bar", "456")
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?bar=456&foo=123&query=string#fragment", u)
 
-	u.AddQuery("baz", "789")
+	u.AddQueryParam("baz", "789")
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?bar=456&baz=789&foo=123&query=string#fragment", u)
 
-	u.AddQuery("bar", "123")
+	u.AddQueryParam("bar", "123")
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?bar=456&bar=123&baz=789&foo=123&query=string#fragment", u)
 }
 
@@ -37,22 +37,22 @@ type queryType struct {
 	Limit   int    `query:"limit,omitempty"`
 }
 
-func TestWithQuery(t *testing.T) {
+func TestQuery(t *testing.T) {
 	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment"))
 
-	u.WithQuery(queryType{
+	u.Query(queryType{
 		Query:   "foo",
 		OrderBy: "bar",
 		Limit:   123,
 	})
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?limit=123&order_by=bar&q=foo#fragment", u)
 
-	u.WithQuery(queryType{
+	u.Query(queryType{
 		OrderBy: "baz",
 	})
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?order_by=baz#fragment", u)
 
-	u.WithQuery(queryType{})
+	u.Query(queryType{})
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/#fragment", u)
 }
 

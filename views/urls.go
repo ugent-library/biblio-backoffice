@@ -15,13 +15,13 @@ func URL(base *url.URL) *URLBuilder {
 	return &URLBuilder{base}
 }
 
-func (builder *URLBuilder) WithPath(path ...string) *URLBuilder {
+func (builder *URLBuilder) Path(path ...string) *URLBuilder {
 	builder.url = builder.url.JoinPath(path...)
 
 	return builder
 }
 
-func (builder *URLBuilder) AddQuery(key string, value string) *URLBuilder {
+func (builder *URLBuilder) AddQueryParam(key string, value string) *URLBuilder {
 	query := builder.url.Query()
 	query.Add(key, value)
 
@@ -30,7 +30,7 @@ func (builder *URLBuilder) AddQuery(key string, value string) *URLBuilder {
 	return builder
 }
 
-func (builder *URLBuilder) WithQuery(query any) *URLBuilder {
+func (builder *URLBuilder) Query(query any) *URLBuilder {
 	vals, err := bind.EncodeQuery(query)
 	if err != nil {
 		return builder

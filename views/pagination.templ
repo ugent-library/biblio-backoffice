@@ -9,7 +9,7 @@ templ Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, se
 	<ul class="pagination">
 		if searchHits.HasPreviousPage() {
 			<li class="page-item">
-				<a class="page-link" href={ URL(baseURL).WithQuery(searchArgs.Clone().WithPage(searchHits.PreviousPage())).SafeURL() } aria-label="Previous">
+				<a class="page-link" href={ URL(baseURL).Query(searchArgs.Clone().WithPage(searchHits.PreviousPage())).SafeURL() } aria-label="Previous">
 					<i class="if if-chevron-left" aria-hidden="true"></i>
 				</a>
 			</li>
@@ -23,7 +23,7 @@ templ Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, se
 		for _, page := range searchHits.PagesWithEllipsis() {
 			if page > 0 {
 				<li class={ "page-item", templ.KV("active", searchHits.Page() == page) }>
-					<a class="page-link" href={ URL(baseURL).WithQuery(searchArgs.Clone().WithPage(page)).SafeURL() } aria-label={ fmt.Sprintf("Page %d", page) }>
+					<a class="page-link" href={ URL(baseURL).Query(searchArgs.Clone().WithPage(page)).SafeURL() } aria-label={ fmt.Sprintf("Page %d", page) }>
 						{ fmt.Sprintf("%d", page) }
 					</a>
 				</li>
@@ -37,7 +37,7 @@ templ Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, se
 		}
 		if searchHits.HasNextPage() {
 			<li class="page-item">
-				<a class="page-link" href={ URL(baseURL).WithQuery(searchArgs.Clone().WithPage(searchHits.NextPage())).SafeURL() } aria-label="Next">
+				<a class="page-link" href={ URL(baseURL).Query(searchArgs.Clone().WithPage(searchHits.NextPage())).SafeURL() } aria-label="Next">
 					<i class="if if-chevron-right" aria-hidden="true"></i>
 				</a>
 			</li>
