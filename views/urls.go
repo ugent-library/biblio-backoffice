@@ -30,13 +30,18 @@ func (builder *URLBuilder) AddQueryParam(key string, value string) *URLBuilder {
 	return builder
 }
 
-func (builder *URLBuilder) Query(query any) *URLBuilder {
-	vals, err := bind.EncodeQuery(query)
-	if err != nil {
-		return builder
+func (builder *URLBuilder) Query(query interface{}) *URLBuilder {
+	if str, ok := query.(string); ok {
+		builder.url.RawQuery = str
+	} else {
+		vals, err := bind.EncodeQuery(query)
+		if err != nil {
+			return builder
+		}
+
+		builder.url.RawQuery = vals.Encode()
 	}
 
-	builder.url.RawQuery = vals.Encode()
 	return builder
 }
 

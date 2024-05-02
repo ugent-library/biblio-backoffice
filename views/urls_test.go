@@ -37,7 +37,7 @@ type queryType struct {
 	Limit   int    `query:"limit,omitempty"`
 }
 
-func TestQuery(t *testing.T) {
+func TestQueryWithStruct(t *testing.T) {
 	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment"))
 
 	u.Query(queryType{
@@ -54,6 +54,16 @@ func TestQuery(t *testing.T) {
 
 	u.Query(queryType{})
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/#fragment", u)
+}
+
+func TestQueryWithString(t *testing.T) {
+	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment"))
+
+	u.Query("foo=123&bar=456")
+	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?foo=123&bar=456#fragment", u)
+
+	u.Query("foo=321&bar=654&baz=987")
+	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?foo=321&bar=654&baz=987#fragment", u)
 }
 
 func TestClearQuery(t *testing.T) {
