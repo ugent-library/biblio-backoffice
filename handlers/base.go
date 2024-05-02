@@ -15,8 +15,6 @@ import (
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
-	ffclient "github.com/thomaspoignant/go-feature-flag"
-	"github.com/thomaspoignant/go-feature-flag/ffcontext"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -52,7 +50,7 @@ type BaseContext struct {
 	CSRFTag         template.HTML
 	CSPNonce        string
 	FrontendBaseUrl string
-	flagContext     *ffcontext.EvaluationContext
+	// flagContext     *ffcontext.EvaluationContext
 }
 
 func (c BaseContext) Yield(pairs ...any) map[string]any {
@@ -80,17 +78,21 @@ func (c BaseContext) Yield(pairs ...any) map[string]any {
 }
 
 // Note: keep in line with new ctx.Context
-func (c BaseContext) getFlagContext() ffcontext.Context {
-	if c.flagContext == nil {
-		flagContext := ffcontext.NewEvaluationContext(c.User.Username)
-		c.flagContext = &flagContext
-	}
-	return *c.flagContext
-}
+// func (c BaseContext) getFlagContext() ffcontext.Context {
+// 	if c.flagContext == nil {
+// 		flagContext := ffcontext.NewEvaluationContext(c.User.Username)
+// 		c.flagContext = &flagContext
+// 	}
+// 	return *c.flagContext
+// }
+
+// func (c BaseContext) FlagCandidateRecords() bool {
+// 	flag, _ := ffclient.BoolVariation("candidate-records", c.getFlagContext(), true)
+// 	return flag
+// }
 
 func (c BaseContext) FlagCandidateRecords() bool {
-	flag, _ := ffclient.BoolVariation("candidate-records", c.getFlagContext(), true)
-	return flag
+	return true
 }
 
 func (h BaseHandler) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContext)) http.HandlerFunc {
@@ -213,13 +215,6 @@ func (h BaseHandler) getUserRoleFromSession(session *sessions.Session) string {
 
 func (h BaseHandler) PathFor(name string, pairs ...string) *url.URL {
 	return h.Router.PathTo(name, pairs...)
-}
-
-func (h BaseHandler) URLFor(name string, pairs ...string) *url.URL {
-	u := h.Router.PathTo(name, pairs...)
-	u.Scheme = h.BaseURL.Scheme
-	u.Host = h.BaseURL.Host
-	return u
 }
 
 func (h BaseHandler) ActionError(w http.ResponseWriter, r *http.Request, ctx BaseContext, msg string, err error, ID string) {
