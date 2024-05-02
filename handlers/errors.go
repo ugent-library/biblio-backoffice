@@ -43,16 +43,6 @@ func (h *BaseHandler) NotFound(w http.ResponseWriter, r *http.Request, ctx BaseC
 	})
 }
 
-func (h *BaseHandler) InternalServerError(w http.ResponseWriter, r *http.Request, ctx BaseContext) {
-	w.WriteHeader(500)
-	render.Layout(w, "layouts/default", "pages/internalerror", YieldNotFound{
-		BaseContext:      ctx,
-		PageTitle:        "Biblio",
-		ErrorTitle:       "Something went wrong.",
-		ErrorDescription: "Your (re)search was too groundbreaking.",
-	})
-}
-
 func (h *BaseHandler) ErrorModal(w http.ResponseWriter, r *http.Request, errID string, ctx BaseContext) {
 	render.Layout(w, "show_modal", "modals/error", YieldModalError{
 		BaseContext: ctx,
