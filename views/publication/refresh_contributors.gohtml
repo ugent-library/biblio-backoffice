@@ -1,4 +1,4 @@
-{{partial "close_modal" .}}
+{{fromTempl "CloseModal"}}
 <div hx-swap-oob="innerHTML:#contributors-{{.Role}}-body">
-    {{partial "publication/contributors_body" .}}
+  {{partial "publication/contributors_body" .}}
 </div>

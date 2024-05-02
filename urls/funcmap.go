@@ -1,13 +1,17 @@
 package urls
 
 import (
+	"context"
+	"fmt"
 	"html"
 	"html/template"
 	"net/url"
 	"strings"
 
+	"github.com/a-h/templ"
 	"github.com/go-playground/form/v4"
 	"github.com/nics/ich"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"mvdan.cc/xurls/v2"
 )
 
@@ -32,6 +36,7 @@ func FuncMap(r *ich.Mux, scheme, host string) template.FuncMap {
 		"queryDel":   queryDel,
 		"queryClear": queryClear,
 		"linkify":    linkify,
+		"fromTempl":  fromTempl,
 	}
 }
 
@@ -122,4 +127,23 @@ func linkify(text string) template.HTML {
 	}
 
 	return template.HTML(b.String())
+}
+
+var componentMap = map[string]func() templ.Component{
+	"CloseModal": views.CloseModal,
+}
+
+func fromTempl(componentName string) template.HTML {
+	componentFunc, ok := componentMap[componentName]
+	if !ok {
+		panic(fmt.Sprintf("unknown component: %s", componentName))
+	}
+	component := componentFunc()
+
+	html, err := templ.ToGoHTML(context.Background(), component)
+	if err != nil {
+		panic(fmt.Sprintf("failed to convert to html: %v", err))
+	}
+
+	return html
 }
