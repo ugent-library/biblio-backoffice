@@ -5,109 +5,82 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/handlers"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
-type YieldLock struct {
-	Context
-	RedirectURL string
-}
+func Lock(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
 
-func (h *Handler) Lock(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurate() {
-		h.Logger.Warnw("lock dataset: user has no permission to lock", "user", ctx.User.ID, "dataset", ctx.Dataset.ID)
-		render.Forbidden(w, r)
+	dataset.Locked = true
+
+	if validationErrs := dataset.Validate(); validationErrs != nil {
+		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
+		views.FormErrorsDialog(c, "Unable to lock this dataset due to the following errors", errors).Render(r.Context(), w)
 		return
 	}
 
-	ctx.Dataset.Locked = true
-
-	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(*okay.Errors)))
-		render.Layout(w, "show_modal", "form_errors_dialog", struct {
-			Title  string
-			Errors form.Errors
-		}{
-			Title:  "Unable to lock this dataset due to the following errors",
-			Errors: errors,
-		})
-		return
-	}
-
-	err := h.Repo.UpdateDataset(ctx.Dataset.SnapshotID, ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(dataset.SnapshotID, dataset, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("dataset.conflict_error"),
-		})
+		views.ErrorDialog(c, c.Loc.Get("dataset.conflict_error"), "").Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("lock dataset: could not save the dataset:", "error", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("lock dataset: could not save the dataset:", "error", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	flash := flash.SimpleFlash().
+	f := flash.SimpleFlash().
 		WithLevel("success").
 		WithBody(template.HTML("<p>Dataset was successfully locked.</p>"))
 
-	h.AddFlash(r, w, *flash)
+	c.PersistFlash(w, *f)
 
 	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))
 }
 
-func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurate() {
-		h.Logger.Warnw("unlock dataset: user has no permission to lock", "user", ctx.User.ID, "dataset", ctx.Dataset.ID)
-		render.Forbidden(w, r)
+func Unlock(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
+	dataset.Locked = false
+
+	if validationErrs := dataset.Validate(); validationErrs != nil {
+		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
+		views.FormErrorsDialog(c, "Unable to unlock this dataset due to the following errors", errors).Render(r.Context(), w)
 		return
 	}
 
-	ctx.Dataset.Locked = false
-
-	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(*okay.Errors)))
-		render.Layout(w, "show_modal", "form_errors_dialog", struct {
-			Title  string
-			Errors form.Errors
-		}{
-			Title:  "Unable to unlock this dataset due to the following errors",
-			Errors: errors,
-		})
-		return
-	}
-
-	err := h.Repo.UpdateDataset(ctx.Dataset.SnapshotID, ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(dataset.SnapshotID, dataset, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message:     ctx.Loc.Get("dataset.conflict_error_reload"),
-			RedirectURL: r.URL.Query().Get("redirect-url"),
-		})
+		views.ErrorDialog(c, c.Loc.Get("dataset.conflict_error_reload"), r.URL.Query().Get("redirect-url")).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("unlock dataset: could not save the dataset:", "error", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("unlock dataset: could not save the dataset:", "error", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	flash := flash.SimpleFlash().
+	f := flash.SimpleFlash().
 		WithLevel("success").
 		WithBody(template.HTML("<p>Dataset was successfully unlocked.</p>"))
 
-	h.AddFlash(r, w, *flash)
+	c.PersistFlash(w, *f)
 
 	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))
 }

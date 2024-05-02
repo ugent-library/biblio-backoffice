@@ -1,0 +1,16 @@
+package views
+
+import (
+    "github.com/ugent-library/biblio-backoffice/ctx"
+    "github.com/ugent-library/biblio-backoffice/render/form"
+)
+
+templ FormErrors(c *ctx.Ctx, errors form.Errors) {
+    <div class="alert alert-danger">
+        <ul class="ps-3">
+        for _, err := range errors {
+            <li>{err}</li>
+        }
+        </ul>
+    </div>
+}
