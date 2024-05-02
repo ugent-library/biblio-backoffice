@@ -25,7 +25,7 @@ func ShowModalLayout(c *ctx.Ctx) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"modal-backdrop\" class=\"d-block modal-backdrop fade show\"></div><div id=\"modal\" class=\"d-block modal show\" tabindex=\"-1\" aria-modal=\"true\" role=\"dialog\"><div id=\"modal\" class=\"d-block modal show\" tabindex=\"-1\" aria-modal=\"true\" role=\"dialog\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"modal-backdrop\" class=\"d-block modal-backdrop fade show\"></div><div id=\"modal\" class=\"d-block modal show\" tabindex=\"-1\" aria-modal=\"true\" role=\"dialog\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -33,7 +33,7 @@ func ShowModalLayout(c *ctx.Ctx) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
