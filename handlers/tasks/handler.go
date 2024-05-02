@@ -1,5 +1,6 @@
 package tasks
 
+/*
 import (
 	"fmt"
 	"net/http"
@@ -75,3 +76,4 @@ func (h *Handler) Status(w http.ResponseWriter, r *http.Request, ctx Context) {
 		Message: msg,
 	})
 }
+*/

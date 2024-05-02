@@ -217,13 +217,6 @@ func (h BaseHandler) PathFor(name string, pairs ...string) *url.URL {
 	return h.Router.PathTo(name, pairs...)
 }
 
-func (h BaseHandler) URLFor(name string, pairs ...string) *url.URL {
-	u := h.Router.PathTo(name, pairs...)
-	u.Scheme = h.BaseURL.Scheme
-	u.Host = h.BaseURL.Host
-	return u
-}
-
 func (h BaseHandler) ActionError(w http.ResponseWriter, r *http.Request, ctx BaseContext, msg string, err error, ID string) {
 	errID := ulid.Make().String()
 	errMsg := fmt.Sprintf("[error: %s] %s", errID, msg)
