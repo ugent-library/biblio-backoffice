@@ -4,6 +4,7 @@ import (
 	"net/url"
 
 	"github.com/a-h/templ"
+	"github.com/samber/lo"
 	"github.com/ugent-library/bind"
 )
 
@@ -17,7 +18,7 @@ func URL(base *url.URL) *URLBuilder {
 
 func URLFromString(base string) *URLBuilder {
 	return &URLBuilder{
-		url: Must(url.Parse(base)),
+		url: lo.Must(url.Parse(base)),
 	}
 }
 

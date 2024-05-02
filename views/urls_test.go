@@ -5,11 +5,12 @@ import (
 	"testing"
 
 	"github.com/a-h/templ"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
 
 func TestURLConstructor(t *testing.T) {
-	u := URL(Must(url.Parse("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment")))
+	u := URL(lo.Must(url.Parse("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment")))
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment", u)
 }
 
