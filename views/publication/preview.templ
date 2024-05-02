@@ -14,7 +14,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                 <div class="bc-toolbar bc-toolbar-sm-responsive w-100">
                     <div class="bc-toolbar-left mb-1">
                         <div class="d-inline-flex align-items-center flex-wrap">
-                            <span class="c-subline text-nowrap me-3 pe-3 border-end">{ c.Loc.Get("publication_types." + p.Type) }</span>
+                            <span class={ "c-subline", "text-nowrap", "me-3", "pe-3", templ.KV("border-end", p.MainFile() != nil) }>{ c.Loc.Get("publication_types." + p.Type) }</span>
                             if f := p.MainFile(); f != nil {
                                 @AccessLevel(c, f)
                             }
@@ -34,7 +34,16 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                         </div>
                     </div>
                 </div>
-                <h4 class="w-100 c-body-small mb-4">Cooper, Jane, et al. Neuropsychiatric aspects of COVID-19 pandemic: A selective review. International Journal of Environmental Research and Public Health, 2020
+                <h4 class="w-100 c-body-small mb-4">
+                if contributors, more := p.PrimaryContributors("author", 3); contributors != nil {
+                    for _, c := range contributors {
+                        { c.LastName() }, { c.FirstName() }
+                    },
+                    if more {
+                        , et al.,
+                    }
+                }
+                { p.Title }, { p.Year }
                 </h4>
             </div>
             <div class="d-flex flex-grow-1 flex-shrink-1 overflow-hidden position-relative">
@@ -116,7 +125,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label form-label-top">Publication version</label>
-                                        <p>Published version</p>
+                                        <p>{ f.PublicationVersion }</p>
                                     </div>
                                 </div>
                                 } else {
@@ -129,26 +138,42 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                     <div class="form-group">
                                         <label class="form-label form-label-top pb-0 d-block" for="">Is a patent application ongoing or planned?
                                         </label>
+                                        if p.HasPatentApplication != "" {
+                                        { p.HasPatentApplication }
+                                        } else {
                                         <p>-</p>
+                                        }
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label form-label-top pb-0 d-block" for="">Does the dissertation contain privacy-sensitive information?
                                         </label>
                                         <small class="form-text text-muted mb-2">Does not include patents. Private or sensitive information about individuals or companies that should <strong>never</strong> be disclosed.</small>
-                                        <p>-</p>
+                                        if p.HasConfidentialData != "" {
+                                        { p.HasConfidentialData }
+                                        } else {
+                                        <p>-</p>                                            
+                                        }
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label form-label-top pb-0 d-block" for="">Are other publications planned based on this dissertation?
                                         </label>
                                         <small class="form-text text-muted mb-2">e.g. articles or book</small>
+                                        if p.HasPublicationsPlanned != "" {
+                                        { p.HasPublicationsPlanned }
+                                        } else {
                                         <p>-</p>
+                                        }
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label form-label-top pb-0 d-block" for="">Does the dissertation contain published articles?
                                         </label>
                                         <small class="form-text text-muted mb-2">The dissertation contains a copy of the full text, either in the publisher's layout (VoR) or your own (AAM). <a class="c-link" href="https://researchtips.ugent.be/en/tips/00002066">Read more</a>
                                         </small>
+                                        if p.HasPublishedMaterial != ""{
+                                        { p.HasPublishedMaterial }
+                                        } else {
                                         <p>-</p>
+                                        }
                                     </div>
                                 </div>
                                 <div class="card-body border-bottom" x-data="{ mode: 'view' }">
@@ -171,9 +196,9 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                         </div>
                                         <span>
                                         if p.Title != "" {
-                                            { p.Title }
+                                        { p.Title }
                                         } else {
-                                            Untitled record
+                                        Untitled record
                                         }
                                         </span>
                                     </div>
@@ -254,7 +279,6 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                         } else {
                                         <p>-</p>
                                         }
-
                                     </div>
                                 </div>
                             </div>
@@ -271,7 +295,9 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                                 <label class="form-label form-label-top">Authors</label>
                                             </div>
                                         </div>
-                                        <ul class="list-group rounded-lg">
+                                        if len(p.Author) > 0 {
+                                        <div class="list-group rounded-lg">
+                                        for _, a := range p.Author {
                                             <div class="list-group-item">
                                                 <div class="bc-avatar-and-text align-items-start">
                                                     <div class="bc-avatar mt-3 bc-avatar--light-blue" data-avatar-item="data-avatar-item">
@@ -280,23 +306,31 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                                     <div class="bc-avatar-text">
                                                         <div class="hstack-md-responsive gap-3 gap-lg-4">
                                                             <div class="vstack gap-3">
-                                                                <h4 class="mb-0">Jane Cooper</h4>
+                                                                <h4 class="mb-0">{ a.Name() }</h4>
                                                                 <ul class="c-meta-list c-meta-list-horizontal">
+                                                                    if a.Person != nil {
                                                                     <li class="c-meta-item">
                                                                         <i class="if if-ghent-university if--small if--muted"></i>
                                                                         <span class="text-muted">UGent author</span>
                                                                     </li>
+                                                                    }
+                                                                    if a.ORCID() != "" {
                                                                     <li class="c-meta-item text-nowrap">
                                                                         <i class="if if-orcid if--small if--success"></i>
-                                                                        <span></span>
+                                                                        <span>{ a.ORCID() }</span>
                                                                     </li>
+                                                                    }
                                                                 </ul>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </ul>
+                                        }
+                                        </div>
+                                        } else {
+                                        <p>-</p>
+                                        }
                                     </div>
                                     <div class="form-group">
                                         <div class="bc-toolbar h-auto">
@@ -304,8 +338,10 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                                 <label class="form-label form-label-top">Supervisors</label>
                                             </div>
                                         </div>
+                                        if len(p.Supervisor) > 0 {
                                         <ul class="list-group rounded-lg">
-                                            <div class="list-group-item">
+                                        for _, s := range p.Supervisor {
+                                            <li class="list-group-item">
                                                 <div class="bc-avatar-and-text align-items-start">
                                                     <div class="bc-avatar mt-3 bc-avatar--light-blue" data-avatar-item="data-avatar-item">
                                                         <i class="if if-ghent-university"></i>
@@ -313,47 +349,31 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                                     <div class="bc-avatar-text">
                                                         <div class="hstack-md-responsive gap-3 gap-lg-4">
                                                             <div class="vstack gap-3">
-                                                                <h4 class="mb-0">Brooklyn Simmons</h4>
+                                                                <h4 class="mb-0">{ s.Name() }</h4>
                                                                 <ul class="c-meta-list c-meta-list-horizontal">
+                                                                    if s.Person != nil {
                                                                     <li class="c-meta-item">
                                                                         <i class="if if-ghent-university if--small if--muted"></i>
                                                                         <span class="text-muted">UGent author</span>
                                                                     </li>
+                                                                    }
+                                                                    if s.ORCID() != "" {
                                                                     <li class="c-meta-item text-nowrap">
                                                                         <i class="if if-orcid if--small if--success"></i>
-                                                                        <span></span>
+                                                                        <span>{ s.ORCID() }</span>
                                                                     </li>
+                                                                    }
                                                                 </ul>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="list-group-item">
-                                                <div class="bc-avatar-and-text align-items-start">
-                                                    <div class="bc-avatar mt-3 bc-avatar--light-blue" data-avatar-item="data-avatar-item">
-                                                        <i class="if if-ghent-university"></i>
-                                                    </div>
-                                                    <div class="bc-avatar-text">
-                                                        <div class="hstack-md-responsive gap-3 gap-lg-4">
-                                                            <div class="vstack gap-3">
-                                                                <h4 class="mb-0">Esther Howard</h4>
-                                                                <ul class="c-meta-list c-meta-list-horizontal">
-                                                                    <li class="c-meta-item">
-                                                                        <i class="if if-ghent-university if--small if--muted"></i>
-                                                                        <span class="text-muted">UGent author</span>
-                                                                    </li>
-                                                                    <li class="c-meta-item text-nowrap">
-                                                                        <i class="if if-orcid if--small if--success"></i>
-                                                                        <span></span>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            </li>
+                                        }
                                         </ul>
+                                        } else {
+                                        <p>-</p>
+                                        }
                                     </div>
                                     <div class="form-group">
                                         <div class="bc-toolbar h-auto">
@@ -361,7 +381,9 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                                 <label class="form-label form-label-top">Departments</label>
                                             </div>
                                         </div>
+                                        if len(p.RelatedOrganizations) > 0 {
                                         <ul class="list-group">
+                                            for _, o := range p.RelatedOrganizations {
                                             <li class="list-group-item">
                                                 <div class="bc-avatar-and-text align-items-start">
                                                     <div class="bc-avatar bc-avatar--muted bc-avatar--square mt-3">
@@ -370,29 +392,18 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                                     <div class="bc-avatar-text">
                                                         <div class="hstack-md-responsive gap-3 gap-lg-4">
                                                             <div class="vstack gap-3">
-                                                                <h4 class="mb-0">Department of Large Animal Surgery, Anaesthesia and Orthopaedics</h4>
-                                                                <div class="c-body-small text-muted">Department ID: DI10</div>
+                                                                <h4 class="mb-0">{ o.Organization.Name }</h4>
+                                                                <div class="c-body-small text-muted">Department ID: { o.OrganizationID }</div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </li>
-                                            <li class="list-group-item">
-                                                <div class="bc-avatar-and-text align-items-start">
-                                                    <div class="bc-avatar bc-avatar--muted bc-avatar--square mt-3">
-                                                        <i class="if if-building"></i>
-                                                    </div>
-                                                    <div class="bc-avatar-text">
-                                                        <div class="hstack-md-responsive gap-3 gap-lg-4">
-                                                            <div class="vstack gap-3">
-                                                                <h4 class="mb-0">Department of Pathology, bacteriology and poultry diseases (ceased 1-1-2022)</h4>
-                                                                <div class="c-body-small text-muted">Department ID: DI05*</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
+                                            }
                                         </ul>
+                                        } else {
+                                        <p>-</p>
+                                        }
                                     </div>
                                 </div>
                             </div>

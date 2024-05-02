@@ -364,6 +364,27 @@ func (p *Publication) Contributors(role string) []*Contributor {
 	}
 }
 
+func (p *Publication) PrimaryContributors(role string, limit int) ([]*Contributor, bool) {
+	var contributors []*Contributor
+
+	switch role {
+	case "author":
+		contributors = p.Author
+	case "editor":
+		contributors = p.Editor
+	case "supervisor":
+		contributors = p.Supervisor
+	default:
+		return nil, false
+	}
+
+	if len(contributors) < limit {
+		return contributors, false
+	}
+
+	return contributors[:limit], (len(contributors) >= limit)
+}
+
 func (p *Publication) SetContributors(role string, c []*Contributor) {
 	switch role {
 	case "author":
