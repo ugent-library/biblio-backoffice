@@ -1,10 +1,10 @@
 package views
 
 import (
-    "github.com/ugent-library/biblio-backoffice/ctx"
-    "github.com/ugent-library/biblio-backoffice/models"
-    "github.com/ugent-library/biblio-backoffice/vocabularies"
-    "fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"fmt"
 )
 
 func facetShortValue(values []string) templ.Component {
@@ -18,254 +18,255 @@ func facetShortValue(values []string) templ.Component {
 			if i > 0 {
 				w.Write([]byte(", "))
 			}
-            w.Write([]byte(v))
+			w.Write([]byte(v))
 		}
 		return nil
 	})
 }
 
 func filterToLabels(c *ctx.Ctx, vals []string, locPrefix string) []string {
-    labels := make([]string, 0, len(vals))
-    for _, val := range vals {
-        if lVal := c.Loc.Get(locPrefix +  "." + val); lVal != "" {
-            labels = append(labels, lVal)
-        } else {
-            labels = append(labels, val)
-        }
-    }
-    return labels
+	labels := make([]string, 0, len(vals))
+	for _, val := range vals {
+		if lVal := c.Loc.Get(locPrefix + "." + val); lVal != "" {
+			labels = append(labels, lVal)
+		} else {
+			labels = append(labels, val)
+		}
+	}
+	return labels
 }
 
 templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, facetValues models.FacetValues, searchArgs *models.SearchArgs) {
-    <div class={"dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName))}
-        data-facet-dropdown={fieldName}
-    >
-        <a
-            if searchArgs.HasFilter(fieldName) {
-                class="badge bg-primary me-3"
-            } else {
-                if facetValues.HasMatches() {
-                    class="badge badge-default me-3"
-                } else {
-                    class="badge badge-light me-3"
-                }
-            }
-            data-bs-toggle="dropdown"
-            data-persist="true"
-            aria-haspopup="true"
-            aria-expanded="false" 
-            role="button"
-        >
-            <span class="badge-text">{title}</span>
-            if filters := searchArgs.FiltersFor(fieldName); len(filters) > 0 {
-            <span class="badge-value ms-2">
-            @facetShortValue(filterToLabels(c, filters, locPrefix))
-            </span>
-            }
-            <i class="if if-caret-down"></i>
-        </a>
-        <form class="dropdown-menu" method="GET" action={URL(c.CurrentURL).ClearQuery().SafeURL()}>
-            <div class="bc-navbar bc-navbar--bordered-bottom">
-                <div class="bc-toolbar bc-toolbar--auto">
-                    <div class="bc-toolbar-left">
-                        <h4 class="text-nowrap">{title}</h4>
-                    </div>
-                    <div class="bc-toolbar-right">
-                        <button type="button" class="btn btn-link form-check-all">Select all</button>
-                    </div>
-                </div>
-            </div>
-            <input type="hidden" name="q" value={searchArgs.Query}/>
-            for _, sort := range searchArgs.Sort {
-                <input type="hidden" name="sort" value={sort} />
-            }
-            for field, vals := range searchArgs.Filters {
-                if field != fieldName {
-                    for _, val := range vals {
-                        <input type="hidden" name={fmt.Sprintf("f[%s]", field)} value={val} />
-                    }
-                }
-            }
-            <div class="dropdown-menu__body border-bottom">
-                <div class="d-flex flex-column gap-4">
-                    for i, f := range facetValues {
-                    <div class="form-check">
-                        <input
-                            class="form-check-input"
-                            id={fmt.Sprintf("filter-%s-%d", fieldName, i)}
-                            type="checkbox"
-                            name={fmt.Sprintf("f[%s]", fieldName)}
-                            value={f.Value}
-                            if searchArgs.HasFilter(fieldName, f.Value) {
-                                checked
-                            }
-                        />
-                        <label class="form-check-label" for={fmt.Sprintf("filter-%s-%d", fieldName, i)}>
-                        if lVal := c.Loc.Get(locPrefix+"."+f.Value); lVal != "" {
-                            {fmt.Sprintf("%s (%d)", lVal, f.Count)}
-                        } else {
-                            {fmt.Sprintf("%s (%d)", f.Value, f.Count)}
-                        }
-                        </label>
-                    </div>
-                    }
-                </div>
-            </div>
-            <div class="bc-navbar bc-navbar--large">
-                <button class="btn btn-primary d-grid w-100" type="submit">Apply filter</button>
-            </div>
-        </form>
-    </div>
+	<div
+		class={ "dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName)) }
+		data-facet-dropdown={ fieldName }
+	>
+		<a
+			if searchArgs.HasFilter(fieldName) {
+				class="badge bg-primary me-3"
+			} else {
+				if facetValues.HasMatches() {
+					class="badge badge-default me-3"
+				} else {
+					class="badge badge-light me-3"
+				}
+			}
+			data-bs-toggle="dropdown"
+			data-persist="true"
+			aria-haspopup="true"
+			aria-expanded="false"
+			role="button"
+		>
+			<span class="badge-text">{ title }</span>
+			if filters := searchArgs.FiltersFor(fieldName); len(filters) > 0 {
+				<span class="badge-value ms-2">
+					@facetShortValue(filterToLabels(c, filters, locPrefix))
+				</span>
+			}
+			<i class="if if-caret-down"></i>
+		</a>
+		<form class="dropdown-menu" method="GET" action={ URL(c.CurrentURL).ClearQuery().SafeURL() }>
+			<div class="bc-navbar bc-navbar--bordered-bottom">
+				<div class="bc-toolbar bc-toolbar--auto">
+					<div class="bc-toolbar-left">
+						<h4 class="text-nowrap">{ title }</h4>
+					</div>
+					<div class="bc-toolbar-right">
+						<button type="button" class="btn btn-link form-check-all">Select all</button>
+					</div>
+				</div>
+			</div>
+			<input type="hidden" name="q" value={ searchArgs.Query }/>
+			for _, sort := range searchArgs.Sort {
+				<input type="hidden" name="sort" value={ sort }/>
+			}
+			for field, vals := range searchArgs.Filters {
+				if field != fieldName {
+					for _, val := range vals {
+						<input type="hidden" name={ fmt.Sprintf("f[%s]", field) } value={ val }/>
+					}
+				}
+			}
+			<div class="dropdown-menu__body border-bottom">
+				<div class="d-flex flex-column gap-4">
+					for i, f := range facetValues {
+						<div class="form-check">
+							<input
+								class="form-check-input"
+								id={ fmt.Sprintf("filter-%s-%d", fieldName, i) }
+								type="checkbox"
+								name={ fmt.Sprintf("f[%s]", fieldName) }
+								value={ f.Value }
+								if searchArgs.HasFilter(fieldName, f.Value) {
+									checked
+								}
+							/>
+							<label class="form-check-label" for={ fmt.Sprintf("filter-%s-%d", fieldName, i) }>
+								if lVal := c.Loc.Get(locPrefix+"."+f.Value); lVal != "" {
+									{ fmt.Sprintf("%s (%d)", lVal, f.Count) }
+								} else {
+									{ fmt.Sprintf("%s (%d)", f.Value, f.Count) }
+								}
+							</label>
+						</div>
+					}
+				</div>
+			</div>
+			<div class="bc-navbar bc-navbar--large">
+				<button class="btn btn-primary d-grid w-100" type="submit">Apply filter</button>
+			</div>
+		</form>
+	</div>
 }
 
 templ FacetSince(c *ctx.Ctx, fieldName string, title string, description string, searchArgs *models.SearchArgs) {
-    <div 
-        class={"dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName))}
-        data-facet-dropdown="updated_since"
-    >
-        <a
-            if searchArgs.HasFilter(fieldName) {
-                class="badge bg-primary me-3"
-            } else {
-                class="badge badge-default me-3"
-            }
-            data-bs-toggle="dropdown"
-            data-persist="true"
-            aria-haspopup="true"
-            aria-expanded="false"
-            role="button"
-        >
-            <span class="badge-text">{title}</span>
-            if filter := searchArgs.FilterFor(fieldName); filter != "" {
-            <span class="badge-value ms-2">&ndash; {filter}</span>
-            }
-            <i class="if if-caret-down"></i>
-        </a>
-        <form class="dropdown-menu" method="GET" action={URL(c.CurrentURL).ClearQuery().SafeURL()}>
-            <div class="bc-navbar bc-navbar--bordered-bottom">
-                <div class="bc-toolbar bc-toolbar--auto">
-                    <div class="bc-toolbar-left">
-                        <h4 class="text-nowrap">{title}</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="dropdown-menu__body">
-                <label class="col-form-label">{description}</label>
-                <input class="form-control" type="text" name={fmt.Sprintf("f[%s]", fieldName)} value={searchArgs.FilterFor(fieldName)} />
-                <small class="form-text text-muted">Type a date (YYYY-MM-DD), year (YYYY) or timing (today, yesterday).</small>
-            </div>
-            <div class="bc-navbar bc-navbar--large">
-                <button class="btn btn-primary d-grid w-100" type="submit">Apply filter</button>
-            </div>
-            <input type="hidden" name="q" value={searchArgs.Query} />
-            for _, sort := range searchArgs.Sort {
-            <input type="hidden" name="sort" value={sort} />
-            }
-            for f, vals := range searchArgs.Filters {
-                if f != fieldName {
-                    for _, val := range vals {
-                        <input type="hidden" name={fmt.Sprintf("f[%s]", f)} value={val} />
-                    }
-                }
-            }
-        </form>
-    </div>
+	<div
+		class={ "dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName)) }
+		data-facet-dropdown="updated_since"
+	>
+		<a
+			if searchArgs.HasFilter(fieldName) {
+				class="badge bg-primary me-3"
+			} else {
+				class="badge badge-default me-3"
+			}
+			data-bs-toggle="dropdown"
+			data-persist="true"
+			aria-haspopup="true"
+			aria-expanded="false"
+			role="button"
+		>
+			<span class="badge-text">{ title }</span>
+			if filter := searchArgs.FilterFor(fieldName); filter != "" {
+				<span class="badge-value ms-2">&ndash; { filter }</span>
+			}
+			<i class="if if-caret-down"></i>
+		</a>
+		<form class="dropdown-menu" method="GET" action={ URL(c.CurrentURL).ClearQuery().SafeURL() }>
+			<div class="bc-navbar bc-navbar--bordered-bottom">
+				<div class="bc-toolbar bc-toolbar--auto">
+					<div class="bc-toolbar-left">
+						<h4 class="text-nowrap">{ title }</h4>
+					</div>
+				</div>
+			</div>
+			<div class="dropdown-menu__body">
+				<label class="col-form-label">{ description }</label>
+				<input class="form-control" type="text" name={ fmt.Sprintf("f[%s]", fieldName) } value={ searchArgs.FilterFor(fieldName) }/>
+				<small class="form-text text-muted">Type a date (YYYY-MM-DD), year (YYYY) or timing (today, yesterday).</small>
+			</div>
+			<div class="bc-navbar bc-navbar--large">
+				<button class="btn btn-primary d-grid w-100" type="submit">Apply filter</button>
+			</div>
+			<input type="hidden" name="q" value={ searchArgs.Query }/>
+			for _, sort := range searchArgs.Sort {
+				<input type="hidden" name="sort" value={ sort }/>
+			}
+			for f, vals := range searchArgs.Filters {
+				if f != fieldName {
+					for _, val := range vals {
+						<input type="hidden" name={ fmt.Sprintf("f[%s]", f) } value={ val }/>
+					}
+				}
+			}
+		</form>
+	</div>
 }
 
 templ FacetLine() {
-    <div class="badge-list">
-    {children...}
-    </div>
+	<div class="badge-list">
+		{ children... }
+	</div>
 }
 
 templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
-    <div
-        class={"bc-toolbar", "bc-toolbar--auto", "mb-4", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2)}
-    >
-        <div class="bc-toolbar-left">
-            <div class="bc-toolbar-item">
-            {children...}
-            </div>
-        </div>
-        <div class="bc-toolbar-right">
-            <div class="bc-toolbar-item">
-                <div class="c-button-toolbar">
-                    if len(searchArgs.FacetLines) > 2 {
-                    <div class="form-check">
-                        <input
-                            type="checkbox"
-                            id="show-all-facet-filters-toggle"
-                            class="btn-check toggle"
-                            autocomplete="off"
-                            if searchArgs.HasActiveCollapsedFacets() {
-                                checked
-                            }
-                        />
-                        <label for="show-all-facet-filters-toggle" class="btn btn-link toggle-off">
-                            <i class="if if-chevron-down u-no-transition"></i>
-                            <span class="btn-text">
-                                <span class="u-no-transition">Show all filters</span>
-                            </span>
-                        </label>
-                        <label for="show-all-facet-filters-toggle" class="btn btn-link toggle-on">
-                            <i class="if if-chevron-up u-no-transition"></i>
-                            <span class="btn-text">
-                                <span class="u-no-transition">Show less filters</span>
-                            </span>
-                        </label>
-                    </div>
-                    }
-
-                    <form method="GET" action={URL(c.CurrentURL).ClearQuery().SafeURL()}>
-                        <input type="hidden" name="q" value={searchArgs.Query} />
-                        for _, sort := range searchArgs.Sort {
-                        <input type="hidden" name="sort" value={sort} />
-                        }
-                        <button class="btn btn-link btn-muted text-muted" type="submit">
-                            <i class="if if-close"></i>
-                            <span class="btn-text">Reset filters</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div
+		class={ "bc-toolbar", "bc-toolbar--auto", "mb-4", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2) }
+	>
+		<div class="bc-toolbar-left">
+			<div class="bc-toolbar-item">
+				{ children... }
+			</div>
+		</div>
+		<div class="bc-toolbar-right">
+			<div class="bc-toolbar-item">
+				<div class="c-button-toolbar">
+					if len(searchArgs.FacetLines) > 2 {
+						<div class="form-check">
+							<input
+								type="checkbox"
+								id="show-all-facet-filters-toggle"
+								class="btn-check toggle"
+								autocomplete="off"
+								if searchArgs.HasActiveCollapsedFacets() {
+									checked
+								}
+							/>
+							<label for="show-all-facet-filters-toggle" class="btn btn-link toggle-off">
+								<i class="if if-chevron-down u-no-transition"></i>
+								<span class="btn-text">
+									<span class="u-no-transition">Show all filters</span>
+								</span>
+							</label>
+							<label for="show-all-facet-filters-toggle" class="btn btn-link toggle-on">
+								<i class="if if-chevron-up u-no-transition"></i>
+								<span class="btn-text">
+									<span class="u-no-transition">Show less filters</span>
+								</span>
+							</label>
+						</div>
+					}
+					<form method="GET" action={ URL(c.CurrentURL).ClearQuery().SafeURL() }>
+						<input type="hidden" name="q" value={ searchArgs.Query }/>
+						for _, sort := range searchArgs.Sort {
+							<input type="hidden" name="sort" value={ sort }/>
+						}
+						<button class="btn btn-link btn-muted text-muted" type="submit">
+							<i class="if if-close"></i>
+							<span class="btn-text">Reset filters</span>
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 }
 
 templ Query(c *ctx.Ctx, searchArgs *models.SearchArgs) {
-    <form class="mb-6" method="GET" action={URL(c.CurrentURL).ClearQuery().SafeURL()}>
-        for field, values := range searchArgs.Filters {
-            for _, val := range values {
-                <input type="hidden" name={fmt.Sprintf("f[%s]", field)} value={val} />
-            }
-        }
-        <div class="row">
-            <div class="col">
-                <div class="input-group flex-nowrap">
-                    <label class="visually-hidden" for="q">Search</label>
-                    <input class="form-control" type="text" name="q" value={searchArgs.Query} placeholder="Search..." autocomplete="off" />
-                    <button type="submit" class="btn btn-outline-primary" type="button">
-                        <i class="if if-search"></i>
-                        <span class="btn-text">Search</span>
-                    </button>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="d-flex align-items-center">
-                    <label class="pe-3 text-nowrap" for="sort">Sort by</label>
-                    <select class="form-select form-change-submit" name="sort" id="sort">
-                    for _, sort := range vocabularies.Map["publication_sorts"] {
-                        <option value={sort}
-                            if searchArgs.HasSort(sort) {
-                                selected
-                            }
-                        >
-                            {c.Loc.Get("publication_sorts." + sort)}
-                        </option>
-                    }
-                    </select>
-                </div>
-            </div>
-        </div>
-    </form>
+	<form class="mb-6" method="GET" action={ URL(c.CurrentURL).ClearQuery().SafeURL() }>
+		for field, values := range searchArgs.Filters {
+			for _, val := range values {
+				<input type="hidden" name={ fmt.Sprintf("f[%s]", field) } value={ val }/>
+			}
+		}
+		<div class="row">
+			<div class="col">
+				<div class="input-group flex-nowrap">
+					<label class="visually-hidden" for="q">Search</label>
+					<input class="form-control" type="text" name="q" value={ searchArgs.Query } placeholder="Search..." autocomplete="off"/>
+					<button type="submit" class="btn btn-outline-primary" type="button">
+						<i class="if if-search"></i>
+						<span class="btn-text">Search</span>
+					</button>
+				</div>
+			</div>
+			<div class="col-3">
+				<div class="d-flex align-items-center">
+					<label class="pe-3 text-nowrap" for="sort">Sort by</label>
+					<select class="form-select form-change-submit" name="sort" id="sort">
+						for _, sort := range vocabularies.Map["publication_sorts"] {
+							<option
+								value={ sort }
+								if searchArgs.HasSort(sort) {
+									selected
+								}
+							>
+								{ c.Loc.Get("publication_sorts." + sort) }
+							</option>
+						}
+					</select>
+				</div>
+			</div>
+		</div>
+	</form>
 }
