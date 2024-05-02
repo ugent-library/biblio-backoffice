@@ -9,14 +9,14 @@ import (
 )
 
 func TestWithPath(t *testing.T) {
-	u := NewURLBuilder("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment")
+	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment"))
 
 	u.WithPath("foo", "123", "bar/", "456", "/baz", "789")
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/foo/123/bar/456/baz/789?query=string#fragment", u)
 }
 
 func TestAddQuery(t *testing.T) {
-	u := NewURLBuilder("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment")
+	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment"))
 
 	u.AddQuery("foo", "123")
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?foo=123&query=string#fragment", u) // query params are added in alphabetical order
@@ -38,7 +38,7 @@ type queryType struct {
 }
 
 func TestWithQuery(t *testing.T) {
-	u := NewURLBuilder("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment")
+	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment"))
 
 	u.WithQuery(queryType{
 		Query:   "foo",
@@ -57,7 +57,7 @@ func TestWithQuery(t *testing.T) {
 }
 
 func TestClearQuery(t *testing.T) {
-	u := NewURLBuilder("https://user:Pa$$w0rd@example.com:8081/test/path/?foo=123&query=string#fragment")
+	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?foo=123&query=string#fragment"))
 
 	u.ClearQuery()
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/#fragment", u)
@@ -76,4 +76,13 @@ func assertUrl(t *testing.T, expected string, actual *URLBuilder) {
 
 	// assert as SafeURL (implicit string)
 	require.Equal(t, templ.SafeURL(expected), actual.SafeURL())
+}
+
+func parseURL(u string) *url.URL {
+	parsed, err := url.Parse(u)
+	if err != nil {
+		panic(err)
+	}
+
+	return parsed
 }

@@ -11,14 +11,8 @@ type URLBuilder struct {
 	url *url.URL
 }
 
-func NewURLBuilder(base string) *URLBuilder {
-	url, err := url.Parse(base)
-	if err != nil {
-		// TODO: how to deal with this
-		panic(err)
-	}
-
-	return &URLBuilder{url}
+func URL(base *url.URL) *URLBuilder {
+	return &URLBuilder{base}
 }
 
 func (builder *URLBuilder) WithPath(path ...string) *URLBuilder {
