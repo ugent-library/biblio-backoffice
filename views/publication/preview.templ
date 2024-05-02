@@ -125,7 +125,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label form-label-top">Publication version</label>
-                                        <p>{ f.PublicationVersion }</p>
+                                        <p>{ c.Loc.Get("publication_versions." + f.PublicationVersion) }</p>
                                     </div>
                                 </div>
                                 } else {
