@@ -112,8 +112,9 @@ describe('Issue #1364: Add "Updated (oldest first)" to sorting options', () => {
   function getTitles() {
     return cy
       .get(".list-group-item h4")
-      .map<HTMLElement, string>((t) =>
-        t.textContent.replace(new RegExp(randomTitle + ".*", "g"), "").trim(),
-      );
+      .map<
+        HTMLElement,
+        string
+      >((t) => t.textContent.replace(new RegExp(randomTitle + ".*", "g"), "").trim());
   }
 });

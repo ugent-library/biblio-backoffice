@@ -20,6 +20,7 @@ import clocked from "./clocked";
 import finishLog from "./finish-log";
 import closeToast from "./close-toast";
 import setField from "./set-field";
+import triggerHtmx from "./trigger-htmx";
 
 // Dual commands
 import extractBiblioId from "./extract-biblio-id";
@@ -69,7 +70,9 @@ Cypress.Commands.addAll(
     closeToast,
 
     setField,
-  }
+
+    triggerHtmx,
+  },
 );
 
 // Dual commands
@@ -81,5 +84,5 @@ Cypress.Commands.addAll(
     extractBiblioId,
 
     closeModal,
-  }
+  },
 );

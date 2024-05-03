@@ -1,5 +1,6 @@
 package orcid
 
+/*
 import (
 	"fmt"
 	"html/template"
@@ -318,3 +319,4 @@ func publicationToORCID(p *models.Publication) *orcid.Work {
 
 	return w
 }
+*/

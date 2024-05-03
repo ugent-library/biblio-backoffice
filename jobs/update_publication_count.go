@@ -65,11 +65,9 @@ func (w *UpdatePublicationCountWorker) Work(ctx context.Context, job *river.Job[
 		return true
 	})
 
-	var numPeeps int
-
 	var iterErr error
+
 	w.peopleRepo.EachPerson(ctx, func(p *people.Person) bool {
-		numPeeps++
 		var count int
 		for _, id := range p.Identifiers.GetAll("id") {
 			if c, ok := peopleCounts[id]; ok {
@@ -80,6 +78,25 @@ func (w *UpdatePublicationCountWorker) Work(ctx context.Context, job *river.Job[
 
 		id := p.Identifiers.Get("id")
 		iterErr = w.peopleRepo.SetPersonPublicationCount(ctx, "id", id, count)
+
+		return iterErr == nil
+	})
+
+	if iterErr != nil {
+		return iterErr
+	}
+
+	w.projectsRepo.EachProject(ctx, func(p *projects.Project) bool {
+		var count int
+		for _, id := range p.Identifiers.GetAll("iweto") {
+			if c, ok := projectCounts[id]; ok {
+				count = c
+				break
+			}
+		}
+
+		id := p.Identifiers.Get("id")
+		iterErr = w.projectsRepo.SetProjectPublicationCount(ctx, "id", id, count)
 
 		return iterErr == nil
 	})

@@ -183,6 +183,9 @@ templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
                                 if c.UserRole == "curator" {
                                 <li class={"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "batch")}>
                                     <a href={ templ.URL(c.PathTo("publication_batch").String()) }>
+                                        <span class="c-sidebar__icon">
+                                            <i class="if if-tool"></i>
+                                        </span>
                                         <span class="c-sidebar__label">Batch</span>
                                     </a>
                                 </li>

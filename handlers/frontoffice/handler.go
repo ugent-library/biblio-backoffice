@@ -269,6 +269,33 @@ func (h *Handler) SearchPeople(w http.ResponseWriter, r *http.Request) {
 	httpx.RenderJSON(w, 200, hits)
 }
 
+type BindSetPersonPreferredName struct {
+	ID         string `path:"id"`
+	GivenName  string `form:"given_name"`
+	FamilyName string `form:"family_name"`
+}
+
+func (h *Handler) SetPersonPreferredName(w http.ResponseWriter, r *http.Request) {
+	b := BindSetPersonPreferredName{}
+	if err := bind.Request(r, &b); err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	ident, err := people.NewIdentifier(b.ID)
+	if err != nil {
+		h.Log.Errorw("unable to decode identifier %s: %w", b.ID, err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	err = h.PeopleRepo.SetPersonPreferredName(r.Context(), ident.Kind, ident.Value, b.GivenName, b.FamilyName)
+	if err != nil {
+		h.Log.Errorw("unable to set person preferred name: %w", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+}
+
 func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
 	id := bind.PathValue(r, "id")
 	ident, err := projects.NewIdentifier(id) // TODO don't use function from people ns

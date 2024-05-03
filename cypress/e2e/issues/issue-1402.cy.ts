@@ -188,7 +188,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn", "Add abstract").click();
         cy.ensureModal("Add abstract")
           .within(() => {
-            cy.setFieldByLabel("Abstract", " ");
+            cy.setFieldByLabel("Abstract", "");
             cy.setFieldByLabel("Language", "Danish");
           })
           .closeModal("Add abstract");
@@ -347,7 +347,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn", "Add lay summary").click();
         cy.ensureModal("Add lay summary")
           .within(() => {
-            cy.setFieldByLabel("Lay summary", " ");
+            cy.setFieldByLabel("Lay summary", "");
             cy.setFieldByLabel("Language", "Italian");
           })
           .closeModal("Add lay summary");
@@ -1113,7 +1113,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.updateFields(
           "Publication details",
           () => {
-            cy.setFieldByLabel("Publication year", " ");
+            cy.setFieldByLabel("Publication year", "");
           },
           true,
         );
@@ -1250,7 +1250,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.contains(".btn", "Add abstract").click();
         cy.ensureModal("Add abstract")
           .within(() => {
-            cy.setFieldByLabel("Abstract", " ");
+            cy.setFieldByLabel("Abstract", "");
             cy.setFieldByLabel("Language", "Danish");
           })
           .closeModal("Add abstract");
@@ -1330,6 +1330,37 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.ensureNoModal();
 
         cy.get("#abstracts-body").should("contain", "No abstracts");
+      });
+
+      it("should error when trying to delete an abstract that was already deleted", () => {
+        cy.setUpDataset();
+        cy.visitDataset();
+
+        cy.updateFields(
+          "Abstract",
+          () => {
+            cy.setFieldByLabel("Abstract", "The abstract text");
+          },
+          "Add abstract",
+        );
+
+        cy.get("#abstracts-body .if-more").click();
+        cy.contains("#abstracts-body .dropdown-item", "Delete").click();
+        cy.ensureModal("Confirm deletion")
+          .within(() => {
+            cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
+          })
+          .closeModal("Cancel");
+        cy.ensureNoModal();
+
+        cy.get("#abstracts-body .if-more").click();
+        cy.contains("#abstracts-body .dropdown-item", "Edit").click();
+        cy.ensureModal(null).within(() => {
+          cy.get(".modal-body").should(
+            "contain",
+            "Dataset has been modified by another user. Please reload the page.",
+          );
+        });
       });
 
       it("should be possible to add, edit and delete links", () => {
@@ -1736,8 +1767,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.updateFields(
           "Dataset details",
           () => {
-            cy.setFieldByLabel("Publisher", " ");
-            cy.setFieldByLabel("Publication year", " ");
+            cy.setFieldByLabel("Publisher", "");
+            cy.setFieldByLabel("Publication year", "");
           },
           true,
         );

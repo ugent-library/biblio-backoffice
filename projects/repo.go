@@ -52,6 +52,7 @@ func (r *Repo) EachProject(ctx context.Context, fn func(*Project) bool) error {
 			&r.StartDate,
 			&r.EndDate,
 			&r.Deleted,
+			&r.PublicationCount,
 			&r.Attributes,
 			&r.CreatedAt,
 			&r.UpdatedAt,
@@ -164,6 +165,11 @@ func (r *Repo) AddProject(ctx context.Context, p AddProjectParams) error {
 	}
 
 	return tx.Commit(ctx)
+}
+
+func (r *Repo) SetProjectPublicationCount(ctx context.Context, idKind, idValue string, n int) error {
+	_, err := r.conn.Exec(ctx, setProjectPublicationCountQuery, idKind, idValue, n)
+	return err
 }
 
 func newID() Identifier {

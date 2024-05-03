@@ -176,6 +176,9 @@
                             {{if eq .UserRole "curator"}}
                             <li class="c-sidebar__item{{if eq .ActiveNav "batch"}} c-sidebar__item--active{{end}}">
                                 <a href="{{pathFor "publication_batch"}}">
+                                    <span class="c-sidebar__icon">
+                                        <i class="if if-tool"></i>
+                                    </span>
                                     <span class="c-sidebar__label">Batch</span>
                                 </a>
                             </li>

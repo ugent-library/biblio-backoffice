@@ -23,22 +23,7 @@ describe("Issue #1414: JS error when closing toast", () => {
     cy.setUpPublication();
     cy.visitPublication();
 
-    cy.contains(".btn", "Lock record").then((button) => {
-      const csrfToken = button
-        .get()[0]
-        .ownerDocument.querySelector("meta[name='csrf-token']")
-        .getAttribute("content");
-
-      // Send the request via AJAX so the flash message cannot be shown immediately.
-      // It will be shown on the next page visit (which is a templ layout page).
-      cy.request({
-        method: "POST",
-        url: button.attr("hx-post"),
-        headers: {
-          "X-CSRF-Token": csrfToken,
-        },
-      });
-    });
+    cy.contains(".btn", "Lock record").triggerHtmx("hx-post");
 
     cy.visit("/dashboard");
 

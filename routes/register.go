@@ -129,10 +129,6 @@ func Register(c Config) {
 			BlockByDefault: true,
 		}),
 	}
-	datasetSearchingHandler := &datasetsearching.Handler{
-		BaseHandler:        baseHandler,
-		DatasetSearchIndex: c.Services.DatasetSearchIndex,
-	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
 		Repo:        c.Services.Repo,
@@ -201,6 +197,7 @@ func Register(c Config) {
 		r.Get("/frontoffice/user/{id}", frontofficeHandler.GetUser)
 		r.Get("/frontoffice/user/username/{username}", frontofficeHandler.GetUserByUsername)
 		r.Get("/frontoffice/person/{id}", frontofficeHandler.GetPerson)
+		r.Put("/frontoffice/person/{id}/preferred-name", frontofficeHandler.SetPersonPreferredName)
 		r.Get("/frontoffice/person/list", frontofficeHandler.GetPeople)
 		r.Get("/frontoffice/person", frontofficeHandler.SearchPeople)
 		r.Get("/frontoffice/project/{id}", frontofficeHandler.GetProject)
@@ -343,6 +340,8 @@ func Register(c Config) {
 						r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
 
 						// projects
+						r.Get("/projects/add", publicationediting.AddProject).Name("publication_add_project")
+						r.Get("/projects/suggestions", publicationediting.SuggestProjects).Name("publication_suggest_projects")
 						// project_id is last part of url because some id's contain slashes
 						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", publicationediting.ConfirmDeleteProject).Name("publication_confirm_delete_project")
 
@@ -385,10 +384,16 @@ func Register(c Config) {
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
+
+						// (un)lock publication
+						r.Post("/lock", publicationediting.Lock).Name("publication_lock")
+						r.Post("/unlock", publicationediting.Unlock).Name("publication_unlock")
 					})
 				})
 
 				// datasets
+				r.With(ctx.SetNav("datasets")).Get("/dataset", datasetsearching.Search).Name("datasets")
+
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 
@@ -406,6 +411,8 @@ func Register(c Config) {
 						r.Delete("/", datasetediting.Delete).Name("dataset_delete")
 
 						// projects
+						r.Get("/projects/add", datasetediting.AddProject).Name("dataset_add_project")
+						r.Get("/projects/suggestions", datasetediting.SuggestProjects).Name("dataset_suggest_projects")
 						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", datasetediting.ConfirmDeleteProject).Name("dataset_confirm_delete_project")
 
 						// abstracts
@@ -441,6 +448,10 @@ func Register(c Config) {
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
+
+						// (un)lock dataset
+						r.Post("/lock", datasetediting.Lock).Name("dataset_lock")
+						r.Post("/unlock", datasetediting.Unlock).Name("dataset_unlock")
 					})
 				})
 
@@ -449,11 +460,6 @@ func Register(c Config) {
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// search datasets
-		r.Get("/dataset",
-			datasetSearchingHandler.Wrap(datasetSearchingHandler.Search)).
-			Name("datasets")
 
 		// add dataset
 		r.Get("/dataset/add",
@@ -500,14 +506,6 @@ func Register(c Config) {
 			datasetViewingHandler.Wrap(datasetViewingHandler.ShowActivity)).
 			Name("dataset_activity")
 
-		// lock dataset
-		r.Post("/dataset/{id}/lock",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Lock)).
-			Name("dataset_lock")
-		r.Post("/dataset/{id}/unlock",
-			datasetEditingHandler.Wrap(datasetEditingHandler.Unlock)).
-			Name("dataset_unlock")
-
 		// edit dataset activity
 		r.Get("/dataset/{id}/message/edit",
 			datasetEditingHandler.Wrap(datasetEditingHandler.EditMessage)).
@@ -540,12 +538,6 @@ func Register(c Config) {
 			Name("dataset_update_details")
 
 		// edit dataset projects
-		r.Get("/dataset/{id}/projects/add",
-			datasetEditingHandler.Wrap(datasetEditingHandler.AddProject)).
-			Name("dataset_add_project")
-		r.Get("/dataset/{id}/projects/suggestions",
-			datasetEditingHandler.Wrap(datasetEditingHandler.SuggestProjects)).
-			Name("dataset_suggest_projects")
 		r.Post("/dataset/{id}/projects",
 			datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
 			Name("dataset_create_project")
@@ -707,14 +699,6 @@ func Register(c Config) {
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowActivity)).
 			Name("publication_activity")
 
-		// lock publication
-		r.Post("/publication/{id}/lock",
-			publicationEditingHandler.Wrap(publicationEditingHandler.Lock)).
-			Name("publication_lock")
-		r.Post("/publication/{id}/unlock",
-			publicationEditingHandler.Wrap(publicationEditingHandler.Unlock)).
-			Name("publication_unlock")
-
 		// edit publication activity
 		r.Get("/publication/{id}/message/edit",
 			publicationEditingHandler.Wrap(publicationEditingHandler.EditMessage)).
@@ -765,12 +749,6 @@ func Register(c Config) {
 			Name("publication_update_additional_info")
 
 		// edit publication projects
-		r.Get("/publication/{id}/projects/add",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddProject)).
-			Name("publication_add_project")
-		r.Get("/publication/{id}/projects/suggestions",
-			publicationEditingHandler.Wrap(publicationEditingHandler.SuggestProjects)).
-			Name("publication_suggest_projects")
 		r.Post("/publication/{id}/projects",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
 			Name("publication_create_project")

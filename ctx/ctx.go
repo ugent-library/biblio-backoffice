@@ -16,8 +16,6 @@ import (
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/oklog/ulid/v2"
-	ffclient "github.com/thomaspoignant/go-feature-flag"
-	"github.com/thomaspoignant/go-feature-flag/ffcontext"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
@@ -54,13 +52,14 @@ func Set(config Config) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// setup ctx
 			c := &Ctx{
-				Config:    config,
-				host:      r.Host,
-				scheme:    r.URL.Scheme,
-				Log:       zaphttp.Logger(r.Context()).Sugar(),
-				Loc:       config.Loc,
-				CSRFToken: csrf.Token(r),
-				CSPNonce:  secure.CSPNonce(r.Context()),
+				Config:     config,
+				host:       r.Host,
+				scheme:     r.URL.Scheme,
+				Log:        zaphttp.Logger(r.Context()).Sugar(),
+				Loc:        config.Loc,
+				CSRFToken:  csrf.Token(r),
+				CSPNonce:   secure.CSPNonce(r.Context()),
+				CurrentURL: r.URL,
 			}
 			if c.scheme == "" {
 				c.scheme = "http"
@@ -133,7 +132,8 @@ type Ctx struct {
 	CSRFToken    string
 	CSPNonce     string
 	Nav          string
-	flagContext  *ffcontext.EvaluationContext
+	CurrentURL   *url.URL
+	// flagContext  *ffcontext.EvaluationContext
 }
 
 func (c *Ctx) HandleError(w http.ResponseWriter, r *http.Request, err error) {
@@ -246,18 +246,22 @@ func (c *Ctx) getUserRoleFromSession(session *sessions.Session) string {
 }
 
 // TODO keep cache of user flag contexts?
-func (c *Ctx) getFlagContext() ffcontext.Context {
-	if c.flagContext == nil {
-		flagContext := ffcontext.NewEvaluationContext(c.User.Username)
-		c.flagContext = &flagContext
-	}
-	return *c.flagContext
-}
+// func (c *Ctx) getFlagContext() ffcontext.Context {
+// 	if c.flagContext == nil {
+// 		flagContext := ffcontext.NewEvaluationContext(c.User.Username)
+// 		c.flagContext = &flagContext
+// 	}
+// 	return *c.flagContext
+// }
+
+// func (c *Ctx) FlagCandidateRecords() bool {
+// 	flag, err := ffclient.BoolVariation("candidate-records", c.getFlagContext(), true)
+// 	if err != nil {
+// 		c.Log.Error(err)
+// 	}
+// 	return flag
+// }
 
 func (c *Ctx) FlagCandidateRecords() bool {
-	flag, err := ffclient.BoolVariation("candidate-records", c.getFlagContext(), true)
-	if err != nil {
-		c.Log.Error(err)
-	}
-	return flag
+	return true
 }
