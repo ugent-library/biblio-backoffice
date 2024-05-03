@@ -51,10 +51,22 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 					Label: c.Loc.Get("builder.type"),
 					Value: c.Loc.Get("publication_types." + p.Type),
 				})
+				if p.UsesJournalArticleType() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.journal_article_type"),
+						Value: c.Loc.Get("journal_article_types." + p.JournalArticleType),
+					})
+				}
 				if p.UsesConferenceType() {
 					@display.Field(display.FieldArgs{
 						Label: c.Loc.Get("builder.conference_type"),
 						Value: c.Loc.Get("conference_types." + p.ConferenceType),
+					})
+				}
+				if p.UsesMiscellaneousType() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.miscellaneous_type"),
+						Value: c.Loc.Get("miscellaneous_types." + p.MiscellaneousType),
 					})
 				}
 				if p.UsesDOI() {
@@ -97,7 +109,7 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 				}
 				if p.UsesPublicationAbbreviation() {
 					@display.Field(display.FieldArgs{
-						Label: c.Loc.Get("builder.publication_abbreviation"),
+						Label: c.Loc.Get("builder." + p.Type + ".publication_abbreviation"),
 						Value: p.PublicationAbbreviation,
 					})
 				}
@@ -185,6 +197,46 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 						Value: p.IssueTitle,
 					})
 				}
+				if p.UsesReportNumber() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.report_number"),
+						Value: p.ReportNumber,
+					})
+				}
+			}
+			if p.UsesDefense() {
+				@detailsSection() {
+					@display.Field(display.FieldArgs{
+						Label:    c.Loc.Get("builder.defense_date"),
+						Value:    p.DefenseDate,
+						Required: p.ShowDefenseAsRequired(),
+					})
+					@display.Field(display.FieldArgs{
+						Label:    c.Loc.Get("builder.defense_place"),
+						Value:    p.DefensePlace,
+						Required: p.ShowDefenseAsRequired(),
+					})
+				}
+			}
+			if p.UsesConfirmations() {
+				@detailsSection() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.has_confidential_data"),
+						Value: c.Loc.Get("confirmations." + p.HasConfidentialData),
+					})
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.has_patent_application"),
+						Value: c.Loc.Get("confirmations." + p.HasPatentApplication),
+					})
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.has_publications_planned"),
+						Value: c.Loc.Get("confirmations." + p.HasPublicationsPlanned),
+					})
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.has_published_material"),
+						Value: c.Loc.Get("confirmations." + p.HasPublishedMaterial),
+					})
+				}
 			}
 			@detailsSection() {
 				if p.UsesWOS() {
@@ -216,6 +268,24 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 					@display.Field(display.FieldArgs{
 						Label:   c.Loc.Get("builder.eisbn"),
 						Content: display.List(p.EISBN, nil),
+					})
+				}
+				if p.UsesPubMedID() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.pubmed_id"),
+						Value: p.PubMedID,
+					})
+				}
+				if p.UsesArxivID() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.arxiv_id"),
+						Value: p.ArxivID,
+					})
+				}
+				if p.UsesESCIID() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.esci_id"),
+						Value: p.ESCIID,
 					})
 				}
 			}
