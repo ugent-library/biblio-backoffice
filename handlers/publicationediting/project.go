@@ -7,10 +7,10 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
-	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 )
@@ -29,44 +29,38 @@ type BindDeleteProject struct {
 type YieldProjects struct {
 	Context
 }
-type YieldAddProject struct {
-	Context
-	Hits []*models.Project
-}
 
-func (h *Handler) AddProject(w http.ResponseWriter, r *http.Request, ctx Context) {
-	hits, err := h.ProjectSearchService.SuggestProjects("")
+func AddProject(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	hits, err := c.ProjectSearchService.SuggestProjects("")
 	if err != nil {
-		h.Logger.Errorw("add publication project: could not suggest projects:", "errors", err, "request", r, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("add publication project: could not suggest projects:", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.Layout(w, "show_modal", "publication/add_project", YieldAddProject{
-		Context: ctx,
-		Hits:    hits,
-	})
+	publicationviews.AddProject(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
 }
 
-func (h *Handler) SuggestProjects(w http.ResponseWriter, r *http.Request, ctx Context) {
+func SuggestProjects(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	b := BindSuggestProjects{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("suggest publication project: could not bind request arguments:", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("suggest publication project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	hits, err := h.ProjectSearchService.SuggestProjects(b.Query)
+	hits, err := c.ProjectSearchService.SuggestProjects(b.Query)
 	if err != nil {
-		h.Logger.Errorw("suggest publication project: could not suggest projects:", "errors", err, "request", r, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("suggest publication project: could not suggest projects:", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.Partial(w, "publication/suggest_projects", YieldAddProject{
-		Context: ctx,
-		Hits:    hits,
-	})
+	publicationviews.SuggestProjects(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
 }
 
 func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Context) {

@@ -52,13 +52,14 @@ func Set(config Config) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// setup ctx
 			c := &Ctx{
-				Config:    config,
-				host:      r.Host,
-				scheme:    r.URL.Scheme,
-				Log:       zaphttp.Logger(r.Context()).Sugar(),
-				Loc:       config.Loc,
-				CSRFToken: csrf.Token(r),
-				CSPNonce:  secure.CSPNonce(r.Context()),
+				Config:     config,
+				host:       r.Host,
+				scheme:     r.URL.Scheme,
+				Log:        zaphttp.Logger(r.Context()).Sugar(),
+				Loc:        config.Loc,
+				CSRFToken:  csrf.Token(r),
+				CSPNonce:   secure.CSPNonce(r.Context()),
+				CurrentURL: r.URL,
 			}
 			if c.scheme == "" {
 				c.scheme = "http"
@@ -131,6 +132,7 @@ type Ctx struct {
 	CSRFToken    string
 	CSPNonce     string
 	Nav          string
+	CurrentURL   *url.URL
 	// flagContext  *ffcontext.EvaluationContext
 }
 

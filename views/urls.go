@@ -13,7 +13,8 @@ type URLBuilder struct {
 }
 
 func URL(base *url.URL) *URLBuilder {
-	return &URLBuilder{base}
+	copyBase := *base
+	return &URLBuilder{url: &copyBase}
 }
 
 func URLFromString(base string) *URLBuilder {
@@ -31,6 +32,15 @@ func (builder *URLBuilder) Path(path ...string) *URLBuilder {
 func (builder *URLBuilder) AddQueryParam(key string, value string) *URLBuilder {
 	query := builder.url.Query()
 	query.Add(key, value)
+
+	builder.url.RawQuery = query.Encode()
+
+	return builder
+}
+
+func (builder *URLBuilder) SetQueryParam(key string, value string) *URLBuilder {
+	query := builder.url.Query()
+	query.Set(key, value)
 
 	builder.url.RawQuery = query.Encode()
 

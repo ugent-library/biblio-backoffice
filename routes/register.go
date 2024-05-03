@@ -129,10 +129,6 @@ func Register(c Config) {
 			BlockByDefault: true,
 		}),
 	}
-	datasetSearchingHandler := &datasetsearching.Handler{
-		BaseHandler:        baseHandler,
-		DatasetSearchIndex: c.Services.DatasetSearchIndex,
-	}
 	datasetViewingHandler := &datasetviewing.Handler{
 		BaseHandler: baseHandler,
 		Repo:        c.Services.Repo,
@@ -343,6 +339,8 @@ func Register(c Config) {
 						r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
 
 						// projects
+						r.Get("/projects/add", publicationediting.AddProject).Name("publication_add_project")
+						r.Get("/projects/suggestions", publicationediting.SuggestProjects).Name("publication_suggest_projects")
 						// project_id is last part of url because some id's contain slashes
 						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", publicationediting.ConfirmDeleteProject).Name("publication_confirm_delete_project")
 
@@ -393,6 +391,8 @@ func Register(c Config) {
 				})
 
 				// datasets
+				r.With(ctx.SetNav("datasets")).Get("/dataset", datasetsearching.Search).Name("datasets")
+
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 
@@ -461,11 +461,6 @@ func Register(c Config) {
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// search datasets
-		r.Get("/dataset",
-			datasetSearchingHandler.Wrap(datasetSearchingHandler.Search)).
-			Name("datasets")
 
 		// add dataset
 		r.Get("/dataset/add",
@@ -749,12 +744,6 @@ func Register(c Config) {
 			Name("publication_update_additional_info")
 
 		// edit publication projects
-		r.Get("/publication/{id}/projects/add",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddProject)).
-			Name("publication_add_project")
-		r.Get("/publication/{id}/projects/suggestions",
-			publicationEditingHandler.Wrap(publicationEditingHandler.SuggestProjects)).
-			Name("publication_suggest_projects")
 		r.Post("/publication/{id}/projects",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
 			Name("publication_create_project")
