@@ -12,7 +12,8 @@ type URLBuilder struct {
 }
 
 func URL(base *url.URL) *URLBuilder {
-	return &URLBuilder{base}
+	copyBase := *base
+	return &URLBuilder{url: &copyBase}
 }
 
 func (builder *URLBuilder) Path(path ...string) *URLBuilder {
