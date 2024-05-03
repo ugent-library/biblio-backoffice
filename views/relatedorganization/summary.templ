@@ -5,40 +5,40 @@ import "github.com/ugent-library/biblio-backoffice/models"
 import "fmt"
 
 templ SummaryItem(c *ctx.Ctx, org *models.Organization) {
-    <li class="badge badge-light badge-sm">
-	    <span>{org.ID}</span>
-    </li>
+	<li class="badge badge-light badge-sm">
+		<span>{ org.ID }</span>
+	</li>
 }
 
 templ Summary(c *ctx.Ctx, relatedOrganizations []*models.RelatedOrganization, url string) {
-    <ul class="badge-list">
-    if len(relatedOrganizations) > 3 {
-        for _, rel := range relatedOrganizations[0:3] {
-            @SummaryItem(c, rel.Organization)
-        }
-        <li class="badge badge-light badge-sm">
-        if url != "" {
-            <a class="c-link c-link-muted" href={templ.URL(url)}>
-            { fmt.Sprint(len(relatedOrganizations) - 3) } more
-            if len(relatedOrganizations) - 3 > 1 {
-                { "departments" }
-            } else {
-                { "department" }
-            }
-            </a>
-        } else {
-            { fmt.Sprint(len(relatedOrganizations) - 3) } more
-            if len(relatedOrganizations) - 3 > 1 {
-                { "departments" }
-            } else {
-                { "department" }
-            }
-        }
-        </li>
-    } else {
-        for _, rel := range relatedOrganizations {
-            @SummaryItem(c, rel.Organization)
-        }
-    }
-    </ul>
+	<ul class="badge-list">
+		if len(relatedOrganizations) > 3 {
+			for _, rel := range relatedOrganizations[0:3] {
+				@SummaryItem(c, rel.Organization)
+			}
+			<li class="badge badge-light badge-sm">
+				if url != "" {
+					<a class="c-link c-link-muted" href={ templ.URL(url) }>
+						{ fmt.Sprint(len(relatedOrganizations) - 3) } more
+						if len(relatedOrganizations) - 3 > 1 {
+							{ "departments" }
+						} else {
+							{ "department" }
+						}
+					</a>
+				} else {
+					{ fmt.Sprint(len(relatedOrganizations) - 3) } more
+					if len(relatedOrganizations) - 3 > 1 {
+						{ "departments" }
+					} else {
+						{ "department" }
+					}
+				}
+			</li>
+		} else {
+			for _, rel := range relatedOrganizations {
+				@SummaryItem(c, rel.Organization)
+			}
+		}
+	</ul>
 }

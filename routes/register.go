@@ -324,6 +324,7 @@ func Register(c Config) {
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireViewPublication)
 
+						r.Get("/description", publicationviewing.ShowDescription).Name("publication_description")
 						r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 					})
 
@@ -682,9 +683,6 @@ func Register(c Config) {
 		r.Get("/publication/{id}",
 			publicationViewingHandler.Wrap(publicationViewingHandler.Show)).
 			Name("publication")
-		r.Get("/publication/{id}/description",
-			publicationViewingHandler.Wrap(publicationViewingHandler.ShowDescription)).
-			Name("publication_description")
 		r.Get("/publication/{id}/files",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowFiles)).
 			Name("publication_files")

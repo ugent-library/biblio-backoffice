@@ -1,0 +1,101 @@
+package display
+
+type FieldArgs struct {
+	Label    string
+	Tooltip  string
+	Required bool
+	Value    string
+	Content  templ.Component
+}
+
+templ Field(args FieldArgs) {
+	<div class="mb-6 row">
+		<label class="col-lg-3 col-form-label">
+			{ args.Label }
+			if args.Tooltip != "" {
+				<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
+					<i class="if if-info-circle if--small"></i>
+					<span class="visually-hidden">More info</span>
+				</a>
+			}
+			if args.Required {
+				&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>
+			}
+		</label>
+		<div class="col-lg-9">
+			if args.Content != nil {
+				@args.Content
+			} else if args.Value != "" {
+				{ args.Value }
+			} else {
+				<span>-</span>
+			}
+		</div>
+	</div>
+}
+
+// templ String(val string) {
+//     if val != "" {
+//         <span>{ val }</span>
+//     } else {
+//         <span>-</span>
+//     }
+// }
+templ Boolean(val bool) {
+	if val {
+		<i class="if if-check-circle-fill"></i>
+	} else {
+		<span>-</span>
+	}
+}
+
+templ Badge(val string) {
+	<span class="badge rounded-pill badge-default me-3">{ val }</span>
+}
+
+templ Link(val string, buildLink func(string) string) {
+	if val != "" {
+		<a href={ templ.SafeURL(buildLink(val)) } target="_blank">
+			{ val }
+			<i class="if if--small if-external-link"></i>
+		</a>
+	} else {
+		<span>-</span>
+	}
+}
+
+templ List(vals []string, template func(string) templ.Component) {
+	if len(vals) > 0 {
+		<ul class="list-unstyled">
+			for _, val := range vals {
+				<li>
+					if template != nil {
+						@template(val)
+					} else {
+						{ val }
+					}
+				</li>
+			}
+		</ul>
+	} else {
+		<span>-</span>
+	}
+}
+
+templ InlineList(vals []string, template func(string) templ.Component) {
+	if len(vals) > 0 {
+		<ul class="list-inline">
+			for _, val := range vals {
+				<li class="list-inline-item">
+					if template != nil {
+						@template(val)
+					} else {
+						{ val }
+					}
+				</li>
+			}
+		</ul>
+	} else {
+		<span>-</span>
+	}
+}

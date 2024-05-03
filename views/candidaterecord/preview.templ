@@ -1,14 +1,14 @@
 package candidaterecordviews
 
 import (
-    "github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
 templ Preview(c *ctx.Ctx, p *models.Publication) {
-    @views.ShowModalLayout(c) {
-        @publicationviews.Preview(p)
-    }
+	@views.ShowModalLayout(c) {
+		@publicationviews.Preview(p)
+	}
 }

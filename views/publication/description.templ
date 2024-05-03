@@ -1,0 +1,10 @@
+package publication
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+templ Description(c *ctx.Ctx, p *models.Publication) {
+	@Details(c, p)
+}

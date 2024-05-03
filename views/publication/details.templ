@@ -1,0 +1,60 @@
+package publication
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/identifiers"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/display"
+)
+
+templ Details(c *ctx.Ctx, p *models.Publication) {
+	<div id="publication-details" class="card mb-6">
+		<div class="card-header">
+			<div class="bc-toolbar">
+				<div class="bc-toolbar-left">
+					<h1 class="bc-toolbar-title">Publication details</h1>
+				</div>
+				<div class="bc-toolbar-right">
+					if c.User.CanEditPublication(p) {
+						<div class="c-button-toolbar" data-panel-state="read">
+							<button
+								class="btn btn-outline-primary"
+								hx-get={ c.PathTo("publication_edit_details", "id", p.ID).String() }
+								hx-target="#modals"
+							>
+								<i class="if if-edit"></i>
+								<div class="btn-text">Edit</div>
+							</button>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+		@DetailsBody(c, p)
+	</div>
+}
+
+templ detailsSection() {
+	<li class="list-group-item">
+		{ children... }
+	</li>
+}
+
+templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
+	<div class="card-body p-0">
+		<ul class="list-group list-group-flush" data-panel-state="read">
+			@detailsSection() {
+				@display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.type"),
+					Value: c.Loc.Get("publication_types." + p.Type),
+				})
+				if p.UsesDOI() {
+					@display.Field(display.FieldArgs{
+						Label:   c.Loc.Get("builder.doi"),
+						Content: display.Link(p.DOI, identifiers.DOI.Resolve),
+					})
+				}
+			}
+		</ul>
+	</div>
+}

@@ -5,10 +5,11 @@ import (
 
 	"slices"
 
-	"github.com/ugent-library/biblio-backoffice/displays"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/display"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
 var subNavs = []string{"description", "files", "contributors", "datasets", "activity"}
@@ -71,15 +72,16 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 	})
 }
 
-func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.View(w, "publication/show_description", YieldShowDescription{
-		Context:               ctx,
-		SubNavs:               subNavs,
-		ActiveSubNav:          "description",
-		DisplayDetails:        displays.PublicationDetails(ctx.User, ctx.Loc, ctx.Publication),
-		DisplayConference:     displays.PublicationConference(ctx.User, ctx.Loc, ctx.Publication),
-		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.User, ctx.Loc, ctx.Publication),
-	})
+func ShowDescription(w http.ResponseWriter, r *http.Request) {
+	publicationviews.Description(ctx.Get(r), ctx.GetPublication(r)).Render(r.Context(), w)
+	// render.View(w, "publication/show_description", YieldShowDescription{
+	// 	Context:               ctx,
+	// 	SubNavs:               subNavs,
+	// 	ActiveSubNav:          "description",
+	// 	DisplayDetails:        displays.PublicationDetails(ctx.User, ctx.Loc, ctx.Publication),
+	// 	DisplayConference:     displays.PublicationConference(ctx.User, ctx.Loc, ctx.Publication),
+	// 	DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.User, ctx.Loc, ctx.Publication),
+	// })
 }
 
 func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context) {
