@@ -10,7 +10,9 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+)
 
 func ErrorDialog(c *ctx.Ctx, msg string, redirectURL string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -38,7 +40,7 @@ func ErrorDialog(c *ctx.Ctx, msg string, redirectURL string) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(msg)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `error_dialog.templ`, Line: 13, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `error_dialog.templ`, Line: 15, Col: 14}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {

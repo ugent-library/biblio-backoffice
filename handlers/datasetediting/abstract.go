@@ -102,29 +102,30 @@ func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 	})
 }
 
-func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
+func EditAbstract(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("edit dataset abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("edit dataset abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	abstract := ctx.Dataset.GetAbstract(b.AbstractID)
+	abstract := dataset.GetAbstract(b.AbstractID)
 
 	// TODO catch non-existing item in UI
 	if abstract == nil {
-		h.Logger.Warnf("edit dataset abstract: Could not fetch the abstract:", "dataset", ctx.Dataset.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
-		})
+		c.Log.Warnf("edit dataset abstract: Could not fetch the abstract:", "dataset", dataset.ID, "abstract", b.AbstractID, "user", c.User.ID)
+		views.ErrorDialog(c, c.Loc.Get("dataset.conflict_error_reload"), "").Render(r.Context(), w)
 		return
 	}
 
 	render.Layout(w, "show_modal", "dataset/edit_abstract", YieldEditAbstract{
-		Context:    ctx,
+		Context:    legacyContext,
 		AbstractID: b.AbstractID,
-		Form:       abstractForm(ctx.Loc, ctx.Dataset, abstract, nil),
+		Form:       abstractForm(c.Loc, dataset, abstract, nil),
 		Conflict:   false,
 	})
 }
