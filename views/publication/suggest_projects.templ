@@ -1,0 +1,86 @@
+package publication
+
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+)
+
+templ SuggestProjects(c *ctx.Ctx,  publication *models.Publication, hits []*models.Project) {
+	<ul class="list-group">
+		for _, hit := range hits {
+			<li class="list-group-item">
+				<div class="list-group-item-inner">
+					<div class="list-group-item-main">
+						<div class="d-flex align-items-top">
+							if hit.Acronym != "" {
+								<div class="me-5">
+									<span class="badge badge-default rounded-pill mt-1">{ hit.Acronym }</span>
+								</div>
+							}
+							<div class="mx-3">
+								<div class="mb-3">
+									<h3>{ hit.Title }</h3>
+								</div>
+								if hit.Description != "" {
+									<p class="mb-3 text-muted">
+										{ hit.Description }
+									</p>
+								}
+								<div class="mb-3">
+									<ul class="c-meta-list c-meta-list-horizontal pb-0">
+										<li class="c-meta-item">
+											if hit.EUProject != nil  && hit.EUProject.FrameworkProgramme != "" {
+												<div class="pe-4 me-4 border-right">
+													EU Funding programme: Horizon 2020
+												</div>
+											}
+											if hit.StartDate != "" && hit.EndDate !=  "" {
+												<div class="pe-4 me-4 border-right">
+													Period: { hit.StartDate } – { hit.EndDate }
+												</div>
+											}
+											<div class="me-43">
+												<a class="c-link c-link-muted" href={ views.URLFromString(c.FrontendURL).Path("project", hit.ID).SafeURL() } target="blank">Read more <i class="if if-external-link if--small"></i></a>
+											</div>
+										</li>
+									</ul>
+									<ul class="c-meta-list c-meta-list-horizontal">
+										<li class="c-meta-item gap-4">
+											<div>
+												<span>Project ID</span>
+												<code class="c-code d-inline-block">{ hit.ID }</code>
+											</div>
+											if hit.IWETOID != "" {
+												<div class="ps-4 border-left">
+													<span>IWETO ID</span>
+													<code class="c-code d-inline-block">{ hit.IWETOID }</code>
+												</div>
+											}
+											if hit.EUProject != nil && hit.EUProject.ID != "" {
+												<div class="ps-4 border-left">
+													<span>CORDIS ID</span>
+													<code class="c-code d-inline-block">{ hit.EUProject.ID }</code>
+												</div>
+											}
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="c-button-toolbar">
+						<button
+							class="btn btn-primary"
+							hx-post={ c.PathTo("publication_create_project", "id", publication.ID).String() }
+							hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
+							hx-vals={ fmt.Sprintf(`{"project_id": "%s"}`, hit.ID) }
+							hx-swap="none"
+						>Add project</button>
+					</div>
+				</div>
+			</li>
+		}
+	</ul>
+}
