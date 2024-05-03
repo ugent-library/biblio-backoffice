@@ -42,6 +42,25 @@ func TestAddQueryParam(t *testing.T) {
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?bar=456&bar=123&baz=789&foo=123&query=string#fragment", u)
 }
 
+func TestSetQueryParam(t *testing.T) {
+	u := URL(lo.Must(url.Parse("https://user:Pa$$w0rd@example.com:8081/test/path/?f=a&f=b")))
+
+	u.SetQueryParam("f", "c")
+	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?f=c", u)
+
+	u.SetQueryParam("key", "val")
+	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?f=c&key=val", u)
+}
+
+func TestURL(t *testing.T) {
+	origURLStr := "https://user:Pa$$w0rd@example.com:8081/test/path/?f=a&f=b"
+	origURL := lo.Must(url.Parse(origURLStr))
+
+	u := URL(origURL)
+	u.SetQueryParam("f", "c")
+	require.Equal(t, origURL.String(), origURLStr)
+}
+
 type queryType struct {
 	Query   string `query:"q,omitempty"`
 	OrderBy string `query:"order_by,omitempty"`

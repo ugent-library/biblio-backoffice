@@ -11,6 +11,11 @@ import "io"
 import "bytes"
 
 import "github.com/ugent-library/biblio-backoffice/ctx"
+import "strings"
+import "mvdan.cc/xurls/v2"
+import h "html"
+
+var reURL, _ = xurls.StrictMatchingScheme("https")
 
 func csrfField(c *ctx.Ctx) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -58,4 +63,34 @@ func html(text string) templ.Component {
 		_, err := io.WriteString(w, text)
 		return err
 	})
+}
+
+func Linkify(text string) string {
+	text = h.EscapeString(text)
+
+	matches := reURL.FindAllStringIndex(text, -1)
+
+	b := strings.Builder{}
+	pos := 0
+	for _, match := range matches {
+		before := text[pos:match[0]]
+		if len(before) > 0 {
+			b.WriteString(before)
+		}
+
+		link := text[match[0]:match[1]]
+		b.WriteString(`<a href="`)
+		b.WriteString(link)
+		b.WriteString(`" target="_blank">`)
+		b.WriteString(link)
+		b.WriteString(`</a>`)
+		pos = match[1]
+	}
+
+	after := text[pos:]
+	if len(after) > 0 {
+		b.WriteString(after)
+	}
+
+	return b.String()
 }

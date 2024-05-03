@@ -14,8 +14,9 @@ import "fmt"
 import "net/url"
 import "github.com/ugent-library/biblio-backoffice/ctx"
 import "github.com/ugent-library/biblio-backoffice/models"
+import pag "github.com/ugent-library/biblio-backoffice/pagination"
 
-func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, searchHits *models.SearchHits) templ.Component {
+func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, p pag.Pagination) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -32,12 +33,12 @@ func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, sea
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if searchHits.HasPreviousPage() {
+		if p.HasPreviousPage() {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"page-item\"><a class=\"page-link\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 templ.SafeURL = URL(baseURL).Query(searchArgs.Clone().WithPage(searchHits.PreviousPage())).SafeURL()
+			var templ_7745c5c3_Var2 templ.SafeURL = URL(baseURL).Query(searchArgs.Clone().WithPage(p.PreviousPage())).SafeURL()
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -52,9 +53,9 @@ func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, sea
 				return templ_7745c5c3_Err
 			}
 		}
-		for _, page := range searchHits.PagesWithEllipsis() {
+		for _, page := range p.PagesWithEllipsis() {
 			if page > 0 {
-				var templ_7745c5c3_Var3 = []any{"page-item", templ.KV("active", searchHits.Page() == page)}
+				var templ_7745c5c3_Var3 = []any{"page-item", templ.KV("active", p.Page() == page)}
 				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -91,7 +92,7 @@ func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, sea
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", page))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pagination.templ`, Line: 26, Col: 31}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pagination.templ`, Line: 27, Col: 31}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -108,12 +109,12 @@ func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, sea
 				}
 			}
 		}
-		if searchHits.HasNextPage() {
+		if p.HasNextPage() {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"page-item\"><a class=\"page-link\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 templ.SafeURL = URL(baseURL).Query(searchArgs.Clone().WithPage(searchHits.NextPage())).SafeURL()
+			var templ_7745c5c3_Var6 templ.SafeURL = URL(baseURL).Query(searchArgs.Clone().WithPage(p.NextPage())).SafeURL()
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var6)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -139,10 +140,10 @@ func Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, sea
 	})
 }
 
-func PaginationCount(c *ctx.Ctx, searchHits *models.SearchHits) string {
-	if searchHits.TotalPages() > 1 {
-		return fmt.Sprintf("Showing %d-%d of %d", searchHits.FirstOnPage(), searchHits.LastOnPage(), searchHits.Total)
+func PaginationCount(c *ctx.Ctx, p pag.Pagination) string {
+	if p.TotalPages() > 1 {
+		return fmt.Sprintf("Showing %d-%d of %d", p.FirstOnPage(), p.LastOnPage(), p.Total)
 	} else {
-		return fmt.Sprintf("Showing %d", searchHits.Total)
+		return fmt.Sprintf("Showing %d", p.Total)
 	}
 }
