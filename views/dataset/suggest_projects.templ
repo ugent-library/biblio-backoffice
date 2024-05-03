@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
 )
 
-templ SuggestProjects(c *ctx.Ctx,  dataset *models.Dataset, hits []*models.Project) {
+templ SuggestProjects(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Project) {
 	<ul class="list-group">
 		for _, hit := range hits {
 			<li class="list-group-item">
@@ -35,30 +36,34 @@ templ SuggestProjects(c *ctx.Ctx,  dataset *models.Dataset, hits []*models.Proje
 													EU Funding programme: Horizon 2020
 												</div>
 											}
-											if hit.StartDate != "" && hit.EndDate !="" {
+											if hit.StartDate != "" && hit.EndDate != "" {
 												<div class="pe-4 me-4 border-right">
 													Period: { hit.StartDate } – { hit.EndDate }
 												</div>
 											}
 											<div class="me-43">
-												<a class="c-link c-link-muted" target="blank">Read more <i class="if if-external-link if--small"></i></a>
+												<a
+													class="c-link c-link-muted"
+													href={ views.URLFromString(c.FrontendURL).Path("project", hit.ID).SafeURL() }
+													target="blank"
+												>Read more <i class="if if-external-link if--small"></i></a>
 											</div>
 										</li>
 									</ul>
 									<ul class="c-meta-list c-meta-list-horizontal">
-										<li class="c-meta-item">
-											<div class="pe-4 me-4 border-right">
+										<li class="c-meta-item gap-4">
+											<div>
 												<span>Project ID</span>
 												<code class="c-code d-inline-block">{ hit.ID }</code>
 											</div>
 											if hit.IWETOID != "" {
-												<div class="pe-4 me-4{{if .EUProject.ID}} border-right{{end}}">
+												<div class="ps-4 border-left">
 													<span>IWETO ID</span>
 													<code class="c-code d-inline-block">{ hit.IWETOID }</code>
 												</div>
 											}
 											if hit.EUProject != nil && hit.EUProject.ID != "" {
-												<div class="me-3">
+												<div class="ps-4 border-left">
 													<span>CORDIS ID</span>
 													<code class="c-code d-inline-block">{ hit.EUProject.ID }</code>
 												</div>

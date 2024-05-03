@@ -6,7 +6,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-templ SuggestDepartments(c *ctx.Ctx,  dataset *models.Dataset, hits []models.Completion) {
+templ SuggestDepartments(c *ctx.Ctx, dataset *models.Dataset, hits []models.Completion) {
 	<ul class="list-group mt-6">
 		for _, hit := range hits {
 			<li class="list-group-item">

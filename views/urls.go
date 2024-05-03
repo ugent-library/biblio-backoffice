@@ -4,6 +4,7 @@ import (
 	"net/url"
 
 	"github.com/a-h/templ"
+	"github.com/samber/lo"
 	"github.com/ugent-library/bind"
 )
 
@@ -14,6 +15,12 @@ type URLBuilder struct {
 func URL(base *url.URL) *URLBuilder {
 	copyBase := *base
 	return &URLBuilder{url: &copyBase}
+}
+
+func URLFromString(base string) *URLBuilder {
+	return &URLBuilder{
+		url: lo.Must(url.Parse(base)),
+	}
 }
 
 func (builder *URLBuilder) Path(path ...string) *URLBuilder {
