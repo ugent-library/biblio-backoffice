@@ -9,7 +9,6 @@ import (
 
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/displays"
-	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -17,6 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/okay"
 )
@@ -272,9 +272,7 @@ func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
-		})
+		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
