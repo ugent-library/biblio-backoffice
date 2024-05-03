@@ -1,57 +1,57 @@
 package contributorviews
 
 import (
-    "fmt"
-    "strings"
+	"fmt"
+	"strings"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 templ Summary(c *ctx.Ctx,  role string, contribs []*models.Contributor, url string) {
-    if len(contribs) > 0 {
-        <div class="c-author-list">
-        if len(contribs) > 3 {
-            for _, contrib := range contribs[:3] {
-                @summaryItem(c, role, contrib)
-            }
-            <div class="c-author">
-            if url != "" {
-                <a class="c-link c-link-muted" href={templ.URL(url)}>
-                { fmt.Sprint(len(contribs) - 3) } more
-                if len(contribs) - 3 > 1 {
-                    { role + "s" }
-                } else {
-                    { role }
-                }
-                </a>
-            } else {
-                { fmt.Sprint(len(contribs) - 3) } more
-                if len(contribs) - 3 > 1 {
-                    { role + "s" }
-                } else {
-                    { role }
-                }
-            }
-            </div>
-        } else {
-            for _, contrib := range contribs {
-                @summaryItem(c, role, contrib)
-            }
-        }
-        </div>
-    } else {
-        <em>UGent { role + "s" } missing</em>
-    }
+	if len(contribs) > 0 {
+		<div class="c-author-list">
+			if len(contribs) > 3 {
+				for _, contrib := range contribs[:3] {
+					@summaryItem(c, role, contrib)
+				}
+				<div class="c-author">
+					if url != "" {
+						<a class="c-link c-link-muted" href={ templ.URL(url) }>
+							{ fmt.Sprint(len(contribs) - 3) } more
+							if len(contribs) - 3 > 1 {
+								{ role + "s" }
+							} else {
+								{ role }
+							}
+						</a>
+					} else {
+						{ fmt.Sprint(len(contribs) - 3) } more
+						if len(contribs) - 3 > 1 {
+							{ role + "s" }
+						} else {
+							{ role }
+						}
+					}
+				</div>
+			} else {
+				for _, contrib := range contribs {
+					@summaryItem(c, role, contrib)
+				}
+			}
+		</div>
+	} else {
+		<em>UGent { role + "s" } missing</em>
+	}
 }
 
 templ summaryItem(c *ctx.Ctx, role string, contrib *models.Contributor) {
-    <div class="c-author">
-        if contrib.Person != nil {
-            <i class="if if-ghent-university" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ "UGent " + role }></i>
-        }
-        if contrib.ORCID() != "" {
-        <i class="if if-orcid" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ strings.Title(role) + " with ORCID" }></i>
-        }
-        <span>{contrib.Name()}</span>
-    </div>
+	<div class="c-author">
+		if contrib.Person != nil {
+			<i class="if if-ghent-university" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ "UGent " + role }></i>
+		}
+		if contrib.ORCID() != "" {
+			<i class="if if-orcid" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ strings.Title(role) + " with ORCID" }></i>
+		}
+		<span>{ contrib.Name() }</span>
+	</div>
 }
