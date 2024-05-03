@@ -114,11 +114,12 @@ describe("The home page", () => {
       "contain.text",
       "Librarian",
     );
-    cy.get(".c-sidebar-menu .c-sidebar__item").should("have.length", 4);
+    cy.get(".c-sidebar-menu .c-sidebar__item").should("have.length", 5);
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
     cy.contains(".c-sidebar__item", "Batch").should("be.visible");
+    cy.contains(".c-sidebar__item", "Suggestions").should("be.visible");
 
     cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
 
@@ -139,6 +140,7 @@ describe("The home page", () => {
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
     cy.contains(".c-sidebar__item", "Batch").should("not.exist");
+    cy.contains(".c-sidebar__item", "Suggestions").should("not.exist");
 
     cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
   });

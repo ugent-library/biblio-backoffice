@@ -5,18 +5,29 @@ import (
 	"testing"
 
 	"github.com/a-h/templ"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
 
+func TestURLConstructor(t *testing.T) {
+	u := URL(lo.Must(url.Parse("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment")))
+	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment", u)
+}
+
+func TestURLFromStringConstructor(t *testing.T) {
+	u := URLFromString("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment")
+	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment", u)
+}
+
 func TestPath(t *testing.T) {
-	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment"))
+	u := URLFromString("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment")
 
 	u.Path("foo", "123", "bar/", "456", "/baz", "789")
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/foo/123/bar/456/baz/789?query=string#fragment", u)
 }
 
 func TestAddQueryParam(t *testing.T) {
-	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment"))
+	u := URLFromString("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment")
 
 	u.AddQueryParam("foo", "123")
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?foo=123&query=string#fragment", u) // query params are added in alphabetical order
@@ -38,7 +49,7 @@ type queryType struct {
 }
 
 func TestQueryWithStruct(t *testing.T) {
-	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment"))
+	u := URLFromString("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment")
 
 	u.Query(queryType{
 		Query:   "foo",
@@ -57,7 +68,7 @@ func TestQueryWithStruct(t *testing.T) {
 }
 
 func TestQueryWithString(t *testing.T) {
-	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment"))
+	u := URLFromString("https://user:Pa$$w0rd@example.com:8081/test/path/?query=string#fragment")
 
 	u.Query("foo=123&bar=456")
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?foo=123&bar=456#fragment", u)
@@ -67,7 +78,7 @@ func TestQueryWithString(t *testing.T) {
 }
 
 func TestClearQuery(t *testing.T) {
-	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?foo=123&query=string#fragment"))
+	u := URLFromString("https://user:Pa$$w0rd@example.com:8081/test/path/?foo=123&query=string#fragment")
 
 	u.ClearQuery()
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/#fragment", u)
@@ -86,13 +97,4 @@ func assertUrl(t *testing.T, expected string, actual *URLBuilder) {
 
 	// assert as SafeURL (implicit string)
 	require.Equal(t, templ.SafeURL(expected), actual.SafeURL())
-}
-
-func parseURL(u string) *url.URL {
-	parsed, err := url.Parse(u)
-	if err != nil {
-		panic(err)
-	}
-
-	return parsed
 }
