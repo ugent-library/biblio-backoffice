@@ -1350,7 +1350,15 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .within(() => {
             cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
           })
-          .closeModal("Cancel");
+          .closeModal("Delete");
+        cy.ensureModal(null)
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Dataset has been modified by another user. Please reload the page.",
+            );
+          })
+          .closeModal("Close");
         cy.ensureNoModal();
 
         cy.get("#abstracts-body .if-more").click();

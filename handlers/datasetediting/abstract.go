@@ -7,7 +7,6 @@ import (
 
 	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -118,7 +117,7 @@ func EditAbstract(w http.ResponseWriter, r *http.Request, legacyContext Context)
 	// TODO catch non-existing item in UI
 	if abstract == nil {
 		c.Log.Warnf("edit dataset abstract: Could not fetch the abstract:", "dataset", dataset.ID, "abstract", b.AbstractID, "user", c.User.ID)
-		views.ErrorDialog(c, c.Loc.Get("dataset.conflict_error_reload"), "").Render(r.Context(), w)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"), "")).Render(r.Context(), w)
 		return
 	}
 
@@ -206,7 +205,7 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if b.SnapshotID != dataset.SnapshotID {
-		views.ErrorDialog(c, c.Loc.Get("dataset.conflict_error_reload"), "").Render(r.Context(), w)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"), "")).Render(r.Context(), w)
 		return
 	}
 
@@ -218,34 +217,34 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+	c := ctx.Get(r)
+
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete datase abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+		h.Logger.Warnw("delete datase abstract: could not bind request arguments", "errors", err, "request", r, "user", legacyContext.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	ctx.Dataset.RemoveAbstract(b.AbstractID)
+	legacyContext.Dataset.RemoveAbstract(b.AbstractID)
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), legacyContext.Dataset, legacyContext.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
-		})
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"), "")).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Warnf("delete dataset abstract: Could not save the dataset:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
+		h.Logger.Warnf("delete dataset abstract: Could not save the dataset:", "errors", err, "dataset", legacyContext.Dataset.ID, "user", legacyContext.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
 	render.View(w, "dataset/refresh_abstracts", YieldAbstracts{
-		Context: ctx,
+		Context: legacyContext,
 	})
 }
 
