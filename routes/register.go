@@ -337,6 +337,7 @@ func Register(c Config) {
 
 						// edit publication type
 						r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
+						r.Put("/type", publicationEditingHandler.Wrap(publicationediting.UpdateType)).Name("publication_update_type")
 
 						// projects
 						r.Get("/projects/add", publicationediting.AddProject).Name("publication_add_project")
@@ -721,11 +722,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/details",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateDetails)).
 			Name("publication_update_details")
-
-		// edit publication type
-		r.Put("/publication/{id}/type",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateType)).
-			Name("publication_update_type")
 
 		// edit publication conference
 		r.Get("/publication/{id}/conference/edit",
