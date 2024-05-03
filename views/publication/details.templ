@@ -2,10 +2,12 @@ package publication
 
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/helpers"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/display"
+	"github.com/samber/lo"
 )
 
 templ Details(c *ctx.Ctx, p *models.Publication) {
@@ -49,6 +51,12 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 					Label: c.Loc.Get("builder.type"),
 					Value: c.Loc.Get("publication_types." + p.Type),
 				})
+				if p.UsesConferenceType() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.conference_type"),
+						Value: c.Loc.Get("conference_types." + p.ConferenceType),
+					})
+				}
 				if p.UsesDOI() {
 					@display.Field(display.FieldArgs{
 						Label:   c.Loc.Get("builder.doi"),
@@ -59,8 +67,13 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 					Label: c.Loc.Get("builder.classification"),
 					Value: c.Loc.Get("publication_classifications." + p.Classification),
 				})
+				if c.User.CanCurate() {
+					@display.Field(display.FieldArgs{
+						Label:   c.Loc.Get("builder.legacy"),
+						Content: display.Boolean(p.Legacy),
+					})
+				}
 			}
-
 			@detailsSection() {
 				if p.UsesTitle() {
 					@display.Field(display.FieldArgs{
@@ -75,8 +88,20 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 						Content: display.List(p.AlternativeTitle, nil),
 					})
 				}
+				if p.UsesPublication() {
+					@display.Field(display.FieldArgs{
+						Label:    c.Loc.Get("builder." + p.Type + ".publication"),
+						Value:    p.Publication,
+						Required: p.ShowPublicationAsRequired(),
+					})
+				}
+				if p.UsesPublicationAbbreviation() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.publication_abbreviation"),
+						Value: p.PublicationAbbreviation,
+					})
+				}
 			}
-
 			@detailsSection() {
 				if p.UsesLanguage() {
 					@display.Field(display.FieldArgs{
@@ -90,10 +115,17 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 						Value: c.Loc.Get("publication_publishing_statuses." + p.PublicationStatus),
 					})
 				}
-                @display.Field(display.FieldArgs{
-                    Label:   c.Loc.Get("builder.extern"),
-                    Content: display.Boolean(p.Extern),
-                })
+				@display.Field(display.FieldArgs{
+					Label:   c.Loc.Get("builder.extern"),
+					Content: display.Boolean(p.Extern),
+				})
+				if p.UsesYear() {
+					@display.Field(display.FieldArgs{
+						Label:    c.Loc.Get("builder.year"),
+						Value:    p.Year,
+						Required: true,
+					})
+				}
 				if p.UsesPublisher() {
 					@display.Field(display.FieldArgs{
 						Label: c.Loc.Get("builder.place_of_publication"),
@@ -102,6 +134,88 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 					@display.Field(display.FieldArgs{
 						Label: c.Loc.Get("builder.publisher"),
 						Value: p.Publisher,
+					})
+				}
+			}
+			@detailsSection() {
+				if p.UsesSeriesTitle() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get(lo.Ternary(p.Type == "conference", "builder.conference.series_title", "builder.series_title")),
+						Value: p.SeriesTitle,
+					})
+				}
+				if p.UsesVolume() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.volume"),
+						Value: p.Volume,
+					})
+				}
+				if p.UsesIssue() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.issue"),
+						Value: p.Issue,
+					})
+				}
+				if p.UsesEdition() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.edition"),
+						Value: p.Edition,
+					})
+				}
+				if p.UsesPage() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.pages"),
+						Value: helpers.FormatRange(p.PageFirst, p.PageLast)})
+				}
+				if p.UsesPageCount() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.page_count"),
+						Value: p.PageCount,
+					})
+				}
+				if p.UsesArticleNumber() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.article_number"),
+						Value: p.ArticleNumber,
+					})
+				}
+				if p.UsesIssue() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.issue_title"),
+						Value: p.IssueTitle,
+					})
+				}
+			}
+			@detailsSection() {
+				if p.UsesWOS() {
+					@display.Field(display.FieldArgs{
+						Label:   c.Loc.Get("builder.wos_type"),
+						Value:   p.WOSType,
+						Tooltip: c.Loc.Get("tooltip.publication.wos_type"),
+					})
+					@display.Field(display.FieldArgs{
+						Label:   c.Loc.Get("builder.wos_id"),
+						Content: display.Link(p.WOSID, identifiers.WebOfScience.Resolve),
+					})
+				}
+				if p.UsesISSN() {
+					@display.Field(display.FieldArgs{
+						Label:   c.Loc.Get("builder.issn"),
+						Content: display.List(p.ISSN, nil),
+					})
+					@display.Field(display.FieldArgs{
+						Label:   c.Loc.Get("builder.eissn"),
+						Content: display.List(p.EISSN, nil),
+					})
+				}
+				if p.UsesISBN() {
+					@display.Field(display.FieldArgs{
+						Label:   c.Loc.Get("builder.isbn"),
+						Content: display.List(p.ISSN, nil),
+					})
+					@display.Field(display.FieldArgs{
+						Label:   c.Loc.Get("builder.eisbn"),
+						Content: display.List(p.EISBN, nil),
 					})
 				}
 			}

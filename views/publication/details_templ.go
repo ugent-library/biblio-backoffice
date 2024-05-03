@@ -11,7 +11,9 @@ import "io"
 import "bytes"
 
 import (
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/helpers"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -134,6 +136,19 @@ func DetailsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			if p.UsesConferenceType() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.conference_type"),
+					Value: c.Loc.Get("conference_types." + p.ConferenceType),
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			if p.UsesDOI() {
 				templ_7745c5c3_Err = display.Field(display.FieldArgs{
 					Label:   c.Loc.Get("builder.doi"),
@@ -153,6 +168,19 @@ func DetailsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if c.User.CanCurate() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label:   c.Loc.Get("builder.legacy"),
+					Content: display.Boolean(p.Legacy),
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
 			if !templ_7745c5c3_IsBuffer {
 				_, templ_7745c5c3_Err = io.Copy(templ_7745c5c3_W, templ_7745c5c3_Buffer)
@@ -187,6 +215,33 @@ func DetailsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 				templ_7745c5c3_Err = display.Field(display.FieldArgs{
 					Label:   c.Loc.Get("builder.alternative_title"),
 					Content: display.List(p.AlternativeTitle, nil),
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if p.UsesPublication() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label:    c.Loc.Get("builder." + p.Type + ".publication"),
+					Value:    p.Publication,
+					Required: p.ShowPublicationAsRequired(),
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if p.UsesPublicationAbbreviation() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.publication_abbreviation"),
+					Value: p.PublicationAbbreviation,
 				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -244,6 +299,20 @@ func DetailsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			if p.UsesYear() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label:    c.Loc.Get("builder.year"),
+					Value:    p.Year,
+					Required: true,
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			if p.UsesPublisher() {
 				templ_7745c5c3_Err = display.Field(display.FieldArgs{
 					Label: c.Loc.Get("builder.place_of_publication"),
@@ -270,6 +339,204 @@ func DetailsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 			return templ_7745c5c3_Err
 		})
 		templ_7745c5c3_Err = detailsSection().Render(templ.WithChildren(ctx, templ_7745c5c3_Var6), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var7 := templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+			if !templ_7745c5c3_IsBuffer {
+				templ_7745c5c3_Buffer = templ.GetBuffer()
+				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+			}
+			if p.UsesSeriesTitle() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label: c.Loc.Get(lo.Ternary(p.Type == "conference", "builder.conference.series_title", "builder.series_title")),
+					Value: p.SeriesTitle,
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if p.UsesVolume() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.volume"),
+					Value: p.Volume,
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if p.UsesIssue() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.issue"),
+					Value: p.Issue,
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if p.UsesEdition() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.edition"),
+					Value: p.Edition,
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if p.UsesPage() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.pages"),
+					Value: helpers.FormatRange(p.PageFirst, p.PageLast)}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if p.UsesPageCount() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.page_count"),
+					Value: p.PageCount,
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if p.UsesArticleNumber() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.article_number"),
+					Value: p.ArticleNumber,
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if p.UsesIssue() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.issue_title"),
+					Value: p.IssueTitle,
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			if !templ_7745c5c3_IsBuffer {
+				_, templ_7745c5c3_Err = io.Copy(templ_7745c5c3_W, templ_7745c5c3_Buffer)
+			}
+			return templ_7745c5c3_Err
+		})
+		templ_7745c5c3_Err = detailsSection().Render(templ.WithChildren(ctx, templ_7745c5c3_Var7), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var8 := templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+			if !templ_7745c5c3_IsBuffer {
+				templ_7745c5c3_Buffer = templ.GetBuffer()
+				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+			}
+			if p.UsesWOS() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label:   c.Loc.Get("builder.wos_type"),
+					Value:   p.WOSType,
+					Tooltip: c.Loc.Get("tooltip.publication.wos_type"),
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label:   c.Loc.Get("builder.wos_id"),
+					Content: display.Link(p.WOSID, identifiers.WebOfScience.Resolve),
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if p.UsesISSN() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label:   c.Loc.Get("builder.issn"),
+					Content: display.List(p.ISSN, nil),
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label:   c.Loc.Get("builder.eissn"),
+					Content: display.List(p.EISSN, nil),
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if p.UsesISBN() {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label:   c.Loc.Get("builder.isbn"),
+					Content: display.List(p.ISSN, nil),
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label:   c.Loc.Get("builder.eisbn"),
+					Content: display.List(p.EISBN, nil),
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			if !templ_7745c5c3_IsBuffer {
+				_, templ_7745c5c3_Err = io.Copy(templ_7745c5c3_W, templ_7745c5c3_Buffer)
+			}
+			return templ_7745c5c3_Err
+		})
+		templ_7745c5c3_Err = detailsSection().Render(templ.WithChildren(ctx, templ_7745c5c3_Var8), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
