@@ -30,6 +30,15 @@ func (builder *URLBuilder) AddQueryParam(key string, value string) *URLBuilder {
 	return builder
 }
 
+func (builder *URLBuilder) SetQueryParam(key string, value string) *URLBuilder {
+	query := builder.url.Query()
+	query.Set(key, value)
+
+	builder.url.RawQuery = query.Encode()
+
+	return builder
+}
+
 func (builder *URLBuilder) Query(query interface{}) *URLBuilder {
 	if str, ok := query.(string); ok {
 		builder.url.RawQuery = str
