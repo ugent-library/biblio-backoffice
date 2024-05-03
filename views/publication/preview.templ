@@ -7,7 +7,7 @@ import (
     "github.com/ugent-library/friendly"
 )
 
-templ Preview(c *ctx.Ctx, p *models.Publication) {
+templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction templ.Component) {
     <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
         <div class="modal-content bg-lightest">
             <div class="bc-navbar bc-navbar--white bc-navbar--auto bc-navbar--bordered-bottom flex-column align-items-start">
@@ -28,7 +28,9 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                         <i class="if if-close"></i>
                                         <span class="btn-text">Close</span>
                                     </button>
-                                    <a class="btn btn-primary" type="button" href="/biblio/researcher/publications/detail/full-view.html">Import as draft</a>
+                                    if actions != nil {
+                                    @actions
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -112,10 +114,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                                                 </ul>
                                                             </div>
                                                             <div class="c-button-toolbar">
-                                                                <button class="btn btn-tertiary btn-lg-only-responsive">
-                                                                    <i class="if if-eye"></i>
-                                                                    <span class="btn-text">View file</span>
-                                                                </button>
+                                                                @downloadMainFileAction
                                                             </div>
                                                         </div>
                                                     </div>

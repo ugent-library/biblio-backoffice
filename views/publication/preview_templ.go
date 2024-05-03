@@ -17,7 +17,7 @@ import (
 	"strings"
 )
 
-func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
+func Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction templ.Component) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -70,7 +70,17 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"bc-toolbar-right mb-3 mb-lg-0\"><div class=\"bc-toolbar-item\"><div class=\"d-flex align-items-center my-2\"><div class=\"c-button-toolbar\"><button class=\"btn btn-tertiary modal-close\" data-bs-dismiss=\"modal\"><i class=\"if if-close\"></i> <span class=\"btn-text\">Close</span></button> <a class=\"btn btn-primary\" type=\"button\" href=\"/biblio/researcher/publications/detail/full-view.html\">Import as draft</a></div></div></div></div></div><h4 class=\"w-100 c-body-small mb-4\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"bc-toolbar-right mb-3 mb-lg-0\"><div class=\"bc-toolbar-item\"><div class=\"d-flex align-items-center my-2\"><div class=\"c-button-toolbar\"><button class=\"btn btn-tertiary modal-close\" data-bs-dismiss=\"modal\"><i class=\"if if-close\"></i> <span class=\"btn-text\">Close</span></button> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if actions != nil {
+			templ_7745c5c3_Err = actions.Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></div><h4 class=\"w-100 c-body-small mb-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -79,7 +89,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(c.LastName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 39, Col: 38}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 41, Col: 38}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -92,7 +102,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.FirstName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 39, Col: 57}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 41, Col: 57}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -113,7 +123,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(p.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 45, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 47, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -126,7 +136,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(p.Year)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 45, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 47, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -139,7 +149,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_types." + p.Type))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 81, Col: 93}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 83, Col: 93}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -157,7 +167,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(f.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 106, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 108, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -170,7 +180,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(f.ContentType)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 109, Col: 107}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 111, Col: 107}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -183,20 +193,28 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(friendly.Bytes(int64(f.Size)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 110, Col: 123}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 112, Col: 123}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li></ul></div><div class=\"c-button-toolbar\"><button class=\"btn btn-tertiary btn-lg-only-responsive\"><i class=\"if if-eye\"></i> <span class=\"btn-text\">View file</span></button></div></div></div></div></div></div></div><div class=\"form-group\"><label class=\"form-label form-label-top\">Publication version</label><p>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li></ul></div><div class=\"c-button-toolbar\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = downloadMainFileAction.Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></div></div></div><div class=\"form-group\"><label class=\"form-label form-label-top\">Publication version</label><p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_versions." + f.PublicationVersion))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 127, Col: 102}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 126, Col: 102}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -220,7 +238,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(p.HasPatentApplication)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 141, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 140, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -240,7 +258,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(p.HasConfidentialData)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 151, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 150, Col: 63}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -260,7 +278,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(p.HasPublicationsPlanned)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 161, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 160, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -280,7 +298,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(p.HasPublishedMaterial)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 172, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 171, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -323,7 +341,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(p.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 209, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 208, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -347,7 +365,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(p.AlternativeTitle[0])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 218, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 217, Col: 69}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -376,7 +394,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var19 string
 					templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(a.Lang)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 232, Col: 96}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 231, Col: 96}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 					if templ_7745c5c3_Err != nil {
@@ -390,7 +408,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(a.Text)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 234, Col: 56}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 233, Col: 56}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
@@ -425,7 +443,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var21 string
 					templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(s.Lang)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 257, Col: 96}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 256, Col: 96}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 					if templ_7745c5c3_Err != nil {
@@ -439,7 +457,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(s.Text)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 259, Col: 56}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 258, Col: 56}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
@@ -473,7 +491,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var23 string
 				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(k)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 276, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 275, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 				if templ_7745c5c3_Err != nil {
@@ -511,7 +529,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var24 string
 				templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(r)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 288, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 287, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 				if templ_7745c5c3_Err != nil {
@@ -549,7 +567,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var25 string
 				templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(a.Name())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 321, Col: 91}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 320, Col: 91}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 				if templ_7745c5c3_Err != nil {
@@ -573,7 +591,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var26 string
 					templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(a.ORCID())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 332, Col: 89}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 331, Col: 89}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 					if templ_7745c5c3_Err != nil {
@@ -616,7 +634,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(s.Name())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 364, Col: 91}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 363, Col: 91}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 				if templ_7745c5c3_Err != nil {
@@ -640,7 +658,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var28 string
 					templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(s.ORCID())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 375, Col: 89}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 374, Col: 89}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 					if templ_7745c5c3_Err != nil {
@@ -683,7 +701,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var29 string
 				templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(o.Organization.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 407, Col: 102}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 406, Col: 102}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 				if templ_7745c5c3_Err != nil {
@@ -696,7 +714,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var30 string
 				templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(o.OrganizationID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 408, Col: 134}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 407, Col: 134}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 				if templ_7745c5c3_Err != nil {
@@ -729,7 +747,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(p.Year)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 435, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 434, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
@@ -757,7 +775,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(p.PlaceOfPublication)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 443, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 442, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 			if templ_7745c5c3_Err != nil {
@@ -785,7 +803,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(p.Publisher)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 451, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 450, Col: 71}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
@@ -813,7 +831,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var34 string
 			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(strings.Join(p.Language, ", "))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 459, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 458, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 			if templ_7745c5c3_Err != nil {
@@ -841,7 +859,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var35 string
 			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(p.PageCount)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 467, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 466, Col: 71}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
@@ -869,7 +887,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var36 string
 			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(p.DefenseDate)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 475, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 474, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 			if templ_7745c5c3_Err != nil {
@@ -897,7 +915,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var37 string
 			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(p.DefensePlace)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 483, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 482, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 			if templ_7745c5c3_Err != nil {
@@ -925,7 +943,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var38 string
 			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(strings.Join(p.ISSN, ", "))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 504, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 503, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 			if templ_7745c5c3_Err != nil {
@@ -953,7 +971,7 @@ func Preview(c *ctx.Ctx, p *models.Publication) templ.Component {
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(strings.Join(p.ISBN, ", "))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 512, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/preview.templ`, Line: 511, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {
