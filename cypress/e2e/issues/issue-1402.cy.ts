@@ -1332,6 +1332,37 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.get("#abstracts-body").should("contain", "No abstracts");
       });
 
+      it("should error when trying to delete an abstract that was already deleted", () => {
+        cy.setUpDataset();
+        cy.visitDataset();
+
+        cy.updateFields(
+          "Abstract",
+          () => {
+            cy.setFieldByLabel("Abstract", "The abstract text");
+          },
+          "Add abstract",
+        );
+
+        cy.get("#abstracts-body .if-more").click();
+        cy.contains("#abstracts-body .dropdown-item", "Delete").click();
+        cy.ensureModal("Confirm deletion")
+          .within(() => {
+            cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
+          })
+          .closeModal("Cancel");
+        cy.ensureNoModal();
+
+        cy.get("#abstracts-body .if-more").click();
+        cy.contains("#abstracts-body .dropdown-item", "Edit").click();
+        cy.ensureModal(null).within(() => {
+          cy.get(".modal-body").should(
+            "contain",
+            "Dataset has been modified by another user. Please reload the page.",
+          );
+        });
+      });
+
       it("should be possible to add, edit and delete links", () => {
         cy.get("#links-body").should("contain", "No links");
 
