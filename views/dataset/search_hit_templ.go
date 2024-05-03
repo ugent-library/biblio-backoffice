@@ -13,7 +13,6 @@ import "bytes"
 import "github.com/ugent-library/biblio-backoffice/ctx"
 import "github.com/ugent-library/biblio-backoffice/identifiers"
 import "github.com/ugent-library/biblio-backoffice/models"
-import urlviews "github.com/ugent-library/biblio-backoffice/views/url"
 import "github.com/ugent-library/biblio-backoffice/views"
 import "fmt"
 
@@ -78,7 +77,7 @@ func SummaryActions(c *ctx.Ctx, dataset *models.Dataset, url string) templ.Compo
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(urlviews.QuerySet(c.PathTo("dataset_confirm_delete", "id", dataset.ID), "redirect-url", c.CurrentURL.String()).String()))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(views.URL(c.PathTo("dataset_confirm_delete", "id", dataset.ID)).AddQueryParam("redirect-url", c.CurrentURL.String()).String()))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
