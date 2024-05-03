@@ -117,7 +117,7 @@ func EditAbstract(w http.ResponseWriter, r *http.Request, legacyContext Context)
 	// TODO catch non-existing item in UI
 	if abstract == nil {
 		c.Log.Warnf("edit dataset abstract: Could not fetch the abstract:", "dataset", dataset.ID, "abstract", b.AbstractID, "user", c.User.ID)
-		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"), "")).Render(r.Context(), w)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -205,7 +205,7 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if b.SnapshotID != dataset.SnapshotID {
-		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"), "")).Render(r.Context(), w)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -233,7 +233,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, legacyC
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"), "")).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 

@@ -1,6 +1,14 @@
 package views
 
-templ ErrorDialog(msg string, redirectURL string) {
+type ErrorDialogOptions struct {
+	RedirectURL string
+}
+
+templ ErrorDialog(message string) {
+	@ErrorDialogWithOptions(message, ErrorDialogOptions{})
+}
+
+templ ErrorDialogWithOptions(message string, opts ErrorDialogOptions) {
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-body">
@@ -8,14 +16,14 @@ templ ErrorDialog(msg string, redirectURL string) {
 					<div class="bc-avatar">
 						<i class="if if-error-circle"></i>
 					</div>
-					<p>{ msg }</p>
+					<p>{ message }</p>
 				</div>
 			</div>
 			<div class="modal-footer">
 				<div class="bc-toolbar">
 					<div class="bc-toolbar-left">
-						if redirectURL != "" {
-							<a class="btn btn-link" href={ templ.URL(redirectURL) }>Close</a>
+						if opts.RedirectURL != "" {
+							<a class="btn btn-link" href={ templ.URL(opts.RedirectURL) }>Close</a>
 						} else {
 							<button class="btn btn-link modal-close">Close</button>
 						}
