@@ -43,7 +43,7 @@ func TestAddQueryParam(t *testing.T) {
 }
 
 func TestSetQueryParam(t *testing.T) {
-	u := URL(parseURL("https://user:Pa$$w0rd@example.com:8081/test/path/?f=a&f=b"))
+	u := URL(lo.Must(url.Parse("https://user:Pa$$w0rd@example.com:8081/test/path/?f=a&f=b")))
 
 	u.SetQueryParam("f", "c")
 	assertUrl(t, "https://user:Pa$$w0rd@example.com:8081/test/path/?f=c", u)
@@ -54,7 +54,7 @@ func TestSetQueryParam(t *testing.T) {
 
 func TestURL(t *testing.T) {
 	origURLStr := "https://user:Pa$$w0rd@example.com:8081/test/path/?f=a&f=b"
-	origURL := parseURL(origURLStr)
+	origURL := lo.Must(url.Parse(origURLStr))
 
 	u := URL(origURL)
 	u.SetQueryParam("f", "c")
