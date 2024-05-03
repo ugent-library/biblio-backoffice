@@ -206,9 +206,7 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if b.SnapshotID != dataset.SnapshotID {
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: c.Loc.Get("dataset.conflict_error_reload"),
-		})
+		views.ErrorDialog(c, c.Loc.Get("dataset.conflict_error_reload"), "").Render(r.Context(), w)
 		return
 	}
 
