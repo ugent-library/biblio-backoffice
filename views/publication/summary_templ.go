@@ -99,7 +99,7 @@ func Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) templ.Componen
 			return templ_7745c5c3_Err
 		}
 		if f := p.MainFile(); f != nil {
-			templ_7745c5c3_Err = AccessLevel(c, f).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = SummaryAccessLevel(c, f).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

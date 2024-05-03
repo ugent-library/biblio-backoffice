@@ -36,7 +36,7 @@ templ Summary(c *ctx.Ctx,  p *models.Publication, opts SummaryOpts) {
                                     }
                                 </span>
                                 if f := p.MainFile(); f != nil {
-                                    @AccessLevel(c, f)
+                                    @SummaryAccessLevel(c, f)
                                 }
                             </div>
                             <h4 class="mb-0">

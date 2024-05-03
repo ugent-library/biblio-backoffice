@@ -2,9 +2,9 @@ package publication
 
 import (
     "strings"
-    "fmt"
 	"github.com/ugent-library/biblio-backoffice/models"
     "github.com/ugent-library/biblio-backoffice/ctx"
+    "github.com/ugent-library/friendly"
 )
 
 templ Preview(c *ctx.Ctx, p *models.Publication) {
@@ -16,7 +16,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                         <div class="d-inline-flex align-items-center flex-wrap">
                             <span class={ "c-subline", "text-nowrap", "me-3", "pe-3", templ.KV("border-end", p.MainFile() != nil) }>{ c.Loc.Get("publication_types." + p.Type) }</span>
                             if f := p.MainFile(); f != nil {
-                                @AccessLevel(c, f)
+                                @SummaryAccessLevel(c, f)
                             }
                         </div>
                     </div>
@@ -108,7 +108,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                                                 <ul class="c-meta-list c-meta-list-horizontal">
                                                                     <li class="c-meta-item">Full text</li>
                                                                     <li class="c-meta-item">{ f.ContentType }</li>
-                                                                    <li class="c-meta-item">{ fmt.Sprintf("%d", f.Size) }</li>
+                                                                    <li class="c-meta-item">{ friendly.Bytes(int64(f.Size)) }</li>
                                                                 </ul>
                                                             </div>
                                                             <div class="c-button-toolbar">
@@ -178,6 +178,17 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                 </div>
                                 <div class="card-body border-bottom" x-data="{ mode: 'view' }">
                                     <h3 class="mb-3">Access level</h3>
+                                    <div class="bc-toolbar h-auto">
+                                        <div class="bc-toolbar-left">
+                                        if f := p.MainFile(); f != nil {
+                                            <div class="bc-avatar-and-text align-items-start">
+                                                @PreviewAccesLevel(c, f)
+                                            </div>
+                                        } else {
+                                        <p>-</p>
+                                        }
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -204,7 +215,9 @@ templ Preview(c *ctx.Ctx, p *models.Publication) {
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label form-label-top" for="">Alternative title</label>
-                                        <span>Alternative title</span>
+                                        if len(p.AlternativeTitle) > 0 {
+                                        <span>{ p.AlternativeTitle[0] }</span>
+                                        }
                                     </div>
                                     <div class="form-group">
                                         <div class="bc-toolbar h-auto">
