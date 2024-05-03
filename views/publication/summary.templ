@@ -7,61 +7,60 @@ import (
 )
 
 type SummaryOpts struct {
-    Thumbnail string
-    Badge     templ.Component
+	Thumbnail string
+	Badge     templ.Component
 }
 
-templ Summary(c *ctx.Ctx,  p *models.Publication, opts SummaryOpts) {
-    <div class="w-100">
-        <div class="c-thumbnail-and-text align-items-start w-100">
-            if opts.Thumbnail != "" {
-            <div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-small c-thumbnail-lg-large">
-                <div class="c-thumbnail-inner">
-                    <img src={ opts.Thumbnail }/>
-                </div>
-            </div>
-            }
-            <div class="c-thumbnail-text">
-                <div class="hstack-lg-responsive align-items-start gap-3 w-100">
-                    <div class="vstack gap-5">
-                        <div class="vstack gap-2">
-                            <div class="d-inline-flex align-items-center flex-wrap">
-                                if opts.Badge != nil {
-                                    @opts.Badge
-                                }
-                                <span class="c-subline text-nowrap me-2 pe-3 my-2 border-end">
-                                    { c.Loc.Get("publication_types." + p.Type) }
-                                    if p.Classification != "" {
-                                    : { p.Classification }
-                                    }
-                                </span>
-                                if f := p.MainFile(); f != nil {
-                                    @AccessLevel(c, f)
-                                }
-                            </div>
-                            <h4 class="mb-0">
-                                <span class="list-group-item-title">
-                                if p.Title != "" {
-                                    { p.Title }
-                                } else {
-                                    Untitled record
-                                }
-                                </span>
-                            </h4>
-                            <ul class="c-meta-list c-meta-list-inline">
-                                for _, val := range p.SummaryParts() {
-                                    <li class="c-meta-item">{ val }</li>
-                                }
-                            </ul>
-
-                            @contributorviews.Summary(c, "author", p.Author)
-                        </div>
-                    </div>
-                    <div class="c-button-toolbar flex-row-reverse flex-lg-row">
-                        { children... }
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
+	<div class="w-100">
+		<div class="c-thumbnail-and-text align-items-start w-100">
+			if opts.Thumbnail != "" {
+				<div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-small c-thumbnail-lg-large">
+					<div class="c-thumbnail-inner">
+						<img src={ opts.Thumbnail }/>
+					</div>
+				</div>
+			}
+			<div class="c-thumbnail-text">
+				<div class="hstack-lg-responsive align-items-start gap-3 w-100">
+					<div class="vstack gap-5">
+						<div class="vstack gap-2">
+							<div class="d-inline-flex align-items-center flex-wrap">
+								if opts.Badge != nil {
+									@opts.Badge
+								}
+								<span class="c-subline text-nowrap me-2 pe-3 my-2 border-end">
+									{ c.Loc.Get("publication_types." + p.Type) }
+									if p.Classification != "" {
+										: { p.Classification }
+									}
+								</span>
+								if f := p.MainFile(); f != nil {
+									@AccessLevel(c, f)
+								}
+							</div>
+							<h4 class="mb-0">
+								<span class="list-group-item-title">
+									if p.Title != "" {
+										{ p.Title }
+									} else {
+										Untitled record
+									}
+								</span>
+							</h4>
+							<ul class="c-meta-list c-meta-list-inline">
+								for _, val := range p.SummaryParts() {
+									<li class="c-meta-item">{ val }</li>
+								}
+							</ul>
+							@contributorviews.Summary(c, "author", p.Author)
+						</div>
+					</div>
+					<div class="c-button-toolbar flex-row-reverse flex-lg-row">
+						{ children... }
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 }
