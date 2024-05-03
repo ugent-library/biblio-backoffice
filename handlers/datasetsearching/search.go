@@ -7,7 +7,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
@@ -56,7 +55,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	default:
 		errorUnkownScope := fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))
 		c.Log.Warnw("dataset search: could not create searcher with passed filters", "errors", errorUnkownScope, "user", c.User.ID)
-		render.BadRequest(w, r, errorUnkownScope)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 	delete(args.Filters, "scope")
