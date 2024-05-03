@@ -54,6 +54,25 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 						Content: display.Link(p.DOI, identifiers.DOI.Resolve),
 					})
 				}
+				@display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.classification"),
+					Value: c.Loc.Get("publication_classifications." + p.Classification),
+				})
+			}
+			@detailsSection() {
+				if p.UsesTitle() {
+					@display.Field(display.FieldArgs{
+						Label:    c.Loc.Get("builder.title"),
+						Value:    p.Title,
+						Required: true,
+					})
+				}
+				if p.UsesAlternativeTitle() {
+					@display.Field(display.FieldArgs{
+						Label:   c.Loc.Get("builder.alternative_title"),
+						Content: display.List(p.AlternativeTitle, nil),
+					})
+				}
 			}
 		</ul>
 	</div>
