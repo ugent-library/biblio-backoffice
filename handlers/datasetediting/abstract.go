@@ -217,19 +217,20 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+func DeleteAbstract(w http.ResponseWriter, r *http.Request, legacyContext Context) {
 	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
 
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete datase abstract: could not bind request arguments", "errors", err, "request", r, "user", legacyContext.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("delete datase abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	legacyContext.Dataset.RemoveAbstract(b.AbstractID)
+	dataset.RemoveAbstract(b.AbstractID)
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), legacyContext.Dataset, legacyContext.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), dataset, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -238,8 +239,8 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, legacyC
 	}
 
 	if err != nil {
-		h.Logger.Warnf("delete dataset abstract: Could not save the dataset:", "errors", err, "dataset", legacyContext.Dataset.ID, "user", legacyContext.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Warnf("delete dataset abstract: Could not save the dataset:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 

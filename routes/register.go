@@ -417,7 +417,7 @@ func Register(c Config) {
 						// abstracts
 						r.Get("/abstracts/{abstract_id}/edit", datasetEditingHandler.Wrap(datasetediting.EditAbstract)).Name("dataset_edit_abstract")
 						r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", datasetediting.ConfirmDeleteAbstract).Name("dataset_confirm_delete_abstract")
-						r.Delete("/abstracts/{abstract_id}", datasetEditingHandler.Wrap(datasetEditingHandler.DeleteAbstract)).Name("dataset_delete_abstract")
+						r.Delete("/abstracts/{abstract_id}", datasetEditingHandler.Wrap(datasetediting.DeleteAbstract)).Name("dataset_delete_abstract")
 
 						// links
 						r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", datasetediting.ConfirmDeleteLink).Name("dataset_confirm_delete_link")
