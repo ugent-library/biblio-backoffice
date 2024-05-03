@@ -3,6 +3,7 @@ package publication
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
+	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/display"
 )
@@ -59,6 +60,7 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 					Value: c.Loc.Get("publication_classifications." + p.Classification),
 				})
 			}
+
 			@detailsSection() {
 				if p.UsesTitle() {
 					@display.Field(display.FieldArgs{
@@ -71,6 +73,35 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 					@display.Field(display.FieldArgs{
 						Label:   c.Loc.Get("builder.alternative_title"),
 						Content: display.List(p.AlternativeTitle, nil),
+					})
+				}
+			}
+
+			@detailsSection() {
+				if p.UsesLanguage() {
+					@display.Field(display.FieldArgs{
+						Label:   c.Loc.Get("builder.language"),
+						Content: display.List(localize.LanguageNames(p.Language), nil),
+					})
+				}
+				if p.UsesPublicationStatus() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.publication_status"),
+						Value: c.Loc.Get("publication_publishing_statuses." + p.PublicationStatus),
+					})
+				}
+                @display.Field(display.FieldArgs{
+                    Label:   c.Loc.Get("builder.extern"),
+                    Content: display.Boolean(p.Extern),
+                })
+				if p.UsesPublisher() {
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.place_of_publication"),
+						Value: p.PlaceOfPublication,
+					})
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.publisher"),
+						Value: p.Publisher,
 					})
 				}
 			}
