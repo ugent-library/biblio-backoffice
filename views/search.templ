@@ -27,10 +27,10 @@ func facetShortValue(values []string) templ.Component {
 func filterToLabels(c *ctx.Ctx, vals []string, locPrefix string) []string {
 	labels := make([]string, 0, len(vals))
 	for _, val := range vals {
-		if lVal := c.Loc.Get(locPrefix + "." + val); lVal != "" {
-			labels = append(labels, lVal)
-		} else {
+		if locPrefix == "" {
 			labels = append(labels, val)
+		} else {
+			labels = append(labels, c.Loc.Get(locPrefix+"."+val))
 		}
 	}
 	return labels
@@ -102,10 +102,10 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, facetV
 								}
 							/>
 							<label class="form-check-label" for={ fmt.Sprintf("filter-%s-%d", fieldName, i) }>
-								if lVal := c.Loc.Get(locPrefix+"."+f.Value); lVal != "" {
-									{ fmt.Sprintf("%s (%d)", lVal, f.Count) }
-								} else {
+								if locPrefix == "" {
 									{ fmt.Sprintf("%s (%d)", f.Value, f.Count) }
+								} else {
+									{ fmt.Sprintf("%s (%d)", c.Loc.Get(locPrefix+"."+f.Value), f.Count) }
 								}
 							</label>
 						</div>
