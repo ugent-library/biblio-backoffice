@@ -122,7 +122,7 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, facetV
 templ FacetSince(c *ctx.Ctx, fieldName string, title string, description string, searchArgs *models.SearchArgs) {
 	<div
 		class={ "dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName)) }
-		data-facet-dropdown="updated_since"
+		data-facet-dropdown={ fieldName }
 	>
 		<a
 			if searchArgs.HasFilter(fieldName) {
