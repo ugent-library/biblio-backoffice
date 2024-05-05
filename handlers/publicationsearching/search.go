@@ -3,13 +3,14 @@ package publicationsearching
 import (
 	"fmt"
 	"net/http"
-	"net/url"
 
 	"github.com/ugent-library/biblio-backoffice/backends"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
@@ -17,60 +18,52 @@ var (
 	userScopes = []string{"all", "contributed", "created"}
 )
 
-type ActionItem struct {
-	Template string
-	URL      *url.URL
-	Label    string
-}
-
-type YieldSearch struct {
-	Context
-	PageTitle    string
-	ActiveNav    string
-	Scopes       []string
-	CurrentScope string
-	IsFirstUse   bool
-	Hits         *models.PublicationHits
-	ActionItems  []*ActionItem
-}
-
-func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if ctx.UserRole == "curator" {
-		h.CurationSearch(w, r, ctx)
+func Search(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	if c.UserRole == "curator" {
+		CurationSearch(w, r)
 		return
 	}
 
-	ctx.SearchArgs.WithFacetLines(vocabularies.Facets["publication"])
-	if ctx.SearchArgs.FilterFor("scope") == "" {
-		ctx.SearchArgs.WithFilter("scope", "all")
+	searchArgs := models.NewSearchArgs()
+	if err := bind.Request(r, searchArgs); err != nil {
+		c.Log.Warnw("publication search: could not bind search arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
+		return
+	}
+	searchArgs.Cleanup()
+
+	searchArgs.WithFacetLines(vocabularies.Facets["publication"])
+	if searchArgs.FilterFor("scope") == "" {
+		searchArgs.WithFilter("scope", "all")
 	}
 
-	searcher := h.PublicationSearchIndex.WithScope("status", "private", "public", "returned")
-	args := ctx.SearchArgs.Clone()
+	searcher := c.PublicationSearchIndex.WithScope("status", "private", "public", "returned")
+	args := searchArgs.Clone()
 	var currentScope string
 
 	switch args.FilterFor("scope") {
 	case "created":
-		searcher = searcher.WithScope("creator_id", ctx.User.ID)
+		searcher = searcher.WithScope("creator_id", c.User.ID)
 		currentScope = "created"
 	case "contributed":
-		searcher = searcher.WithScope("author_id", ctx.User.ID)
+		searcher = searcher.WithScope("author_id", c.User.ID)
 		currentScope = "contributed"
 	case "all":
-		searcher = searcher.WithScope("creator_id|author_id", ctx.User.ID)
+		searcher = searcher.WithScope("creator_id|author_id", c.User.ID)
 		currentScope = "all"
 	default:
 		errorUnkownScope := fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))
-		h.Logger.Warnw("publication search: could not create searcher with passed filters", "errors", errorUnkownScope, "user", ctx.User.ID)
-		render.BadRequest(w, r, errorUnkownScope)
+		c.Log.Warnw("publication search: could not create searcher with passed filters", "errors", errorUnkownScope, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 	delete(args.Filters, "scope")
 
 	hits, err := searcher.Search(args)
 	if err != nil {
-		h.Logger.Errorw("publication search: could not execute search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("publication search: could not execute search", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
@@ -83,8 +76,8 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 	if hits.Total == 0 {
 		globalHits, globalHitsErr := globalSearch(searcher)
 		if globalHitsErr != nil {
-			h.Logger.Errorw("publication search: could not execute global search", "errors", globalHitsErr, "user", ctx.User.ID)
-			render.InternalServerError(w, r, globalHitsErr)
+			c.Log.Errorw("publication search: could not execute global search", "errors", globalHitsErr, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
 		isFirstUse = globalHits.Total == 0
@@ -92,23 +85,20 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request, ctx Context) {
 
 	// you are on the wrong page: cap page to last available page
 	if hits.Total > 0 && len(hits.Hits) == 0 {
-		query := ctx.CurrentURL.Query()
+		query := c.CurrentURL.Query()
 		query.Set("page", fmt.Sprintf("%d", hits.TotalPages()))
-		ctx.CurrentURL.RawQuery = query.Encode()
-		http.Redirect(w, r, ctx.CurrentURL.String(), http.StatusTemporaryRedirect)
+		c.CurrentURL.RawQuery = query.Encode()
+		http.Redirect(w, r, c.CurrentURL.String(), http.StatusTemporaryRedirect)
 		return
 	}
 
-	render.Layout(w, "layouts/default", "publication/pages/search", YieldSearch{
-		Context:      ctx,
-		PageTitle:    "Overview - Publications - Biblio",
-		ActiveNav:    "publications",
+	publicationviews.Search(c, &publicationviews.SearchArgs{
 		Scopes:       userScopes,
 		Hits:         hits,
 		IsFirstUse:   isFirstUse,
 		CurrentScope: currentScope,
-		ActionItems:  h.getSearchActions(ctx),
-	})
+		SearchArgs:   searchArgs,
+	}).Render(r.Context(), w)
 }
 
 /*
@@ -128,19 +118,30 @@ func globalSearch(searcher backends.PublicationIndex) (*models.PublicationHits, 
 	return searcher.Search(globalArgs)
 }
 
-func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurate() {
-		render.Forbidden(w, r)
+func CurationSearch(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	if !c.User.CanCurate() {
+		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
 
-	ctx.SearchArgs.WithFacetLines(vocabularies.Facets["publication_curation"])
+	searchArgs := models.NewSearchArgs()
+	if err := bind.Request(r, searchArgs); err != nil {
+		c.Log.Warnw("publication search: could not bind search arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
+		return
+	}
+	searchArgs.Cleanup()
 
-	searcher := h.PublicationSearchIndex.WithScope("status", "private", "public", "returned")
-	hits, err := searcher.Search(ctx.SearchArgs)
+	c.Log.Infof("my translation: %s", c.Loc.Get("my translation"))
+
+	searchArgs.WithFacetLines(vocabularies.Facets["publication_curation"])
+
+	searcher := c.PublicationSearchIndex.WithScope("status", "private", "public", "returned")
+	hits, err := searcher.Search(searchArgs)
 	if err != nil {
-		h.Logger.Errorw("publication search: could not execute search", "errors", err, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("publication search: could not execute search", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
@@ -153,8 +154,8 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 	if hits.Total == 0 {
 		globalHits, globalHitsErr := globalSearch(searcher)
 		if globalHitsErr != nil {
-			h.Logger.Errorw("curation publication search: could not execute global search", "errors", globalHitsErr, "user", ctx.User.ID)
-			render.InternalServerError(w, r, globalHitsErr)
+			c.Log.Errorw("curation publication search: could not execute global search", "errors", globalHitsErr, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
 		isFirstUse = globalHits.Total == 0
@@ -162,56 +163,18 @@ func (h *Handler) CurationSearch(w http.ResponseWriter, r *http.Request, ctx Con
 
 	// you are on the wrong page: cap page to last available page
 	if hits.Total > 0 && len(hits.Hits) == 0 {
-		query := ctx.CurrentURL.Query()
+		query := c.CurrentURL.Query()
 		query.Set("page", fmt.Sprintf("%d", hits.TotalPages()))
-		ctx.CurrentURL.RawQuery = query.Encode()
-		http.Redirect(w, r, ctx.CurrentURL.String(), http.StatusTemporaryRedirect)
+		c.CurrentURL.RawQuery = query.Encode()
+		http.Redirect(w, r, c.CurrentURL.String(), http.StatusTemporaryRedirect)
 		return
 	}
 
-	render.Layout(w, "layouts/default", "publication/pages/search", YieldSearch{
-		Context:      ctx,
-		PageTitle:    "Overview - Publications - Biblio",
-		ActiveNav:    "publications",
+	publicationviews.Search(c, &publicationviews.SearchArgs{
+		Scopes:       nil,
 		Hits:         hits,
 		IsFirstUse:   isFirstUse,
-		CurrentScope: "all", //only here to translate first use
-		ActionItems:  h.getCurationSearchActions(ctx),
-	})
+		CurrentScope: "all",
+		SearchArgs:   searchArgs,
+	}).Render(r.Context(), w)
 }
-
-func (h *Handler) getCurationSearchActions(ctx Context) []*ActionItem {
-	actionItems := make([]*ActionItem, 0)
-	// if oa := h.getOrcidAction(ctx); oa != nil {
-	// 	actionItems = append(actionItems, oa)
-	// }
-	u := h.PathFor("export_publications", "format", "xlsx")
-	q, _ := bind.EncodeQuery(ctx.SearchArgs)
-	u.RawQuery = q.Encode()
-	actionItems = append(actionItems, &ActionItem{
-		Label:    ctx.Loc.Get("export_to.xlsx"),
-		URL:      u,
-		Template: "actions/export",
-	})
-	return actionItems
-}
-
-func (h *Handler) getSearchActions(ctx Context) []*ActionItem {
-	// actionItems := make([]*ActionItem, 0)
-	// if oa := h.getOrcidAction(ctx); oa != nil {
-	// 	actionItems = append(actionItems, oa)
-	// }
-	// return actionItems
-	return nil
-}
-
-// func (h *Handler) getOrcidAction(ctx Context) *ActionItem {
-// 	if ctx.User.ORCID == "" || ctx.User.ORCIDToken == "" {
-// 		return nil
-// 	}
-// 	return &ActionItem{
-// 		Label:    "Send my publications to ORCID",
-// 		URL:      h.PathFor("publication_orcid_add_all"),
-// 		Template: "actions/publication_orcid_add_all",
-// 	}
-// }
