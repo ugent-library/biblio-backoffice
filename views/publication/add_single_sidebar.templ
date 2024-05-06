@@ -1,6 +1,9 @@
 package publication
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/views/shared"
+)
 
 templ AddSingleSidebar(c *ctx.Ctx, step int) {
 	<div class="c-sub-sidebar c-sidebar--bordered d-none d-lg-block">
@@ -23,46 +26,10 @@ templ AddSingleSidebar(c *ctx.Ctx, step int) {
 			<nav>
 				<div class="c-sub-sidebar-menu">
 					<ol class="c-stepper my-6">
-						<li class={ "c-stepper__item", templ.KV("c-stepper__item--active", step == 1) }>
-							<a href={ templ.URL(c.PathTo("publication_add").String()) }>
-								if step > 1 {
-									<div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
-								} else {
-									<div class={ "c-stepper__step", templ.KV("c-stepper__step--active", step == 1) }>1</div>
-								}
-								<span class="c-stepper__text">Add publication(s)</span>
-							</a>
-						</li>
-						<li class={ "c-stepper__item", templ.KV("c-stepper__item--active", step == 2) }>
-							<a href="#">
-								if step > 2 {
-									<div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
-								} else {
-									<div class={ "c-stepper__step", templ.KV("c-stepper__step--active", step == 2) }>2</div>
-								}
-								<span class="c-stepper__text">Complete description</span>
-							</a>
-						</li>
-						<li class={ "c-stepper__item", templ.KV("c-stepper__item--active", step == 3) }>
-							<a href="#">
-								if step > 3 {
-									<div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
-								} else {
-									<div class={ "c-stepper__step", templ.KV("c-stepper__step--active", step == 3) }>3</div>
-								}
-								<span class="c-stepper__text">Review and publish</span>
-							</a>
-						</li>
-						<li class={ "c-stepper__item", templ.KV("c-stepper__item--active", step == 4) }>
-							<a href="#">
-								if step > 4 {
-									<div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
-								} else {
-									<div class={ "c-stepper__step", templ.KV("c-stepper__step--active", step == 4) }>4</div>
-								}
-								<span class="c-stepper__text">Finished</span>
-							</a>
-						</li>
+						@shared.SidebarStep(1, "Add publication(s)", step, c.PathTo("publication_add"))
+						@shared.SidebarStep(2, "Complete description", step, nil)
+						@shared.SidebarStep(3, "Review and publish", step, nil)
+						@shared.SidebarStep(4, "Finished", step, nil)
 					</ol>
 				</div>
 			</nav>
