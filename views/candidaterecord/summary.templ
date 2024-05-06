@@ -32,7 +32,7 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 								}
 								@publicationviews.BadgeType(c, p)
 								if f := p.MainFile(); f != nil {
-									@publicationviews.AccessLevel(c, f)
+									@publicationviews.SummaryAccessLevel(c, f)
 								}
 							</div>
 							<h4 class="mb-0">

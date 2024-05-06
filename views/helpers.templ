@@ -8,15 +8,15 @@ import h "html"
 var reURL, _ = xurls.StrictMatchingScheme("https")
 
 templ csrfField(c *ctx.Ctx) {
-    <input type="hidden" name={ c.CSRFName } value={ c.CSRFToken}/>
+	<input type="hidden" name={ c.CSRFName } value={ c.CSRFToken }/>
 }
 
 // TODO remove need for this
 func html(text string) templ.Component {
-    return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
-        _, err := io.WriteString(w, text)
-        return err
-    })
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
+		_, err := io.WriteString(w, text)
+		return err
+	})
 }
 
 func Linkify(text string) string {

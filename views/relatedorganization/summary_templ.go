@@ -34,7 +34,7 @@ func SummaryItem(c *ctx.Ctx, org *models.Organization) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(org.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 8, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 8, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -96,7 +96,7 @@ func Summary(c *ctx.Ctx, relatedOrganizations []*models.RelatedOrganization, url
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(len(relatedOrganizations) - 3))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 21, Col: 55}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 21, Col: 49}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -110,7 +110,7 @@ func Summary(c *ctx.Ctx, relatedOrganizations []*models.RelatedOrganization, url
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs("departments")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 23, Col: 31}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 23, Col: 22}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
@@ -120,7 +120,7 @@ func Summary(c *ctx.Ctx, relatedOrganizations []*models.RelatedOrganization, url
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs("department")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 25, Col: 30}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 25, Col: 21}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -135,7 +135,7 @@ func Summary(c *ctx.Ctx, relatedOrganizations []*models.RelatedOrganization, url
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(len(relatedOrganizations) - 3))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 29, Col: 55}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 29, Col: 48}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -149,7 +149,7 @@ func Summary(c *ctx.Ctx, relatedOrganizations []*models.RelatedOrganization, url
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs("departments")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 31, Col: 31}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 31, Col: 21}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -159,7 +159,7 @@ func Summary(c *ctx.Ctx, relatedOrganizations []*models.RelatedOrganization, url
 					var templ_7745c5c3_Var10 string
 					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs("department")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 33, Col: 30}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `relatedorganization/summary.templ`, Line: 33, Col: 20}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {

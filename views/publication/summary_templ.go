@@ -77,7 +77,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if mainFile := args.Publication.MainFile(); mainFile != nil {
-			templ_7745c5c3_Err = AccessLevel(c, mainFile).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = SummaryAccessLevel(c, mainFile).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

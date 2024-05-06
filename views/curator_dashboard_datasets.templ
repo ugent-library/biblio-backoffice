@@ -1,7 +1,7 @@
 package views
 
-import(
-    "github.com/ugent-library/biblio-backoffice/ctx"
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
 )
 
 type CuratorDashboardDatasetsArgs struct {
@@ -12,86 +12,84 @@ type CuratorDashboardDatasetsArgs struct {
 }
 
 templ CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) {
-    @PageLayout(c, "Dashboard - Datasets - Biblio", nil) {
-    <div class="c-sub-sidebar c-sidebar--bordered">
-        <div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom">
-            <div class="bc-toolbar">
-                <div class="bc-toolbar-left">
-                    <div class="bc-toolbar-item">
-                        <h4 class="bc-toolbar-title">Dashboard</h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="c-sub-sidebar__menu my-6">
-        @curatorDashboardShowNav(c, args.ActiveSubNav)
-        </div>
-    </div>
-
-    <div class="w-100 u-scroll-wrapper">
-        <div class="bg-white">
-            <div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
-                <div class="bc-toolbar bc-toolbar--auto">
-                    <div class="bc-toolbar-left">
-                        <div class="bc-toolbar-item">
-                            <h4 class="bc-toolbar-title">Datasets</h4>
-                        </div>
-                    </div>
-                    <div class="bc-toolbar-right">
-                        <div class="bc-toolbar-item">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="u-scroll-wrapper__body w-100 p-6">
-            <div class="pb-5">
-                <p><strong>Why are the totals wrong?</strong></p>
-                <p>Some publications are associated with more than 1 faculty.</p>
-                <p>The category "all" in the table header may contain less publications, as it only counts each publication once.</p>
-            </div>
-            <div class="card w-100 mb-6">
-                <div class="card-header">
-                    <div class="bc-toolbar">
-                        <div class="bc-toolbar-left">
-                            <h3 class="card-title">Datasets</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body w-100 p-0">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered">
-                            <thead>
-                                <tr>
-                                    <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col"></th>
-                                    for _, f := range args.Faculties {
-                                        <th scope="col">{f}</th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                            for pti, pt := range args.PTypes {
-                                <tr>
-                                    <th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col">{pt}</th>
-                                    for _, f := range args.Faculties{
-                                    if cell, ok := args.Datasets[f][pti]; ok {
-                                    <td>
-                                        if cell[1] == "" {
-                                        <span>{cell[0]}</span>
-                                        } else {
-                                        <a href={templ.URL(cell[1])}>{cell[0]}</a>
-                                        }
-                                    </td>
-                                    }
-                                    }
-                                </tr>
-                            }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    }
+	@PageLayout(c, "Dashboard - Datasets - Biblio", nil) {
+		<div class="c-sub-sidebar c-sidebar--bordered">
+			<div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<div class="bc-toolbar-item">
+							<h4 class="bc-toolbar-title">Dashboard</h4>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="c-sub-sidebar__menu my-6">
+				@curatorDashboardShowNav(c, args.ActiveSubNav)
+			</div>
+		</div>
+		<div class="w-100 u-scroll-wrapper">
+			<div class="bg-white">
+				<div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
+					<div class="bc-toolbar bc-toolbar--auto">
+						<div class="bc-toolbar-left">
+							<div class="bc-toolbar-item">
+								<h4 class="bc-toolbar-title">Datasets</h4>
+							</div>
+						</div>
+						<div class="bc-toolbar-right">
+							<div class="bc-toolbar-item"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="u-scroll-wrapper__body w-100 p-6">
+				<div class="pb-5">
+					<p><strong>Why are the totals wrong?</strong></p>
+					<p>Some publications are associated with more than 1 faculty.</p>
+					<p>The category "all" in the table header may contain less publications, as it only counts each publication once.</p>
+				</div>
+				<div class="card w-100 mb-6">
+					<div class="card-header">
+						<div class="bc-toolbar">
+							<div class="bc-toolbar-left">
+								<h3 class="card-title">Datasets</h3>
+							</div>
+						</div>
+					</div>
+					<div class="card-body w-100 p-0">
+						<div class="table-responsive">
+							<table class="table table-sm table-bordered">
+								<thead>
+									<tr>
+										<th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col"></th>
+										for _, f := range args.Faculties {
+											<th scope="col">{ f }</th>
+										}
+									</tr>
+								</thead>
+								<tbody>
+									for pti, pt := range args.PTypes {
+										<tr>
+											<th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col">{ pt }</th>
+											for _, f := range args.Faculties {
+												if cell, ok := args.Datasets[f][pti]; ok {
+													<td>
+														if cell[1] == "" {
+															<span>{ cell[0] }</span>
+														} else {
+															<a href={ templ.URL(cell[1]) }>{ cell[0] }</a>
+														}
+													</td>
+												}
+											}
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
 }

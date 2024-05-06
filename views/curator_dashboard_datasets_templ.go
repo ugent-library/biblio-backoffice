@@ -60,7 +60,7 @@ func CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) te
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(f)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_datasets.templ`, Line: 67, Col: 58}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_datasets.templ`, Line: 65, Col: 30}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -83,7 +83,7 @@ func CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) te
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(pt)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_datasets.templ`, Line: 74, Col: 106}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_datasets.templ`, Line: 72, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -107,7 +107,7 @@ func CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) te
 							var templ_7745c5c3_Var5 string
 							templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(cell[0])
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_datasets.templ`, Line: 79, Col: 54}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_datasets.templ`, Line: 77, Col: 30}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 							if templ_7745c5c3_Err != nil {
@@ -134,7 +134,7 @@ func CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) te
 							var templ_7745c5c3_Var7 string
 							templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(cell[0])
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_datasets.templ`, Line: 81, Col: 77}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_datasets.templ`, Line: 79, Col: 55}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 							if templ_7745c5c3_Err != nil {

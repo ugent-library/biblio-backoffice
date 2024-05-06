@@ -1,79 +1,79 @@
 package publication
 
 import (
-    "github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 templ SummaryAccessLevel(c *ctx.Ctx, f *models.PublicationFile) {
-    <span class={ "c-subline", "me-3", "pe-3", templ.KV("border-end", f.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }>
-        if f.AccessLevel == "info:eu-repo/semantics/openAccess" {
-            <i class="if if-download if--small if--success"></i>
-            <span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</span>
-        } else if f.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
-            <i class="if if-time if--small if--muted"></i>
-            <span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</span>
-        } else if f.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
-            <i class="if if-ghent-university if--small if--primary"></i>
-            <span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</span>
-        } else if f.AccessLevel == "info:eu-repo/semantics/closedAccess" {
-            <i class="if if-eye-off if--small if--muted"></i>
-            <span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</span>
-        }
-    </span>
-    if f.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
-        <span class="c-subline me-3 pe-3 border-end">
-            if f.AccessLevelDuringEmbargo == "info:eu-repo/semantics/closedAccess" {
-                <i class="if if-eye-off if--small if--muted"></i>
-            } else {
-                <i class="if if-ghent-university if--small if--primary"></i>
-            }
-            <span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels_during_embargo." + f.AccessLevelDuringEmbargo) }</span>
-        </span>
-        <span class="c-subline me-3 pe-3">
-            if f.AccessLevelAfterEmbargo == "info:eu-repo/semantics/openAccess" {
-            <i class="if if-download if--small if--success"></i>
-            } else {
-            <i class="if if-ghent-university if--small if--primary"></i>
-            }
-            { c.Loc.Get("publication_file_access_levels_after_embargo." + f.AccessLevelAfterEmbargo) } from { f.EmbargoDate }
-        </span>
-    }
+	<span class={ "c-subline", "me-3", "pe-3", templ.KV("border-end", f.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }>
+		if f.AccessLevel == "info:eu-repo/semantics/openAccess" {
+			<i class="if if-download if--small if--success"></i>
+			<span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</span>
+		} else if f.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+			<i class="if if-time if--small if--muted"></i>
+			<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</span>
+		} else if f.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
+			<i class="if if-ghent-university if--small if--primary"></i>
+			<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</span>
+		} else if f.AccessLevel == "info:eu-repo/semantics/closedAccess" {
+			<i class="if if-eye-off if--small if--muted"></i>
+			<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</span>
+		}
+	</span>
+	if f.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+		<span class="c-subline me-3 pe-3 border-end">
+			if f.AccessLevelDuringEmbargo == "info:eu-repo/semantics/closedAccess" {
+				<i class="if if-eye-off if--small if--muted"></i>
+			} else {
+				<i class="if if-ghent-university if--small if--primary"></i>
+			}
+			<span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels_during_embargo." + f.AccessLevelDuringEmbargo) }</span>
+		</span>
+		<span class="c-subline me-3 pe-3">
+			if f.AccessLevelAfterEmbargo == "info:eu-repo/semantics/openAccess" {
+				<i class="if if-download if--small if--success"></i>
+			} else {
+				<i class="if if-ghent-university if--small if--primary"></i>
+			}
+			{ c.Loc.Get("publication_file_access_levels_after_embargo." + f.AccessLevelAfterEmbargo) } from { f.EmbargoDate }
+		</span>
+	}
 }
 
 templ PreviewAccesLevel(c *ctx.Ctx, f *models.PublicationFile) {
-        switch f.AccessLevel {
-            case "info:eu-repo/semantics/openAccess":
-                <div class="bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue">
-                    <i class="if if-download"></i>
-                </div>
-                <div class="bc-avatar-text">
-                    <h4>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</h4>
-                    <p class="text-muted c-body-small">[BLANK COPY]</p>
-                </div>
-            case "info:eu-repo/semantics/embargoedAccess":
-                <div class="bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue">
-                    <i class="if if-time text-muted"></i>
-                </div>
-                <div class="bc-avatar-text">
-                    <h4>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</h4>
-                    <p class="text-muted c-body-small">[BLANK COPY]</p>
-                </div>
-            case "info:eu-repo/semantics/restrictedAccess":
-                <div class="bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue">
-                    <i class="if if-ghent-university"></i>
-                </div>
-                <div class="bc-avatar-text">
-                    <h4>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</h4>
-                    <p class="text-muted c-body-small">The document will be visible to users within the UGent network only. The metadata will be available to anyone.</p>
-                </div>
-            case "info:eu-repo/semantics/closedAccess":
-                <div class="bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue">
-                    <i class="if if-eye-off text-muted"></i>
-                </div>
-                <div class="bc-avatar-text">
-                    <h4>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</h4>
-                    <p class="text-muted c-body-small">[BLANK COPY]</p>
-                </div>
-        }
-} 
+	switch f.AccessLevel {
+		case "info:eu-repo/semantics/openAccess":
+			<div class="bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue">
+				<i class="if if-download"></i>
+			</div>
+			<div class="bc-avatar-text">
+				<h4>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</h4>
+				<p class="text-muted c-body-small">[BLANK COPY]</p>
+			</div>
+		case "info:eu-repo/semantics/embargoedAccess":
+			<div class="bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue">
+				<i class="if if-time text-muted"></i>
+			</div>
+			<div class="bc-avatar-text">
+				<h4>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</h4>
+				<p class="text-muted c-body-small">[BLANK COPY]</p>
+			</div>
+		case "info:eu-repo/semantics/restrictedAccess":
+			<div class="bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue">
+				<i class="if if-ghent-university"></i>
+			</div>
+			<div class="bc-avatar-text">
+				<h4>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</h4>
+				<p class="text-muted c-body-small">The document will be visible to users within the UGent network only. The metadata will be available to anyone.</p>
+			</div>
+		case "info:eu-repo/semantics/closedAccess":
+			<div class="bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue">
+				<i class="if if-eye-off text-muted"></i>
+			</div>
+			<div class="bc-avatar-text">
+				<h4>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</h4>
+				<p class="text-muted c-body-small">[BLANK COPY]</p>
+			</div>
+	}
+}
