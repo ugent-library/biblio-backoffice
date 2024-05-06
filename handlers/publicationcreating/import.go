@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/oklog/ulid/v2"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
@@ -20,6 +21,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views/publication/pages"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/okay"
@@ -75,7 +77,10 @@ type YieldValidationErrors struct {
 	Errors form.Errors
 }
 
-func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
+func Add(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+	c := ctx.Get(r)
+
+	const pageTitle = "Add - Publications - Biblio"
 	tmpl := ""
 	switch r.URL.Query().Get("method") {
 	case "identifier":
@@ -85,14 +90,15 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
 	case "wos":
 		tmpl = "publication/pages/add_wos"
 	case "bibtex":
-		tmpl = "publication/pages/add_bibtex"
+		pages.AddBibTeX(c, pageTitle, 1).Render(r.Context(), w)
+		return
 	default:
 		tmpl = "publication/pages/add"
 	}
 
 	render.Layout(w, "layouts/default", tmpl, YieldAddSingle{
-		Context:   ctx,
-		PageTitle: "Add - Publications - Biblio",
+		Context:   legacyContext,
+		PageTitle: pageTitle,
 		Step:      1,
 		ActiveNav: "publications",
 	})

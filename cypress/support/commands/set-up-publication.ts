@@ -38,7 +38,7 @@ export default function setUpPublication(
     publicationType,
   );
 
-  cy.visit("/publication/add", NO_LOG);
+  cy.visit("/add-publication", NO_LOG);
 
   cy.contains("Enter a publication manually", NO_LOG)
     .find(":radio", NO_LOG)
