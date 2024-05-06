@@ -23,11 +23,11 @@ templ SuggestDepartments(c *ctx.Ctx, dataset *models.Dataset, hits []models.Comp
 									<div class="list-group-item-meta-left"></div>
 									<div class="list-group-item-meta-right">
 										<button
- 											class="btn btn-primary"
- 											hx-post={ c.PathTo("dataset_create_department", "id", dataset.ID).String() }
- 											hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
- 											hx-vals={ fmt.Sprintf(`{"department_id": "%s"}`, hit.ID) }
- 											hx-swap="none"
+											class="btn btn-primary"
+											hx-post={ c.PathTo("dataset_create_department", "id", dataset.ID).String() }
+											hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
+											hx-vals={ fmt.Sprintf(`{"department_id": "%s"}`, hit.ID) }
+											hx-swap="none"
 										>Add department</button>
 									</div>
 								</div>

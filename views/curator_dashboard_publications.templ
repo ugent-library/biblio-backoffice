@@ -63,12 +63,12 @@ templ CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublication
 							<div class="bc-toolbar-right text-align-right">
 								<div>
 									<select
- 										class="form-select w-100"
- 										name="uyear"
- 										hx-post={ c.PathTo("dashboard_refresh_upublications", "type", args.Type).String() }
- 										hx-target="#tbl-upublications"
- 										hx-include="[name=&#39;ayear&#39;]"
- 										hx-indicator="#tbl-upublications .spinner-card-backdrop"
+										class="form-select w-100"
+										name="uyear"
+										hx-post={ c.PathTo("dashboard_refresh_upublications", "type", args.Type).String() }
+										hx-target="#tbl-upublications"
+										hx-include="[name='ayear']"
+										hx-indicator="#tbl-upublications .spinner-card-backdrop"
 									>
 										<option value="">All years</option>
 										for _, uyear := range args.AllUPublicationYears {
@@ -98,12 +98,12 @@ templ CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublication
 							<div class="bc-toolbar-right text-align-right">
 								<div>
 									<select
- 										name="ayear"
- 										class="form-select w-100"
- 										hx-post={ c.PathTo("dashboard_refresh_apublications", "type", args.Type).String() }
- 										hx-target="#tbl-apublications"
- 										hx-include="[name=&#39;uyear&#39;]"
- 										hx-indicator="#tbl-apublications .spinner-card-backdrop"
+										name="ayear"
+										class="form-select w-100"
+										hx-post={ c.PathTo("dashboard_refresh_apublications", "type", args.Type).String() }
+										hx-target="#tbl-apublications"
+										hx-include="[name='uyear']"
+										hx-indicator="#tbl-apublications .spinner-card-backdrop"
 									>
 										<option value="">All years</option>
 										for _, ayear := range args.AllUPublicationYears {

@@ -21,9 +21,9 @@ templ Details(c *ctx.Ctx, p *models.Publication) {
 					if c.User.CanEditPublication(p) {
 						<div class="c-button-toolbar" data-panel-state="read">
 							<button
- 								class="btn btn-outline-primary"
- 								hx-get={ c.PathTo("publication_edit_details", "id", p.ID).String() }
- 								hx-target="#modals"
+								class="btn btn-outline-primary"
+								hx-get={ c.PathTo("publication_edit_details", "id", p.ID).String() }
+								hx-target="#modals"
 							>
 								<i class="if if-edit"></i>
 								<div class="btn-text">Edit</div>

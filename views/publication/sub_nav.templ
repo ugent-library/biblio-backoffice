@@ -13,14 +13,14 @@ templ SubNav(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 		for _, sn := range SubNavs {
 			<li class="nav-item">
 				<a
- 					class={ "nav-link", templ.KV("active", c.SubNav == sn) }
- 					href={ views.URL(c.PathTo("publication_"+sn, "id", p.ID)).QuerySet("redirect-url", redirectURL, "show", sn).SafeURL() }
- 					hx-get={ views.URL(c.PathTo("publication_"+sn, "id", p.ID)).QuerySet("redirect-url", redirectURL).String() }
- 					hx-target="#show-content"
- 					hx-push-url={ views.URL(c.PathTo("publication_"+sn, "id", p.ID)).QuerySet("redirect-url", redirectURL, "show", sn).String() }
- 					role="tab"
- 					aria-controls={ sn }
- 					if c.SubNav == sn {
+					class={ "nav-link", templ.KV("active", c.SubNav == sn) }
+					href={ views.URL(c.PathTo("publication_"+sn, "id", p.ID)).QuerySet("redirect-url", redirectURL, "show", sn).SafeURL() }
+					hx-get={ views.URL(c.PathTo("publication_"+sn, "id", p.ID)).QuerySet("redirect-url", redirectURL).String() }
+					hx-target="#show-content"
+					hx-push-url={ views.URL(c.PathTo("publication_"+sn, "id", p.ID)).QuerySet("redirect-url", redirectURL, "show", sn).String() }
+					role="tab"
+					aria-controls={ sn }
+					if c.SubNav == sn {
 						aria-selected="true"
 					} else {
 						aria-selected="false"

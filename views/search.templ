@@ -38,11 +38,11 @@ func filterToLabels(c *ctx.Ctx, vals []string, locPrefix string) []string {
 
 templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPrefixShort string, facetValues models.FacetValues, searchArgs *models.SearchArgs) {
 	<div
- 		class={ "dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName)) }
- 		data-facet-dropdown={ fieldName }
+		class={ "dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName)) }
+		data-facet-dropdown={ fieldName }
 	>
 		<a
- 			if searchArgs.HasFilter(fieldName) {
+			if searchArgs.HasFilter(fieldName) {
 				class="badge bg-primary me-3"
 			} else {
 				if facetValues.HasMatches() {
@@ -51,11 +51,11 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPre
 					class="badge badge-light me-3"
 				}
 			}
- 			data-bs-toggle="dropdown"
- 			data-persist="true"
- 			aria-haspopup="true"
- 			aria-expanded="false"
- 			role="button"
+			data-bs-toggle="dropdown"
+			data-persist="true"
+			aria-haspopup="true"
+			aria-expanded="false"
+			role="button"
 		>
 			<span class="badge-text">{ title }</span>
 			if filters := searchArgs.FiltersFor(fieldName); len(filters) > 0 {
@@ -92,12 +92,12 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPre
 					for i, f := range facetValues {
 						<div class="form-check">
 							<input
- 								class="form-check-input"
- 								id={ fmt.Sprintf("filter-%s-%d", fieldName, i) }
- 								type="checkbox"
- 								name={ fmt.Sprintf("f[%s]", fieldName) }
- 								value={ f.Value }
- 								if searchArgs.HasFilter(fieldName, f.Value) {
+								class="form-check-input"
+								id={ fmt.Sprintf("filter-%s-%d", fieldName, i) }
+								type="checkbox"
+								name={ fmt.Sprintf("f[%s]", fieldName) }
+								value={ f.Value }
+								if searchArgs.HasFilter(fieldName, f.Value) {
 									checked
 								}
 							/>
@@ -121,20 +121,20 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPre
 
 templ FacetSince(c *ctx.Ctx, fieldName string, title string, description string, searchArgs *models.SearchArgs) {
 	<div
- 		class={ "dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName)) }
- 		data-facet-dropdown={ fieldName }
+		class={ "dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName)) }
+		data-facet-dropdown={ fieldName }
 	>
 		<a
- 			if searchArgs.HasFilter(fieldName) {
+			if searchArgs.HasFilter(fieldName) {
 				class="badge bg-primary me-3"
 			} else {
 				class="badge badge-default me-3"
 			}
- 			data-bs-toggle="dropdown"
- 			data-persist="true"
- 			aria-haspopup="true"
- 			aria-expanded="false"
- 			role="button"
+			data-bs-toggle="dropdown"
+			data-persist="true"
+			aria-haspopup="true"
+			aria-expanded="false"
+			role="button"
 		>
 			<span class="badge-text">{ title }</span>
 			if filter := searchArgs.FilterFor(fieldName); filter != "" {
@@ -181,7 +181,7 @@ templ FacetLine() {
 
 templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 	<div
- 		class={ "bc-toolbar", "bc-toolbar--auto", "mb-4", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2) }
+		class={ "bc-toolbar", "bc-toolbar--auto", "mb-4", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2) }
 	>
 		<div class="bc-toolbar-left">
 			<div class="bc-toolbar-item">
@@ -194,11 +194,11 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 					if len(searchArgs.FacetLines) > 2 {
 						<div class="form-check">
 							<input
- 								type="checkbox"
- 								id="show-all-facet-filters-toggle"
- 								class="btn-check toggle"
- 								autocomplete="off"
- 								if searchArgs.HasActiveCollapsedFacets() {
+								type="checkbox"
+								id="show-all-facet-filters-toggle"
+								class="btn-check toggle"
+								autocomplete="off"
+								if searchArgs.HasActiveCollapsedFacets() {
 									checked
 								}
 							/>
@@ -256,8 +256,8 @@ templ Query(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 					<select class="form-select form-change-submit" name="sort" id="sort">
 						for _, sort := range vocabularies.Map["publication_sorts"] {
 							<option
- 								value={ sort }
- 								if searchArgs.HasSort(sort) {
+								value={ sort }
+								if searchArgs.HasSort(sort) {
 									selected
 								}
 							>

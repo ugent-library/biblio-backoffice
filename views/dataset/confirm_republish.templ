@@ -24,9 +24,9 @@ templ ConfirmRepublish(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) 
 						</div>
 						<div class="bc-toolbar-right">
 							<button
- 								class="btn btn-success"
- 								hx-post={ c.PathTo("dataset_republish", "id", dataset.ID, "redirect-url", redirectURL).String() }
- 								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
+								class="btn btn-success"
+								hx-post={ c.PathTo("dataset_republish", "id", dataset.ID, "redirect-url", redirectURL).String() }
+								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
 							>
 								Republish
 							</button>

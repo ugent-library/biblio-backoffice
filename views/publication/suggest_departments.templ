@@ -23,11 +23,11 @@ templ SuggestDepartments(c *ctx.Ctx, publication *models.Publication, hits []mod
 									<div class="list-group-item-meta-left"></div>
 									<div class="list-group-item-meta-right">
 										<button
- 											class="btn btn-primary"
- 											hx-post={ c.PathTo("publication_create_department", "id", publication.ID).String() }
- 											hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
- 											hx-vals={ fmt.Sprintf(`{"department_id": "%s"}`, hit.ID) }
- 											hx-swap="none"
+											class="btn btn-primary"
+											hx-post={ c.PathTo("publication_create_department", "id", publication.ID).String() }
+											hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
+											hx-vals={ fmt.Sprintf(`{"department_id": "%s"}`, hit.ID) }
+											hx-swap="none"
 										>Add department</button>
 									</div>
 								</div>

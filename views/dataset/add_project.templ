@@ -16,14 +16,14 @@ templ AddProject(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Project) {
 				<div class="p-6 border-bottom">
 					<label class="form-label" for="project-q">Search project</label>
 					<input
- 						class="form-control mb-4"
- 						type="text"
- 						id="project-q"
- 						name="q"
- 						placeholder="Search on title or project identifier..."
- 						hx-get={ c.PathTo("dataset_suggest_projects", "id", dataset.ID).String() }
- 						hx-trigger="keyup changed delay:500ms"
- 						hx-target="#project-suggestions"
+						class="form-control mb-4"
+						type="text"
+						id="project-q"
+						name="q"
+						placeholder="Search on title or project identifier..."
+						hx-get={ c.PathTo("dataset_suggest_projects", "id", dataset.ID).String() }
+						hx-trigger="keyup changed delay:500ms"
+						hx-target="#project-suggestions"
 					/>
 					<p class="text-muted">Select one or more projects as known in GISMO and Research Explorer. <a href="https://onderzoektips.ugent.be/en/tips/00002060/" target="_blank">View documentation <i class="if if--small if-external-link"></i></a></p>
 				</div>
