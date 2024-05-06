@@ -1,14 +1,33 @@
 package candidaterecordviews
 
 import (
-    "github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
-templ Preview(c *ctx.Ctx, p *models.Publication) {
-    @views.ShowModalLayout(c) {
-        @publicationviews.Preview(p)
-    }
+templ actions(c *ctx.Ctx, rec *models.CandidateRecord) {
+	<button
+		class="btn btn-primary"
+		hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
+		hx-swap="none"
+	>
+		<div class="btn-text">Import as draft</div>
+	</button>
+}
+
+templ downloadMainFileAction(c *ctx.Ctx, rec *models.CandidateRecord) {
+	if f := rec.Publication.MainFile(); f != nil {
+		<a class="btn btn-tertiary btn-lg-only-responsive" href={ templ.URL(c.PathTo("candidate_record_download_file", "id", rec.ID, "file_id", f.ID).String()) }>
+			<i class="if if-eye"></i>
+			<span class="btn-text">View file</span>
+		</a>
+	}
+}
+
+templ Preview(c *ctx.Ctx, rec *models.CandidateRecord) {
+	@views.ShowModalLayout(c) {
+		@publicationviews.Preview(c, rec.Publication, actions(c, rec), downloadMainFileAction(c, rec))
+	}
 }

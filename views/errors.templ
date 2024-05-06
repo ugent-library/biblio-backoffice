@@ -3,47 +3,45 @@ package views
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
 templ NotFound(c *ctx.Ctx) {
-    @PageLayout(c, "Biblio", nil) {
-    <div class="w-100 u-scroll-wrapper">
-        <div class="u-scroll-wrapper__body p-6">
-            <div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
-                <div class="bc-avatar bc-avatar--medium">
-                    ?
-                </div>
-                <h3 class="c-blank-slate-title">This page does not exist</h3>
-                <p>Your (re)search was too groundbreaking.</p>
-
-                <div class="c-button-toolbar">
-                    <a class="btn btn-outline-primary" href={ templ.URL(c.PathTo("home").String()) }>
-                        <i class="if if-arrow-left"></i>
-                        <span class="btn-text">Take me back</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    }
+	@PageLayout(c, "Biblio", nil) {
+		<div class="w-100 u-scroll-wrapper">
+			<div class="u-scroll-wrapper__body p-6">
+				<div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
+					<div class="bc-avatar bc-avatar--medium">
+						?
+					</div>
+					<h3 class="c-blank-slate-title">This page does not exist</h3>
+					<p>Your (re)search was too groundbreaking.</p>
+					<div class="c-button-toolbar">
+						<a class="btn btn-outline-primary" href={ templ.URL(c.PathTo("home").String()) }>
+							<i class="if if-arrow-left"></i>
+							<span class="btn-text">Take me back</span>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
 }
 
 templ InternalServerError(c *ctx.Ctx) {
-    @PageLayout(c, "Biblio", nil) {
-    <div class="w-100 u-scroll-wrapper">
-        <div class="u-scroll-wrapper__body p-6">
-            <div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
-                <div class="bc-avatar bc-avatar--medium">
-                    ?
-                </div>
-                <h3 class="c-blank-slate-title">This page does not exist</h3>
-                <p>Your (re)search was too groundbreaking.</p>
-
-                <div class="c-button-toolbar">
-                    <a class="btn btn-outline-primary" href={ templ.URL(c.PathTo("home").String()) }>
-                        <i class="if if-arrow-left"></i>
-                        <span class="btn-text">Take me back</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    }
+	@PageLayout(c, "Biblio", nil) {
+		<div class="w-100 u-scroll-wrapper">
+			<div class="u-scroll-wrapper__body p-6">
+				<div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
+					<div class="bc-avatar bc-avatar--medium">
+						?
+					</div>
+					<h3 class="c-blank-slate-title">This page does not exist</h3>
+					<p>Your (re)search was too groundbreaking.</p>
+					<div class="c-button-toolbar">
+						<a class="btn btn-outline-primary" href={ templ.URL(c.PathTo("home").String()) }>
+							<i class="if if-arrow-left"></i>
+							<span class="btn-text">Take me back</span>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
 }

@@ -39,7 +39,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								}
 								@BadgeType(c, args.Publication)
 								if mainFile := args.Publication.MainFile(); mainFile != nil {
-									@AccessLevel(c, mainFile)
+									@SummaryAccessLevel(c, mainFile)
 								} else if !args.Publication.Extern {
 									<span class="c-subline ps-2 me-3 pe-3">
 										<a href={ views.URL(args.PublicationURL).SetQueryParam("show", "files").SafeURL() } class="c-link-muted">

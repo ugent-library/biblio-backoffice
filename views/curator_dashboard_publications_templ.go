@@ -84,7 +84,7 @@ func CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublications
 					var templ_7745c5c3_Var3 string
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(uyear)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 76, Col: 85}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 75, Col: 52}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
@@ -110,7 +110,7 @@ func CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublications
 					var templ_7745c5c3_Var4 string
 					templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(uyear)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 78, Col: 76}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 77, Col: 43}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 					if templ_7745c5c3_Err != nil {
@@ -159,7 +159,7 @@ func CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublications
 					var templ_7745c5c3_Var5 string
 					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ayear)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 111, Col: 85}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 110, Col: 52}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 					if templ_7745c5c3_Err != nil {
@@ -185,7 +185,7 @@ func CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublications
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(ayear)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 113, Col: 76}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 112, Col: 43}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
@@ -250,7 +250,7 @@ func CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publication
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(f)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 143, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 142, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -273,7 +273,7 @@ func CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publication
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(pt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 150, Col: 86}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 149, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -297,7 +297,7 @@ func CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publication
 						var templ_7745c5c3_Var10 string
 						templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(cell[0])
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 155, Col: 42}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 154, Col: 24}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 						if templ_7745c5c3_Err != nil {
@@ -324,7 +324,7 @@ func CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publication
 						var templ_7745c5c3_Var12 string
 						templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(cell[0])
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 157, Col: 65}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 156, Col: 49}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 						if templ_7745c5c3_Err != nil {

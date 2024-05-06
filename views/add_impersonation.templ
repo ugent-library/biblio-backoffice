@@ -1,42 +1,42 @@
 package views
 
 import (
-    "github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 )
 
 templ AddImpersonation(c *ctx.Ctx, frm *form.Form) {
-    @ShowModalLayout(c) {
-        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">View as other user</h2>
-                </div>
-                <div class="p-6 border-bottom person-attributes">
-                    for _, section := range frm.Sections {
-                        if tmpl, err := section.Render(); err == nil {
-                        <div class="row align-items-end">
-                        @templ.Raw(tmpl)
-                        </div>
-                        }
-                    }
-                </div>
-                <div class="modal-body" id="person-suggestions">
-                    <div class="c-blank-slate c-blank-slate-muted c-blank-slate-large">
-                        <div class="bc-avatar bc-avatar--small">
-                            <i class="if if-info-circle"></i>
-                        </div>
-                        <p>Type a first or last name above.</p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <div class="bc-toolbar">
-                        <div class="bc-toolbar-left">
-                            <button class="btn btn-link modal-close" data-bs-dismiss="modal">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
+	@ShowModalLayout(c) {
+		<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2 class="modal-title">View as other user</h2>
+				</div>
+				<div class="p-6 border-bottom person-attributes">
+					for _, section := range frm.Sections {
+						if tmpl, err := section.Render(); err == nil {
+							<div class="row align-items-end">
+								@templ.Raw(tmpl)
+							</div>
+						}
+					}
+				</div>
+				<div class="modal-body" id="person-suggestions">
+					<div class="c-blank-slate c-blank-slate-muted c-blank-slate-large">
+						<div class="bc-avatar bc-avatar--small">
+							<i class="if if-info-circle"></i>
+						</div>
+						<p>Type a first or last name above.</p>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<button class="btn btn-link modal-close" data-bs-dismiss="modal">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
 }

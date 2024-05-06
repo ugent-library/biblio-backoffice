@@ -1,121 +1,121 @@
 package views
 
 import (
-    "fmt"
-    "github.com/ugent-library/biblio-backoffice/ctx"
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 )
 
 templ DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) {
-    <div class="d-flex flex-column h-100">
-        <div class="bc-toolbar">
-            <div class="bc-toolbar-left">
-                <div class="d-flex align-items-center">
-                    <h2 class="mb-0">Drafts to complete</h2>
-                    if pTotal > 0 || dTotal > 0 {
-                    <span class="badge bg-warning rounded-pill badge-sm ms-3 d-flex justify-content-center">{ fmt.Sprint(pTotal+dTotal) }</span>
-                    }
-                </div>
-            </div>
-            <div class="bc-toolbar-right">
-                <div class="d-flex align-items-center">
-                    <a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover-custom" data-bs-placement="right" data-popover-content="#drafts-to-complete-tooltip">
-                        <i class="if if-info-circle"></i>
-                        <span class="visually-hidden">More info</span>
-                    </a>
-                    <div class="u-hidden" id="drafts-to-complete-tooltip">
-                        <div class="popover-body p-0">
-                            <p>
-                                Items appearing in <strong>Drafts to complete</strong> are waiting to be completed and made visible to the public by you.
-                                <a class="c-link" target="_blank" href="https://onderzoektips.ugent.be/en/tips/00002173/">
-                                    <span class="text-decoration-underline">Read the research tip</span>
-                                    <i class="if if--small if-external-link"></i>
-                                </a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        if pTotal > 0 || dTotal > 0 {
-        <div class="card mb-6 flex-grow-1">
-            <ul class="list-group list-group-flush">
-                if pTotal > 0 {
-                <li class="list-group-item bg-transparent">
-                    <div class="bc-toolbar h-auto">
-                        <div class="bc-toolbar-left">
-                            <div class="d-flex align-items-center flex-wrap">
-                                <h4 class="font-weight-bold me-4">Publications</h4>
-                                <span class="badge badge-sm badge-pill badge-warning-light">
-                                    <span class="badge-circle"></span>
-                                    <span class="badge-text">{ fmt.Sprint(pTotal) } Biblio draft</span>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="bc-toolbar-right">
-                            <a class="btn btn-outline-secondary" href={ templ.URL(c.PathTo("publications", "f[status]", "private").String()) }>
-                                <span class="btn-text">Complete</span>
-                            </a>
-                        </div>
-                    </div>
-                </li>
-                } else {
-                <li class="list-group-item bg-transparent">
-                    <div class="bc-toolbar h-auto">
-                        <div class="bc-toolbar-left">
-                            <div class="d-flex align-items-center flex-wrap">
-                                <h4 class="font-weight-bold me-4">Publications</h4>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <i class="if if-check if--small if--success me-2"></i>
-                            <span class="c-body-small text-muted">Completed</span>
-                        </div>
-                    </div>
-                </li>
-                }
-                if dTotal > 0 {
-                <li class="list-group-item bg-transparent">
-                    <div class="bc-toolbar h-auto">
-                        <div class="bc-toolbar-left">
-                            <div class="d-flex align-items-center flex-wrap">
-                                <h4 class="font-weight-bold me-4">Datasets</h4>
-                                <span class="badge badge-sm badge-pill badge-warning-light">
-                                    <span class="badge-circle"></span>
-                                    <span class="badge-text">{ fmt.Sprint(dTotal) } Biblio draft</span>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="bc-toolbar-right">
-                            <a class="btn btn-outline-secondary" href={ templ.URL(c.PathTo("datasets", "f[status]", "private").String()) }>
-                                <span class="btn-text">Complete</span>
-                            </a>
-                        </div>
-                    </div>
-                </li>
-                } else {
-                <li class="list-group-item bg-transparent">
-                    <div class="bc-toolbar h-auto">
-                        <div class="bc-toolbar-left">
-                            <div class="d-flex align-items-center flex-wrap">
-                                <h4 class="font-weight-bold me-4">Datasets</h4>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <i class="if if-check if--small if--success me-2"></i>
-                            <span class="c-body-small text-muted">Completed</span>
-                        </div>
-                    </div>
-                </li>
-                }
-            </ul>
-        </div>
-        } else {
-        <div class="card mb-6 flex-grow-1 bg-lightest shadow-none u-mix-blend-multiply">
-            <div class="c-blank-slate py-6">
-                <img class="mb-4" src={ c.AssetPath("/images/inbox-illustration.svg") } alt="" width="auto" height="32"/>
-                <p>Fully completed.</p>
-            </div>
-        </div>
-        }
-    </div>
+	<div class="d-flex flex-column h-100">
+		<div class="bc-toolbar">
+			<div class="bc-toolbar-left">
+				<div class="d-flex align-items-center">
+					<h2 class="mb-0">Drafts to complete</h2>
+					if pTotal > 0 || dTotal > 0 {
+						<span class="badge bg-warning rounded-pill badge-sm ms-3 d-flex justify-content-center">{ fmt.Sprint(pTotal+dTotal) }</span>
+					}
+				</div>
+			</div>
+			<div class="bc-toolbar-right">
+				<div class="d-flex align-items-center">
+					<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover-custom" data-bs-placement="right" data-popover-content="#drafts-to-complete-tooltip">
+						<i class="if if-info-circle"></i>
+						<span class="visually-hidden">More info</span>
+					</a>
+					<div class="u-hidden" id="drafts-to-complete-tooltip">
+						<div class="popover-body p-0">
+							<p>
+								Items appearing in <strong>Drafts to complete</strong> are waiting to be completed and made visible to the public by you.
+								<a class="c-link" target="_blank" href="https://onderzoektips.ugent.be/en/tips/00002173/">
+									<span class="text-decoration-underline">Read the research tip</span>
+									<i class="if if--small if-external-link"></i>
+								</a>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		if pTotal > 0 || dTotal > 0 {
+			<div class="card mb-6 flex-grow-1">
+				<ul class="list-group list-group-flush">
+					if pTotal > 0 {
+						<li class="list-group-item bg-transparent">
+							<div class="bc-toolbar h-auto">
+								<div class="bc-toolbar-left">
+									<div class="d-flex align-items-center flex-wrap">
+										<h4 class="font-weight-bold me-4">Publications</h4>
+										<span class="badge badge-sm badge-pill badge-warning-light">
+											<span class="badge-circle"></span>
+											<span class="badge-text">{ fmt.Sprint(pTotal) } Biblio draft</span>
+										</span>
+									</div>
+								</div>
+								<div class="bc-toolbar-right">
+									<a class="btn btn-outline-secondary" href={ templ.URL(c.PathTo("publications", "f[status]", "private").String()) }>
+										<span class="btn-text">Complete</span>
+									</a>
+								</div>
+							</div>
+						</li>
+					} else {
+						<li class="list-group-item bg-transparent">
+							<div class="bc-toolbar h-auto">
+								<div class="bc-toolbar-left">
+									<div class="d-flex align-items-center flex-wrap">
+										<h4 class="font-weight-bold me-4">Publications</h4>
+									</div>
+								</div>
+								<div class="d-flex align-items-center">
+									<i class="if if-check if--small if--success me-2"></i>
+									<span class="c-body-small text-muted">Completed</span>
+								</div>
+							</div>
+						</li>
+					}
+					if dTotal > 0 {
+						<li class="list-group-item bg-transparent">
+							<div class="bc-toolbar h-auto">
+								<div class="bc-toolbar-left">
+									<div class="d-flex align-items-center flex-wrap">
+										<h4 class="font-weight-bold me-4">Datasets</h4>
+										<span class="badge badge-sm badge-pill badge-warning-light">
+											<span class="badge-circle"></span>
+											<span class="badge-text">{ fmt.Sprint(dTotal) } Biblio draft</span>
+										</span>
+									</div>
+								</div>
+								<div class="bc-toolbar-right">
+									<a class="btn btn-outline-secondary" href={ templ.URL(c.PathTo("datasets", "f[status]", "private").String()) }>
+										<span class="btn-text">Complete</span>
+									</a>
+								</div>
+							</div>
+						</li>
+					} else {
+						<li class="list-group-item bg-transparent">
+							<div class="bc-toolbar h-auto">
+								<div class="bc-toolbar-left">
+									<div class="d-flex align-items-center flex-wrap">
+										<h4 class="font-weight-bold me-4">Datasets</h4>
+									</div>
+								</div>
+								<div class="d-flex align-items-center">
+									<i class="if if-check if--small if--success me-2"></i>
+									<span class="c-body-small text-muted">Completed</span>
+								</div>
+							</div>
+						</li>
+					}
+				</ul>
+			</div>
+		} else {
+			<div class="card mb-6 flex-grow-1 bg-lightest shadow-none u-mix-blend-multiply">
+				<div class="c-blank-slate py-6">
+					<img class="mb-4" src={ c.AssetPath("/images/inbox-illustration.svg") } alt="" width="auto" height="32"/>
+					<p>Fully completed.</p>
+				</div>
+			</div>
+		}
+	</div>
 }

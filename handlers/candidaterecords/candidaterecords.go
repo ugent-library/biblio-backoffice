@@ -71,7 +71,7 @@ func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	candidaterecordviews.Preview(c, rec.Publication).Render(r.Context(), w)
+	candidaterecordviews.Preview(c, rec).Render(r.Context(), w)
 }
 
 func CandidateRecordsIcon(w http.ResponseWriter, r *http.Request) {

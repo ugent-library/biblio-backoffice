@@ -108,7 +108,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				var templ_7745c5c3_Var2 string
 				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(act.Datestamp.In(c.Timezone).Format("2006-01-02 15:04"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 65, Col: 116}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 65, Col: 100}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
@@ -132,7 +132,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 					var templ_7745c5c3_Var3 string
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(act.User.FullName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 73, Col: 51}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 73, Col: 30}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
@@ -151,7 +151,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(" ")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 78, Col: 33}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 78, Col: 14}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -170,7 +170,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 					var templ_7745c5c3_Var5 string
 					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("activity_statuses." + act.Status))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 81, Col: 82}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 81, Col: 65}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 					if templ_7745c5c3_Err != nil {
@@ -210,7 +210,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(" ")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 95, Col: 33}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 95, Col: 14}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -235,7 +235,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(": ")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 102, Col: 34}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 102, Col: 15}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -258,7 +258,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(act.Title)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 105, Col: 47}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 105, Col: 22}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
