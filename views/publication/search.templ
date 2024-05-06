@@ -126,8 +126,8 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 							for _, scope := range args.Scopes {
 								<li class="nav-item">
 									<a
- 										class={ "nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope)) }
- 										href={ views.URL(c.PathTo("publications")).Query(args.SearchArgs.Clone().WithFilter("scope", scope)).SafeURL() }
+										class={ "nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope)) }
+										href={ views.URL(c.PathTo("publications")).Query(args.SearchArgs.Clone().WithFilter("scope", scope)).SafeURL() }
 									>
 										{ c.Loc.Get("publication.search.scopes."+scope) }
 									</a>
@@ -297,9 +297,9 @@ templ pubSummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
 				if c.User.CanDeletePublication(pub) {
 					<div class="dropdown-divider"></div>
 					<button
- 						class="dropdown-item"
- 						hx-get={ views.URL(c.PathTo("publication_confirm_delete", "id", pub.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).String() }
- 						hx-target="#modals"
+						class="dropdown-item"
+						hx-get={ views.URL(c.PathTo("publication_confirm_delete", "id", pub.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).String() }
+						hx-target="#modals"
 					>
 						<i class="if if-delete"></i>
 						<span>Delete</span>

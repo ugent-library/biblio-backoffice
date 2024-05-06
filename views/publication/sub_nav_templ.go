@@ -57,7 +57,7 @@ func SubNav(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Compone
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 templ.SafeURL = views.URL(c.PathTo("publication_"+sn, "id", p.ID)).QuerySet("redirect-url", redirectURL, "show", sn).SafeURL()
+			var templ_7745c5c3_Var3 templ.SafeURL = views.URL(c.PathTo("publication", "id", p.ID)).QuerySet("redirect-url", redirectURL, "show", sn).SafeURL()
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -74,7 +74,7 @@ func SubNav(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Compone
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(views.URL(c.PathTo("publication_"+sn, "id", p.ID)).QuerySet("redirect-url", redirectURL, "show", sn).String()))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(views.URL(c.PathTo("publication", "id", p.ID)).QuerySet("redirect-url", redirectURL, "show", sn).String()))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

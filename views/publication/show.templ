@@ -1,0 +1,186 @@
+package publication
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+)
+
+templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
+	@views.PageLayout(c, c.Loc.Get("publication.page.show.title"), nil) {
+		<div class="w-100 u-scroll-wrapper">
+			<div class="bg-white" data-collapsed="true">
+				<div class="bc-navbar bc-navbar--large bc-navbar--white">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<div class="bc-toolbar-item">
+								<a class="btn btn-link btn-link-muted" href={ templ.URL(redirectURL) }>
+									<i class="if if-arrow-left"></i>
+									<div class="btn-text">Publications overview</div>
+								</a>
+							</div>
+						</div>
+						<div class="bc-toolbar-right">
+							if c.User.CanWithdrawPublication(p) {
+								<div class="bc-toolbar-item">
+									<button
+										class="btn btn-outline-danger"
+										hx-get={ c.PathTo("publication_confirm_withdraw", "id", p.ID, "redirect-url", c.CurrentURL.String()).String() }
+										hx-target="#modals"
+									>
+										<i class="if if-arrow-go-back"></i>
+										<span class="btn-text">Withdraw</span>
+									</button>
+								</div>
+							}
+							if c.User.CanPublishPublication(p) && p.Status == "returned" {
+								<div class="bc-toolbar-item">
+									<button
+										class="btn btn-success"
+										hx-get={ c.PathTo("publication_confirm_republish", "id", p.ID, "redirect-url", c.CurrentURL.String()).String() }
+										hx-target="#modals"
+									>
+										<div class="btn-text">Republish to Biblio</div>
+									</button>
+								</div>
+							}
+							if c.User.CanPublishPublication(p) &&  p.Status != "returned" {
+								<div class="bc-toolbar-item">
+									<button
+										class="btn btn-success"
+										hx-get={ c.PathTo("publication_confirm_publish", "id", p.ID, "redirect-url", c.CurrentURL.String()).String() }
+										hx-target="#modals"
+									>
+										<div class="btn-text">Publish to Biblio</div>
+									</button>
+								</div>
+							}
+							<div class="bc-toolbar-item">
+								if c.User.CanCurate() && p.Locked {
+									<button
+										class="btn btn-outline-secondary"
+										hx-post={ c.PathTo("publication_unlock", "id", p.ID, "redirect-url", c.CurrentURL.String()).String() }
+										hx-swap="none"
+									>
+										<i class="if if-lock-unlock"></i>
+										<span class="btn-text">Unlock record</span>
+									</button>
+								} else if c.User.CanCurate() {
+									<button
+										class="btn btn-outline-secondary"
+										hx-post={ c.PathTo("publication_lock", "id", p.ID, "redirect-url", c.CurrentURL.String()).String() }
+										hx-swap="none"
+									>
+										<i class="if if-lock"></i>
+										<span class="btn-text">Lock record</span>
+									</button>
+								}
+							</div>
+							if c.User.CanDeletePublication(p) {
+								<div class="bc-toolbar-item">
+									<div class="dropdown dropleft">
+										<button
+											class="btn btn-outline-primary btn-icon-only"
+											type="button"
+											data-bs-toggle="dropdown"
+											aria-haspopup="true"
+											aria-expanded="false"
+										>
+											<i class="if if-more"></i>
+										</button>
+										<div class="dropdown-menu">
+											<a
+												class="dropdown-item"
+												href="#"
+												hx-get={ c.PathTo("publication_confirm_delete", "id", p.ID, "redirect-url", redirectURL).String() }
+												hx-target="#modals"
+											>
+												<i class="if if-delete"></i>
+												<span>Delete</span>
+											</a>
+										</div>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+				<div class="c-divider mt-0 mx-6 mb-4"></div>
+				<div id="summary">
+					<div class="mx-6">
+						<div class="c-thumbnail-text u-min-w-0">
+							<div class="bc-toolbar bc-toolbar--auto bc-toolbar--responsive mb-3">
+								<div class="bc-toolbar-left">
+									<div class="bc-toolbar-item">
+										@views.BadgeStatus(p.Status)
+									</div>
+									if p.PublicationStatus != "" {
+										<div class="bc-toolbar-item">
+											<p class="c-subline text-nowrap pe-5 border-end">{ c.Loc.Get("publication_publishing_statuses." + p.PublicationStatus) }</p>
+										</div>
+									}
+									if p.Locked {
+										<div class="bc-toolbar-item" data-bs-toggle="tooltip" data-bs-title="Locked for editing" data-bs-placement="bottom">
+											<span class="c-subline text-nowrap pe-5 border-end">
+												<i class="if if-lock if--small if--muted"></i>
+												<span class="text-muted c-body-small ms-2">Locked</span>
+											</span>
+										</div>
+									}
+									<div class="bc-toolbar-item">
+										<span class="c-subline text-nowrap">
+											{ c.Loc.Get("publication_types." + p.Type) }
+											if p.Classification != "" {
+												{ p.Classification }
+											}
+										</span>
+									</div>
+								</div>
+								<div class="bc-toolbar-right">
+									<div class="bc-toolbar-item me-auto me-lg-0">
+										<div class="d-flex align-items-center flex-wrap justify-content-end">
+											<span class="c-subline text-truncate text-nowrap">
+												{ views.CreatedBy(c, p.DateCreated, p.Creator) }
+											</span>
+											<span class="c-subline text-truncate text-nowrap ps-5">
+												{ views.UpdatedBy(c, p.DateUpdated, p.User, p.LastUser) }
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+							<h4 class="list-group-item-title">
+								if p.Title != "" {
+									{ p.Title }
+								} else {
+									Untitled record
+								}
+							</h4>
+						</div>
+					</div>
+				</div>
+				<div class="c-divider mb-2 mx-6 mt-4"></div>
+				<div class="bc-navbar bc-navbar--auto bc-navbar--white bc-navbar--bordered-bottom">
+					<div class="bc-toolbar bc-toolbar--auto">
+						<div class="bc-toolbar-left">
+							<div class="bc-toolbar-item" id="show-nav">
+								@SubNav(c, p, redirectURL)
+							</div>
+						</div>
+						<div class="bc-toolbar-right"></div>
+					</div>
+				</div>
+			</div>
+			<div class="d-flex flex-grow-1 flex-shrink-1 overflow-hidden">
+				<div id="show-sidebar"></div>
+				<div
+					class="u-scroll-wrapper__body p-6"
+					id="show-content"
+					hx-get={ c.PathTo("publication_"+c.SubNav, "id", p.ID, "redirect-url", redirectURL).String() }
+					hx-trigger="load delay:100ms"
+					hx-target="#show-content"
+				></div>
+			</div>
+		</div>
+	}
+}

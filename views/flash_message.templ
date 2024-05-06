@@ -7,7 +7,7 @@ import (
 
 templ flashMessage(f flash.Flash) {
 	<div
- 		if f.DismissAfter != 0 {
+		if f.DismissAfter != 0 {
 			hx-ext="remove-me"
 			remove-me={ fmt.Sprintf("%dms", f.DismissAfter) }
 		}

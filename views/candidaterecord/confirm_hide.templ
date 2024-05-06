@@ -28,9 +28,9 @@ templ ConfirmHide(c *ctx.Ctx, rec *models.CandidateRecord) {
 						</div>
 						<div class="bc-toolbar-right">
 							<button
- 								class="btn btn-danger"
- 								hx-put={ c.PathTo("reject_candidate_record", "id", rec.ID).String() }
- 								hx-swap="none"
+								class="btn btn-danger"
+								hx-put={ c.PathTo("reject_candidate_record", "id", rec.ID).String() }
+								hx-swap="none"
 							>Yes, hide suggestion</button>
 						</div>
 					</div>

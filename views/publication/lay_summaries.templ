@@ -17,10 +17,10 @@ templ LaySummaries(c *ctx.Ctx, p *models.Publication) {
 				<div class="bc-toolbar-right">
 					if c.User.CanEditPublication(p) {
 						<button
- 							class="btn btn-outline-primary"
- 							type="button"
- 							hx-get={ c.PathTo("publication_add_lay_summary", "id", p.ID).String() }
- 							hx-target="#modals"
+							class="btn btn-outline-primary"
+							type="button"
+							hx-get={ c.PathTo("publication_add_lay_summary", "id", p.ID).String() }
+							hx-target="#modals"
 						>
 							<i class="if if-add"></i>
 							<div class="btn-text">Add lay summary</div>
@@ -62,19 +62,19 @@ templ LaySummariesBody(c *ctx.Ctx, p *models.Publication) {
 											</button>
 											<div class="dropdown-menu">
 												<button
- 													class="dropdown-item"
- 													type="button"
- 													hx-get={ c.PathTo("publication_edit_lay_summary", "id", p.ID, "lay_summary_id", l.ID).String() }
- 													hx-target="#modals"
+													class="dropdown-item"
+													type="button"
+													hx-get={ c.PathTo("publication_edit_lay_summary", "id", p.ID, "lay_summary_id", l.ID).String() }
+													hx-target="#modals"
 												>
 													<i class="if if-edit"></i>
 													<span>Edit</span>
 												</button>
 												<button
- 													class="dropdown-item"
- 													type="button"
- 													hx-get={ c.PathTo("publication_confirm_delete_lay_summary", "id", p.ID, "snapshot_id", p.SnapshotID, "lay_summary_id", l.ID).String() }
- 													hx-target="#modals"
+													class="dropdown-item"
+													type="button"
+													hx-get={ c.PathTo("publication_confirm_delete_lay_summary", "id", p.ID, "snapshot_id", p.SnapshotID, "lay_summary_id", l.ID).String() }
+													hx-target="#modals"
 												>
 													<i class="if if-delete"></i>
 													<span>Delete</span>

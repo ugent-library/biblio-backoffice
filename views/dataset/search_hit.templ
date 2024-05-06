@@ -40,9 +40,9 @@ templ SummaryActions(c *ctx.Ctx, dataset *models.Dataset, url string) {
 				if c.User.CanDeleteDataset(dataset) {
 					<div class="dropdown-divider"></div>
 					<button
- 						class="dropdown-item"
- 						hx-get={ views.URL(c.PathTo("dataset_confirm_delete", "id", dataset.ID)).AddQueryParam("redirect-url", c.CurrentURL.String()).String() }
- 						hx-target="#modals"
+						class="dropdown-item"
+						hx-get={ views.URL(c.PathTo("dataset_confirm_delete", "id", dataset.ID)).AddQueryParam("redirect-url", c.CurrentURL.String()).String() }
+						hx-target="#modals"
 					>
 						<i class="if if-delete"></i>
 						<span>Delete</span>

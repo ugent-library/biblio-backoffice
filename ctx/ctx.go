@@ -106,6 +106,7 @@ type Config struct {
 	*backends.Services
 	Router        *ich.Mux
 	Assets        mix.Manifest
+	MaxFileSize   int
 	Timezone      *time.Location
 	Loc           *gotext.Locale
 	Env           string
@@ -134,6 +135,7 @@ type Ctx struct {
 	Nav          string
 	SubNav       string
 	CurrentURL   *url.URL
+
 	// flagContext  *ffcontext.EvaluationContext
 }
 

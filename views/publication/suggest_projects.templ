@@ -72,11 +72,11 @@ templ SuggestProjects(c *ctx.Ctx,  publication *models.Publication, hits []*mode
 					</div>
 					<div class="c-button-toolbar">
 						<button
- 							class="btn btn-primary"
- 							hx-post={ c.PathTo("publication_create_project", "id", publication.ID).String() }
- 							hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
- 							hx-vals={ fmt.Sprintf(`{"project_id": "%s"}`, hit.ID) }
- 							hx-swap="none"
+							class="btn btn-primary"
+							hx-post={ c.PathTo("publication_create_project", "id", publication.ID).String() }
+							hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
+							hx-vals={ fmt.Sprintf(`{"project_id": "%s"}`, hit.ID) }
+							hx-swap="none"
 						>Add project</button>
 					</div>
 				</div>

@@ -1,0 +1,206 @@
+package publication
+
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/friendly"
+)
+
+templ Files(c *ctx.Ctx, p *models.Publication, redirectURL string) {
+	<div hx-swap-oob="innerHTML:#show-nav">
+		@SubNav(c, p, redirectURL)
+	</div>
+	<div hx-swap-oob="innerHTML:#show-sidebar"></div>
+	<div class="alert alert-success mb-6">
+		<i class="if if-check-circle"></i>
+		<div>
+			<h3>Full texts are stored and made available in line with UGent’s <a href="https://www.ugent.be/intranet/en/research/impact/schol-publishing/policy-ugent.htm" target="_blank">scholarly publishing policy</a>.</h3>
+			<p>Other documents are handled according to the access levels and licences you indicate.</p>
+		</div>
+	</div>
+	<div class="card mb-6">
+		<div class="card-header">
+			<div class="bc-toolbar">
+				<div class="bc-toolbar-left">
+					<div class="bc-toolbar-title">Full text documents</div>
+				</div>
+			</div>
+		</div>
+		<div id="files-body">
+			@FilesBody(c, p)
+		</div>
+	</div>
+}
+
+templ FilesBody(c *ctx.Ctx, p *models.Publication) {
+	<div class="card-body p-0">
+		if c.User.CanEditPublication(p) {
+			<form
+ 				class="p-6"
+ 				hx-post={ c.PathTo("publication_upload_file", "id", p.ID).String() }
+ 				hx-encoding="multipart/form-data"
+ 				hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
+ 				hx-target="#modals"
+ 				hx-trigger="change"
+			>
+				<div class="c-file-upload file-upload-start">
+					<input
+ 						class="upload-progress"
+ 						type="file"
+ 						name="file"
+ 						data-max-size={ fmt.Sprint(c.MaxFileSize) }
+ 						data-max-size-error={ fmt.Sprintf("Maximum file size is %s", friendly.Bytes(int64(c.MaxFileSize))) }
+					/>
+					<div class="c-file-upload__content">
+						<p>Drag and drop or</p>
+						<button class="btn btn-outline-primary">Upload file</button>
+						<p class="small pt-3 mb-0">Maximum file size: { friendly.Bytes(int64(c.MaxFileSize)) }</p>
+					</div>
+				</div>
+				<div class="c-file-upload c-file-upload--disabled file-upload-busy d-none">
+					<div class="c-file-upload__content">
+						<p class="mt-5">
+							Uploading your file.
+							<br/>
+							<span>Hold on, do not refresh the page.</span>
+						</p>
+						<div class="progress w-75">
+							<div
+ 								class="progress-bar progress-bar-striped progress-bar-animated"
+ 								role="progressbar"
+ 								style="width: 0%"
+ 								aria-valuenow="0"
+ 								aria-valuemin="0"
+ 								aria-valuemax="100"
+							></div>
+						</div>
+						<p class="mt-4 text-muted"><span class="progress-bar-percent">0</span>%</p>
+					</div>
+				</div>
+				<small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/en/tips/00002066" target="_blank">Which document format or version should I use?</a></small>
+			</form>
+			<hr/>
+		}
+		if len(p.File) > 0 {
+			<ul class="list-group list-group-flush">
+				for _, f := range p.File {
+					<li class="list-group-item">
+						<div class="list-group-item-inner">
+							<div class="list-group-item-main u-min-w-0">
+								<div class="c-thumbnail-and-text align-items-start d-block d-lg-flex">
+									<a href={ templ.URL(c.PathTo("publication_download_file", "id", p.ID, "file_id", f.ID).String()) }>
+										<div class="c-thumbnail c-thumbnail-5-4 c-thumbnail-small c-thumbnail-xl-large mb-6 mb-xl-0 flex-shrink-0 d-none d-lg-block">
+											<div class="c-thumbnail-inner">
+												<i class="if if-article"></i>
+											</div>
+										</div>
+									</a>
+									<div class="c-thumbnail-text u-min-w-0">
+										<div class="bc-toolbar bc-toolbar--auto">
+											<div class="bc-toolbar-left flex-wrap">
+												if f.AccessLevel == "info:eu-repo/semantics/openAccess" {
+													<div class="c-subline text-nowrap me-3 pe-3 my-2 border-end">
+														<i class="if if-download if--small if--muted"></i>
+														<span>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</span>
+													</div>
+												} else if f.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
+													<div class="c-subline text-nowrap me-3 pe-3 my-2 border-end">
+														<i class="if if-ghent-university if--small if--muted"></i>
+														<span>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</span>
+													</div>
+												} else if f.AccessLevel == "info:eu-repo/semantics/closedAccess" {
+													<div class="c-subline text-nowrap me-3 pe-3 my-2 border-end">
+														<i class="if if-eye-off if--small if--muted"></i>
+														<span>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</span>
+													</div>
+												} else if f.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+													<div class="c-subline text-nowrap me-3 pe-3 my-2 border-end">
+														<i class="if if-time if--small"></i>
+														<span>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</span>
+													</div>
+													<div class="c-subline text-nowrap me-3 pe-3 my-2 border-end">
+														if f.AccessLevelDuringEmbargo == "info:eu-repo/semantics/closedAccess" {
+															<i class="if if-eye-off if--small if--primary"></i>
+														} else {
+															<i class="if if-ghent-university if--small if--primary"></i>
+														}
+														<span>{ c.Loc.Get("publication_file_access_levels_during_embargo." + f.AccessLevelDuringEmbargo) }</span>
+													</div>
+													<div class="c-subline text-nowrap me-3 pe-3 my-2 border-end">
+														if f.AccessLevelAfterEmbargo == "info:eu-repo/semantics/openAccess" {
+															<i class="if if-download if--small if--muted"></i>
+														} else {
+															<i class="if if-ghent-university if--small if--muted"></i>
+														}
+														<span>{ c.Loc.Get("publication_file_access_levels_after_embargo." + f.AccessLevelAfterEmbargo) } from { f.EmbargoDate }</span>
+													</div>
+												}
+												<div class="c-subline text-nowrap me-3 pe-3 my-2">
+													if f.License != "" {
+														<span>{ c.Loc.Get("publication_licenses." + f.License) }</span>
+													} else {
+														<span>{ f.OtherLicense }</span>
+													}
+												</div>
+											</div>
+											<div class="bc-toolbar-right">
+												<div class="bc-toolbar-item ms-auto ms-lg-0">
+													if c.User.CanEditPublication(p) {
+														<div class="c-button-toolbar">
+															<button
+ 																class="btn btn-icon-only"
+ 																type="button"
+ 																hx-get={ c.PathTo("publication_edit_file", "id", p.ID, "file_id", f.ID).String() }
+ 																hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
+ 																hx-swap="innerHTML"
+ 																hx-target="#modals"
+															>
+																<i class="if if-edit"></i>
+															</button>
+															<button
+ 																class="btn btn-icon-only"
+ 																type="button"
+ 																hx-get={ c.PathTo("publication_confirm_delete_file", "id", p.ID, "snapshot_id", p.SnapshotID, "file_id", f.ID).String() }
+ 																hx-target="#modals"
+ 																hx-trigger="click"
+															>
+																<i class="if if-delete"></i>
+															</button>
+														</div>
+													}
+												</div>
+											</div>
+										</div>
+										<h4>
+											<a href={ templ.URL(c.PathTo("publication_download_file", "id", p.ID, "file_id", f.ID).String()) }>
+												<span class="list-group-item-title">
+													{ f.Name }
+												</span>
+											</a>
+										</h4>
+										if f.Relation != "" {
+											<span>{ c.Loc.Get("publication_file_relations." + f.Relation) }</span>
+										}
+										if f.PublicationVersion != "" {
+											<span class="ms-3 ps-3 border-start">{ c.Loc.Get("publication_versions." + f.PublicationVersion) }</span>
+										}
+										<div class="bc-toolbar-left flex-wrap">
+											<div class="bc-toolbar-item">
+												<span class="c-body-small text-muted text-truncate my-2">Uploaded { f.DateCreated.In(c.Timezone).Format("2006-01-02 at 15:04") }</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</li>
+				}
+			</ul>
+		} else {
+			<div class="m-6">
+				<span class="text-muted">No files</span>
+			</div>
+		}
+	</div>
+}
