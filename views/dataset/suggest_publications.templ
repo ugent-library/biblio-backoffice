@@ -1,0 +1,34 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+	"fmt"
+)
+
+templ SuggestPublications(c *ctx.Ctx, dataset *models.Dataset, publicationHits *models.PublicationHits) {
+	<ul class="list-group mt-6">
+		for _, hit := range publicationHits.Hits {
+			<li class="list-group-item">
+				@publicationviews.Summary(c,
+					publicationviews.SummaryArgs{Publication: hit, PublicationURL: c.PathTo("publication", "id", hit.ID), Actions: suggestPublicationSummaryActions(c, dataset, hit)})
+			</li>
+		}
+	</ul>
+}
+
+templ suggestPublicationSummaryActions(c *ctx.Ctx, dataset *models.Dataset, publication *models.Publication) {
+	<div class="bc-toolbar-item ms-auto ms-lg-0">
+		<div class="c-button-toolbar">
+			<button
+				class="btn btn-primary"
+				hx-post={ views.URL(c.PathTo("dataset_create_publication", "id", dataset.ID)).String() }
+				hx-headers={ fmt.Sprintf("{\"If-Match\": \"%s\"}", dataset.SnapshotID) }
+				hx-vals={ fmt.Sprintf("{\"publication_id\": \"%s\"}", publication.ID) }
+				hx-swap="none"
+			>Add publication</button>
+		</div>
+	</div>
+}

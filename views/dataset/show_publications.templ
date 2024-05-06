@@ -1,0 +1,55 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+type NavPublicationsArgs struct {
+	NavArgs
+	Publications []*models.Publication
+}
+
+templ ShowPublications(c *ctx.Ctx, args NavPublicationsArgs) {
+	<div hx-swap-oob="innerHTML:#show-nav">
+		@ShowNav(c, NavArgs{Dataset: args.Dataset, ActiveSubNav: args.ActiveSubNav, SubNavs: args.SubNavs})
+	</div>
+	<div hx-swap-oob="innerHTML:#show-sidebar"></div>
+	<div class="card mb-6">
+		<div class="card-header">
+			<div class="bc-toolbar">
+				<div class="bc-toolbar-left">
+					<h1 class="bc-toolbar-title">Related publications</h1>
+					<a
+						class="text-muted px-2"
+						href="#"
+						data-bs-container="body"
+						data-bs-toggle="popover"
+						data-bs-placement="right"
+						data-bs-content={ c.Loc.Get("tooltip.dataset.related_publications") }
+					>
+						<i class="if if-info-circle if--small"></i>
+						<span class="visually-hidden">More info</span>
+					</a>
+				</div>
+				<div class="bc-toolbar-right">
+					if c.User.CanEditDataset(args.Dataset) {
+						<div class="c-button-toolbar" data-panel-state="read">
+							<button
+								class="btn btn-outline-primary"
+								hx-get={ c.PathTo("dataset_add_publication", "id", args.Dataset.ID).String() }
+								hx-target="#modals"
+							>
+								<i class="if if-add"></i>
+								<div class="btn-text">Add publication</div>
+							</button>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+		<div id="publications-body">
+			@publicationsBody(c, args.Dataset, args.Publications)
+		</div>
+	</div>
+}

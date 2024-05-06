@@ -443,6 +443,15 @@ func Register(c Config) {
 						// re-publish
 						r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
 						r.Post("/republish", datasetediting.Republish).Name("dataset_republish")
+
+						// publications
+						r.Get("/publications/add", datasetediting.AddPublication).Name("dataset_add_publication")
+						r.Get("/publications/suggestions", datasetediting.SuggestPublications).Name("dataset_suggest_publications")
+
+						r.Post("/publications", datasetediting.CreatePublication).Name("dataset_create_publication")
+						r.Delete("/publications/{publication_id}", datasetediting.DeletePublication).Name("dataset_delete_publication")
+
+						r.Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
 					})
 
 					// curator actions
@@ -499,9 +508,7 @@ func Register(c Config) {
 		r.Get("/dataset/{id}/contributors",
 			datasetViewingHandler.Wrap(datasetViewingHandler.ShowContributors)).
 			Name("dataset_contributors")
-		r.Get("/dataset/{id}/publications",
-			datasetViewingHandler.Wrap(datasetViewingHandler.ShowPublications)).
-			Name("dataset_publications")
+
 		r.Get("/dataset/{id}/activity",
 			datasetViewingHandler.Wrap(datasetViewingHandler.ShowActivity)).
 			Name("dataset_activity")
@@ -583,20 +590,6 @@ func Register(c Config) {
 		r.Delete("/dataset/{id}/abstracts/{abstract_id}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteAbstract)).
 			Name("dataset_delete_abstract")
-
-		// edit dataset publications
-		r.Get("/dataset/{id}/publications/add",
-			datasetEditingHandler.Wrap(datasetEditingHandler.AddPublication)).
-			Name("dataset_add_publication")
-		r.Get("/dataset/{id}/publications/suggestions",
-			datasetEditingHandler.Wrap(datasetEditingHandler.SuggestPublications)).
-			Name("dataset_suggest_publications")
-		r.Post("/dataset/{id}/publications",
-			datasetEditingHandler.Wrap(datasetEditingHandler.CreatePublication)).
-			Name("dataset_create_publication")
-		r.Delete("/dataset/{id}/publications/{publication_id}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.DeletePublication)).
-			Name("dataset_delete_publication")
 
 		// edit dataset contributors
 		r.Post("/dataset/{id}/contributors/{role}/order",

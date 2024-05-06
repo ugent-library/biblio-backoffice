@@ -1,0 +1,45 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	"net/url"
+)
+
+type NavArgs struct {
+	ActiveSubNav string
+	SubNavs      []string
+	Dataset      *models.Dataset
+}
+
+func showNavURL(c *ctx.Ctx, dataset *models.Dataset, subNav string) *url.URL {
+	return views.URL(c.PathTo("dataset", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.Query().Get("redirect-url")).QuerySet("show", subNav).URL()
+}
+
+templ ShowNav(c *ctx.Ctx, args NavArgs) {
+	<ul class="nav nav-tabs" role="tablist">
+		for _, subNav := range args.SubNavs {
+			if u := showNavURL(c, args.Dataset, subNav); u != nil {
+				<li class="nav-item">
+					<a
+						class={ "nav-link", templ.KV("active", args.ActiveSubNav == subNav) }
+						href={ templ.URL(u.String()) }
+						hx-get={ views.URL(c.PathTo("dataset_"+subNav, "id", args.Dataset.ID)).QuerySet("redirect-url", c.CurrentURL.Query().Get("redirect-url")).String() }
+						hx-target="#show-content"
+						hx-push-url={ u.String() }
+						role="tab"
+						aria-controls={ subNav }
+						if args.ActiveSubNav == subNav {
+							aria-selected="true"
+						} else {
+							aria-selected="false"
+						}
+					>
+						{ c.Loc.Get("dataset.subnav."+subNav) }
+					</a>
+				</li>
+			}
+		}
+	</ul>
+}
