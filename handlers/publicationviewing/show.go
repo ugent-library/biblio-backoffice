@@ -8,7 +8,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
-	"github.com/ugent-library/biblio-backoffice/render/display"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
@@ -22,14 +21,14 @@ type YieldShow struct {
 	ActiveSubNav string
 }
 
-type YieldShowDescription struct {
-	Context
-	SubNavs               []string
-	ActiveSubNav          string
-	DisplayDetails        *display.Display
-	DisplayConference     *display.Display
-	DisplayAdditionalInfo *display.Display
-}
+// type YieldShowDescription struct {
+// 	Context
+// 	SubNavs               []string
+// 	ActiveSubNav          string
+// 	DisplayDetails        *display.Display
+// 	DisplayConference     *display.Display
+// 	DisplayAdditionalInfo *display.Display
+// }
 
 type YieldShowContributors struct {
 	Context
@@ -73,7 +72,10 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 }
 
 func ShowDescription(w http.ResponseWriter, r *http.Request) {
-	publicationviews.Description(ctx.Get(r), ctx.GetPublication(r)).Render(r.Context(), w)
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+	redirectURL := c.PathTo("publications").String()
+	publicationviews.Description(c, p, redirectURL).Render(r.Context(), w)
 	// render.View(w, "publication/show_description", YieldShowDescription{
 	// 	Context:               ctx,
 	// 	SubNavs:               subNavs,

@@ -324,7 +324,7 @@ func Register(c Config) {
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireViewPublication)
 
-						r.Get("/description", publicationviewing.ShowDescription).Name("publication_description")
+						r.With(ctx.SetSubNav("description")).Get("/description", publicationviewing.ShowDescription).Name("publication_description")
 						r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 					})
 

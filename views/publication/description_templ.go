@@ -15,7 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-func Description(c *ctx.Ctx, p *models.Publication) templ.Component {
+func Description(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -28,6 +28,38 @@ func Description(c *ctx.Ctx, p *models.Publication) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-swap-oob=\"innerHTML:#show-nav\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = SubNav(c, p, redirectURL).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div hx-swap-oob=\"innerHTML:#show-sidebar\"><div class=\"c-sub-sidebar c-sub-sidebar--bordered u-z-reset h-100\" data-sidebar=\"\"><div class=\"bc-navbar bc-navbar--bordered-bottom bc-navbar--large\"><button class=\"btn btn-link btn-icon-only ms-n3\" type=\"button\" data-sidebar-toggle=\"\"><i class=\"if if-menu\"></i> <span class=\"visually-hidden\">Sections</span></button></div><div class=\"c-sub-sidebar__content\"><div class=\"p-4\"><nav class=\"nav nav-pills flex-column\"><a class=\"nav-link\" href=\"#publication-details\">Publication details</a> <a class=\"nav-link\" href=\"#projects\">Projects</a> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if p.UsesConference() {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"nav-link\" href=\"#conference-details\">Conference details</a>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"nav-link\" href=\"#abstracts\">Abstracts</a> <a class=\"nav-link\" href=\"#links\">Links</a> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if p.UsesLaySummary() {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"nav-link\" href=\"#lay-summaries\">Lay summaries</a>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"nav-link\" href=\"#additional-information\">Additional information</a></nav></div></div></div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = Details(c, p).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

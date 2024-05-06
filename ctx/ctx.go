@@ -132,6 +132,7 @@ type Ctx struct {
 	CSRFToken    string
 	CSPNonce     string
 	Nav          string
+	SubNav       string
 	CurrentURL   *url.URL
 	// flagContext  *ffcontext.EvaluationContext
 }
