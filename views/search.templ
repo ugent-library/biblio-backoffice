@@ -36,7 +36,7 @@ func filterToLabels(c *ctx.Ctx, vals []string, locPrefix string) []string {
 	return labels
 }
 
-templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, facetValues models.FacetValues, searchArgs *models.SearchArgs) {
+templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPrefixShort string, facetValues models.FacetValues, searchArgs *models.SearchArgs) {
 	<div
 		class={ "dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName)) }
 		data-facet-dropdown={ fieldName }
@@ -60,7 +60,7 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, facetV
 			<span class="badge-text">{ title }</span>
 			if filters := searchArgs.FiltersFor(fieldName); len(filters) > 0 {
 				<span class="badge-value ms-2">
-					@facetShortValue(filterToLabels(c, filters, locPrefix))
+					@facetShortValue(filterToLabels(c, filters, locPrefixShort))
 				</span>
 			}
 			<i class="if if-caret-down"></i>

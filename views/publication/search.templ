@@ -25,17 +25,17 @@ func publicationSearchExportURL(c *ctx.Ctx, searchArgs *models.SearchArgs) *url.
 
 templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.FacetValues) {
 	@views.FacetLine() {
-		@views.Facet(c, "status", "Biblio status", "publication_statuses", facets["status"], searchArgs)
-		@views.Facet(c, "classification", "Classification", "publication_classifications", facets["classification"], searchArgs)
-		@views.Facet(c, "faculty_id", "Faculty", "organization", facets["faculty_id"], searchArgs)
-		@views.Facet(c, "year", "Publication year", "", facets["year"], searchArgs)
-		@views.Facet(c, "type", "Publication type", "publication_types", facets["type"], searchArgs)
+		@views.Facet(c, "status", "Biblio status", "publication_statuses", "publication_statuses", facets["status"], searchArgs)
+		@views.Facet(c, "classification", "Classification", "publication_classifications", "", facets["classification"], searchArgs)
+		@views.Facet(c, "faculty_id", "Faculty", "organization", "organization", facets["faculty_id"], searchArgs)
+		@views.Facet(c, "year", "Publication year", "", "", facets["year"], searchArgs)
+		@views.Facet(c, "type", "Publication type", "publication_types", "publication_types", facets["type"], searchArgs)
 	}
 	@views.FacetLine() {
-		@views.Facet(c, "has_message", "Message", "has_message", facets["has_message"], searchArgs)
-		@views.Facet(c, "locked", "Locked", "locked", facets["locked"], searchArgs)
-		@views.Facet(c, "has_files", "File", "has_files", facets["has_files"], searchArgs)
-		@views.Facet(c, "vabb_type", "VABB type", "", facets["vabb_type"], searchArgs)
+		@views.Facet(c, "has_message", "Message", "has_message", "has_message", facets["has_message"], searchArgs)
+		@views.Facet(c, "locked", "Locked", "locked", "locked", facets["locked"], searchArgs)
+		@views.Facet(c, "has_files", "File", "has_files", "has_files", facets["has_files"], searchArgs)
+		@views.Facet(c, "vabb_type", "VABB type", "", "", facets["vabb_type"], searchArgs)
 		@views.FacetSince(c, "created_since", "Created since", "Show records created since", searchArgs)
 		@views.FacetSince(c, "updated_since", "Updated since", "Show records updated since", searchArgs)
 	}
@@ -43,27 +43,38 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models
 
 templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.FacetValues) {
 	@views.FacetLine() {
-		@views.Facet(c, "status", "Biblio status", "publication_statuses", facets["status"], searchArgs)
-		@views.Facet(c, "classification", "Classification", "publication_classifications", facets["classification"], searchArgs)
-		@views.Facet(c, "faculty_id", "Faculty", "organization", facets["faculty_id"], searchArgs)
-		@views.Facet(c, "year", "Publication year", "", facets["year"], searchArgs)
-		@views.Facet(c, "type", "Publication type", "publication_types", facets["type"], searchArgs)
+		@views.Facet(c, "status", "Biblio status", "publication_statuses", "publication_statuses", facets["status"], searchArgs)
+		@views.Facet(c, "classification", "Classification", "publication_classifications", "", facets["classification"], searchArgs)
+		@views.Facet(c, "faculty_id", "Faculty", "organization", "organization", facets["faculty_id"], searchArgs)
+		@views.Facet(c, "year", "Publication year", "", "", facets["year"], searchArgs)
+		@views.Facet(c, "type", "Publication type", "publication_types", "publication_types", facets["type"], searchArgs)
 	}
 	@views.FacetLine() {
-		@views.Facet(c, "publication_status", "Publication status", "publication_publishing_statuses", facets["publication_status"], searchArgs)
-		@views.Facet(c, "reviewer_tags", "Librarian tags", "", facets["reviewer_tags"], searchArgs)
-		@views.Facet(c, "has_message", "Message", "has_message", facets["has_message"], searchArgs)
-		@views.Facet(c, "locked", "Locked", "locked", facets["locked"], searchArgs)
-		@views.Facet(c, "extern", "UGent", "extern", facets["extern"], searchArgs)
+		@views.Facet(c, "publication_status", "Publication status", "publication_publishing_statuses", "publication_publishing_statuses", facets["publication_status"], searchArgs)
+		@views.Facet(c, "reviewer_tags", "Librarian tags", "", "", facets["reviewer_tags"], searchArgs)
+		@views.Facet(c, "has_message", "Message", "has_message", "has_message", facets["has_message"], searchArgs)
+		@views.Facet(c, "locked", "Locked", "locked", "locked", facets["locked"], searchArgs)
+		@views.Facet(c, "extern", "UGent", "extern", "extern", facets["extern"], searchArgs)
 	}
 	@views.FacetLine() {
-		@views.Facet(c, "wos_type", "WOS type", "", facets["wos_type"], searchArgs)
-		@views.Facet(c, "vabb_type", "VABB type", "", facets["vabb_type"], searchArgs)
-		@views.Facet(c, "has_files", "File", "has_files", facets["has_files"], searchArgs)
-		@views.Facet(c, "file_relation", "File type", "publication_file_relations", facets["file_relation"], searchArgs)
+		@views.Facet(c, "wos_type", "WOS type", "", "", facets["wos_type"], searchArgs)
+		@views.Facet(c, "vabb_type", "VABB type", "", "", facets["vabb_type"], searchArgs)
+		@views.Facet(c, "has_files", "File", "has_files", "has_files", facets["has_files"], searchArgs)
+		@views.Facet(c, "file_relation", "File type", "publication_file_relations", "publication_file_relations", facets["file_relation"], searchArgs)
 		@views.FacetSince(c, "created_since", "Created since", "Show records created since", searchArgs)
 		@views.FacetSince(c, "updated_since", "Updated since", "Show records updated since", searchArgs)
-		@views.Facet(c, "legacy", "Legacy", "legacy", facets["legacy"], searchArgs)
+		@views.Facet(c, "legacy", "Legacy", "legacy", "legacy", facets["legacy"], searchArgs)
+	}
+}
+
+func genPublicationSummaryArgs(c *ctx.Ctx, pub *models.Publication) PublicationSummaryArgs {
+	pubURL := views.URL(c.PathTo("publication", "id", pub.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).URL()
+	return PublicationSummaryArgs{
+		Publication:    pub,
+		PublicationURL: pubURL,
+		Actions:        pubSummaryActions(c, pub, pubURL),
+		Footer:         pubSummaryFooter(c, pub),
+		Links:          pubSummaryLinks(c, pub, pubURL),
 	}
 }
 
@@ -150,7 +161,7 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 							<ul class="list-group list-group-flush">
 								for _, hit := range args.Hits.Hits {
 									<li class="list-group-item">
-										@pubSummary(c, hit, views.URL(c.PathTo("publication", "id", hit.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).URL())
+										@PublicationSummary(c, genPublicationSummaryArgs(c, hit))
 									</li>
 								}
 							</ul>

@@ -19,7 +19,15 @@ import contributorviews "github.com/ugent-library/biblio-backoffice/views/contri
 import "fmt"
 import "net/url"
 
-func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Component {
+type PublicationSummaryArgs struct {
+	Publication    *models.Publication
+	PublicationURL *url.URL
+	Actions        templ.Component
+	Footer         templ.Component
+	Links          templ.Component
+}
+
+func PublicationSummary(c *ctx.Ctx, args PublicationSummaryArgs) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -41,7 +49,7 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 templ.SafeURL = templ.URL(pubURL.String())
+			var templ_7745c5c3_Var2 templ.SafeURL = templ.URL(args.PublicationURL.String())
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -55,11 +63,11 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = views.BadgeStatus(pub.Status).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = views.BadgeStatus(args.Publication.Status).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if pub.Locked {
+		if args.Publication.Locked {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"c-subline ps-2 me-3 pe-3 border-end\" data-bs-toggle=\"tooltip\" data-bs-placement=\"bottom\" data-bs-title=\"Locked for editing\"><i class=\"if if-lock if--small if--muted\"></i> <span class=\"text-muted c-body-small ms-2\">Locked</span></span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -69,11 +77,11 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if pub.Classification != "" {
+		if args.Publication.Classification != "" {
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s: %s", c.Loc.Get("publication_types."+pub.Type), pub.Classification))
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s: %s", c.Loc.Get("publication_types."+args.Publication.Type), args.Publication.Classification))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 37, Col: 95}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 45, Col: 121}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -81,9 +89,9 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 			}
 		} else {
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_types." + pub.Type))
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_types." + args.Publication.Type))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 39, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 47, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -94,17 +102,17 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if mainFile := pub.MainFile(); mainFile != nil {
+		if mainFile := args.Publication.MainFile(); mainFile != nil {
 			templ_7745c5c3_Err = AccessLevel(c, mainFile).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		} else if !pub.Extern {
+		} else if !args.Publication.Extern {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"c-subline ps-2 me-3 pe-3\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var5 templ.SafeURL = views.URL(pubURL).SetQueryParam("show", "files").SafeURL()
+			var templ_7745c5c3_Var5 templ.SafeURL = views.URL(args.PublicationURL).SetQueryParam("show", "files").SafeURL()
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var5)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -119,11 +127,11 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 			return templ_7745c5c3_Err
 		}
 		if c.UserRole == "curator" {
-			if pub.Title != "" {
+			if args.Publication.Title != "" {
 				var templ_7745c5c3_Var6 string
-				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(pub.Title)
+				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(args.Publication.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 56, Col: 21}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 64, Col: 34}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -140,7 +148,7 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var7 templ.SafeURL = templ.URL(pubURL.String())
+			var templ_7745c5c3_Var7 templ.SafeURL = templ.URL(args.PublicationURL.String())
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var7)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -149,11 +157,11 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if pub.Title != "" {
+			if args.Publication.Title != "" {
 				var templ_7745c5c3_Var8 string
-				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(pub.Title)
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(args.Publication.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 64, Col: 23}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 72, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -174,7 +182,7 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, summaryPart := range pub.SummaryParts() {
+		for _, summaryPart := range args.Publication.SummaryParts() {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -182,7 +190,7 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(summaryPart)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 74, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 82, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -197,7 +205,7 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = contributorviews.Summary(c, "author", pub.Author, views.URL(pubURL).SetQueryParam("show", "contributors").String()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = contributorviews.Summary(c, "author", args.Publication.Author, views.URL(args.PublicationURL).SetQueryParam("show", "contributors").String()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -205,8 +213,8 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if len(pub.RelatedOrganizations) > 0 {
-			templ_7745c5c3_Err = relatedorganizationviews.Summary(c, pub.RelatedOrganizations, views.URL(pubURL).SetQueryParam("show", "contributors").String()).Render(ctx, templ_7745c5c3_Buffer)
+		if len(args.Publication.RelatedOrganizations) > 0 {
+			templ_7745c5c3_Err = relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.PublicationURL).SetQueryParam("show", "contributors").String()).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -215,7 +223,7 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var10 templ.SafeURL = views.URL(pubURL).SetQueryParam("show", "contributors").SafeURL()
+			var templ_7745c5c3_Var10 templ.SafeURL = views.URL(args.PublicationURL).SetQueryParam("show", "contributors").SafeURL()
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var10)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -229,7 +237,7 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if vabb := pub.VABB(); vabb != "" {
+		if vabb := args.Publication.VABB(); vabb != "" {
 			if c.User.CanCurate() {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><i class=\"if if-bar-chart if--muted if--small\"></i> <span class=\"text-muted\">VABB: ")
 				if templ_7745c5c3_Err != nil {
@@ -238,7 +246,7 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(vabb)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 97, Col: 49}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 105, Col: 49}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -263,18 +271,18 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 				}
 			}
 		}
-		if pub.Legacy {
+		if args.Publication.Legacy {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\" data-bs-toggle=\"tooltip\" data-bs-placement=\"bottom\" data-bs-title=\"Legacy record\"><i class=\"if if-forbid if--muted if--small\"></i> <span class=\"text-muted\">Legacy</span></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		if len(pub.RelatedDataset) > 0 {
+		if len(args.Publication.RelatedDataset) > 0 {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\" data-bs-toggle=\"tooltip\" data-bs-placement=\"bottom\" data-bs-title=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("%d related datasets", len(pub.RelatedDataset))))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("%d related datasets", len(args.Publication.RelatedDataset))))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -283,9 +291,9 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var12 string
-			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(pub.RelatedDataset)))
+			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(args.Publication.RelatedDataset)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 115, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 123, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -300,7 +308,7 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = pubSummaryFooter(c, pub).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = args.Footer.Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -309,9 +317,9 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
-		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(views.CreatedBy(c, pub.DateCreated, pub.Creator))
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(views.CreatedBy(c, args.Publication.DateCreated, args.Publication.Creator))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 125, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 133, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -322,9 +330,9 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var14 string
-		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(views.UpdatedBy(c, pub.DateUpdated, pub.User, pub.LastUser))
+		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(views.UpdatedBy(c, args.Publication.DateUpdated, args.Publication.User, args.Publication.LastUser))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 128, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 136, Col: 109}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -334,7 +342,7 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(pub.ID))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(args.Publication.ID))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -343,9 +351,9 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var15 string
-		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(pub.ID)
+		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(args.Publication.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 137, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 145, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -356,7 +364,7 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 			return templ_7745c5c3_Err
 		}
 		if c.UserRole == "curator" {
-			templ_7745c5c3_Err = pubSummaryLinks(c, pub, pubURL).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = args.Links.Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -365,7 +373,7 @@ func pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Comp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = pubSummaryActions(c, pub, pubURL).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = args.Actions.Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

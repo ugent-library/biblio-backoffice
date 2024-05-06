@@ -46,7 +46,7 @@ func filterToLabels(c *ctx.Ctx, vals []string, locPrefix string) []string {
 	return labels
 }
 
-func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, facetValues models.FacetValues, searchArgs *models.SearchArgs) templ.Component {
+func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPrefixShort string, facetValues models.FacetValues, searchArgs *models.SearchArgs) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -124,7 +124,7 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, facetVa
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = facetShortValue(filterToLabels(c, filters, locPrefix)).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = facetShortValue(filterToLabels(c, filters, locPrefixShort)).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

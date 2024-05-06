@@ -9,12 +9,20 @@ import contributorviews "github.com/ugent-library/biblio-backoffice/views/contri
 import "fmt"
 import "net/url"
 
-templ pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
+type PublicationSummaryArgs struct {
+	Publication    *models.Publication
+	PublicationURL *url.URL
+	Actions        templ.Component
+	Footer         templ.Component
+	Links          templ.Component
+}
+
+templ PublicationSummary(c *ctx.Ctx, args PublicationSummaryArgs) {
 	<div class="w-100">
 		<div class="c-thumbnail-and-text align-items-start w-100">
 			if c.UserRole == "curator" {
 				<div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-md-small c-thumbnail-lg-large d-none d-lg-block">
-					<a href={ templ.URL(pubURL.String()) }>
+					<a href={ templ.URL(args.PublicationURL.String()) }>
 						<div class="c-thumbnail-inner">
 							<i class="if if-article"></i>
 						</div>
@@ -26,25 +34,25 @@ templ pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
 					<div class="vstack gap-5">
 						<div class="vstack gap-2">
 							<div class="d-inline-flex align-items-center flex-wrap">
-								@views.BadgeStatus(pub.Status)
-								if pub.Locked {
+								@views.BadgeStatus(args.Publication.Status)
+								if args.Publication.Locked {
 									<span class="c-subline ps-2 me-3 pe-3 border-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Locked for editing">
 										<i class="if if-lock if--small if--muted"></i>
 										<span class="text-muted c-body-small ms-2">Locked</span>
 									</span>
 								}
 								<span class="c-subline ps-2 me-3 pe-3 border-end">
-									if pub.Classification != "" {
-										{ fmt.Sprintf("%s: %s", c.Loc.Get("publication_types."+pub.Type), pub.Classification) }
+									if args.Publication.Classification != "" {
+										{ fmt.Sprintf("%s: %s", c.Loc.Get("publication_types."+args.Publication.Type), args.Publication.Classification) }
 									} else {
-										{ c.Loc.Get("publication_types."+pub.Type) }
+										{ c.Loc.Get("publication_types."+args.Publication.Type) }
 									}
 								</span>
-								if mainFile := pub.MainFile(); mainFile != nil {
+								if mainFile := args.Publication.MainFile(); mainFile != nil {
 									@AccessLevel(c, mainFile)
-								} else if !pub.Extern {
+								} else if !args.Publication.Extern {
 									<span class="c-subline ps-2 me-3 pe-3">
-										<a href={ views.URL(pubURL).SetQueryParam("show", "files").SafeURL() } class="c-link-muted">
+										<a href={ views.URL(args.PublicationURL).SetQueryParam("show", "files").SafeURL() } class="c-link-muted">
 											<i class="if if-edit if--small"></i>
 											<em>Add document type: full text</em>
 										</a>
@@ -53,16 +61,16 @@ templ pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
 							</div>
 							<h4 class="mb-0">
 								if c.UserRole == "curator" {
-									if pub.Title != "" {
-										{ pub.Title }
+									if args.Publication.Title != "" {
+										{ args.Publication.Title }
 									} else {
 										Untitled record
 									}
 								} else {
-									<a href={ templ.URL(pubURL.String()) }>
+									<a href={ templ.URL(args.PublicationURL.String()) }>
 										<span class="list-group-item-title">
-											if pub.Title != "" {
-												{ pub.Title }
+											if args.Publication.Title != "" {
+												{ args.Publication.Title }
 											} else {
 												Untitled record
 											}
@@ -71,27 +79,27 @@ templ pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
 								}
 							</h4>
 							<ul class="c-meta-list c-meta-list-inline">
-								for _, summaryPart := range pub.SummaryParts() {
+								for _, summaryPart := range args.Publication.SummaryParts() {
 									<li class="c-meta-item">{ summaryPart }</li>
 								}
 							</ul>
-							@contributorviews.Summary(c, "author", pub.Author, views.URL(pubURL).SetQueryParam("show", "contributors").String())
+							@contributorviews.Summary(c, "author", args.Publication.Author, views.URL(args.PublicationURL).SetQueryParam("show", "contributors").String())
 						</div>
 						<div class="collapsible-card-content collapse" data-collapsible-card-content>
 							<div class="vstack gap-3">
 								<div class="d-flex align-items-center">
 									<i class="if if-building if--small if--muted me-2"></i>
-									if len(pub.RelatedOrganizations) > 0 {
-										@relatedorganizationviews.Summary(c, pub.RelatedOrganizations, views.URL(pubURL).SetQueryParam("show", "contributors").String())
+									if len(args.Publication.RelatedOrganizations) > 0 {
+										@relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.PublicationURL).SetQueryParam("show", "contributors").String())
 									} else {
-										<a href={ views.URL(pubURL).SetQueryParam("show", "contributors").SafeURL() } class="c-link-muted">
+										<a href={ views.URL(args.PublicationURL).SetQueryParam("show", "contributors").SafeURL() } class="c-link-muted">
 											<i class="if if-edit if--small"></i>
 											<em>Add department</em>
 										</a>
 									}
 								</div>
 								<ul class="c-meta-list c-meta-list-inline">
-									if vabb := pub.VABB(); vabb != "" {
+									if vabb := args.Publication.VABB(); vabb != "" {
 										if c.User.CanCurate() {
 											<li class="c-meta-item">
 												<i class="if if-bar-chart if--muted if--small"></i>
@@ -104,46 +112,46 @@ templ pubSummary(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
 											</li>
 										}
 									}
-									if pub.Legacy {
+									if args.Publication.Legacy {
 										<li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Legacy record">
 											<i class="if if-forbid if--muted if--small"></i>
 											<span class="text-muted">Legacy</span>
 										</li>
 									}
-									if len(pub.RelatedDataset) > 0 {
-										<li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ fmt.Sprintf("%d related datasets", len(pub.RelatedDataset)) }>
+									if len(args.Publication.RelatedDataset) > 0 {
+										<li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ fmt.Sprintf("%d related datasets", len(args.Publication.RelatedDataset)) }>
 											<i class="if if-database if--muted if--small"></i>
-											<span class="text-muted">{ fmt.Sprintf("%d", len(pub.RelatedDataset)) }</span>
+											<span class="text-muted">{ fmt.Sprintf("%d", len(args.Publication.RelatedDataset)) }</span>
 										</li>
 									}
 								</ul>
 							</div>
 						</div>
-						@pubSummaryFooter(c, pub)
+						@args.Footer
 						<div class="d-lg-flex flex-row-reverse align-items-center justify-content-end vstack gap-3 flex-wrap">
 							<ul class="c-meta-list c-meta-list-inline c-body-small">
 								<li class="c-meta-item">
-									{ views.CreatedBy(c, pub.DateCreated, pub.Creator) }
+									{ views.CreatedBy(c, args.Publication.DateCreated, args.Publication.Creator) }
 								</li>
 								<li class="c-meta-item">
-									{ views.UpdatedBy(c, pub.DateUpdated, pub.User, pub.LastUser) }
+									{ views.UpdatedBy(c, args.Publication.DateUpdated, args.Publication.User, args.Publication.LastUser) }
 								</li>
 							</ul>
 							<div class="d-block pe-3">
 								<div class="input-group">
-									<button type="button" class="btn btn-outline-secondary btn-sm" data-clipboard={ pub.ID }>
+									<button type="button" class="btn btn-outline-secondary btn-sm" data-clipboard={ args.Publication.ID }>
 										<i class="if if-copy text-muted "></i>
 										<span class="btn-text ms-0 me-1">Biblio ID</span>
 									</button>
-									<code class="c-code">{ pub.ID }</code>
+									<code class="c-code">{ args.Publication.ID }</code>
 								</div>
 							</div>
 						</div>
 						if c.UserRole == "curator" {
-							@pubSummaryLinks(c, pub, pubURL)
+							@args.Links
 						}
 					</div>
-					@pubSummaryActions(c, pub, pubURL)
+					@args.Actions
 				</div>
 			</div>
 		</div>
