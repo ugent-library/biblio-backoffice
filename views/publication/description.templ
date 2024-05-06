@@ -37,6 +37,18 @@ templ Description(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 			</div>
 		</div>
 	</div>
-	
+
+	if p.Locked {
+	<div class="alert alert-info mb-5">
+		<i class="if if-info-circle-filled"></i>
+		<div class="alert-content">
+			<h3 class="alert-title">This record has been reviewed and locked.</h3>
+			<p class="mb-2">For any change requests or questions, get in touch via <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>. Thank you for your contribution!</p>
+		</div>
+	</div>
+	}
+
 	@Details(c, p)
+
+	@Projects(c, p)
 }
