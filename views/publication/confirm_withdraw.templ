@@ -24,10 +24,10 @@ templ ConfirmWithdraw(c *ctx.Ctx, publication *models.Publication, redirectURL s
 						</div>
 						<div class="bc-toolbar-right">
 							<button
-								class="btn btn-danger"
-								hx-post={ c.PathTo("publication_withdraw", "id", publication.ID, "redirect-url", redirectURL).String() }
-								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
-								hx-swap="none"
+ 								class="btn btn-danger"
+ 								hx-post={ c.PathTo("publication_withdraw", "id", publication.ID, "redirect-url", redirectURL).String() }
+ 								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
+ 								hx-swap="none"
 							>Withdraw</button>
 						</div>
 					</div>

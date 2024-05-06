@@ -76,11 +76,11 @@ templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
 										if c.User != nil {
 											<div class="dropdown">
 												<button
-													class="nav-link dropdown-toggle"
-													role="button"
-													data-bs-toggle="dropdown"
-													aria-haspopup="true"
-													aria-expanded="false"
+ 													class="nav-link dropdown-toggle"
+ 													role="button"
+ 													data-bs-toggle="dropdown"
+ 													aria-haspopup="true"
+ 													aria-expanded="false"
 												>
 													<div class="bc-avatar-and-text">
 														<div class="bc-avatar bc-avatar--tiny bc-avatar--light-blue me-3">
@@ -102,10 +102,10 @@ templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
 													<hr class="dropdown-divider"/>
 													if c.User.CanImpersonateUser() && c.OriginalUser == nil {
 														<a
-															class="dropdown-item"
-															href="#"
-															hx-get={ c.PathTo("add_impersonation").String() }
-															hx-target="#modals"
+ 															class="dropdown-item"
+ 															href="#"
+ 															hx-get={ c.PathTo("add_impersonation").String() }
+ 															hx-target="#modals"
 														>
 															<i class="if if-eye"></i>
 															View as
@@ -161,8 +161,8 @@ templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
 									<ul class="c-sidebar-menu">
 										<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "dashboard") }>
 											<a
-												href={ templ.URL(c.PathTo("dashboard").String()) }
-												if c.UserRole == "user" {
+ 												href={ templ.URL(c.PathTo("dashboard").String()) }
+ 												if c.UserRole == "user" {
 													hx-get={ c.PathTo("dashboard_icon").String() }
 													hx-trigger="load, every 5s"
 												}
@@ -198,9 +198,9 @@ templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
 											if c.FlagCandidateRecords() {
 												<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "candidate_records") }>
 													<a
-														href={ templ.URL(c.PathTo("candidate_records").String()) }
-														hx-get={ c.PathTo("candidate_records_icon").String() }
-														hx-trigger="load, every 5s"
+ 														href={ templ.URL(c.PathTo("candidate_records").String()) }
+ 														hx-get={ c.PathTo("candidate_records_icon").String() }
+ 														hx-trigger="load, every 5s"
 													>
 														@CandidateRecordsIcon(c, false)
 													</a>

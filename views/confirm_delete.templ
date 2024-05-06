@@ -34,12 +34,12 @@ templ ConfirmDelete(args ConfirmDeleteArgs) {
 						</div>
 						<div class="bc-toolbar-right">
 							<button
-								class="btn btn-danger"
-								hx-delete={ args.DeleteUrl.String() }
-								if args.SnapshotID != "" {
+ 								class="btn btn-danger"
+ 								hx-delete={ args.DeleteUrl.String() }
+ 								if args.SnapshotID != "" {
 									hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.SnapshotID) }
 								}
-								hx-swap="none"
+ 								hx-swap="none"
 							>Delete</button>
 						</div>
 					</div>

@@ -43,9 +43,9 @@ templ SuggestProjects(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Projec
 											}
 											<div class="me-43">
 												<a
-													class="c-link c-link-muted"
-													href={ views.URLFromString(c.FrontendURL).Path("project", hit.ID).SafeURL() }
-													target="blank"
+ 													class="c-link c-link-muted"
+ 													href={ views.URLFromString(c.FrontendURL).Path("project", hit.ID).SafeURL() }
+ 													target="blank"
 												>Read more <i class="if if-external-link if--small"></i></a>
 											</div>
 										</li>
@@ -76,11 +76,11 @@ templ SuggestProjects(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Projec
 					</div>
 					<div class="c-button-toolbar">
 						<button
-							class="btn btn-primary"
-							hx-post={ c.PathTo("dataset_create_project", "id", dataset.ID).String() }
-							hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
-							hx-vals={ fmt.Sprintf(`{"project_id": "%s"}`, hit.ID) }
-							hx-swap="none"
+ 							class="btn btn-primary"
+ 							hx-post={ c.PathTo("dataset_create_project", "id", dataset.ID).String() }
+ 							hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
+ 							hx-vals={ fmt.Sprintf(`{"project_id": "%s"}`, hit.ID) }
+ 							hx-swap="none"
 						>Add project</button>
 					</div>
 				</div>

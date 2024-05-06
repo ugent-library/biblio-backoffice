@@ -5,10 +5,10 @@ import (
 
 	"slices"
 
-	"github.com/ugent-library/biblio-backoffice/displays"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
-	"github.com/ugent-library/biblio-backoffice/render/display"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
 var subNavs = []string{"description", "files", "contributors", "datasets", "activity"}
@@ -19,15 +19,6 @@ type YieldShow struct {
 	SubNavs      []string
 	ActiveNav    string
 	ActiveSubNav string
-}
-
-type YieldShowDescription struct {
-	Context
-	SubNavs               []string
-	ActiveSubNav          string
-	DisplayDetails        *display.Display
-	DisplayConference     *display.Display
-	DisplayAdditionalInfo *display.Display
 }
 
 type YieldShowContributors struct {
@@ -71,15 +62,11 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, ctx Context) {
 	})
 }
 
-func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.View(w, "publication/show_description", YieldShowDescription{
-		Context:               ctx,
-		SubNavs:               subNavs,
-		ActiveSubNav:          "description",
-		DisplayDetails:        displays.PublicationDetails(ctx.User, ctx.Loc, ctx.Publication),
-		DisplayConference:     displays.PublicationConference(ctx.User, ctx.Loc, ctx.Publication),
-		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.User, ctx.Loc, ctx.Publication),
-	})
+func ShowDescription(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+	redirectURL := c.PathTo("publications").String()
+	publicationviews.Description(c, p, redirectURL).Render(r.Context(), w)
 }
 
 func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context) {

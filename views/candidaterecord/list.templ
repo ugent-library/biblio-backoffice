@@ -47,23 +47,23 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 									<li class="list-group-item bg-transparent">
 										@Summary(c, rec.Publication, SummaryOpts{Badge: summaryBadge(rec), Thumbnail: c.AssetPath("/images/plato-logo.svg")}) {
 											<button
-												class="btn btn-link btn-link-muted"
-												hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
-												hx-target="#modals"
+ 												class="btn btn-link btn-link-muted"
+ 												hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
+ 												hx-target="#modals"
 											>
 												<div class="btn-text">Remove suggestion</div>
 											</button>
 											<button
-												class="btn btn-link btn-link-muted"
-												hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
-												hx-target="#modals"
+ 												class="btn btn-link btn-link-muted"
+ 												hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
+ 												hx-target="#modals"
 											>
 												<div class="btn-text">Preview</div>
 											</button>
 											<button
-												class="btn btn-outline-primary"
-												hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
-												hx-swap="none"
+ 												class="btn btn-outline-primary"
+ 												hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
+ 												hx-swap="none"
 											>
 												<div class="btn-text">Import as draft</div>
 											</button>

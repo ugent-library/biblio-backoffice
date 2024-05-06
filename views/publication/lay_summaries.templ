@@ -1,0 +1,97 @@
+package publication
+
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/localize"
+)
+
+templ LaySummaries(c *ctx.Ctx, p *models.Publication) {
+	<div id="lay-summaries" class="card mb-6">
+		<div class="card-header">
+			<div class="bc-toolbar">
+				<div class="bc-toolbar-left">
+					<h1 class="bc-toolbar-title">Lay summary</h1>
+				</div>
+				<div class="bc-toolbar-right">
+					if c.User.CanEditPublication(p) {
+						<button
+ 							class="btn btn-outline-primary"
+ 							type="button"
+ 							hx-get={ c.PathTo("publication_add_lay_summary", "id", p.ID).String() }
+ 							hx-target="#modals"
+						>
+							<i class="if if-add"></i>
+							<div class="btn-text">Add lay summary</div>
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+		<div id="lay-summaries-body">
+			@LaySummariesBody(c, p)
+		</div>
+	</div>
+}
+
+templ LaySummariesBody(c *ctx.Ctx, p *models.Publication) {
+	if len(p.LaySummary) > 0 {
+		<div class="card-body p-0">
+			<table class="table">
+				<thead>
+					<tr>
+						<th class="ps-6">Lay summary</th>
+						<th>Language</th>
+						<th class="pe-6"></th>
+					</tr>
+				</thead>
+				<tbody>
+					for i, l := range p.LaySummary {
+						<tr class={ fmt.Sprintf("row-%d", i) }>
+							<td class="ps-6">
+								<p>{ l.Text }</p>
+							</td>
+							<td>{ localize.LanguageName(l.Lang) }</td>
+							<td class="pe-6">
+								if c.User.CanEditPublication(p) {
+									<div class="c-button-toolbar">
+										<div class="dropdown">
+											<button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+												<i class="if if-more"></i>
+											</button>
+											<div class="dropdown-menu">
+												<button
+ 													class="dropdown-item"
+ 													type="button"
+ 													hx-get={ c.PathTo("publication_edit_lay_summary", "id", p.ID, "lay_summary_id", l.ID).String() }
+ 													hx-target="#modals"
+												>
+													<i class="if if-edit"></i>
+													<span>Edit</span>
+												</button>
+												<button
+ 													class="dropdown-item"
+ 													type="button"
+ 													hx-get={ c.PathTo("publication_confirm_delete_lay_summary", "id", p.ID, "snapshot_id", p.SnapshotID, "lay_summary_id", l.ID).String() }
+ 													hx-target="#modals"
+												>
+													<i class="if if-delete"></i>
+													<span>Delete</span>
+												</button>
+											</div>
+										</div>
+									</div>
+								}
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	} else {
+		<div class="card-body">
+			<span class="text-muted">No lay summaries</span>
+		</div>
+	}
+}

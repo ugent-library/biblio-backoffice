@@ -9,9 +9,9 @@ import (
 
 templ actions(c *ctx.Ctx, rec *models.CandidateRecord) {
 	<button
-		class="btn btn-primary"
-		hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
-		hx-swap="none"
+ 		class="btn btn-primary"
+ 		hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
+ 		hx-swap="none"
 	>
 		<div class="btn-text">Import as draft</div>
 	</button>

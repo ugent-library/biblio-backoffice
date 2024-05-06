@@ -38,9 +38,41 @@ func (builder *URLBuilder) AddQueryParam(key string, value string) *URLBuilder {
 	return builder
 }
 
+func (builder *URLBuilder) QueryAdd(pairs ...string) *URLBuilder {
+	if len(pairs)%2 != 0 {
+		panic("QueryAdd arguments should be an even sized-list of key value pairs")
+	}
+
+	query := builder.url.Query()
+
+	for i := 0; i < len(pairs); i += 2 {
+		query.Add(pairs[i], pairs[i+1])
+	}
+
+	builder.url.RawQuery = query.Encode()
+
+	return builder
+}
+
 func (builder *URLBuilder) SetQueryParam(key string, value string) *URLBuilder {
 	query := builder.url.Query()
 	query.Set(key, value)
+
+	builder.url.RawQuery = query.Encode()
+
+	return builder
+}
+
+func (builder *URLBuilder) QuerySet(pairs ...string) *URLBuilder {
+	if len(pairs)%2 != 0 {
+		panic("QueryAdd arguments should be an even-sized list of key value pairs")
+	}
+
+	query := builder.url.Query()
+
+	for i := 0; i < len(pairs); i += 2 {
+		query.Set(pairs[i], pairs[i+1])
+	}
 
 	builder.url.RawQuery = query.Encode()
 

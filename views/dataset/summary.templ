@@ -57,7 +57,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									}
 								</span>
 								<span
-									class={ "c-subline", "me-3", "pe-3", templ.KV("border-end", args.Dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }
+ 									class={ "c-subline", "me-3", "pe-3", templ.KV("border-end", args.Dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }
 								>
 									if args.Dataset.AccessLevel == "info:eu-repo/semantics/openAccess" {
 										<i class="if if-download if--small if--success"></i>

@@ -92,8 +92,8 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 							for _, scope := range args.Scopes {
 								<li class="nav-item">
 									<a
-										class={ "nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope)) }
-										href={ views.URL(c.PathTo("datasets")).Query(args.SearchArgs.Clone().WithFilter("scope", scope)).SafeURL() }
+ 										class={ "nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope)) }
+ 										href={ views.URL(c.PathTo("datasets")).Query(args.SearchArgs.Clone().WithFilter("scope", scope)).SafeURL() }
 									>
 										{ c.Loc.Get("dataset.search.scopes."+scope) }
 									</a>
