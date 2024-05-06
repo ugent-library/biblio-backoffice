@@ -81,28 +81,25 @@ func Add(w http.ResponseWriter, r *http.Request, legacyContext Context) {
 	c := ctx.Get(r)
 
 	const pageTitle = "Add - Publications - Biblio"
-	tmpl := ""
 	switch r.URL.Query().Get("method") {
 	case "identifier":
-		tmpl = "publication/pages/add_identifier"
+		// TODO: refactor to templ
+		render.Layout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
+			Context:   legacyContext,
+			PageTitle: pageTitle,
+			Step:      1,
+			ActiveNav: "publications",
+		})
+		return
 	case "manual":
 		pages.AddManual(c, pageTitle, 1).Render(r.Context(), w)
 	case "wos":
 		pages.AddWebOfScience(c, pageTitle, 1).Render(r.Context(), w)
-		return
 	case "bibtex":
 		pages.AddBibTeX(c, pageTitle, 1).Render(r.Context(), w)
-		return
 	default:
-		tmpl = "publication/pages/add"
+		pages.Add(c, pageTitle, 1).Render(r.Context(), w)
 	}
-
-	render.Layout(w, "layouts/default", tmpl, YieldAddSingle{
-		Context:   legacyContext,
-		PageTitle: pageTitle,
-		Step:      1,
-		ActiveNav: "publications",
-	})
 }
 
 func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
