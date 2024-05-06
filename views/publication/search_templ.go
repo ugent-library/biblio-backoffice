@@ -11,7 +11,9 @@ import "io"
 import "bytes"
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
@@ -352,15 +354,18 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 	})
 }
 
-func genPublicationSummaryArgs(c *ctx.Ctx, pub *models.Publication) PublicationSummaryArgs {
+func genPublicationSummaryArgs(c *ctx.Ctx, pub *models.Publication) SummaryArgs {
 	pubURL := views.URL(c.PathTo("publication", "id", pub.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).URL()
-	return PublicationSummaryArgs{
+	args := SummaryArgs{
 		Publication:    pub,
 		PublicationURL: pubURL,
 		Actions:        pubSummaryActions(c, pub, pubURL),
 		Footer:         pubSummaryFooter(c, pub),
-		Links:          pubSummaryLinks(c, pub, pubURL),
 	}
+	if c.UserRole == "curator" {
+		args.Links = pubSummaryLinks(c, pub, pubURL)
+	}
+	return args
 }
 
 func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
@@ -412,7 +417,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("export_to.xlsx"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 107, Col: 47}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 112, Col: 47}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -466,7 +471,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.search.scopes." + scope))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 126, Col: 57}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 131, Col: 57}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
@@ -531,7 +536,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, args.Hits.Pagination))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 153, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 158, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -551,7 +556,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = PublicationSummary(c, genPublicationSummaryArgs(c, hit)).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = Summary(c, genPublicationSummaryArgs(c, hit)).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -572,7 +577,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.search.empty.title." + args.CurrentScope))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 173, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 178, Col: 75}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -585,7 +590,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.search.empty.description." + args.CurrentScope))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 176, Col: 81}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 181, Col: 81}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -634,7 +639,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, args.Hits.Pagination))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 210, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 215, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
@@ -660,6 +665,305 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 			return templ_7745c5c3_Err
 		})
 		templ_7745c5c3_Err = views.PageLayout(c, "Overview - Publications - Biblio", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func pubSummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var23 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var23 == nil {
+			templ_7745c5c3_Var23 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-button-toolbar\"><button class=\"btn btn-tertiary btn-lg-only-responsive pt-0\" data-collapsible-card-toggle><i class=\"if if-info-circle\"></i> <span class=\"btn-text d-md-none d-lg-inline-block\">More info</span> <span class=\"visually-hidden\">View more details</span></button><div class=\"dropdown\"><button class=\"btn btn-tertiary btn-lg-only-responsive pt-0\" type=\"button\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"><i class=\"if if-more\"></i> <span class=\"btn-text d-md-none d-lg-inline-block\">Actions</span> <span class=\"visually-hidden\">View more actions</span></button><div class=\"dropdown-menu me-3\"><a class=\"dropdown-item\" href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var24 templ.SafeURL = templ.URL(pubURL.String())
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var24)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-eye\"></i> <span>View publication</span></a><div class=\"dropdown-divider\"></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if pub.Status == "public" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"dropdown-item\" href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var25 templ.SafeURL = templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, pub.ID))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var25)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" target=\"_blank\"><i class=\"if if-book\"></i> <span>Public Biblio Location</span></a>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if c.UserRole == "curator" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"dropdown-item\" href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var26 templ.SafeURL = views.URL(pubURL).SetQueryParam("show", "files").SafeURL()
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var26)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-file\"></i> <span>View full texts &amp; files</span></a> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if pub.DOI != "" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"dropdown-item\" href=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var27 templ.SafeURL = templ.URL(identifiers.Resolve("DOI", pub.DOI))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var27)))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" target=\"_blank\"><i class=\"if if-external-link\"></i> <span>DOI</span></a>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if pub.WOSID != "" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"dropdown-item\" href=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var28 templ.SafeURL = templ.URL(identifiers.Resolve("WebOfScience", pub.WOSID))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var28)))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" target=\"_blank\"><i class=\"if if-external-link\"></i> <span>WoS</span></a>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if pub.PubMedID != "" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"dropdown-item\" href=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var29 templ.SafeURL = templ.URL(identifiers.Resolve("PubMed", pub.PubMedID))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var29)))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" target=\"_blank\"><i class=\"if if-external-link\"></i> <span>PubMed</span></a>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+		} else {
+			if pub.DOI != "" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"dropdown-item\" href=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var30 templ.SafeURL = views.URLFromString("https://www.altmetric.com/explorer/outputs?scope=all").SetQueryParam("identifier", pub.DOI).SafeURL()
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var30)))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" target=\"_blank\"><i class=\"if if-external-link\"></i> <span>Altmetric</span></a>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+		}
+		if c.User.CanDeletePublication(pub) {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"dropdown-divider\"></div><button class=\"dropdown-item\" hx-get=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(views.URL(c.PathTo("publication_confirm_delete", "id", pub.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).String()))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><i class=\"if if-delete\"></i> <span>Delete</span></button>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><a class=\"btn btn-tertiary btn-lg-only-responsive pt-0\" href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var31 templ.SafeURL = templ.URL(pubURL.String())
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var31)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-eye\"></i> <span class=\"btn-text d-md-none d-lg-inline-block\">View</span> <span class=\"visually-hidden\">Go to record</span></a></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func pubSummaryFooter(c *ctx.Ctx, pub *models.Publication) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var32 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var32 == nil {
+			templ_7745c5c3_Var32 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		if pub.Message != "" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"alert alert-info mb-0\"><i class=\"if if-message\"></i><div class=\"alert-content\"><h3 class=\"Biblio message\">Biblio message</h3><p class=\"mt-2\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templ.Raw(views.Linkify(pub.Message)).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func pubSummaryLinks(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var33 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var33 == nil {
+			templ_7745c5c3_Var33 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul class=\"c-meta-list c-meta-list-inline\"><li class=\"c-meta-item\"><a class=\"c-link-muted c-body-small\" href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var34 templ.SafeURL = templ.URL(pubURL.String())
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var34)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">View publication</a></li><li class=\"c-meta-item\"><a class=\"c-link-muted c-body-small\" href=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var35 templ.SafeURL = views.URL(pubURL).SetQueryParam("show", "files").SafeURL()
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var35)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Full texts &amp; files</a></li>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if pub.DOI != "" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><a class=\"c-link-muted c-body-small\" href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var36 templ.SafeURL = templ.URL(identifiers.Resolve("DOI", pub.DOI))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var36)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" target=\"_blank\">DOI</a></li>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if pub.WOSID != "" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><a class=\"c-link-muted c-body-small\" href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var37 templ.SafeURL = templ.URL(identifiers.Resolve("WebOfScience", pub.WOSID))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var37)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" target=\"_blank\">WoS</a></li>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if pub.PubMedID != "" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><a class=\"c-link-muted c-body-small\" href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var38 templ.SafeURL = templ.URL(identifiers.Resolve("PubMed", pub.PubMedID))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var38)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" target=\"_blank\">PubMed</a></li>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if pub.Status == "public" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><a class=\"c-link-muted c-body-small\" href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var39 templ.SafeURL = templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, pub.ID))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var39)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" target=\"_blank\">Public Biblio Location</a></li>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
