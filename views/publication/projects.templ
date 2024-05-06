@@ -1,130 +1,139 @@
 package publication
 
 import (
-    "net/url"
+	"net/url"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 )
 
 templ Projects(c *ctx.Ctx, p *models.Publication) {
-    <div id="projects" class="card mb-6">
-        <div class="card-header">
-            <div class="bc-toolbar">
-                <div class="bc-toolbar-left">
-                    <h1 class="bc-toolbar-title">Projects</h1>
-                </div>
-                <div class="bc-toolbar-right">
-                    if c.User.CanEditPublication(p) {
-                        <button class="btn btn-outline-primary" type="button"
-                            hx-get={ c.PathTo("publication_add_project", "id", p.ID).String() }
-                            hx-target="#modals"
-                        >
-                            <i class="if if-add"></i>
-                            <div class="btn-text">Add project</div>
-                        </button>
-                    }
-                </div>
-            </div>
-        </div>
-        <div id="projects-body">
-            @ProjectsBody(c, p)
-        </div>
-    </div>
+	<div id="projects" class="card mb-6">
+		<div class="card-header">
+			<div class="bc-toolbar">
+				<div class="bc-toolbar-left">
+					<h1 class="bc-toolbar-title">Projects</h1>
+				</div>
+				<div class="bc-toolbar-right">
+					if c.User.CanEditPublication(p) {
+						<button
+							class="btn btn-outline-primary"
+							type="button"
+							hx-get={ c.PathTo("publication_add_project", "id", p.ID).String() }
+							hx-target="#modals"
+						>
+							<i class="if if-add"></i>
+							<div class="btn-text">Add project</div>
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+		<div id="projects-body">
+			@ProjectsBody(c, p)
+		</div>
+	</div>
 }
 
 templ ProjectsBody(c *ctx.Ctx, p *models.Publication) {
-    if len(p.RelatedProjects) > 0 {
-    <ul class="list-group list-group-flush">
-        for _, rel := range p.RelatedProjects {
-        <li class="row-{{$i}} list-group-item">
-            <div class="list-group-item-inner">
-                <div class="list-group-item-main">
-                    <div class="d-flex align-items-top">
-                        if rel.Project.Acronym != "" {
-                        <div class="me-5">
-                            <span class="badge badge-default rounded-pill mt-1">{ rel.Project.Acronym }</span>
-                        </div>
-                        }
-                        <div class="mx-3">
-                            <div class="mb-3">
-                                <h2 class="h3">{ rel.Project.Title }</h2>
-                                if rel.Project.Description != "" {
-                                <p class="text-muted mb-4">
-                                    { rel.Project.Description }
-                                </p>
-                                }
-                                <ul class="c-meta-list pb-0">
-                                    <li class="c-meta-item">
-                                        if rel.Project.EUProject != nil {
-                                            if rel.Project.EUProject.FrameworkProgramme != "" {
-                                            <div class="pe-4 me-3 border-right">
-                                                EU Funding programme: Horizon 2020
-                                            </div>
-                                            }
-                                        }
-                                        if rel.Project.StartDate != "" && rel.Project.EndDate != "" {
-                                        <div class="pe-4 me-3 border-right">
-                                            Period: { rel.Project.StartDate } – { rel.Project.EndDate }
-                                        </div>
-                                        }
-                                        <div class="me-3">
-                                            <a class="c-link c-link-muted" href={ views.URLFromString(c.FrontendURL).Path("project", rel.Project.ID).SafeURL() } target="blank">Read more <i class="if if-external-link if--small"></i></a>
-                                        </div>
-                                    </li>
-                                </ul>
-                                <ul class="c-meta-list mb-2">
-                                    <li class="c-meta-item">
-                                        <div class="pe-4 me-3 border-right">
-                                            <span>Project ID</span>
-                                            <code class="c-code d-inline-block">{ rel.Project.ID }</code>
-                                        </div>
-                                        if rel.Project.IWETOID != "" {
-                                        <div class={ "pe-4", "me-3", templ.KV("border-right", rel.Project.EUProject != nil && rel.Project.EUProject.ID != "") }>
-                                            <span>IWETO ID</span>
-                                            <code class="c-code d-inline-block">{ rel.Project.IWETOID }</code>
-                                        </div>
-                                        }
-                                        if rel.Project.EUProject != nil && rel.Project.EUProject.ID != "" {
-                                            <div class="me-3">
-                                                <span>CORDIS ID</span>
-                                                <code class="c-code d-inline-block">{ rel.Project.EUProject.ID }</code>
-                                            </div>
-                                        }
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="c-button-toolbar">
-                    if c.User.CanEditPublication(p) {
-                    <div class="c-button-toolbar">
-                        <div class="dropdown">
-                            <button class="btn btn-link btn-icon-only btn-link-muted" type="button"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="if if-more"></i>
-                            </button>
-                            <div class="dropdown-menu">
-                                <button class="dropdown-item" type="button"
-                                    hx-get={ c.PathTo("publication_confirm_delete_project", "id", p.ID, "snapshot_id", p.SnapshotID, "project_id", url.PathEscape(rel.Project.ID)).String() }
-                                    hx-target="#modals"
-                                >
-                                    <i class="if if-delete"></i>
-                                    <span>Remove from publication</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    }
-                </div>
-            </div>
-        </li>
-        }
-    </ul>
-    } else {
-    <div class="card-body">
-        <span class="text-muted">No projects</span>
-    </div>
-    }
+	if len(p.RelatedProjects) > 0 {
+		<ul class="list-group list-group-flush">
+			for _, rel := range p.RelatedProjects {
+				<li class="row-{{$i}} list-group-item">
+					<div class="list-group-item-inner">
+						<div class="list-group-item-main">
+							<div class="d-flex align-items-top">
+								if rel.Project.Acronym != "" {
+									<div class="me-5">
+										<span class="badge badge-default rounded-pill mt-1">{ rel.Project.Acronym }</span>
+									</div>
+								}
+								<div class="mx-3">
+									<div class="mb-3">
+										<h2 class="h3">{ rel.Project.Title }</h2>
+										if rel.Project.Description != "" {
+											<p class="text-muted mb-4">
+												{ rel.Project.Description }
+											</p>
+										}
+										<ul class="c-meta-list pb-0">
+											<li class="c-meta-item">
+												if rel.Project.EUProject != nil {
+													if rel.Project.EUProject.FrameworkProgramme != "" {
+														<div class="pe-4 me-3 border-right">
+															EU Funding programme: Horizon 2020
+														</div>
+													}
+												}
+												if rel.Project.StartDate != "" && rel.Project.EndDate != "" {
+													<div class="pe-4 me-3 border-right">
+														Period: { rel.Project.StartDate } – { rel.Project.EndDate }
+													</div>
+												}
+												<div class="me-3">
+													<a class="c-link c-link-muted" href={ views.URLFromString(c.FrontendURL).Path("project", rel.Project.ID).SafeURL() } target="blank">Read more <i class="if if-external-link if--small"></i></a>
+												</div>
+											</li>
+										</ul>
+										<ul class="c-meta-list mb-2">
+											<li class="c-meta-item">
+												<div class="pe-4 me-3 border-right">
+													<span>Project ID</span>
+													<code class="c-code d-inline-block">{ rel.Project.ID }</code>
+												</div>
+												if rel.Project.IWETOID != "" {
+													<div class={ "pe-4", "me-3", templ.KV("border-right", rel.Project.EUProject != nil && rel.Project.EUProject.ID != "") }>
+														<span>IWETO ID</span>
+														<code class="c-code d-inline-block">{ rel.Project.IWETOID }</code>
+													</div>
+												}
+												if rel.Project.EUProject != nil && rel.Project.EUProject.ID != "" {
+													<div class="me-3">
+														<span>CORDIS ID</span>
+														<code class="c-code d-inline-block">{ rel.Project.EUProject.ID }</code>
+													</div>
+												}
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="c-button-toolbar">
+							if c.User.CanEditPublication(p) {
+								<div class="c-button-toolbar">
+									<div class="dropdown">
+										<button
+											class="btn btn-link btn-icon-only btn-link-muted"
+											type="button"
+											data-bs-toggle="dropdown"
+											aria-haspopup="true"
+											aria-expanded="false"
+										>
+											<i class="if if-more"></i>
+										</button>
+										<div class="dropdown-menu">
+											<button
+												class="dropdown-item"
+												type="button"
+												hx-get={ c.PathTo("publication_confirm_delete_project", "id", p.ID, "snapshot_id", p.SnapshotID, "project_id", url.PathEscape(rel.Project.ID)).String() }
+												hx-target="#modals"
+											>
+												<i class="if if-delete"></i>
+												<span>Remove from publication</span>
+											</button>
+										</div>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</li>
+			}
+		</ul>
+	} else {
+		<div class="card-body">
+			<span class="text-muted">No projects</span>
+		</div>
+	}
 }

@@ -3,58 +3,60 @@ package publication
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-    	"github.com/ugent-library/biblio-backoffice/helpers"
+	"github.com/ugent-library/biblio-backoffice/helpers"
 	"github.com/ugent-library/biblio-backoffice/views/display"
 )
 
 templ Conference(c *ctx.Ctx, p *models.Publication) {
-    <div id="conference-details" class="card mb-6">
-        <div class="card-header">
-            <div class="bc-toolbar">
-                <div class="bc-toolbar-left">
-                    <h1 class="bc-toolbar-title">Conference details</h1>
-                </div>
-                <div class="bc-toolbar-right">
-                    if c.User.CanEditPublication(p) {
-                    <div class="c-button-toolbar" data-panel-state="read">
-                        <button class="btn btn-outline-primary"
-                            hx-get={ c.PathTo("publication_edit_conference", "id", p.ID).String() }
-                            hx-target="#modals"
-                        >
-                            <i class="if if-edit"></i><div class="btn-text">Edit</div>
-                        </button>
-                    </div>
-                    }
-                </div>
-            </div>
-        </div>
-        <div id="conference-body">
-            @ConferenceBody(c, p)
-        </div>
-    </div>
+	<div id="conference-details" class="card mb-6">
+		<div class="card-header">
+			<div class="bc-toolbar">
+				<div class="bc-toolbar-left">
+					<h1 class="bc-toolbar-title">Conference details</h1>
+				</div>
+				<div class="bc-toolbar-right">
+					if c.User.CanEditPublication(p) {
+						<div class="c-button-toolbar" data-panel-state="read">
+							<button
+								class="btn btn-outline-primary"
+								hx-get={ c.PathTo("publication_edit_conference", "id", p.ID).String() }
+								hx-target="#modals"
+							>
+								<i class="if if-edit"></i>
+								<div class="btn-text">Edit</div>
+							</button>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+		<div id="conference-body">
+			@ConferenceBody(c, p)
+		</div>
+	</div>
 }
 
 templ ConferenceBody(c *ctx.Ctx, p *models.Publication) {
-    <div class="card-body p-0">
-        <ul class="list-group list-group-flush" data-panel-state="read">
-            <li class="list-group-item">
-                @display.Field(display.FieldArgs{
+	<div class="card-body p-0">
+		<ul class="list-group list-group-flush" data-panel-state="read">
+			<li class="list-group-item">
+				@display.Field(display.FieldArgs{
 					Label: c.Loc.Get("builder.conference.name"),
 					Value: p.ConferenceName,
 				})
-                @display.Field(display.FieldArgs{
+				@display.Field(display.FieldArgs{
 					Label: c.Loc.Get("builder.conference.location"),
 					Value: p.ConferenceLocation,
 				})
-                @display.Field(display.FieldArgs{
+				@display.Field(display.FieldArgs{
 					Label: c.Loc.Get("builder.conference.organizer"),
 					Value: p.ConferenceOrganizer,
 				})
-                @display.Field(display.FieldArgs{
+				@display.Field(display.FieldArgs{
 					Label: c.Loc.Get("builder.conference.date"),
-				    Value: helpers.FormatRange(p.ConferenceStartDate, p.ConferenceEndDate),				
-                })
-            </li>
-        </ul>
-    </div>
+					Value: helpers.FormatRange(p.ConferenceStartDate, p.ConferenceEndDate),
+				})
+			</li>
+		</ul>
+	</div>
 }
