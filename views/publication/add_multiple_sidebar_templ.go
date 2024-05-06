@@ -55,7 +55,7 @@ func AddMultipleSidebar(c *ctx.Ctx, step int) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var4 templ.SafeURL = templ.URL(c.PathTo("publications").String())
+		var templ_7745c5c3_Var4 templ.SafeURL = templ.URL(c.PathTo("publication_add").String())
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

@@ -24,7 +24,7 @@ templ AddMultipleSidebar(c *ctx.Ctx, step int) {
 				<div class="c-sub-sidebar-menu">
 					<ol class="c-stepper my-6">
 						<li class={ "c-stepper__item", templ.KV("c-stepper__item--active", step == 1) }>
-							<a href={ templ.URL(c.PathTo("publications").String()) }>
+							<a href={ templ.URL(c.PathTo("publication_add").String()) }>
 								if step > 1 {
 									<div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
 								} else {
