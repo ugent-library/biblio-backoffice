@@ -103,10 +103,14 @@ func (h *Handler) ShowDatasets(w http.ResponseWriter, r *http.Request, ctx Conte
 	})
 }
 
-func (h *Handler) ShowActivity(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.View(w, "publication/show_activity", YieldShowActivity{
-		Context:      ctx,
-		SubNavs:      subNavs,
-		ActiveSubNav: "activity",
-	})
+func ShowActivity(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
+	redirectURL := r.URL.Query().Get("redirect-url")
+	if redirectURL == "" {
+		redirectURL = c.PathTo("publications").String()
+	}
+
+	publicationviews.Activity(c, p, redirectURL).Render(r.Context(), w)
 }

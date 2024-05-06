@@ -324,6 +324,8 @@ func Register(c Config) {
 					r.Get("/", publicationviewing.Show).Name("publication")
 					r.With(ctx.SetSubNav("description")).Get("/description", publicationviewing.ShowDescription).Name("publication_description")
 					r.With(ctx.SetSubNav("files")).Get("/files", publicationviewing.ShowFiles).Name("publication_files")
+					r.With(ctx.SetSubNav("activity")).Get("/activity", publicationviewing.ShowActivity).Name("publication_activity")
+
 					r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 
 					// edit only
@@ -678,9 +680,6 @@ func Register(c Config) {
 		r.Get("/publication/{id}/datasets",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowDatasets)).
 			Name("publication_datasets")
-		r.Get("/publication/{id}/activity",
-			publicationViewingHandler.Wrap(publicationViewingHandler.ShowActivity)).
-			Name("publication_activity")
 
 		// edit publication activity
 		r.Get("/publication/{id}/message/edit",

@@ -1,16 +1,16 @@
 package publication
 
 import (
-	// "fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	// "github.com/ugent-library/friendly"
+	"github.com/ugent-library/biblio-backoffice/views"
 )
 
 templ Activity(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 	<div hx-swap-oob="innerHTML:#show-nav">
 		@SubNav(c, p, redirectURL)
 	</div>
+
 	<div hx-swap-oob="innerHTML:#show-sidebar"></div>
 
     <div class="row">
@@ -27,14 +27,14 @@ templ Activity(c *ctx.Ctx, p *models.Publication, redirectURL string) {
                                 hx-get={ c.PathTo("publication_edit_reviewer_tags", "id", p.ID).String() }
                                 hx-target="#modals"
                             >
-                                <i class="if if-edit"></I>
+                                <i class="if if-edit"></i>
                                 <div class="btn-text">Edit</div>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div id="reviewer-tags-body">
-                    {{partial "publication/reviewer_tags_body" .}}
+                    @ReviewerTagsBody(c, p)
                 </div>
             </div>
         </div>
@@ -47,21 +47,21 @@ templ Activity(c *ctx.Ctx, p *models.Publication, redirectURL string) {
                         </div>
                         <div class="bc-toolbar-right">
                             <button class="btn btn-outline-primary" type="button"
-                                hx-get="{{pathFor "publication_edit_reviewer_note" "id" .Publication.ID}}"
+                                hx-get={ c.PathTo("publication_edit_reviewer_note", "id", p.ID).String() }
                                 hx-target="#modals"
                             >
-                                <i class="if if-edit"></I>
+                                <i class="if if-edit"></i>
                                 <div class="btn-text">Edit</div>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div id="reviewer-note-body">
-                    {{partial "publication/reviewer_note_body" .}}
+                    @ReviewerNoteBody(c, p)
                 </div>
             </div>
         </div>
-        {{end}}
+        }
 
         <div class="col-lg-6">
             <div class="card mb-6">
@@ -71,22 +71,45 @@ templ Activity(c *ctx.Ctx, p *models.Publication, redirectURL string) {
                             <h3 class="card-title">Messages from and for Biblio team</h3>
                         </div>
                         <div class="bc-toolbar-right">
-                            {{if .User.CanEditPublication .Publication}}
+                            if c.User.CanEditPublication(p) {
                             <button class="btn btn-outline-primary" type="button"
-                                hx-get="{{pathFor "publication_edit_message" "id" .Publication.ID}}"
+                                hx-get={ c.PathTo("publication_edit_message", "id", p.ID).String() }
                                 hx-target="#modals"
                             >
-                                <i class="if if-edit"></I>
+                                <i class="if if-edit"></i>
                                 <div class="btn-text">Edit</div>
                             </button>
-                            {{end}}
+                            }
                         </div>
                     </div>
                 </div>
                 <div id="message-body">
-                    {{partial "publication/message_body" .}}
+                    @MessageBody(c, p)
                 </div>
             </div>
         </div>
+    </div>
+}
+
+templ ReviewerTagsBody(c *ctx.Ctx, p *models.Publication) {
+    <div class="card-body">
+        <div class="badge-list">
+            for _, t := range p.ReviewerTags {
+                <span class="badge rounded-pill badge-default">{ t }</span>
+            }
+        </div>
+    </div>
+}
+
+templ ReviewerNoteBody(c *ctx.Ctx, p *models.Publication) {
+    <div class="card-body">
+        <p>{ p.ReviewerNote }</p>
+    </div>
+}
+
+templ MessageBody(c *ctx.Ctx, p *models.Publication) {
+    <div class="card-body">
+        <p class="pb-3">{ views.Linkify(p.Message) }</p>
+        <p class="text-muted">Have any questions or changes to report? Mail to <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.</p>
     </div>
 }
