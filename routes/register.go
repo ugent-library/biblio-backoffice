@@ -229,12 +229,13 @@ func Register(c Config) {
 		// BEGIN NEW STYLE HANDLERS
 		r.Group(func(r *ich.Mux) {
 			r.Use(ctx.Set(ctx.Config{
-				Services: c.Services,
-				Router:   c.Router,
-				Assets:   c.Assets,
-				Timezone: c.Timezone,
-				Loc:      c.Loc,
-				Env:      c.Env,
+				Services:    c.Services,
+				Router:      c.Router,
+				Assets:      c.Assets,
+				MaxFileSize: c.MaxFileSize,
+				Timezone:    c.Timezone,
+				Loc:         c.Loc,
+				Env:         c.Env,
 				ErrorHandlers: map[int]http.HandlerFunc{
 					http.StatusNotFound:            handlers.NotFound,
 					http.StatusInternalServerError: handlers.InternalServerError,
@@ -320,6 +321,12 @@ func Register(c Config) {
 
 					// import
 					r.Get("/add-publication", publicationCreatingHandler.Wrap(publicationcreating.Add)).Name("publication_add")
+
+					// view only functions
+					r.Get("/", publicationviewing.Show).Name("publication")
+					r.With(ctx.SetSubNav("description")).Get("/description", publicationviewing.ShowDescription).Name("publication_description")
+					r.With(ctx.SetSubNav("files")).Get("/files", publicationviewing.ShowFiles).Name("publication_files")
+					r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 
 					r.Route("/publication/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetPublication(c.Services.Repo))
@@ -681,9 +688,6 @@ func Register(c Config) {
 			Name("publication_add_multiple_finish")
 
 		// view publication
-		r.Get("/publication/{id}/files",
-			publicationViewingHandler.Wrap(publicationViewingHandler.ShowFiles)).
-			Name("publication_files")
 		r.Get("/publication/{id}/contributors",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowContributors)).
 			Name("publication_contributors")
