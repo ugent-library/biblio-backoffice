@@ -88,7 +88,8 @@ func Add(w http.ResponseWriter, r *http.Request, legacyContext Context) {
 	case "manual":
 		tmpl = "publication/pages/add_manual"
 	case "wos":
-		tmpl = "publication/pages/add_wos"
+		pages.AddWebOfScience(c, pageTitle, 1).Render(r.Context(), w)
+		return
 	case "bibtex":
 		pages.AddBibTeX(c, pageTitle, 1).Render(r.Context(), w)
 		return

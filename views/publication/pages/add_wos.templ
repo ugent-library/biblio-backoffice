@@ -1,0 +1,60 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/publication"
+	"github.com/ugent-library/biblio-backoffice/views/shared"
+)
+
+templ AddWebOfScience(c *ctx.Ctx, title string, step int) {
+	@views.PageLayout(c, title, nil) {
+		@publication.AddMultipleSidebar(c, step)
+		<div class="w-100 u-scroll-wrapper">
+			<div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<div class="bc-toolbar-item">
+							<div class="d-flex flex-column">
+								<span class="text-muted">Step { fmt.Sprint(step) }</span>
+								<h4 class="bc-toolbar-title">Add publication(s)</h4>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="p-6 u-scroll-wrapper__body">
+				<div class="card mb-6">
+					<div class="card-header">
+						<div class="collapse-trigger" data-bs-toggle="collapse" data-bs-target="#importFromWOS" aria-expanded="true" aria-controls="collapse1"></div>
+						<div class="bc-toolbar">
+							<div class="bc-toolbar-left">Import from Web of Science</div>
+						</div>
+					</div>
+					<div class="collapse show" id="importFromWOS">
+						<div class="card-body">
+							<form class="form-change-submit" action={ templ.URL(c.PathTo("publication_add_multiple_import").String()) } method="POST" enctype="multipart/form-data">
+								@shared.CSRFTag(c)
+								<input type="hidden" name="source" value="wos"/>
+								<div class="c-file-upload">
+									<input type="file" name="file"/>
+									<div class="c-file-upload__content">
+										<p>Drag and drop your .txt file or</p>
+										<button class="btn btn-outline-primary">
+											Upload .txt file
+											<div class="spinner-border">
+												<span class="visually-hidden"></span>
+											</div>
+										</button>
+									</div>
+								</div>
+								<small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/en/tips/00002067/" target="_blank">Web of Science import instructions</a></small>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}
