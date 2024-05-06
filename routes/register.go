@@ -317,16 +317,11 @@ func Register(c Config) {
 				r.Group(func(r *ich.Mux) {
 					r.Use(ctx.SetNav("publications"))
 
+					// search
 					r.Get("/publication", publicationsearching.Search).Name("publications")
 
 					// import
 					r.Get("/add-publication", publicationCreatingHandler.Wrap(publicationcreating.Add)).Name("publication_add")
-
-					// view only functions
-					r.Get("/", publicationviewing.Show).Name("publication")
-					r.With(ctx.SetSubNav("description")).Get("/description", publicationviewing.ShowDescription).Name("publication_description")
-					r.With(ctx.SetSubNav("files")).Get("/files", publicationviewing.ShowFiles).Name("publication_files")
-					r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 
 					r.Route("/publication/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetPublication(c.Services.Repo))
@@ -338,6 +333,7 @@ func Register(c Config) {
 
 							r.Get("/", publicationviewing.Show).Name("publication")
 							r.With(ctx.SetSubNav("description")).Get("/description", publicationviewing.ShowDescription).Name("publication_description")
+							r.With(ctx.SetSubNav("files")).Get("/files", publicationviewing.ShowFiles).Name("publication_files")
 							r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 						})
 
