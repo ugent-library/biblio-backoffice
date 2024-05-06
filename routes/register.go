@@ -151,11 +151,6 @@ func Register(c Config) {
 		PersonService:             c.Services.PersonService,
 		PublicationSearchIndex:    c.Services.PublicationSearchIndex,
 	}
-	publicationSearchingHandler := &publicationsearching.Handler{
-		BaseHandler:            baseHandler,
-		PublicationSearchIndex: c.Services.PublicationSearchIndex,
-		FileStore:              c.Services.FileStore,
-	}
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
 		Repo:        c.Services.Repo,
@@ -292,6 +287,7 @@ func Register(c Config) {
 					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
 					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
 					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
+					r.Get("/candidate-records/{id}/files/{file_id}", candidaterecords.DownloadFile).Name("candidate_record_download_file")
 
 					// impersonate user
 					r.Get("/impersonation/add", impersonating.AddImpersonation).Name("add_impersonation")
@@ -320,22 +316,31 @@ func Register(c Config) {
 				r.Group(func(r *ich.Mux) {
 					r.Use(ctx.SetNav("publications"))
 
+					r.Get("/publication", publicationsearching.Search).Name("publications")
+
 					// import
 					r.Get("/add-publication", publicationCreatingHandler.Wrap(publicationcreating.Add)).Name("publication_add")
 
 					r.Route("/publication/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetPublication(c.Services.Repo))
+						r.Use(ctx.RequireViewPublication)
 
 						// view only functions
 						r.Group(func(r *ich.Mux) {
 							r.Use(ctx.RequireViewPublication)
 
+							r.Get("/", publicationviewing.Show).Name("publication")
+							r.With(ctx.SetSubNav("description")).Get("/description", publicationviewing.ShowDescription).Name("publication_description")
 							r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 						})
 
 						// edit only
 						r.Group(func(r *ich.Mux) {
 							r.Use(ctx.RequireEditPublication)
+
+							// edit publication type
+							r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
+							r.Put("/type", publicationEditingHandler.Wrap(publicationediting.UpdateType)).Name("publication_update_type")
 
 							// delete
 							r.Get("/confirm-delete", publicationediting.ConfirmDelete).Name("publication_confirm_delete")
@@ -422,6 +427,7 @@ func Register(c Config) {
 						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", datasetediting.ConfirmDeleteProject).Name("dataset_confirm_delete_project")
 
 						// abstracts
+						r.Get("/abstracts/{abstract_id}/edit", datasetEditingHandler.Wrap(datasetediting.EditAbstract)).Name("dataset_edit_abstract")
 						r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", datasetediting.ConfirmDeleteAbstract).Name("dataset_confirm_delete_abstract")
 
 						// links
@@ -583,9 +589,6 @@ func Register(c Config) {
 		r.Post("/dataset/{id}/abstracts",
 			datasetEditingHandler.Wrap(datasetEditingHandler.CreateAbstract)).
 			Name("dataset_create_abstract")
-		r.Get("/dataset/{id}/abstracts/{abstract_id}/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditAbstract)).
-			Name("dataset_edit_abstract")
 		r.Put("/dataset/{id}/abstracts/{abstract_id}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateAbstract)).
 			Name("dataset_update_abstract")
@@ -677,18 +680,7 @@ func Register(c Config) {
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleFinish)).
 			Name("publication_add_multiple_finish")
 
-		// search publications
-		r.Get("/publication",
-			publicationSearchingHandler.Wrap(publicationSearchingHandler.Search)).
-			Name("publications")
-
 		// view publication
-		r.Get("/publication/{id}",
-			publicationViewingHandler.Wrap(publicationViewingHandler.Show)).
-			Name("publication")
-		r.Get("/publication/{id}/description",
-			publicationViewingHandler.Wrap(publicationViewingHandler.ShowDescription)).
-			Name("publication_description")
 		r.Get("/publication/{id}/files",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowFiles)).
 			Name("publication_files")
@@ -729,11 +721,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/details",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateDetails)).
 			Name("publication_update_details")
-
-		// edit publication type
-		r.Put("/publication/{id}/type",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateType)).
-			Name("publication_update_type")
 
 		// edit publication conference
 		r.Get("/publication/{id}/conference/edit",
