@@ -133,8 +133,6 @@ func CurationSearch(w http.ResponseWriter, r *http.Request) {
 	}
 	searchArgs.Cleanup()
 
-	c.Log.Infof("my translation: %s", c.Loc.Get("my translation"))
-
 	searchArgs.WithFacetLines(vocabularies.Facets["publication_curation"])
 
 	searcher := c.PublicationSearchIndex.WithScope("status", "private", "public", "returned")
