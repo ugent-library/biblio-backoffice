@@ -11,7 +11,7 @@ services:
       - ../..:/src:cached
     depends_on:
       - db
-      - minio
+      - mc
     command:
       - bash
       - -c
@@ -126,7 +126,7 @@ services:
       - sh
       - -c
       - |
-        mc alias set devcontainer http://minio:3171 minioadmin minioadmin
+        mc alias set devcontainer http://minio:3071 minioadmin minioadmin
         mc mb devcontainer/biblio --ignore-existing
 
 volumes:
