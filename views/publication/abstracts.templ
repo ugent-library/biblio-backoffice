@@ -1,0 +1,90 @@
+package publication
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/localize"
+)
+
+templ Abstracts(c *ctx.Ctx, p *models.Publication) {
+    <div id="abstracts" class="card mb-6">
+        <div class="card-header">
+            <div class="bc-toolbar">
+                <div class="bc-toolbar-left">
+                    <h1 class="bc-toolbar-title">Abstract</h1>
+                </div>
+                <div class="bc-toolbar-right">
+                    if c.User.CanEditPublication(p) {
+                    <button class="btn btn-outline-primary" type="button"
+                        hx-get={ c.PathTo("publication_add_abstract", "id", p.ID).String() }
+                        hx-target="#modals"
+                    >
+                        <i class="if if-add"></i><div class="btn-text">Add abstract</div>
+                    </button>
+                    }
+                </div>
+            </div>
+        </div>
+        <div id="abstracts-body">
+            @AbstractsBody(c, p)
+        </div>
+    </div>
+}
+
+templ AbstractsBody(c *ctx.Ctx, p *models.Publication) {
+    if len(p.Abstract) > 0 {
+    <div class="card-body p-0">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="ps-6">Abstract</th>
+                    <th>Language</th>
+                    <th class="pe-6"></th>
+                </tr>
+            </thead>
+            <tbody>
+            for _, a := range p.Abstract {
+                <tr class="row-{{$i}}">
+                    <td class="ps-6">
+                        <p>{ a.Text }</p>
+                    </td>
+                    <td>{ localize.LanguageName(a.Lang) }</td>
+                    <td class="pe-6">
+                        if c.User.CanEditPublication(p) {
+                        <div class="c-button-toolbar">
+                            <div class="dropdown">
+                                <button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="if if-more"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <button class="dropdown-item" type="button"
+                                        hx-get={ c.PathTo("publication_edit_abstract", "id", p.ID, "abstract_id",  a.ID).String() }
+                                        hx-target="#modals"
+                                    >
+                                        <i class="if if-edit"></i>
+                                        <span>Edit</span>
+                                    </button>
+
+                                    <button class="dropdown-item" type="button"
+                                        hx-get={ c.PathTo("publication_confirm_delete_abstract", "id", p.ID, "snapshot_id", p.SnapshotID, "abstract_id",  a.ID).String() }
+                                        hx-target="#modals"
+                                    >
+                                        <i class="if if-delete"></i>
+                                        <span>Delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    } else {
+    <div class="card-body">
+        <span class="text-muted">No abstracts</span>
+    </div>
+    }
+}

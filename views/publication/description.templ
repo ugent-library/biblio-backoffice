@@ -55,4 +55,6 @@ templ Description(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 	if p.UsesConference() {
 		@Conference(c, p)
 	}
+
+	@Abstracts(c, p)
 }
