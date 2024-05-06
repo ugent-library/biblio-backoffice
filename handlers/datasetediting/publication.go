@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -126,9 +125,7 @@ func ConfirmDeletePublication(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if b.SnapshotID != dataset.SnapshotID {
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: c.Loc.Get("dataset.conflict_error_reload"),
-		})
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 

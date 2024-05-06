@@ -5,11 +5,12 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
@@ -29,44 +30,43 @@ func ConfirmUpdateType(w http.ResponseWriter, r *http.Request) {
 	publication.ConfirmUpdateType(c, ctx.GetPublication(r), r.URL.Query().Get("type")).Render(r.Context(), w)
 }
 
-func (h *Handler) UpdateType(w http.ResponseWriter, r *http.Request, ctx Context) {
+func UpdateType(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+	c := ctx.Get(r)
+
 	b := BindType{}
 	if err := bind.Body(r, &b); err != nil {
-		h.Logger.Warnw("update publication type: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("update publication type: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	ctx.Publication.ChangeType(b.Type)
+	legacyContext.Publication.ChangeType(b.Type)
 
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		form := detailsForm(ctx.User, ctx.Loc, ctx.Publication, validationErrs.(*okay.Errors))
+	if validationErrs := legacyContext.Publication.Validate(); validationErrs != nil {
+		form := detailsForm(c.User, c.Loc, legacyContext.Publication, validationErrs.(*okay.Errors))
 
 		// TODO: refactor to templ
 		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
-			Context: ctx,
+			Context: legacyContext,
 			Form:    form,
 		})
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), legacyContext.Publication, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		// TODO: refactor to templ
-		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.conflict_error_reload"),
-		})
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update publication type: Could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("update publication type: Could not save the publication:", "error", err, "publication", legacyContext.Publication.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	redirectURL := h.PathFor("publication", "id", ctx.Publication.ID)
+	redirectURL := c.PathTo("publication", "id", legacyContext.Publication.ID)
 	w.Header().Set("HX-Redirect", redirectURL.String())
 }

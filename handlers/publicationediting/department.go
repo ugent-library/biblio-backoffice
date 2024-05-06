@@ -6,7 +6,6 @@ import (
 	"net/url"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -92,9 +91,7 @@ func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.conflict_error_reload"),
-		})
+		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -125,9 +122,7 @@ func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
 	b.DepartmentID = depID
 
 	if b.SnapshotID != publication.SnapshotID {
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: c.Loc.Get("publication.conflict_error_reload"),
-		})
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -159,9 +154,7 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.conflict_error_reload"),
-		})
+		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 

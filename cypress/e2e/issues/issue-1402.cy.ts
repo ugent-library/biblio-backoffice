@@ -1332,7 +1332,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.get("#abstracts-body").should("contain", "No abstracts");
       });
 
-      it("should error when trying to delete an abstract that was already deleted", () => {
+      it("should error when trying to edit/delete an abstract that was already deleted", () => {
         cy.setUpDataset();
         cy.visitDataset();
 
@@ -1350,11 +1350,30 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
           .within(() => {
             cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
           })
-          .closeModal("Cancel");
+          .closeModal("Delete");
+        cy.ensureModal(null)
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Dataset has been modified by another user. Please reload the page.",
+            );
+          })
+          .closeModal("Close");
         cy.ensureNoModal();
 
         cy.get("#abstracts-body .if-more").click();
         cy.contains("#abstracts-body .dropdown-item", "Edit").click();
+        cy.ensureModal(null)
+          .within(() => {
+            cy.get(".modal-body").should(
+              "contain",
+              "Dataset has been modified by another user. Please reload the page.",
+            );
+          })
+          .closeModal("Close");
+
+        cy.get("#abstracts-body .if-more").click();
+        cy.contains("#abstracts-body .dropdown-item", "Delete").click();
         cy.ensureModal(null).within(() => {
           cy.get(".modal-body").should(
             "contain",
