@@ -21,15 +21,6 @@ type YieldShow struct {
 	ActiveSubNav string
 }
 
-// type YieldShowDescription struct {
-// 	Context
-// 	SubNavs               []string
-// 	ActiveSubNav          string
-// 	DisplayDetails        *display.Display
-// 	DisplayConference     *display.Display
-// 	DisplayAdditionalInfo *display.Display
-// }
-
 type YieldShowContributors struct {
 	Context
 	SubNavs      []string
@@ -76,14 +67,6 @@ func ShowDescription(w http.ResponseWriter, r *http.Request) {
 	p := ctx.GetPublication(r)
 	redirectURL := c.PathTo("publications").String()
 	publicationviews.Description(c, p, redirectURL).Render(r.Context(), w)
-	// render.View(w, "publication/show_description", YieldShowDescription{
-	// 	Context:               ctx,
-	// 	SubNavs:               subNavs,
-	// 	ActiveSubNav:          "description",
-	// 	DisplayDetails:        displays.PublicationDetails(ctx.User, ctx.Loc, ctx.Publication),
-	// 	DisplayConference:     displays.PublicationConference(ctx.User, ctx.Loc, ctx.Publication),
-	// 	DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.User, ctx.Loc, ctx.Publication),
-	// })
 }
 
 func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context) {
