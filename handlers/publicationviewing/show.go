@@ -17,24 +17,11 @@ type YieldShowContributors struct {
 	ActiveSubNav string
 }
 
-type YieldShowFiles struct {
-	Context
-	SubNavs      []string
-	ActiveSubNav string
-	MaxFileSize  int
-}
-
 type YieldShowDatasets struct {
 	Context
 	SubNavs         []string
 	ActiveSubNav    string
 	RelatedDatasets []*models.Dataset
-}
-
-type YieldShowActivity struct {
-	Context
-	SubNavs      []string
-	ActiveSubNav string
 }
 
 func Show(w http.ResponseWriter, r *http.Request) {
