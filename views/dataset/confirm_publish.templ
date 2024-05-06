@@ -24,10 +24,10 @@ templ ConfirmPublish(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 						</div>
 						<div class="bc-toolbar-right">
 							<button
-								class="btn btn-success"
-								hx-post={ c.PathTo("dataset_publish", "id", dataset.ID, "redirect-url", redirectURL).String() }
-								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
-								hx-swap="none"
+ 								class="btn btn-success"
+ 								hx-post={ c.PathTo("dataset_publish", "id", dataset.ID, "redirect-url", redirectURL).String() }
+ 								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
+ 								hx-swap="none"
 							>Publish</button>
 						</div>
 					</div>

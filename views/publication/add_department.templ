@@ -16,14 +16,14 @@ templ AddDepartment(c *ctx.Ctx, publication *models.Publication, hits []models.C
 				<div class="modal-body">
 					<label class="visually-hidden" for="department-q">Search</label>
 					<input
-						class="form-control"
-						type="text"
-						id="department-q"
-						name="q"
-						placeholder="Search..."
-						hx-get={ c.PathTo("publication_suggest_departments", "id", publication.ID).String() }
-						hx-trigger="keyup changed delay:500ms"
-						hx-target="#department-suggestions"
+ 						class="form-control"
+ 						type="text"
+ 						id="department-q"
+ 						name="q"
+ 						placeholder="Search..."
+ 						hx-get={ c.PathTo("publication_suggest_departments", "id", publication.ID).String() }
+ 						hx-trigger="keyup changed delay:500ms"
+ 						hx-target="#department-suggestions"
 					/>
 					<div id="department-suggestions">
 						@SuggestDepartments(c, publication, hits)

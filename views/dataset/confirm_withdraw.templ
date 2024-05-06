@@ -24,10 +24,10 @@ templ ConfirmWithdraw(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 						</div>
 						<div class="bc-toolbar-right">
 							<button
-								class="btn btn-danger"
-								hx-post={ c.PathTo("dataset_withdraw", "id", dataset.ID, "redirect-url", redirectURL).String() }
-								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
-								hx-swap="none"
+ 								class="btn btn-danger"
+ 								hx-post={ c.PathTo("dataset_withdraw", "id", dataset.ID, "redirect-url", redirectURL).String() }
+ 								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
+ 								hx-swap="none"
 							>Withdraw</button>
 						</div>
 					</div>

@@ -1,23 +1,23 @@
 package publication
 
 import (
+	"strings"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/friendly"
 )
 
-templ Preview(p *models.Publication) {
+templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction templ.Component) {
 	<div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
 		<div class="modal-content bg-lightest">
 			<div class="bc-navbar bc-navbar--white bc-navbar--auto bc-navbar--bordered-bottom flex-column align-items-start">
 				<div class="bc-toolbar bc-toolbar-sm-responsive w-100">
 					<div class="bc-toolbar-left mb-1">
 						<div class="d-inline-flex align-items-center flex-wrap">
-							<span class="c-subline text-nowrap me-3 pe-3 border-end">Dissertation</span>
-							<span class="c-subline ps-2 me-3 pe-3 border-end">
-								<i class="if if-ghent-university if--small if--primary me-2"></i>UGent Access
-							</span>
-							<span class="c-subline ps-2 my-2">
-								<i class="if if-calendar if--small if--muted"></i> Open Access from 23-05-2022
-							</span>
+							<span class={ "c-subline", "text-nowrap", "me-3", "pe-3", templ.KV("border-end", p.MainFile() != nil) }>{ c.Loc.Get("publication_types." + p.Type) }</span>
+							if f := p.MainFile(); f != nil {
+								@SummaryAccessLevel(c, f)
+							}
 						</div>
 					</div>
 					<div class="bc-toolbar-right mb-3 mb-lg-0">
@@ -28,14 +28,25 @@ templ Preview(p *models.Publication) {
 										<i class="if if-close"></i>
 										<span class="btn-text">Close</span>
 									</button>
-									<a class="btn btn-primary" type="button" href="/biblio/researcher/publications/detail/full-view.html">Import as draft</a>
+									if actions != nil {
+										@actions
+									}
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 				<h4 class="w-100 c-body-small mb-4">
-					Cooper, Jane, et al. Neuropsychiatric aspects of COVID-19 pandemic: A selective review. International Journal of Environmental Research and Public Health, 2020
+					if contributors, more := p.PrimaryContributors("author", 3); contributors != nil {
+						for _, c := range contributors {
+							{ c.LastName() }, { c.FirstName() }
+						}
+						,
+						if more {
+							, et al.,
+						}
+					}
+					{ p.Title }, { p.Year }
 				</h4>
 			</div>
 			<div class="d-flex flex-grow-1 flex-shrink-1 overflow-hidden position-relative">
@@ -71,7 +82,7 @@ templ Preview(p *models.Publication) {
 										<div class="col-lg-6">
 											<div class="form-group mb-6 mb-lg-0">
 												<label class="form-label form-label-top">Publication type</label>
-												<p>Dissertation</p>
+												<p>{ c.Loc.Get("publication_types." + p.Type) }</p>
 											</div>
 										</div>
 									</div>
@@ -83,63 +94,78 @@ templ Preview(p *models.Publication) {
 								<h2>Full text &amp; info</h2>
 							</div>
 							<div class="card mb-6">
-								<div class="card-body border-bottom">
-									<div class="form-group">
-										<label class="form-label form-label-top">Full text</label>
-										<div class="list-group mb-4">
-											<div class="list-group-item">
-												<div class="bc-avatar-and-text align-items-start w-100">
-													<div class="bc-avatar bc-avatar--square mt-3 bc-avatar--light-blue">
-														<i class="if if-file"></i>
-													</div>
-													<div class="bc-avatar-text">
-														<div class="hstack-md-responsive gap-3 gap-lg-4">
-															<div class="vstack gap-3">
-																<h4 class="mb-0">final-version.pdf</h4>
-																<ul class="c-meta-list c-meta-list-horizontal">
-																	<li class="c-meta-item">Full text</li>
-																	<li class="c-meta-item">PDF</li>
-																	<li class="c-meta-item">5.1MB</li>
-																</ul>
-															</div>
-															<div class="c-button-toolbar">
-																<button class="btn btn-tertiary btn-lg-only-responsive">
-																	<i class="if if-eye"></i>
-																	<span class="btn-text">View file</span>
-																</button>
+								if f := p.MainFile(); f != nil {
+									<div class="card-body border-bottom">
+										<div class="form-group">
+											<label class="form-label form-label-top">Full text</label>
+											<div class="list-group mb-4">
+												<div class="list-group-item">
+													<div class="bc-avatar-and-text align-items-start w-100">
+														<div class="bc-avatar bc-avatar--square mt-3 bc-avatar--light-blue">
+															<i class="if if-file"></i>
+														</div>
+														<div class="bc-avatar-text">
+															<div class="hstack-md-responsive gap-3 gap-lg-4">
+																<div class="vstack gap-3">
+																	<h4 class="mb-0">{ f.Name }</h4>
+																	<ul class="c-meta-list c-meta-list-horizontal">
+																		<li class="c-meta-item">Full text</li>
+																		<li class="c-meta-item">{ f.ContentType }</li>
+																		<li class="c-meta-item">{ friendly.Bytes(int64(f.Size)) }</li>
+																	</ul>
+																</div>
+																<div class="c-button-toolbar">
+																	@downloadMainFileAction
+																</div>
 															</div>
 														</div>
 													</div>
 												</div>
 											</div>
 										</div>
+										<div class="form-group">
+											<label class="form-label form-label-top">Publication version</label>
+											<p>{ c.Loc.Get("publication_versions." + f.PublicationVersion) }</p>
+										</div>
 									</div>
-									<div class="form-group">
-										<label class="form-label form-label-top">Publication version</label>
-										<p>Published version</p>
+								} else {
+									<div class="card-body border-bottom">
+										<p>-</p>
 									</div>
-								</div>
+								}
 								<div class="card-body border-bottom">
 									<h3 class="mb-3">Access level information</h3>
 									<div class="form-group">
 										<label class="form-label form-label-top pb-0 d-block" for="">
 											Is a patent application ongoing or planned?
 										</label>
-										<p>-</p>
+										if p.HasPatentApplication != "" {
+											{ p.HasPatentApplication }
+										} else {
+											<p>-</p>
+										}
 									</div>
 									<div class="form-group">
 										<label class="form-label form-label-top pb-0 d-block" for="">
 											Does the dissertation contain privacy-sensitive information?
 										</label>
 										<small class="form-text text-muted mb-2">Does not include patents. Private or sensitive information about individuals or companies that should <strong>never</strong> be disclosed.</small>
-										<p>-</p>
+										if p.HasConfidentialData != "" {
+											{ p.HasConfidentialData }
+										} else {
+											<p>-</p>
+										}
 									</div>
 									<div class="form-group">
 										<label class="form-label form-label-top pb-0 d-block" for="">
 											Are other publications planned based on this dissertation?
 										</label>
 										<small class="form-text text-muted mb-2">e.g. articles or book</small>
-										<p>-</p>
+										if p.HasPublicationsPlanned != "" {
+											{ p.HasPublicationsPlanned }
+										} else {
+											<p>-</p>
+										}
 									</div>
 									<div class="form-group">
 										<label class="form-label form-label-top pb-0 d-block" for="">
@@ -148,11 +174,26 @@ templ Preview(p *models.Publication) {
 										<small class="form-text text-muted mb-2">
 											The dissertation contains a copy of the full text, either in the publisher's layout (VoR) or your own (AAM). <a class="c-link" href="https://researchtips.ugent.be/en/tips/00002066">Read more</a>
 										</small>
-										<p>-</p>
+										if p.HasPublishedMaterial != "" {
+											{ p.HasPublishedMaterial }
+										} else {
+											<p>-</p>
+										}
 									</div>
 								</div>
-								<div class="card-body border-bottom" x-data="{ mode: 'view' }">
+								<div class="card-body border-bottom" x-data="{ mode: &#39;view&#39; }">
 									<h3 class="mb-3">Access level</h3>
+									<div class="bc-toolbar h-auto">
+										<div class="bc-toolbar-left">
+											if f := p.MainFile(); f != nil {
+												<div class="bc-avatar-and-text align-items-start">
+													@PreviewAccesLevel(c, f)
+												</div>
+											} else {
+												<p>-</p>
+											}
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -170,11 +211,19 @@ templ Preview(p *models.Publication) {
 												</label>
 											</div>
 										</div>
-										<span>Neuropsychiatric aspects of COVID-19 pandemic: A selective review</span>
+										<span>
+											if p.Title != "" {
+												{ p.Title }
+											} else {
+												Untitled record
+											}
+										</span>
 									</div>
 									<div class="form-group">
 										<label class="form-label form-label-top" for="">Alternative title</label>
-										<span>Alternative title</span>
+										if len(p.AlternativeTitle) > 0 {
+											<span>{ p.AlternativeTitle[0] }</span>
+										}
 									</div>
 									<div class="form-group">
 										<div class="bc-toolbar h-auto">
@@ -182,12 +231,24 @@ templ Preview(p *models.Publication) {
 												<label class="form-label">Abstract</label>
 											</div>
 										</div>
-										<div class="card shadow-none mb-6">
-											<div class="card-body">
-												<p class="c-body-small text-muted mb-1">English</p>
-												<p>Corona virus disease (COVID-19) has been declared as a controllable pandemic by the World Health Organization (WHO). COVID-19 though is a predominantly respiratory illness; it can also affect brain and other organs like kidneys, heart and liver. Neuropsychiatric manifestations are common during viral pandemics but are not effectively addressed. Fever and cough are common symptoms only in infected individuals but headache and sleep disturbances are common even in uninfected general public. In this selective review, the authors report the available evidence of neuropsychiatric morbidity during the current COVID-19 crisis. The authors also discuss the postulated neuronal mechanisms of the corona virus infection sequelae.</p>
+										if len(p.Abstract) > 0 {
+											for _, a := range p.Abstract {
+												<div class="card shadow-none mb-6">
+													<div class="card-body">
+														if a.Lang != "und" {
+															<p class="c-body-small text-muted mb-1">{ a.Lang }</p>
+														}
+														{ a.Text }
+													</div>
+												</div>
+											}
+										} else {
+											<div class="card shadow-none mb-6">
+												<div class="card-body">
+													<p>-</p>
+												</div>
 											</div>
-										</div>
+										}
 									</div>
 									<div class="form-group">
 										<div class="bc-toolbar h-auto">
@@ -195,26 +256,48 @@ templ Preview(p *models.Publication) {
 												<label class="form-label">Lay summary</label>
 											</div>
 										</div>
-										<div class="card shadow-none mb-6">
-											<div class="card-body">
-												<p class="c-body-small text-muted mb-1">Nederlands</p>
-												<p>Lay summary tekst</p>
+										if len(p.LaySummary) > 0 {
+											for _, s := range p.LaySummary {
+												<div class="card shadow-none mb-6">
+													<div class="card-body">
+														if s.Lang != "und" {
+															<p class="c-body-small text-muted mb-1">{ s.Lang }</p>
+														}
+														{ s.Text }
+													</div>
+												</div>
+											}
+										} else {
+											<div class="card shadow-none mb-6">
+												<div class="card-body">
+													<p>-</p>
+												</div>
 											</div>
-										</div>
+										}
 									</div>
 									<div class="form-group">
 										<label class="form-label form-label-top form-label form-label-top" for="keywords">Keywords</label>
-										<ul class="badge-list">
-											<li class="badge badge-light">Keyword 1</li>
-											<li class="badge badge-light">Keyword 2</li>
-										</ul>
+										if len(p.Keyword) > 0 {
+											<ul class="badge-list">
+												for _, k := range p.Keyword {
+													<li class="badge badge-light">{ k }</li>
+												}
+											</ul>
+										} else {
+											<p>-</p>
+										}
 									</div>
 									<div class="form-group">
 										<label class="form-label form-label-top form-label form-label-top" for="keywords">Research field</label>
-										<ul class="badge-list">
-											<li class="badge badge-light">Research field 1</li>
-											<li class="badge badge-light">Research field 2</li>
-										</ul>
+										if len(p.ResearchField) > 0 {
+											<ul class="badge-list">
+												for _, r := range p.ResearchField {
+													<li class="badge badge-light">{ r }</li>
+												}
+											</ul>
+										} else {
+											<p>-</p>
+										}
 									</div>
 								</div>
 							</div>
@@ -231,32 +314,42 @@ templ Preview(p *models.Publication) {
 												<label class="form-label form-label-top">Authors</label>
 											</div>
 										</div>
-										<ul class="list-group rounded-lg">
-											<div class="list-group-item">
-												<div class="bc-avatar-and-text align-items-start">
-													<div class="bc-avatar mt-3 bc-avatar--light-blue" data-avatar-item="data-avatar-item">
-														<i class="if if-ghent-university"></i>
-													</div>
-													<div class="bc-avatar-text">
-														<div class="hstack-md-responsive gap-3 gap-lg-4">
-															<div class="vstack gap-3">
-																<h4 class="mb-0">Jane Cooper</h4>
-																<ul class="c-meta-list c-meta-list-horizontal">
-																	<li class="c-meta-item">
-																		<i class="if if-ghent-university if--small if--muted"></i>
-																		<span class="text-muted">UGent author</span>
-																	</li>
-																	<li class="c-meta-item text-nowrap">
-																		<i class="if if-orcid if--small if--success"></i>
-																		<span></span>
-																	</li>
-																</ul>
+										if len(p.Author) > 0 {
+											<div class="list-group rounded-lg">
+												for _, a := range p.Author {
+													<div class="list-group-item">
+														<div class="bc-avatar-and-text align-items-start">
+															<div class="bc-avatar mt-3 bc-avatar--light-blue" data-avatar-item="data-avatar-item">
+																<i class="if if-ghent-university"></i>
+															</div>
+															<div class="bc-avatar-text">
+																<div class="hstack-md-responsive gap-3 gap-lg-4">
+																	<div class="vstack gap-3">
+																		<h4 class="mb-0">{ a.Name() }</h4>
+																		<ul class="c-meta-list c-meta-list-horizontal">
+																			if a.Person != nil {
+																				<li class="c-meta-item">
+																					<i class="if if-ghent-university if--small if--muted"></i>
+																					<span class="text-muted">UGent author</span>
+																				</li>
+																			}
+																			if a.ORCID() != "" {
+																				<li class="c-meta-item text-nowrap">
+																					<i class="if if-orcid if--small if--success"></i>
+																					<span>{ a.ORCID() }</span>
+																				</li>
+																			}
+																		</ul>
+																	</div>
+																</div>
 															</div>
 														</div>
 													</div>
-												</div>
+												}
 											</div>
-										</ul>
+										} else {
+											<p>-</p>
+										}
 									</div>
 									<div class="form-group">
 										<div class="bc-toolbar h-auto">
@@ -264,56 +357,42 @@ templ Preview(p *models.Publication) {
 												<label class="form-label form-label-top">Supervisors</label>
 											</div>
 										</div>
-										<ul class="list-group rounded-lg">
-											<div class="list-group-item">
-												<div class="bc-avatar-and-text align-items-start">
-													<div class="bc-avatar mt-3 bc-avatar--light-blue" data-avatar-item="data-avatar-item">
-														<i class="if if-ghent-university"></i>
-													</div>
-													<div class="bc-avatar-text">
-														<div class="hstack-md-responsive gap-3 gap-lg-4">
-															<div class="vstack gap-3">
-																<h4 class="mb-0">Brooklyn Simmons</h4>
-																<ul class="c-meta-list c-meta-list-horizontal">
-																	<li class="c-meta-item">
-																		<i class="if if-ghent-university if--small if--muted"></i>
-																		<span class="text-muted">UGent author</span>
-																	</li>
-																	<li class="c-meta-item text-nowrap">
-																		<i class="if if-orcid if--small if--success"></i>
-																		<span></span>
-																	</li>
-																</ul>
+										if len(p.Supervisor) > 0 {
+											<ul class="list-group rounded-lg">
+												for _, s := range p.Supervisor {
+													<li class="list-group-item">
+														<div class="bc-avatar-and-text align-items-start">
+															<div class="bc-avatar mt-3 bc-avatar--light-blue" data-avatar-item="data-avatar-item">
+																<i class="if if-ghent-university"></i>
+															</div>
+															<div class="bc-avatar-text">
+																<div class="hstack-md-responsive gap-3 gap-lg-4">
+																	<div class="vstack gap-3">
+																		<h4 class="mb-0">{ s.Name() }</h4>
+																		<ul class="c-meta-list c-meta-list-horizontal">
+																			if s.Person != nil {
+																				<li class="c-meta-item">
+																					<i class="if if-ghent-university if--small if--muted"></i>
+																					<span class="text-muted">UGent author</span>
+																				</li>
+																			}
+																			if s.ORCID() != "" {
+																				<li class="c-meta-item text-nowrap">
+																					<i class="if if-orcid if--small if--success"></i>
+																					<span>{ s.ORCID() }</span>
+																				</li>
+																			}
+																		</ul>
+																	</div>
+																</div>
 															</div>
 														</div>
-													</div>
-												</div>
-											</div>
-											<div class="list-group-item">
-												<div class="bc-avatar-and-text align-items-start">
-													<div class="bc-avatar mt-3 bc-avatar--light-blue" data-avatar-item="data-avatar-item">
-														<i class="if if-ghent-university"></i>
-													</div>
-													<div class="bc-avatar-text">
-														<div class="hstack-md-responsive gap-3 gap-lg-4">
-															<div class="vstack gap-3">
-																<h4 class="mb-0">Esther Howard</h4>
-																<ul class="c-meta-list c-meta-list-horizontal">
-																	<li class="c-meta-item">
-																		<i class="if if-ghent-university if--small if--muted"></i>
-																		<span class="text-muted">UGent author</span>
-																	</li>
-																	<li class="c-meta-item text-nowrap">
-																		<i class="if if-orcid if--small if--success"></i>
-																		<span></span>
-																	</li>
-																</ul>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</ul>
+													</li>
+												}
+											</ul>
+										} else {
+											<p>-</p>
+										}
 									</div>
 									<div class="form-group">
 										<div class="bc-toolbar h-auto">
@@ -321,38 +400,29 @@ templ Preview(p *models.Publication) {
 												<label class="form-label form-label-top">Departments</label>
 											</div>
 										</div>
-										<ul class="list-group">
-											<li class="list-group-item">
-												<div class="bc-avatar-and-text align-items-start">
-													<div class="bc-avatar bc-avatar--muted bc-avatar--square mt-3">
-														<i class="if if-building"></i>
-													</div>
-													<div class="bc-avatar-text">
-														<div class="hstack-md-responsive gap-3 gap-lg-4">
-															<div class="vstack gap-3">
-																<h4 class="mb-0">Department of Large Animal Surgery, Anaesthesia and Orthopaedics</h4>
-																<div class="c-body-small text-muted">Department ID: DI10</div>
+										if len(p.RelatedOrganizations) > 0 {
+											<ul class="list-group">
+												for _, o := range p.RelatedOrganizations {
+													<li class="list-group-item">
+														<div class="bc-avatar-and-text align-items-start">
+															<div class="bc-avatar bc-avatar--muted bc-avatar--square mt-3">
+																<i class="if if-building"></i>
+															</div>
+															<div class="bc-avatar-text">
+																<div class="hstack-md-responsive gap-3 gap-lg-4">
+																	<div class="vstack gap-3">
+																		<h4 class="mb-0">{ o.Organization.Name }</h4>
+																		<div class="c-body-small text-muted">Department ID: { o.OrganizationID }</div>
+																	</div>
+																</div>
 															</div>
 														</div>
-													</div>
-												</div>
-											</li>
-											<li class="list-group-item">
-												<div class="bc-avatar-and-text align-items-start">
-													<div class="bc-avatar bc-avatar--muted bc-avatar--square mt-3">
-														<i class="if if-building"></i>
-													</div>
-													<div class="bc-avatar-text">
-														<div class="hstack-md-responsive gap-3 gap-lg-4">
-															<div class="vstack gap-3">
-																<h4 class="mb-0">Department of Pathology, bacteriology and poultry diseases (ceased 1-1-2022)</h4>
-																<div class="c-body-small text-muted">Department ID: DI05*</div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</li>
-										</ul>
+													</li>
+												}
+											</ul>
+										} else {
+											<p>-</p>
+										}
 									</div>
 								</div>
 							</div>
@@ -368,31 +438,59 @@ templ Preview(p *models.Publication) {
 											<li class="list-group-item bg-transparent">
 												<div class="form-group">
 													<label class="form-label form-label-top" for="Publication year">Publication year</label>
-													<span>2024</span>
+													if p.Year != "" {
+														<span>{ p.Year }</span>
+													} else {
+														<span>-</span>
+													}
 												</div>
 												<div class="form-group">
 													<label class="form-label form-label-top" for="Place of publication">Place of publication</label>
-													<span>Gent</span>
+													if p.PlaceOfPublication != "" {
+														<span>{ p.PlaceOfPublication }</span>
+													} else {
+														<span>-</span>
+													}
 												</div>
 												<div class="form-group">
 													<label class="form-label form-label-top" for="Publisher">Publisher</label>
-													<span>Universiteit Gent. Faculteit Farmaceutische Wetenschappen, co-publisher</span>
+													if p.Publisher != "" {
+														<span>{ p.Publisher }</span>
+													} else {
+														<span>-</span>
+													}
 												</div>
 												<div class="form-group">
 													<label class="form-label form-label-top" for="Languages">Languages</label>
-													<span>English</span>
+													if len(p.Language) > 0 {
+														<span>{ strings.Join(p.Language, ", ") } </span>
+													} else {
+														<span>-</span>
+													}
 												</div>
 												<div class="form-group">
 													<label class="form-label form-label-top" for="Number of pages">Number of pages</label>
-													<span>249</span>
+													if p.PageCount != "" {
+														<span>{ p.PageCount }</span>
+													} else {
+														<span>-</span>
+													}
 												</div>
 												<div class="form-group">
 													<label class="form-label form-label-top" for="Date of defense">Date of defense</label>
-													<span>2024-08-24</span>
+													if p.DefenseDate != "" {
+														<span>{ p.DefenseDate }</span>
+													} else {
+														<span>-</span>
+													}
 												</div>
 												<div class="form-group">
 													<label class="form-label form-label-top" for="Place of defense">Place of defense</label>
-													<span>Ghent</span>
+													if p.DefensePlace != "" {
+														<span>{ p.DefensePlace }</span>
+													} else {
+														<span>-</span>
+													}
 												</div>
 											</li>
 										</ul>
@@ -409,11 +507,19 @@ templ Preview(p *models.Publication) {
 									<li class="list-group-item bg-transparent">
 										<div class="form-group">
 											<label class="form-label form-label-top" for="ISSN">ISSN</label>
-											<span>9789463556996</span>
+											if len(p.ISSN) > 0 {
+												<span>{ strings.Join(p.ISSN, ", ") } </span>
+											} else {
+												<span>-</span>
+											}
 										</div>
 										<div class="form-group">
 											<label class="form-label form-label-top" for="ISBN">ISBN</label>
-											<span>9789463556996</span>
+											if len(p.ISBN) > 0 {
+												<span>{ strings.Join(p.ISBN, ", ") } </span>
+											} else {
+												<span>-</span>
+											}
 										</div>
 									</li>
 								</div>

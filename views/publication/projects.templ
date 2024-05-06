@@ -17,10 +17,10 @@ templ Projects(c *ctx.Ctx, p *models.Publication) {
 				<div class="bc-toolbar-right">
 					if c.User.CanEditPublication(p) {
 						<button
-							class="btn btn-outline-primary"
-							type="button"
-							hx-get={ c.PathTo("publication_add_project", "id", p.ID).String() }
-							hx-target="#modals"
+ 							class="btn btn-outline-primary"
+ 							type="button"
+ 							hx-get={ c.PathTo("publication_add_project", "id", p.ID).String() }
+ 							hx-target="#modals"
 						>
 							<i class="if if-add"></i>
 							<div class="btn-text">Add project</div>
@@ -104,20 +104,20 @@ templ ProjectsBody(c *ctx.Ctx, p *models.Publication) {
 								<div class="c-button-toolbar">
 									<div class="dropdown">
 										<button
-											class="btn btn-link btn-icon-only btn-link-muted"
-											type="button"
-											data-bs-toggle="dropdown"
-											aria-haspopup="true"
-											aria-expanded="false"
+ 											class="btn btn-link btn-icon-only btn-link-muted"
+ 											type="button"
+ 											data-bs-toggle="dropdown"
+ 											aria-haspopup="true"
+ 											aria-expanded="false"
 										>
 											<i class="if if-more"></i>
 										</button>
 										<div class="dropdown-menu">
 											<button
-												class="dropdown-item"
-												type="button"
-												hx-get={ c.PathTo("publication_confirm_delete_project", "id", p.ID, "snapshot_id", p.SnapshotID, "project_id", url.PathEscape(rel.Project.ID)).String() }
-												hx-target="#modals"
+ 												class="dropdown-item"
+ 												type="button"
+ 												hx-get={ c.PathTo("publication_confirm_delete_project", "id", p.ID, "snapshot_id", p.SnapshotID, "project_id", url.PathEscape(rel.Project.ID)).String() }
+ 												hx-target="#modals"
 											>
 												<i class="if if-delete"></i>
 												<span>Remove from publication</span>

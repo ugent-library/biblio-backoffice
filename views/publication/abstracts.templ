@@ -16,10 +16,10 @@ templ Abstracts(c *ctx.Ctx, p *models.Publication) {
 				<div class="bc-toolbar-right">
 					if c.User.CanEditPublication(p) {
 						<button
-							class="btn btn-outline-primary"
-							type="button"
-							hx-get={ c.PathTo("publication_add_abstract", "id", p.ID).String() }
-							hx-target="#modals"
+ 							class="btn btn-outline-primary"
+ 							type="button"
+ 							hx-get={ c.PathTo("publication_add_abstract", "id", p.ID).String() }
+ 							hx-target="#modals"
 						>
 							<i class="if if-add"></i>
 							<div class="btn-text">Add abstract</div>
@@ -61,19 +61,19 @@ templ AbstractsBody(c *ctx.Ctx, p *models.Publication) {
 											</button>
 											<div class="dropdown-menu">
 												<button
-													class="dropdown-item"
-													type="button"
-													hx-get={ c.PathTo("publication_edit_abstract", "id", p.ID, "abstract_id", a.ID).String() }
-													hx-target="#modals"
+ 													class="dropdown-item"
+ 													type="button"
+ 													hx-get={ c.PathTo("publication_edit_abstract", "id", p.ID, "abstract_id", a.ID).String() }
+ 													hx-target="#modals"
 												>
 													<i class="if if-edit"></i>
 													<span>Edit</span>
 												</button>
 												<button
-													class="dropdown-item"
-													type="button"
-													hx-get={ c.PathTo("publication_confirm_delete_abstract", "id", p.ID, "snapshot_id", p.SnapshotID, "abstract_id", a.ID).String() }
-													hx-target="#modals"
+ 													class="dropdown-item"
+ 													type="button"
+ 													hx-get={ c.PathTo("publication_confirm_delete_abstract", "id", p.ID, "snapshot_id", p.SnapshotID, "abstract_id", a.ID).String() }
+ 													hx-target="#modals"
 												>
 													<i class="if if-delete"></i>
 													<span>Delete</span>

@@ -24,11 +24,11 @@ templ ConfirmUpdateType(c *ctx.Ctx, publication *models.Publication, publication
 						</div>
 						<div class="bc-toolbar-right">
 							<button
-								class="btn btn-danger"
-								hx-put={ c.PathTo("publication_update_type", "id", publication.ID).String() }
-								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
-								hx-vals={ fmt.Sprintf(`{"type": "%s"}`, publicationType) }
-								hx-swap="none"
+ 								class="btn btn-danger"
+ 								hx-put={ c.PathTo("publication_update_type", "id", publication.ID).String() }
+ 								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
+ 								hx-vals={ fmt.Sprintf(`{"type": "%s"}`, publicationType) }
+ 								hx-swap="none"
 							>Proceed</button>
 						</div>
 					</div>

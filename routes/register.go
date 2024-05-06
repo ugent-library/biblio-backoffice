@@ -151,11 +151,6 @@ func Register(c Config) {
 		PersonService:             c.Services.PersonService,
 		PublicationSearchIndex:    c.Services.PublicationSearchIndex,
 	}
-	publicationSearchingHandler := &publicationsearching.Handler{
-		BaseHandler:            baseHandler,
-		PublicationSearchIndex: c.Services.PublicationSearchIndex,
-		FileStore:              c.Services.FileStore,
-	}
 	publicationViewingHandler := &publicationviewing.Handler{
 		BaseHandler: baseHandler,
 		Repo:        c.Services.Repo,
@@ -292,6 +287,7 @@ func Register(c Config) {
 					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
 					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
 					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
+					r.Get("/candidate-records/{id}/files/{file_id}", candidaterecords.DownloadFile).Name("candidate_record_download_file")
 
 					// impersonate user
 					r.Get("/impersonation/add", impersonating.AddImpersonation).Name("add_impersonation")
@@ -317,6 +313,8 @@ func Register(c Config) {
 				r.Post("/delete-impersonation", impersonating.DeleteImpersonation).Name("delete_impersonation")
 
 				// publications
+				r.With(ctx.SetNav("publications")).Get("/publication", publicationsearching.Search).Name("publications")
+
 				r.Route("/publication/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetPublication(c.Services.Repo))
 
@@ -672,11 +670,6 @@ func Register(c Config) {
 		r.Get("/publication/add-multiple/{batch_id}/finish",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleFinish)).
 			Name("publication_add_multiple_finish")
-
-		// search publications
-		r.Get("/publication",
-			publicationSearchingHandler.Wrap(publicationSearchingHandler.Search)).
-			Name("publications")
 
 		// view publication
 		r.Get("/publication/{id}",

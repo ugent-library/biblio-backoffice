@@ -4,7 +4,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
-	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
 templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHits, recs []*models.CandidateRecord) {
@@ -46,25 +45,25 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 							<ul class="list-group list-group-flush">
 								for _, rec := range recs {
 									<li class="list-group-item bg-transparent">
-										@publicationviews.Summary(c, rec.Publication, publicationviews.SummaryOpts{Badge: summaryBadge(rec), Thumbnail: c.AssetPath("/images/plato-logo.svg")}) {
+										@Summary(c, rec.Publication, SummaryOpts{Badge: summaryBadge(rec), Thumbnail: c.AssetPath("/images/plato-logo.svg")}) {
 											<button
-												class="btn btn-link btn-link-muted"
-												hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
-												hx-target="#modals"
+ 												class="btn btn-link btn-link-muted"
+ 												hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
+ 												hx-target="#modals"
 											>
 												<div class="btn-text">Remove suggestion</div>
 											</button>
 											<button
-												class="btn btn-link btn-link-muted"
-												hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
-												hx-target="#modals"
+ 												class="btn btn-link btn-link-muted"
+ 												hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
+ 												hx-target="#modals"
 											>
 												<div class="btn-text">Preview</div>
 											</button>
 											<button
-												class="btn btn-outline-primary"
-												hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
-												hx-swap="none"
+ 												class="btn btn-outline-primary"
+ 												hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
+ 												hx-swap="none"
 											>
 												<div class="btn-text">Import as draft</div>
 											</button>
