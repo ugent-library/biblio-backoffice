@@ -52,4 +52,7 @@ templ Description(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 	}
 	@Abstracts(c, p)
 	@Links(c, p)
+	if p.UsesLaySummary() {
+		@LaySummaries(c, p)
+	}
 }
