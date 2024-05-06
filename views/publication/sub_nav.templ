@@ -1,0 +1,32 @@
+package publication
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+)
+
+var SubNavs = []string{"description", "files", "contributors", "datasets", "activity"}
+
+templ SubNav(c *ctx.Ctx, p *models.Publication, redirectURL string) {
+	<ul class="nav nav-tabs" role="tablist">
+		for _, sn := range SubNavs {
+			<li class="nav-item">
+				<a
+					class={ "nav-link", templ.KV("active", c.SubNav == sn) }
+					href={ views.URL(c.PathTo("publication_"+sn, "id", p.ID)).QuerySet("redirect-url", redirectURL, "show", sn).SafeURL() }
+					hx-get={ views.URL(c.PathTo("publication_"+sn, "id", p.ID)).QuerySet("redirect-url", redirectURL).String() }
+					hx-target="#show-content"
+					hx-push-url={ views.URL(c.PathTo("publication_"+sn, "id", p.ID)).QuerySet("redirect-url", redirectURL, "show", sn).String() }
+					role="tab"
+					aria-controls={ sn }
+					if c.SubNav == sn {
+						aria-selected="true"
+					} else {
+						aria-selected="false"
+					}
+				>{ c.Loc.Get("publication.subnav." + sn) }</a>
+			</li>
+		}
+	</ul>
+}

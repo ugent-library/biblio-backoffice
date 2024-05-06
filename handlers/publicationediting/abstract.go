@@ -7,7 +7,6 @@ import (
 
 	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -110,9 +109,7 @@ func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Conte
 
 	if abstract == nil {
 		h.Logger.Warnf("edit publication abstract: Could not fetch the abstract:", "publication", ctx.Publication.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.conflict_error_reload"),
-		})
+		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -198,9 +195,7 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if b.SnapshotID != publication.SnapshotID {
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: c.Loc.Get("publication.conflict_error_reload"),
-		})
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -226,9 +221,7 @@ func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Con
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.conflict_error_reload"),
-		})
+		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 

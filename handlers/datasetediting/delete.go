@@ -7,12 +7,10 @@ import (
 	"time"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/handlers"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/httperror"
 )
 
 func ConfirmDelete(w http.ResponseWriter, r *http.Request) {
@@ -43,10 +41,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		// TODO: refactor to templ
-		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: c.Loc.Get("dataset.conflict_error_reload"),
-		})
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 

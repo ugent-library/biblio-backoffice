@@ -42,12 +42,9 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 					<div class="vstack gap-5">
 						<div class="vstack gap-2">
 							<div class="d-inline-flex align-items-center flex-wrap">
-								@status(args.Dataset.Status)
+								@views.BadgeStatus(args.Dataset.Status)
 								if args.Dataset.Locked {
-									<span class="c-subline ps-2 me-3 pe-3 border-end" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Locked for editing">
-										<i class="if if-lock if--small if--muted"></i>
-										<span class="text-muted c-body-small ms-2">Locked</span>
-									</span>
+									@views.BadgeLocked()
 								}
 								<span class="c-subline me-3 pe-3 border-end">
 									if args.Dataset.License != "" {
