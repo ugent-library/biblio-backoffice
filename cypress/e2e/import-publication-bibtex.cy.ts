@@ -1,5 +1,5 @@
 describe("Publication import", () => {
-  it("should be a possible to import publications from Web of Science and save as draft", () => {
+  it("should be a possible to import publications from BibTeX and save as draft", () => {
     cy.loginAsResearcher();
 
     cy.visit("/");
@@ -18,21 +18,21 @@ describe("Publication import", () => {
     cy.get("@steps").eq(1).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
 
-    cy.contains("Import from Web of Science").click();
+    cy.contains("Import via BibTeX file").click();
     cy.contains(".btn", "Add publication(s)").click();
 
     // Upload WoS file
     cy.get(".c-file-upload").should(
       "contain.text",
-      "Drag and drop your .txt file or",
+      "Drag and drop your .bib file or",
     );
-    cy.contains(".btn", "Upload .txt file")
+    cy.contains(".btn", "Upload .bib file")
       .get(".spinner-border")
       .should("not.be.visible");
     cy.get("input[name=file]").selectFile(
-      "cypress/fixtures/import-from-wos.txt",
+      "cypress/fixtures/import-from-bibtex.bib",
     );
-    cy.contains(".btn", "Upload .txt file")
+    cy.contains(".btn", "Upload .bib file")
       .get(".spinner-border")
       .should("be.visible");
 
@@ -46,22 +46,6 @@ describe("Publication import", () => {
     cy.contains("Review and publish").should("be.visible");
     cy.wait(1000); // Give elastic some extra time to index imports
     cy.reload();
-    cy.contains("Imported publications Showing 3").should("be.visible");
-
-    // Delete 2 publications
-    deletePublication(
-      "Enhancing bioflocculation in high-rate activated sludge improves effluent quality yet increases sensitivity to surface overflow rate",
-    );
-    cy.contains("Imported publications Showing 2").should("be.visible");
-
-    cy.ensureToast("Publication was successfully deleted.").closeToast();
-
-    deletePublication(
-      "Fusarium isolates from Belgium causing wilt in lettuce show genetic and pathogenic diversity",
-    );
-
-    cy.ensureToast("Publication was successfully deleted.").closeToast();
-
     cy.contains("Imported publications Showing 1").should("be.visible");
 
     cy.extractBiblioId();
@@ -161,29 +145,5 @@ describe("Publication import", () => {
   });
 
   // TODO: Not yet implemented
-  // Example publication: "How can we possibly resolve the planet's nitrogen dilemma?" in import-from-wos.txt
   it("should report errors after import");
-
-  function deletePublication(title) {
-    cy.ensureNoModal();
-
-    cy.contains(".list-group-item-title", title)
-      .closest(".list-group-item")
-      .find(".c-button-toolbar")
-      // The "..." dropdown toggle button
-      .find(".dropdown .btn:has(i.if.if-more)")
-      .click()
-      .closest(".dropdown")
-      .contains("button", "Delete")
-      .click();
-
-    cy.ensureModal("Confirm deletion")
-      .within(() => {
-        cy.get(".modal-body > p").should(
-          "have.text",
-          "Are you sure you want to delete this publication?",
-        );
-      })
-      .closeModal("Delete");
-  }
 });
