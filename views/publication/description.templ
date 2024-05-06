@@ -51,4 +51,8 @@ templ Description(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 	@Details(c, p)
 
 	@Projects(c, p)
+
+	if p.UsesConference() {
+		@Conference(c, p)
+	}
 }
