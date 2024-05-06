@@ -27,16 +27,16 @@ func facetShortValue(values []string) templ.Component {
 func filterToLabels(c *ctx.Ctx, vals []string, locPrefix string) []string {
 	labels := make([]string, 0, len(vals))
 	for _, val := range vals {
-		if lVal := c.Loc.Get(locPrefix + "." + val); lVal != "" {
-			labels = append(labels, lVal)
-		} else {
+		if locPrefix == "" {
 			labels = append(labels, val)
+		} else {
+			labels = append(labels, c.Loc.Get(locPrefix+"."+val))
 		}
 	}
 	return labels
 }
 
-templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, facetValues models.FacetValues, searchArgs *models.SearchArgs) {
+templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPrefixShort string, facetValues models.FacetValues, searchArgs *models.SearchArgs) {
 	<div
 		class={ "dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName)) }
 		data-facet-dropdown={ fieldName }
@@ -60,7 +60,7 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, facetV
 			<span class="badge-text">{ title }</span>
 			if filters := searchArgs.FiltersFor(fieldName); len(filters) > 0 {
 				<span class="badge-value ms-2">
-					@facetShortValue(filterToLabels(c, filters, locPrefix))
+					@facetShortValue(filterToLabels(c, filters, locPrefixShort))
 				</span>
 			}
 			<i class="if if-caret-down"></i>
@@ -102,10 +102,10 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, facetV
 								}
 							/>
 							<label class="form-check-label" for={ fmt.Sprintf("filter-%s-%d", fieldName, i) }>
-								if lVal := c.Loc.Get(locPrefix+"."+f.Value); lVal != "" {
-									{ fmt.Sprintf("%s (%d)", lVal, f.Count) }
-								} else {
+								if locPrefix == "" {
 									{ fmt.Sprintf("%s (%d)", f.Value, f.Count) }
+								} else {
+									{ fmt.Sprintf("%s (%d)", c.Loc.Get(locPrefix+"."+f.Value), f.Count) }
 								}
 							</label>
 						</div>

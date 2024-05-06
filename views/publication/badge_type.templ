@@ -1,0 +1,17 @@
+package publication
+
+import (
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"fmt"
+)
+
+templ BadgeType(c *ctx.Ctx, pub *models.Publication) {
+	<span class="c-subline ps-2 me-3 pe-3 border-end">
+		if pub.Classification != "" {
+			{ fmt.Sprintf("%s: %s", c.Loc.Get("publication_types."+pub.Type), pub.Classification) }
+		} else {
+			{ c.Loc.Get("publication_types."+pub.Type) }
+		}
+	</span>
+}
