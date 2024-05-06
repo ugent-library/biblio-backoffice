@@ -58,20 +58,25 @@ func Show(w http.ResponseWriter, r *http.Request) {
 func ShowDescription(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	p := ctx.GetPublication(r)
+
 	redirectURL := r.URL.Query().Get("redirect-url")
 	if redirectURL == "" {
 		redirectURL = c.PathTo("publications").String()
 	}
+
 	publicationviews.Description(c, p, redirectURL).Render(r.Context(), w)
 }
 
-func (h *Handler) ShowFiles(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.View(w, "publication/show_files", YieldShowFiles{
-		Context:      ctx,
-		SubNavs:      subNavs,
-		ActiveSubNav: "files",
-		MaxFileSize:  h.MaxFileSize,
-	})
+func ShowFiles(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
+	redirectURL := r.URL.Query().Get("redirect-url")
+	if redirectURL == "" {
+		redirectURL = c.PathTo("publications").String()
+	}
+
+	publicationviews.Files(c, p, redirectURL).Render(r.Context(), w)
 }
 
 func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
