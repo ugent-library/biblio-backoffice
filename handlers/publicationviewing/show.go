@@ -11,14 +11,6 @@ import (
 
 var subNavs = []string{"description", "files", "contributors", "datasets", "activity"}
 
-type YieldShow struct {
-	Context
-	PageTitle    string
-	SubNavs      []string
-	ActiveNav    string
-	ActiveSubNav string
-}
-
 type YieldShowContributors struct {
 	Context
 	SubNavs      []string
