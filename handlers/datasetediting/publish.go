@@ -6,12 +6,12 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/dataset"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -52,10 +52,10 @@ func Publish(w http.ResponseWriter, r *http.Request) {
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message:     c.Loc.Get("dataset.conflict_error"),
-			RedirectURL: r.URL.Query().Get("redirect-url"),
-		})
+		views.ReplaceModal(
+			views.ErrorDialogWithOptions(c.Loc.Get("dataset.conflict_error"), views.ErrorDialogOptions{
+				RedirectURL: r.URL.Query().Get("redirect-url"),
+			})).Render(r.Context(), w)
 		return
 	}
 
