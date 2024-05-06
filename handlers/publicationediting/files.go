@@ -8,7 +8,6 @@ import (
 
 	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -71,9 +70,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not process file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.file_upload_error"),
-		})
+		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.file_upload_error"))).Render(r.Context(), w)
 		return
 	}
 	defer file.Close()
@@ -83,9 +80,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	if err != nil {
 		h.Logger.Errorf("publication upload file: could not save file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.file_upload_error"),
-		})
+		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.file_upload_error"))).Render(r.Context(), w)
 		return
 	}
 
@@ -109,9 +104,7 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.conflict_error_reload"),
-		})
+		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -135,9 +128,7 @@ func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) 
 
 	if file == nil {
 		h.Logger.Warnw("publication upload file: could not find file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.conflict_error_reload"),
-		})
+		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -312,9 +303,7 @@ func ConfirmDeleteFile(w http.ResponseWriter, r *http.Request) {
 	file := publication.GetFile(b.FileID)
 
 	if b.SnapshotID != publication.SnapshotID {
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: c.Loc.Get("publication.conflict_error_reload"),
-		})
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -340,9 +329,7 @@ func (h *Handler) DeleteFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("publication.conflict_error_reload"),
-		})
+		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 

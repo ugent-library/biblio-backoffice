@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "dev": "reflex -d none -c reflex.docker.conf",
-    "test": "cypress run --config-file cypress/cypress.config.ts",
+    "build": "go build -o app -v",
+    "start": "./app server start",
+    "test": "cypress run --config-file cypress/cypress.config.ts --config retries=2",
     "test:bibliodev": "env-cmd --file ./cypress/.env npm test --",
     "cypress:open": "cypress open --config-file cypress/cypress.config.ts --browser electron --e2e",
     "cypress:open:bibliodev": "env-cmd --file ./cypress/.env npm run cypress:open --",

@@ -7,7 +7,6 @@ import (
 
 	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -140,9 +139,7 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	link := ctx.Dataset.GetLink(b.LinkID)
 	if link == nil {
 		h.Logger.Warnw("update dataset link: could not get link", "link", b.LinkID, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
-		})
+		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -199,9 +196,7 @@ func ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
 
 	// TODO catch non-existing item in UI
 	if b.SnapshotID != dataset.SnapshotID {
-		render.Layout(w, "show_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: c.Loc.Get("dataset.conflict_error_reload"),
-		})
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -227,9 +222,7 @@ func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "error_dialog", handlers.YieldErrorDialog{
-			Message: ctx.Loc.Get("dataset.conflict_error_reload"),
-		})
+		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 

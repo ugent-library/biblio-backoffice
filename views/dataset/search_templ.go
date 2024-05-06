@@ -52,7 +52,7 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = views.Facet(c, "status", "Biblio status", "publication_statuses", facets["status"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, "status", "Biblio status", "publication_statuses", "publication_statuses", facets["status"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -60,7 +60,7 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "faculty_id", "Faculty", "organization", facets["faculty_id"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, "faculty_id", "Faculty", "organization", "organization", facets["faculty_id"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -68,7 +68,7 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "locked", "Locked", "locked", facets["locked"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, "locked", "Locked", "locked", "locked", facets["locked"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -76,7 +76,7 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "has_message", "Message", "has_message", facets["has_message"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, "has_message", "Message", "has_message", "has_message", facets["has_message"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -131,7 +131,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = views.Facet(c, "status", "Biblio status", "publication_statuses", facets["status"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, "status", "Biblio status", "publication_statuses", "publication_statuses", facets["status"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -139,7 +139,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "faculty_id", "Faculty", "organization", facets["faculty_id"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, "faculty_id", "Faculty", "organization", "organization", facets["faculty_id"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -147,7 +147,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "locked", "Locked", "locked", facets["locked"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, "locked", "Locked", "locked", "locked", facets["locked"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -155,7 +155,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "identifier_type", "Persistent identifier type", "identifier", facets["identifier_type"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, "identifier_type", "Persistent identifier type", "identifier", "identifier_type", facets["identifier_type"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -174,7 +174,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = views.Facet(c, "reviewer_tags", "Librarian tags", "reviewer_tags", facets["reviewer_tags"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, "reviewer_tags", "Librarian tags", "reviewer_tags", "reviewer_tags", facets["reviewer_tags"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -182,7 +182,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "has_message", "Message", "has_message", facets["has_message"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, "has_message", "Message", "has_message", "has_message", facets["has_message"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

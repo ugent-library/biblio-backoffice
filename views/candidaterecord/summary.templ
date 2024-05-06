@@ -1,0 +1,58 @@
+package candidaterecordviews
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+)
+
+type SummaryOpts struct {
+	Thumbnail string
+	Badge     templ.Component
+}
+
+templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
+	<div class="w-100">
+		<div class="c-thumbnail-and-text align-items-start w-100">
+			if opts.Thumbnail != "" {
+				<div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-small c-thumbnail-lg-large">
+					<div class="c-thumbnail-inner">
+						<img src={ opts.Thumbnail }/>
+					</div>
+				</div>
+			}
+			<div class="c-thumbnail-text">
+				<div class="hstack-lg-responsive align-items-start gap-3 w-100">
+					<div class="vstack gap-5">
+						<div class="vstack gap-2">
+							<div class="d-inline-flex align-items-center flex-wrap">
+								if opts.Badge != nil {
+									@opts.Badge
+								}
+								@publicationviews.BadgeType(c, p)
+								if f := p.MainFile(); f != nil {
+									@publicationviews.AccessLevel(c, f)
+								}
+							</div>
+							<h4 class="mb-0">
+								<span class="list-group-item-title">
+									if p.Title != "" {
+										{ p.Title }
+									} else {
+										Untitled record
+									}
+								</span>
+							</h4>
+							@publicationviews.SummaryParts(c, p)
+							@contributorviews.Summary(c, "author", p.Author, "")
+						</div>
+					</div>
+					<div class="c-button-toolbar flex-row-reverse flex-lg-row">
+						{ children... }
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}

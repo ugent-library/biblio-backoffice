@@ -31,7 +31,7 @@ func Lock(w http.ResponseWriter, r *http.Request) {
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ErrorDialog(c, c.Loc.Get("dataset.conflict_error"), "").Render(r.Context(), w)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error"))).Render(r.Context(), w)
 		return
 	}
 
@@ -66,7 +66,10 @@ func Unlock(w http.ResponseWriter, r *http.Request) {
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ErrorDialog(c, c.Loc.Get("dataset.conflict_error_reload"), r.URL.Query().Get("redirect-url")).Render(r.Context(), w)
+		views.ShowModal(
+			views.ErrorDialogWithOptions(c.Loc.Get("dataset.conflict_error_reload"), views.ErrorDialogOptions{
+				RedirectURL: r.URL.Query().Get("redirect-url"),
+			})).Render(r.Context(), w)
 		return
 	}
 
