@@ -1,31 +1,35 @@
 package views
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
+type ErrorDialogOptions struct {
+	RedirectURL string
+}
 
-templ ErrorDialog(c *ctx.Ctx, msg string, redirectURL string) {
-	@ShowModalLayout(c) {
-		<div class="modal-dialog modal-dialog-centered" role="document">
-			<div class="modal-content">
-				<div class="modal-body">
-					<div class="c-blank-slate c-blank-slate-danger">
-						<div class="bc-avatar">
-							<i class="if if-error-circle"></i>
-						</div>
-						<p>{ msg }</p>
+templ ErrorDialog(message string) {
+	@ErrorDialogWithOptions(message, ErrorDialogOptions{})
+}
+
+templ ErrorDialogWithOptions(message string, opts ErrorDialogOptions) {
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="c-blank-slate c-blank-slate-danger">
+					<div class="bc-avatar">
+						<i class="if if-error-circle"></i>
 					</div>
+					<p>{ message }</p>
 				</div>
-				<div class="modal-footer">
-					<div class="bc-toolbar">
-						<div class="bc-toolbar-left">
-							if redirectURL != "" {
-								<a class="btn btn-link" href={ templ.URL(redirectURL) }>Close</a>
-							} else {
-								<button class="btn btn-link modal-close">Close</button>
-							}
-						</div>
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						if opts.RedirectURL != "" {
+							<a class="btn btn-link" href={ templ.URL(opts.RedirectURL) }>Close</a>
+						} else {
+							<button class="btn btn-link modal-close">Close</button>
+						}
 					</div>
 				</div>
 			</div>
 		</div>
-	}
+	</div>
 }
