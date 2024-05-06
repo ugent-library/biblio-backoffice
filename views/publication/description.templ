@@ -55,4 +55,5 @@ templ Description(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 	if p.UsesLaySummary() {
 		@LaySummaries(c, p)
 	}
+	@AdditionalInfo(c, p)
 }
