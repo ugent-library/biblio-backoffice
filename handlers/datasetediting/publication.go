@@ -5,8 +5,8 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/views"
+	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 )
@@ -22,95 +22,86 @@ type BindDeletePublication struct {
 	SnapshotID    string `path:"snapshot_id"`
 }
 
-type YieldAddPublication struct {
-	Context
-	Hits *models.PublicationHits
-}
-type YieldPublications struct {
-	Context
-	RelatedPublications []*models.Publication
-}
+func AddPublication(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
 
-func (h *Handler) AddPublication(w http.ResponseWriter, r *http.Request, ctx Context) {
-	hits, err := h.searchRelatedPublications(ctx.User, ctx.Dataset, "")
+	hits, err := searchRelatedPublications(c, dataset, "")
 	if err != nil {
-		h.Logger.Errorf("add dataset publication: Could find related publications:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("add dataset publication: Could find related publications:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.Layout(w, "show_modal", "dataset/add_publication", YieldAddPublication{
-		Context: ctx,
-		Hits:    hits,
-	})
+	views.ShowModal(datasetviews.AddPublicationDialog(c, dataset, hits)).Render(r.Context(), w)
 }
 
-func (h *Handler) SuggestPublications(w http.ResponseWriter, r *http.Request, ctx Context) {
+func SuggestPublications(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindSuggestPublications{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("suggest dataset publications: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("suggest dataset publications: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	hits, err := h.searchRelatedPublications(ctx.User, ctx.Dataset, b.Query)
+	hits, err := searchRelatedPublications(c, dataset, b.Query)
 	if err != nil {
-		h.Logger.Errorf("add dataset publication: Could find related publications:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("add dataset publication: Could find related publications:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.Partial(w, "dataset/suggest_publications", YieldAddPublication{
-		Context: ctx,
-		Hits:    hits,
-	})
+	datasetviews.SuggestPublications(c, dataset, hits).Render(r.Context(), w)
 }
 
-func (h *Handler) CreatePublication(w http.ResponseWriter, r *http.Request, ctx Context) {
+func CreatePublication(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindPublication{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("create dataset publication: could not bind request arguments", "errors", err, "request", r)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("create dataset publication: could not bind request arguments", "errors", err, "request", r)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
 	// TODO reduce calls to repository
-	p, err := h.Repo.GetPublication(b.PublicationID)
+	p, err := c.Repo.GetPublication(b.PublicationID)
 	if err != nil {
-		h.Logger.Errorw("create dataset publication: could not get the publication", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("create dataset publication: could not get the publication", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
 	// TODO handle validation errors
 	// TODO pass If-Match
 	// TODO handle conflict
-	err = h.Repo.AddPublicationDataset(p, ctx.Dataset, ctx.User)
+	err = c.Repo.AddPublicationDataset(p, dataset, c.User)
 	if err != nil {
-		h.Logger.Errorw("create dataset publication: could not add the publication", "error", err, "dataset", ctx.Dataset.ID, "publication", p.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("create dataset publication: could not add the publication", "error", err, "dataset", dataset.ID, "publication", p.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
 	// Refresh the ctx.Dataset: it still carries the old snapshotID
-	ctx.Dataset, err = h.Repo.GetDataset(ctx.Dataset.ID)
+	dataset, err = c.Repo.GetDataset(dataset.ID)
 	if err != nil {
-		h.Logger.Errorw("create dataset publication: could not get dataset", "errors", err, "dataset", ctx.Dataset.ID, "publication", b.PublicationID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("create dataset publication: could not get dataset", "errors", err, "dataset", dataset.ID, "publication", b.PublicationID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	relatedPublications, err := h.Repo.GetVisibleDatasetPublications(ctx.User, ctx.Dataset)
+	relatedPublications, err := c.Repo.GetVisibleDatasetPublications(c.User, dataset)
 	if err != nil {
-		h.Logger.Errorw("create dataset publication: could not get dataset publications", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("create dataset publication: could not get dataset publications", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "dataset/refresh_publications", YieldPublications{
-		Context:             ctx,
-		RelatedPublications: relatedPublications,
-	})
+	datasetviews.RefreshPublications(c, dataset, relatedPublications).Render(r.Context(), w)
 }
 
 func ConfirmDeletePublication(w http.ResponseWriter, r *http.Request) {
@@ -137,55 +128,55 @@ func ConfirmDeletePublication(w http.ResponseWriter, r *http.Request) {
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) DeletePublication(w http.ResponseWriter, r *http.Request, ctx Context) {
+func DeletePublication(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindDeletePublication{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete dataset publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("delete dataset publication: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
 	// TODO reduce calls to repository
-	p, err := h.Repo.GetPublication(b.PublicationID)
+	p, err := c.Repo.GetPublication(b.PublicationID)
 	if err != nil {
-		h.Logger.Errorw("delete dataset publication: could not get the publication", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("delete dataset publication: could not get the publication", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
 	// TODO handle validation errors
 	// TODO pass If-Match
 	// TODO handle conflict
-	err = h.Repo.RemovePublicationDataset(p, ctx.Dataset, ctx.User)
+	err = c.Repo.RemovePublicationDataset(p, dataset, c.User)
 
 	if err != nil {
-		h.Logger.Errorw("delete dataset publication: could not delete the publication", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("delete dataset publication: could not delete the publication", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
 	// Refresh the dataset since it still caries the old snapshotid
-	ctx.Dataset, err = h.Repo.GetDataset(ctx.Dataset.ID)
+	dataset, err = c.Repo.GetDataset(dataset.ID)
 	if err != nil {
-		h.Logger.Errorw("delete dataset publication: could not get the dataset", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("delete dataset publication: could not get the dataset", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	relatedPublications, err := h.Repo.GetVisibleDatasetPublications(ctx.User, ctx.Dataset)
+	relatedPublications, err := c.Repo.GetVisibleDatasetPublications(c.User, dataset)
 	if err != nil {
-		h.Logger.Errorw("create dataset publication: could not get dataset publications", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("create dataset publication: could not get dataset publications", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "dataset/refresh_publications", YieldPublications{
-		Context:             ctx,
-		RelatedPublications: relatedPublications,
-	})
+	datasetviews.RefreshPublications(c, dataset, relatedPublications).Render(r.Context(), w)
 }
 
-func (h *Handler) searchRelatedPublications(user *models.Person, d *models.Dataset, q string) (*models.PublicationHits, error) {
+func searchRelatedPublications(c *ctx.Ctx, d *models.Dataset, q string) (*models.PublicationHits, error) {
 	args := models.NewSearchArgs().WithQuery(q)
 
 	// add exclusion filter if necessary
@@ -197,7 +188,7 @@ func (h *Handler) searchRelatedPublications(user *models.Person, d *models.Datas
 		args.Filters["!id"] = datasetPubIDs
 	}
 
-	searchService := h.PublicationSearchIndex.WithScope("status", "public")
+	searchService := c.PublicationSearchIndex.WithScope("status", "public")
 
 	return searchService.Search(args)
 }
