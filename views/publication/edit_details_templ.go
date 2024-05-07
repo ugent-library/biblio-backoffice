@@ -115,6 +115,65 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 				return templ_7745c5c3_Err
 			}
 		}
+		templ_7745c5c3_Err = form.Checkbox(form.CheckboxArgs{
+			FieldArgs: form.FieldArgs{
+				Label: c.Loc.Get("builder.extern"),
+				Name:  "extern",
+				Cols:  9,
+				Error: localize.ValidationErrorAt(c.Loc, errors, "/extern"),
+			},
+			Value:   "true",
+			Checked: p.Extern,
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if p.UsesYear() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label:    c.Loc.Get("builder.year"),
+					Name:     "year",
+					Cols:     3,
+					Error:    localize.ValidationErrorAt(c.Loc, errors, "/year"),
+					Required: true,
+					Help:     c.Loc.Get("builder.year.help"),
+				},
+				Value: p.Year,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesPublisher() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.place_of_publication"),
+					Name:  "place_of_publication",
+					Cols:  9,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/place_of_publication"),
+				},
+				Value: p.PlaceOfPublication,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.publisher"),
+					Name:  "publisher",
+					Cols:  9,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/publisher"),
+				},
+				Value: p.Publisher,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li></ul></div><div class=\"modal-footer\"><div class=\"bc-toolbar\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

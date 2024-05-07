@@ -77,6 +77,49 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 								Options:     localize.VocabularySelectOptions(c.Loc, "publication_publishing_statuses"),
 							})
 						}
+                        @form.Checkbox(form.CheckboxArgs{
+                            FieldArgs: form.FieldArgs{
+                                Label: c.Loc.Get("builder.extern"),
+                                Name:  "extern",
+                                Cols:  9,
+                                Error: localize.ValidationErrorAt(c.Loc, errors, "/extern"),
+                            },
+                            Value:       "true",
+                            Checked: p.Extern,
+                        })
+                        if p.UsesYear() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.year"),
+									Name:     "year",
+									Cols:     3,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/year"),
+									Required: true,
+                                    Help: c.Loc.Get("builder.year.help"),
+								},
+								Value: p.Year,
+							})
+						}
+                        if p.UsesPublisher() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.place_of_publication"),
+									Name:     "place_of_publication",
+									Cols:     9,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/place_of_publication"),
+								},
+								Value: p.PlaceOfPublication,
+							})
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.publisher"),
+									Name:     "publisher",
+									Cols:     9,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/publisher"),
+								},
+								Value: p.Publisher,
+							})
+						}
 					</li>
 				</ul>
 			</div>

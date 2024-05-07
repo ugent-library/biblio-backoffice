@@ -96,6 +96,38 @@ templ Select(args SelectArgs) {
 	}
 }
 
+type CheckboxArgs struct {
+	FieldArgs
+    Value string
+	Checked bool
+}
+
+templ Checkbox(args CheckboxArgs) {
+    <div class={ "mb-6", "row", templ.KV("is-invalid", args.Error != "") }>
+        <div class={ fmt.Sprintf("col-%d", args.Cols), "offset-lg-3", "mt-2" }>
+            <div class="form-check">
+                <input
+                    class={ "form-check-input", templ.KV("is-invalid", args.Error != "") }
+                    id={ args.Name }
+                    name={ args.Name }
+                    value={ args.Value }
+                    type="checkbox"
+                    checked?={ args.Checked }
+                />
+                <label class="form-check-label" for={ args.Name }>{ args.Label }</label>
+                if args.Error != "" {
+                    <small class="invalid-feedback">{ args.Error }</small>
+                }
+                if args.Help != "" {
+                    <small class="form-text text-muted">
+                        @html(args.Help)
+                    </small>
+                }
+            </div>
+        </div>
+    </div>
+}
+
 type TextRepeatArgs struct {
 	FieldArgs
 	Values []string
