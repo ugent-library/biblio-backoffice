@@ -105,7 +105,7 @@ export default function updateFields(
   cy.location("pathname", NO_LOG).then((pathname) => {
     if (
       !pathname.match(
-        /^\/(publication|dataset)\/([A-Z0-9]+|add|add-single\/import\/confirm)$/,
+        /^\/(publication|dataset|add-publication)\/([A-Z0-9]+|add|import\/single\/confirm)$/,
       )
     ) {
       throw new Error(
