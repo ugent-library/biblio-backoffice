@@ -15,12 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-type NavPublicationsArgs struct {
-	NavArgs
-	Publications []*models.Publication
-}
-
-func ShowPublications(c *ctx.Ctx, args NavPublicationsArgs) templ.Component {
+func ShowPublications(c *ctx.Ctx, dataset *models.Dataset, publications []*models.Publication) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -37,7 +32,7 @@ func ShowPublications(c *ctx.Ctx, args NavPublicationsArgs) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ShowNav(c, NavArgs{Dataset: args.Dataset, ActiveSubNav: args.ActiveSubNav, SubNavs: args.SubNavs}).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = SubNav(c, dataset, c.CurrentURL.Query().Get("redirect-url")).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -53,12 +48,12 @@ func ShowPublications(c *ctx.Ctx, args NavPublicationsArgs) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditDataset(args.Dataset) {
+		if c.User.CanEditDataset(dataset) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-button-toolbar\" data-panel-state=\"read\"><button class=\"btn btn-outline-primary\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("dataset_add_publication", "id", args.Dataset.ID).String()))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("dataset_add_publication", "id", dataset.ID).String()))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -71,7 +66,7 @@ func ShowPublications(c *ctx.Ctx, args NavPublicationsArgs) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = publicationsBody(c, args.Dataset, args.Publications).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = publicationsBody(c, dataset, publications).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

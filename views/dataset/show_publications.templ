@@ -5,14 +5,9 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-type NavPublicationsArgs struct {
-	NavArgs
-	Publications []*models.Publication
-}
-
-templ ShowPublications(c *ctx.Ctx, args NavPublicationsArgs) {
+templ ShowPublications(c *ctx.Ctx, dataset *models.Dataset, publications []*models.Publication) {
 	<div hx-swap-oob="innerHTML:#show-nav">
-		@ShowNav(c, NavArgs{Dataset: args.Dataset, ActiveSubNav: args.ActiveSubNav, SubNavs: args.SubNavs})
+		@SubNav(c, dataset, c.CurrentURL.Query().Get("redirect-url"))
 	</div>
 	<div hx-swap-oob="innerHTML:#show-sidebar"></div>
 	<div class="card mb-6">
@@ -33,11 +28,11 @@ templ ShowPublications(c *ctx.Ctx, args NavPublicationsArgs) {
 					</a>
 				</div>
 				<div class="bc-toolbar-right">
-					if c.User.CanEditDataset(args.Dataset) {
+					if c.User.CanEditDataset(dataset) {
 						<div class="c-button-toolbar" data-panel-state="read">
 							<button
 								class="btn btn-outline-primary"
-								hx-get={ c.PathTo("dataset_add_publication", "id", args.Dataset.ID).String() }
+								hx-get={ c.PathTo("dataset_add_publication", "id", dataset.ID).String() }
 								hx-target="#modals"
 							>
 								<i class="if if-add"></i>
@@ -49,7 +44,7 @@ templ ShowPublications(c *ctx.Ctx, args NavPublicationsArgs) {
 			</div>
 		</div>
 		<div id="publications-body">
-			@publicationsBody(c, args.Dataset, args.Publications)
+			@publicationsBody(c, dataset, publications)
 		</div>
 	</div>
 }

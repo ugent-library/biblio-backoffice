@@ -453,7 +453,7 @@ func Register(c Config) {
 						r.Post("/publications", datasetediting.CreatePublication).Name("dataset_create_publication")
 						r.Delete("/publications/{publication_id}", datasetediting.DeletePublication).Name("dataset_delete_publication")
 
-						r.Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
+						r.With(ctx.SetNav("dataset"), ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
 					})
 
 					// curator actions

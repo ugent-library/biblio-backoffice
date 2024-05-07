@@ -7,7 +7,6 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/displays"
-	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/display"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
@@ -37,13 +36,6 @@ type YieldShowContributors struct {
 	Context
 	SubNavs      []string
 	ActiveSubNav string
-}
-
-type YieldShowPublications struct {
-	Context
-	SubNavs             []string
-	ActiveSubNav        string
-	RelatedPublications []*models.Publication
 }
 
 type YieldShowActivity struct {
@@ -95,14 +87,7 @@ func ShowPublications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	datasetviews.ShowPublications(c, datasetviews.NavPublicationsArgs{
-		NavArgs: datasetviews.NavArgs{
-			SubNavs:      subNavs,
-			ActiveSubNav: "publications",
-			Dataset:      dataset,
-		},
-		Publications: relatedPublications,
-	}).Render(r.Context(), w)
+	datasetviews.ShowPublications(c, dataset, relatedPublications).Render(r.Context(), w)
 }
 
 func (h *Handler) ShowActivity(w http.ResponseWriter, r *http.Request, legacyCtx Context) {
