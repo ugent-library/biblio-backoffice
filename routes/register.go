@@ -395,6 +395,10 @@ func Register(c Config) {
 					r.Use(ctx.RequireViewDataset)
 
 					// view only functions
+					// tab publications
+					r.With(ctx.SetNav("datasets"), ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
+					// tab activity
+					r.With(ctx.SetNav("datasets"), ctx.SetSubNav("activity")).Get("/activity", datasetviewing.ShowActivity).Name("dataset_activity")
 
 					// edit only
 					r.Group(func(r *ich.Mux) {
@@ -445,10 +449,6 @@ func Register(c Config) {
 
 						r.Post("/publications", datasetediting.CreatePublication).Name("dataset_create_publication")
 						r.Delete("/publications/{publication_id}", datasetediting.DeletePublication).Name("dataset_delete_publication")
-
-						r.With(ctx.SetNav("datasets"), ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
-
-						r.With(ctx.SetNav("datasets"), ctx.SetSubNav("activity")).Get("/activity", datasetviewing.ShowActivity).Name("dataset_activity")
 					})
 
 					// curator actions
