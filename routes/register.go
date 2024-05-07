@@ -151,12 +151,6 @@ func Register(c Config) {
 		PersonService:             c.Services.PersonService,
 		PublicationSearchIndex:    c.Services.PublicationSearchIndex,
 	}
-	publicationViewingHandler := &publicationviewing.Handler{
-		BaseHandler: baseHandler,
-		Repo:        c.Services.Repo,
-		FileStore:   c.Services.FileStore,
-		MaxFileSize: c.MaxFileSize,
-	}
 	publicationCreatingHandler := &publicationcreating.Handler{
 		BaseHandler:            baseHandler,
 		Repo:                   c.Services.Repo,
@@ -333,7 +327,10 @@ func Register(c Config) {
 
 							r.Get("/", publicationviewing.Show).Name("publication")
 							r.With(ctx.SetSubNav("description")).Get("/description", publicationviewing.ShowDescription).Name("publication_description")
+							r.With(ctx.SetSubNav("contributors")).Get("/contributors", publicationviewing.ShowContributors).Name("publication_contributors")
 							r.With(ctx.SetSubNav("files")).Get("/files", publicationviewing.ShowFiles).Name("publication_files")
+							r.With(ctx.SetSubNav("datasets")).Get("/datasets", publicationviewing.ShowDatasets).Name("publication_datasets")
+							r.With(ctx.SetSubNav("activity")).Get("/activity", publicationviewing.ShowActivity).Name("publication_activity")
 							r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 						})
 
@@ -410,11 +407,9 @@ func Register(c Config) {
 
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
+					r.Use(ctx.RequireViewDataset)
 
 					// view only functions
-					r.Group(func(r *ich.Mux) {
-						r.Use(ctx.RequireViewDataset)
-					})
 
 					// edit only
 					r.Group(func(r *ich.Mux) {
@@ -458,6 +453,15 @@ func Register(c Config) {
 						// re-publish
 						r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
 						r.Post("/republish", datasetediting.Republish).Name("dataset_republish")
+
+						// publications
+						r.Get("/publications/add", datasetediting.AddPublication).Name("dataset_add_publication")
+						r.Get("/publications/suggestions", datasetediting.SuggestPublications).Name("dataset_suggest_publications")
+
+						r.Post("/publications", datasetediting.CreatePublication).Name("dataset_create_publication")
+						r.Delete("/publications/{publication_id}", datasetediting.DeletePublication).Name("dataset_delete_publication")
+
+						r.With(ctx.SetNav("dataset"), ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
 					})
 
 					// curator actions
@@ -514,9 +518,7 @@ func Register(c Config) {
 		r.Get("/dataset/{id}/contributors",
 			datasetViewingHandler.Wrap(datasetViewingHandler.ShowContributors)).
 			Name("dataset_contributors")
-		r.Get("/dataset/{id}/publications",
-			datasetViewingHandler.Wrap(datasetViewingHandler.ShowPublications)).
-			Name("dataset_publications")
+
 		r.Get("/dataset/{id}/activity",
 			datasetViewingHandler.Wrap(datasetViewingHandler.ShowActivity)).
 			Name("dataset_activity")
@@ -599,20 +601,6 @@ func Register(c Config) {
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteAbstract)).
 			Name("dataset_delete_abstract")
 
-		// edit dataset publications
-		r.Get("/dataset/{id}/publications/add",
-			datasetEditingHandler.Wrap(datasetEditingHandler.AddPublication)).
-			Name("dataset_add_publication")
-		r.Get("/dataset/{id}/publications/suggestions",
-			datasetEditingHandler.Wrap(datasetEditingHandler.SuggestPublications)).
-			Name("dataset_suggest_publications")
-		r.Post("/dataset/{id}/publications",
-			datasetEditingHandler.Wrap(datasetEditingHandler.CreatePublication)).
-			Name("dataset_create_publication")
-		r.Delete("/dataset/{id}/publications/{publication_id}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.DeletePublication)).
-			Name("dataset_delete_publication")
-
 		// edit dataset contributors
 		r.Post("/dataset/{id}/contributors/{role}/order",
 			datasetEditingHandler.Wrap(datasetEditingHandler.OrderContributors)).
@@ -682,17 +670,6 @@ func Register(c Config) {
 		r.Get("/publication/add-multiple/{batch_id}/finish",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleFinish)).
 			Name("publication_add_multiple_finish")
-
-		// view publication
-		r.Get("/publication/{id}/contributors",
-			publicationViewingHandler.Wrap(publicationViewingHandler.ShowContributors)).
-			Name("publication_contributors")
-		r.Get("/publication/{id}/datasets",
-			publicationViewingHandler.Wrap(publicationViewingHandler.ShowDatasets)).
-			Name("publication_datasets")
-		r.Get("/publication/{id}/activity",
-			publicationViewingHandler.Wrap(publicationViewingHandler.ShowActivity)).
-			Name("publication_activity")
 
 		// edit publication activity
 		r.Get("/publication/{id}/message/edit",
