@@ -24,6 +24,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views/publication/pages"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
@@ -77,36 +78,32 @@ type YieldValidationErrors struct {
 	Errors form.Errors
 }
 
-func Add(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+func Add(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-	const pageTitle = "Add - Publications - Biblio"
 	switch r.URL.Query().Get("method") {
 	case "identifier":
-		// TODO: refactor to templ
-		render.Layout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
-			Context:   legacyContext,
-			PageTitle: pageTitle,
-			Step:      1,
-			ActiveNav: "publications",
-		})
-		return
+		pages.AddIdentifier(c, pages.AddIdentifierArgs{
+			Step: 1,
+		}).Render(r.Context(), w)
 	case "manual":
-		pages.AddManual(c, pageTitle, 1).Render(r.Context(), w)
+		pages.AddManual(c, 1).Render(r.Context(), w)
 	case "wos":
-		pages.AddWebOfScience(c, pageTitle, 1).Render(r.Context(), w)
+		pages.AddWebOfScience(c, 1).Render(r.Context(), w)
 	case "bibtex":
-		pages.AddBibTeX(c, pageTitle, 1).Render(r.Context(), w)
+		pages.AddBibTeX(c, 1).Render(r.Context(), w)
 	default:
-		pages.Add(c, pageTitle, 1).Render(r.Context(), w)
+		pages.Add(c, 1).Render(r.Context(), w)
 	}
 }
 
-func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+	c := ctx.Get(r)
+
 	b := BindImportSingle{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("import confirm single publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("import confirm single publication: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -114,37 +111,34 @@ func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request,
 	if b.Source == "crossref" && b.Identifier != "" {
 		args := models.NewSearchArgs().WithFilter("identifier", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
-		existing, err := h.PublicationSearchIndex.Search(args)
-
+		existing, err := c.PublicationSearchIndex.Search(args)
 		if err != nil {
-			h.Logger.Warnw("import single publication: could not execute search for duplicates", "errors", err, "args", args, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			c.Log.Warnw("import single publication: could not execute search for duplicates", "errors", err, "args", args, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
 
 		if existing.Total > 0 {
-			render.Layout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
-				Context:              ctx,
-				PageTitle:            "Add - Publications - Biblio",
+			pages.AddIdentifier(c, pages.AddIdentifierArgs{
 				Step:                 1,
-				ActiveNav:            "publications",
 				Source:               b.Source,
 				Identifier:           b.Identifier,
-				Publication:          existing.Hits[0],
-				DuplicatePublication: true,
-			})
+				DuplicatePublication: existing.Hits[0],
+			}).Render(r.Context(), w)
 			return
 		}
 	}
 
-	h.AddSingleImport(w, r, ctx)
+	h.AddSingleImport(w, r, legacyContext)
 }
 
-func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Context) {
+func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+	c := ctx.Get(r)
+
 	b := BindImportSingle{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("import single publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("import single publication: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -157,19 +151,16 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	if b.Identifier != "" {
 		p, err = h.fetchPublicationByIdentifier(b.Source, b.Identifier)
 		if err != nil {
-			h.Logger.Warnw("import single publication: could not fetch publication", "errors", err, "publication", b.Identifier, "user", ctx.User.ID)
+			c.Log.Warnw("import single publication: could not fetch publication", "errors", err, "publication", b.Identifier, "user", c.User.ID)
 
 			flash := flash.SimpleFlash().
 				WithLevel("error").
-				WithBody(template.HTML(ctx.Loc.Get("publication.single_import.import_by_id.import_failed")))
+				WithBody(template.HTML(c.Loc.Get("publication.single_import.import_by_id.import_failed")))
 
-			ctx.Flash = append(ctx.Flash, *flash)
+			c.Flash = append(c.Flash, *flash)
 
-			render.Layout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
-				Context:    ctx,
-				PageTitle:  "Add - Publications - Biblio",
+			pages.AddIdentifier(c, pages.AddIdentifierArgs{
 				Step:       1,
-				ActiveNav:  "publications",
 				Source:     b.Source,
 				Identifier: b.Identifier,
 			})
@@ -181,21 +172,21 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	p.ID = ulid.Make().String()
-	p.CreatorID = ctx.User.ID
-	p.Creator = ctx.User
-	p.UserID = ctx.User.ID
-	p.User = ctx.User
+	p.CreatorID = c.User.ID
+	p.Creator = c.User
+	p.UserID = c.User.ID
+	p.User = c.User
 	p.Status = "private"
 	p.Classification = "U"
 
-	if len(ctx.User.Affiliations) > 0 {
-		p.AddOrganization(ctx.User.Affiliations[0].Organization)
+	if len(c.User.Affiliations) > 0 {
+		p.AddOrganization(c.User.Affiliations[0].Organization)
 	}
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(*okay.Errors)))
+		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
 		render.Layout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
-			Context:    ctx,
+			Context:    legacyContext,
 			PageTitle:  "Add - Publications - Biblio",
 			Step:       1,
 			ActiveNav:  "publications",
@@ -209,11 +200,11 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 		return
 	}
 
-	err = h.Repo.SavePublication(p, ctx.User)
+	err = c.Repo.SavePublication(p, c.User)
 
 	if err != nil {
-		h.Logger.Errorf("import single publication: -could not save the publication:", "error", err, "identifier", b.Identifier, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("import single publication: could not save the publication:", "error", err, "identifier", b.Identifier, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
@@ -223,14 +214,14 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	render.Layout(w, "layouts/default", "publication/pages/add_single_description", YieldAddSingle{
-		Context:        ctx,
+		Context:        legacyContext,
 		PageTitle:      "Add - Publications - Biblio",
 		Step:           2,
 		ActiveNav:      "publications",
 		SubNavs:        []string{"description", "files", "contributors", "datasets"},
 		ActiveSubNav:   subNav,
 		Publication:    p,
-		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Loc, p),
+		DisplayDetails: displays.PublicationDetails(legacyContext.User, legacyContext.Loc, p),
 	})
 }
 

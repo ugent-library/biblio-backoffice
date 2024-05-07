@@ -315,7 +315,9 @@ func Register(c Config) {
 					r.Get("/publication", publicationsearching.Search).Name("publications")
 
 					// import
-					r.Get("/add-publication", publicationCreatingHandler.Wrap(publicationcreating.Add)).Name("publication_add")
+					r.Get("/add-publication", publicationcreating.Add).Name("publication_add")
+					r.Post("/add-publication/import/single", publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleImport)).Name("publication_add_single_import")
+					r.Post("/add-publication/import/single/confirm", publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleImportConfirm)).Name("publication_add_single_import_confirm")
 
 					r.Route("/publication/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetPublication(c.Services.Repo))
@@ -634,12 +636,6 @@ func Register(c Config) {
 			Name("dataset_delete_contributor")
 
 		// add publication
-		r.Post("/publication/add-single/import",
-			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleImport)).
-			Name("publication_add_single_import")
-		r.Post("/publication/add-single/import/confirm",
-			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleImportConfirm)).
-			Name("publication_add_single_import_confirm")
 		r.Get("/publication/{id}/add/description",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleDescription)).
 			Name("publication_add_single_description")

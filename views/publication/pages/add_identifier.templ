@@ -1,0 +1,162 @@
+package pages
+
+import (
+	"fmt"
+	"net/url"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/render/form"
+	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+	"github.com/ugent-library/biblio-backoffice/views/shared"
+)
+
+type AddIdentifierArgs struct {
+	Step                 int
+	Source               string
+	Identifier           string
+	DuplicatePublication *models.Publication
+	Errors               form.Errors
+}
+
+var sourceValues = []string{
+	"crossref",
+	"pubmed",
+	"arxiv",
+}
+
+var sourceLabels = []string{
+	"DOI",
+	"PubMed",
+	"arXiv",
+}
+
+templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
+	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
+		@publicationviews.AddSingleSidebar(c, args.Step)
+		<form class="w-100 u-scroll-wrapper" action={ templ.URL(c.PathTo("publication_add_single_import_confirm").String()) } method="POST">
+			@shared.CSRFTag(c)
+			<div class="w-100 u-scroll-wrapper">
+				<div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<div class="bc-toolbar-item">
+								<div class="d-flex flex-column">
+									<span class="text-muted">Step { fmt.Sprint(args.Step) }</span>
+									<h4 class="bc-toolbar-title">Add publication(s)</h4>
+								</div>
+							</div>
+						</div>
+						<div class="bc-toolbar-right">
+							<div class="bc-toolbar-item">
+								<button type="submit" class="btn btn-primary">
+									<div class="btn-text">Add publication(s)</div>
+									<i class="if if-arrow-right"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="p-6 u-scroll-wrapper__body">
+					<div class="card mb-6">
+						<div class="card-header">
+							<div class="bc-toolbar">
+								<div class="bc-toolbar-left">Enter identifier of your publication</div>
+							</div>
+						</div>
+						<div class="card-body">
+							<div classp="card-body">
+								<p class="mb-4">Enter publication identifier (e.g. DOI, PubMed ID) to import the publication description from an external repository or database.</p>
+								<div class="mb-6">
+									<div class="row">
+										<div class="col-6">
+											<div class="input-group">
+												<select name="source" class="form-select">
+													for i, value := range sourceValues {
+														<option
+															value={ value }
+															if value == args.Source {
+																selected
+															}
+														>{ sourceLabels[i] }</option>
+													}
+												</select>
+												<input class="form-control" type="text" name="identifier" placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K" value={ args.Identifier }/>
+											</div>
+										</div>
+									</div>
+								</div>
+								<small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/en/tips/00002065/#Step2:ImportusinganID" target="_blank">Identifier import instructions</a></small>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		if args.DuplicatePublication != nil {
+			@views.ShowModal(addIdentifierDuplicate(c, addIdentifierDuplicateArgs{
+				Publication:    args.DuplicatePublication,
+				PublicationURL: c.PathTo("publication", "id", args.DuplicatePublication.ID),
+				Source:         args.Source,
+				Identifier:     args.Identifier,
+			}))
+		}
+		if len(args.Errors) > 0 {
+			@views.FormErrorsDialog(c, "Unable to import this publication due to the following errors", args.Errors)
+		}
+	}
+}
+
+type addIdentifierDuplicateArgs struct {
+	Publication    *models.Publication
+	PublicationURL *url.URL
+	Source         string
+	Identifier     string
+}
+
+templ addIdentifierDuplicate(c *ctx.Ctx, args addIdentifierDuplicateArgs) {
+	<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Are you sure you want to import this publication?</h2>
+			</div>
+			<div class="modal-body">
+				<p>Biblio contains another publication with the same DOI:</p>
+				<ul class="list-group mt-6">
+					<li class="list-group-item">
+						<div class="d-flex w-100">
+							<div class="w-100">
+								<div class="d-flex align-items-start">
+									@publicationviews.Summary(c, publicationviews.SummaryArgs{
+										Publication:    args.Publication,
+										PublicationURL: args.PublicationURL,
+										Target:         "_blank",
+										Actions: publicationviews.DefaultSummary(publicationviews.DefaultSummaryArgs{
+											PublicationURL: args.PublicationURL,
+											Target:         "_blank",
+										}),
+									})
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<button class="btn btn-link modal-close">Cancel</button>
+					</div>
+					<div class="bc-toolbar-right">
+						<form action={ templ.URL(c.PathTo("publication_add_single_import").String()) } method="POST">
+							@shared.CSRFTag(c)
+							<input type="hidden" name="source" value={ args.Source }/>
+							<input type="hidden" name="identifier" value={ args.Identifier }/>
+							<button type="submit" class="btn btn-danger">Import anyway</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}

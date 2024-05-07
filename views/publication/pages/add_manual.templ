@@ -8,8 +8,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views/shared"
 )
 
-templ AddManual(c *ctx.Ctx, title string, step int) {
-	@views.PageLayout(c, title, nil) {
+templ AddManual(c *ctx.Ctx, step int) {
+	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
 		@publication.AddSingleSidebar(c, step)
 		<form class="w-100 u-scroll-wrapper" action={ templ.URL(c.PathTo("publication_add_single_import_confirm").String()) } method="POST">
 			@shared.CSRFTag(c)

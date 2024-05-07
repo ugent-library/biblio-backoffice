@@ -8,8 +8,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views/shared"
 )
 
-templ AddWebOfScience(c *ctx.Ctx, title string, step int) {
-	@views.PageLayout(c, title, nil) {
+templ AddWebOfScience(c *ctx.Ctx, step int) {
+	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
 		@publication.AddMultipleSidebar(c, step)
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">

@@ -7,8 +7,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
-templ Add(c *ctx.Ctx, title string, step int) {
-	@views.PageLayout(c, title, nil) {
+templ Add(c *ctx.Ctx, step int) {
+	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
 		@publication.AddMultipleSidebar(c, step)
 		<form class="w-100" action={ templ.URL(c.PathTo("publication_add").String()) } method="GET">
 			<div class="u-scroll-wrapper">
