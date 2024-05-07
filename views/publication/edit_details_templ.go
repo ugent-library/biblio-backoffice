@@ -52,12 +52,14 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 		}
 		if p.UsesTitle() {
 			templ_7745c5c3_Err = form.Text(form.TextArgs{
-				Label:    c.Loc.Get("builder.title"),
-				Name:     "title",
-				Cols:     9,
-				Error:    localize.ValidationErrorAt(c.Loc, errors, "/title"),
-				Required: true,
-				Value:    p.Title,
+				FieldArgs: form.FieldArgs{
+					Label:    c.Loc.Get("builder.title"),
+					Name:     "title",
+					Cols:     9,
+					Error:    localize.ValidationErrorAt(c.Loc, errors, "/title"),
+					Required: true,
+				},
+				Value: p.Title,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -65,11 +67,33 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 		}
 		if p.UsesAlternativeTitle() {
 			templ_7745c5c3_Err = form.TextRepeat(form.TextRepeatArgs{
-				Label:  c.Loc.Get("builder.alternative_title"),
-				Name:   "alternative_title",
-				Cols:   9,
-				Error:  localize.ValidationErrorAt(c.Loc, errors, "/alternative_title"),
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.alternative_title"),
+					Name:  "alternative_title",
+					Cols:  9,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/alternative_title"),
+				},
 				Values: p.AlternativeTitle,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li><li class=\"list-group-item\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if p.UsesLanguage() {
+			templ_7745c5c3_Err = form.SelectRepeat(form.SelectRepeatArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.language"),
+					Name:  "language",
+					Cols:  9,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/language"),
+				},
+				Values:      p.Language,
+				EmptyOption: true,
+				Options:     localize.LanguageSelectOptions(),
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

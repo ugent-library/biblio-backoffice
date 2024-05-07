@@ -1,6 +1,7 @@
 package form
 
 import "fmt"
+import "github.com/ugent-library/biblio-backoffice/render/form"
 
 templ Errors(errors []string) {
 	if len(errors) > 0 {
@@ -14,10 +15,9 @@ templ Errors(errors []string) {
 	}
 }
 
-type TextArgs struct {
+type FieldArgs struct {
 	Label    string
 	Name     string
-	Value    string
 	Readonly bool
 	Tooltip  string
 	Required bool
@@ -26,9 +26,9 @@ type TextArgs struct {
 	Help     string
 }
 
-templ Text(args TextArgs) {
+templ field(args FieldArgs, labelFor string) {
 	<div class={ "mb-6", "row", templ.KV("is-invalid", args.Error != "") }>
-		<label class="col-lg-3 col-form-label mt-2" for={ args.Name }>
+		<label class="col-lg-3 col-form-label mt-2" for={ labelFor }>
 			{ args.Label }
 			if args.Tooltip != "" {
 				<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
@@ -41,14 +41,7 @@ templ Text(args TextArgs) {
 			}
 		</label>
 		<div class={ fmt.Sprintf("col-lg-%d", args.Cols) }>
-			<input
-				class={ "form-control", templ.KV("is-invalid", args.Error != "") }
-				id={ args.Name }
-				name={ args.Name }
-				type="text"
-				value={ args.Value }
-				readonly?={ args.Readonly }
-			/>
+			{ children... }
 			if args.Error != "" {
 				<small class="invalid-feedback">{ args.Error }</small>
 			}
@@ -61,76 +54,120 @@ templ Text(args TextArgs) {
 	</div>
 }
 
+type TextArgs struct {
+	FieldArgs
+	Value string
+}
+
+templ Text(args TextArgs) {
+	@field(args.FieldArgs, args.Name) {
+		<input
+			class={ "form-control", templ.KV("is-invalid", args.Error != "") }
+			id={ args.Name }
+			name={ args.Name }
+			type="text"
+			value={ args.Value }
+			readonly?={ args.Readonly }
+		/>
+	}
+}
+
 type TextRepeatArgs struct {
-	Label    string
-	Name     string
-	Values   []string
-	Tooltip  string
-	Required bool
-	Error    string
-	Cols     int
-	Help     string
+    FieldArgs
+	Values []string
 }
 
 templ TextRepeat(args TextRepeatArgs) {
-	<div class={ "mb-6", "row", templ.KV("is-invalid", args.Error != "") }>
-		<label class="col-lg-3 col-form-label mt-2" for={ fmt.Sprintf("%s-0", args.Name) }>
-			{ args.Label }
-			if args.Tooltip != "" {
-				<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
-					<i class="if if-info-circle if--small"></i>
-					<span class="visually-hidden">More info</span>
-				</a>
-			}
-			if args.Required {
-				&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>
-			}
-		</label>
-		<div class={ fmt.Sprintf("col-lg-%d", args.Cols), "form-values" }>
+    @field(args.FieldArgs, fmt.Sprintf("%s-0", args.Name)) {
+       	<div class="form-values">
 			for i, v := range args.Values {
-				<div class="form-value">
-					<div class="d-flex mb-3">
-						<input
-							class={ "form-control", templ.KV("is-invalid", args.Error != "") }
-							name={ args.Name }
-							id={ fmt.Sprintf("%s-%d", args.Name, i) }
-							data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
-							type="text"
-							value={ v }
-						/>
-						<button class="btn btn-link-muted btn-icon-only ms-3 form-value-delete" type="button">
-							<i class="if if-delete"></i>
-							<span class="visually-hidden">Delete</span>
-						</button>
-					</div>
-				</div>
-			}
-			<div class="mb-3 form-value">
-				<div class="d-flex">
+				<div class="d-flex mb-3 form-value">
 					<input
 						class={ "form-control", templ.KV("is-invalid", args.Error != "") }
 						name={ args.Name }
-						id={ fmt.Sprintf("%s-%d", args.Name, len(args.Values)) }
+						id={ fmt.Sprintf("%s-%d", args.Name, i) }
 						data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
 						type="text"
-						value=""
+						value={ v }
 					/>
-					<button class="btn btn-outline-primary btn-icon-only ms-3 form-value-add" type="button">
-						<i class="if if-add"></i>
-						<span class="visually-hidden">Add</span>
+					<button class="btn btn-link-muted btn-icon-only ms-3 form-value-delete" type="button">
+						<i class="if if-delete"></i>
+						<span class="visually-hidden">Delete</span>
 					</button>
 				</div>
+			}
+			<div class="d-flex mb-3 form-value">
+				<input
+					class={ "form-control", templ.KV("is-invalid", args.Error != "") }
+					name={ args.Name }
+					id={ fmt.Sprintf("%s-%d", args.Name, len(args.Values)) }
+					data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
+					type="text"
+					value=""
+				/>
+				<button class="btn btn-outline-primary btn-icon-only ms-3 form-value-add" type="button">
+					<i class="if if-add"></i>
+					<span class="visually-hidden">Add</span>
+				</button>
 			</div>
-			if args.Error != "" {
-				<small class="invalid-feedback d-block">{ args.Error }</small>
+        </div>
+    }
+}
+
+type Option = form.SelectOption
+
+type SelectRepeatArgs struct {
+    FieldArgs
+	Values      []string
+	EmptyOption bool
+	Options     []Option
+}
+
+templ SelectRepeat(args SelectRepeatArgs) {
+    @field(args.FieldArgs, fmt.Sprintf("%s-0", args.Name)) {
+       	<div class="form-values">
+			for i, v := range args.Values {
+				<div class="d-flex mb-3 form-value">
+					<select
+						class={ "custom-select", "form-control", templ.KV("is-invalid", args.Error != "") }
+						name={ args.Name }
+						id={ fmt.Sprintf("%s-%d", args.Name, i) }
+						data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
+					>
+						if args.EmptyOption {
+							<option></option>
+						}
+						for _, o := range args.Options {
+							<option value={ o.Value } selected?={ o.Value == v }>{ o.Label }</option>
+						}
+					</select>
+					<button class="btn btn-link-muted btn-icon-only ms-3 form-value-delete" type="button">
+						<i class="if if-delete"></i>
+						<span class="visually-hidden">Delete</span>
+					</button>
+				</div>
 			}
-			if args.Help != "" {
-				<small class="form-text text-muted">
-					@html(args.Help)
-				</small>
-			}
-		</div>
-	</div>
+			<div class="d-flex mb-3 form-value">
+				<select
+					class={ "custom-select", "form-control", templ.KV("is-invalid", args.Error != "") }
+					name={ args.Name }
+					id={ fmt.Sprintf("%s-%d", args.Name, len(args.Values)) }
+					data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
+				>
+					if args.EmptyOption {
+						<option></option>
+					}
+					for _, o := range args.Options {
+						<option value={ o.Value }>{ o.Label }</option>
+					}
+				</select>
+				<button class="btn btn-outline-primary btn-icon-only ms-3 form-value-add" type="button">
+					<i class="if if-add"></i>
+					<span class="visually-hidden">Add</span>
+				</button>
+			</div>
+        </div>
+    }
 }
 
 // TODO remove need for this
