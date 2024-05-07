@@ -316,8 +316,8 @@ func Register(c Config) {
 
 					// import
 					r.Get("/add-publication", publicationcreating.Add).Name("publication_add")
-					r.Post("/add-publication/import/single", publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleImport)).Name("publication_add_single_import")
-					r.Post("/add-publication/import/single/confirm", publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleImportConfirm)).Name("publication_add_single_import_confirm")
+					r.Post("/add-publication/import/single", publicationCreatingHandler.Wrap(publicationcreating.AddSingleImport)).Name("publication_add_single_import")
+					r.Post("/add-publication/import/single/confirm", publicationCreatingHandler.Wrap(publicationcreating.AddSingleImportConfirm)).Name("publication_add_single_import_confirm")
 
 					r.Route("/publication/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetPublication(c.Services.Repo))

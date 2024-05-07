@@ -97,7 +97,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+func AddSingleImportConfirm(w http.ResponseWriter, r *http.Request, legacyContext Context) {
 	c := ctx.Get(r)
 
 	b := BindImportSingle{}
@@ -129,10 +129,10 @@ func (h *Handler) AddSingleImportConfirm(w http.ResponseWriter, r *http.Request,
 		}
 	}
 
-	h.AddSingleImport(w, r, legacyContext)
+	AddSingleImport(w, r, legacyContext)
 }
 
-func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+func AddSingleImport(w http.ResponseWriter, r *http.Request, legacyContext Context) {
 	c := ctx.Get(r)
 
 	b := BindImportSingle{}
@@ -149,7 +149,7 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, legacy
 
 	// import by identifier
 	if b.Identifier != "" {
-		p, err = h.fetchPublicationByIdentifier(b.Source, b.Identifier)
+		p, err = fetchPublicationByIdentifier(c, b.Source, b.Identifier)
 		if err != nil {
 			c.Log.Warnw("import single publication: could not fetch publication", "errors", err, "publication", b.Identifier, "user", c.User.ID)
 
@@ -185,18 +185,13 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, legacy
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
-		render.Layout(w, "layouts/default", "publication/pages/add_identifier", YieldAddSingle{
-			Context:    legacyContext,
-			PageTitle:  "Add - Publications - Biblio",
+
+		pages.AddIdentifier(c, pages.AddIdentifierArgs{
 			Step:       1,
-			ActiveNav:  "publications",
 			Source:     b.Source,
 			Identifier: b.Identifier,
-			Errors: &YieldValidationErrors{
-				Title:  "Unable to import this publication due to the following errors",
-				Errors: errors,
-			},
-		})
+			Errors:     errors,
+		}).Render(r.Context(), w)
 		return
 	}
 
@@ -495,8 +490,8 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 	})
 }
 
-func (h *Handler) fetchPublicationByIdentifier(source, identifier string) (*models.Publication, error) {
-	s, ok := h.PublicationSources[source]
+func fetchPublicationByIdentifier(c *ctx.Ctx, source, identifier string) (*models.Publication, error) {
+	s, ok := c.Services.PublicationSources[source]
 
 	if !ok {
 		return nil, fmt.Errorf("unkown publication source: %s", source)
