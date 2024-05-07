@@ -284,7 +284,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(args.Scopes) > 0 {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-divider my-0 mx-6\"></div><div class=\"bc-navbar bc-navbar--white\"><ul class=\"nav nav-tabs\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-navbar bc-navbar--bordered-bottom bc-navbar--white\"><ul class=\"nav nav-tabs\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
