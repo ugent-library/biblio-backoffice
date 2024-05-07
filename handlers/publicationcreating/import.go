@@ -97,41 +97,6 @@ func Add(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AddSingleImportConfirm(w http.ResponseWriter, r *http.Request, legacyContext Context) {
-	c := ctx.Get(r)
-
-	b := BindImportSingle{}
-	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("import confirm single publication: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
-		return
-	}
-
-	// check for duplicates
-	if b.Source == "crossref" && b.Identifier != "" {
-		args := models.NewSearchArgs().WithFilter("identifier", strings.ToLower(b.Identifier)).WithFilter("status", "public")
-
-		existing, err := c.PublicationSearchIndex.Search(args)
-		if err != nil {
-			c.Log.Warnw("import single publication: could not execute search for duplicates", "errors", err, "args", args, "user", c.User.ID)
-			c.HandleError(w, r, httperror.InternalServerError)
-			return
-		}
-
-		if existing.Total > 0 {
-			pages.AddIdentifier(c, pages.AddIdentifierArgs{
-				Step:                 1,
-				Source:               b.Source,
-				Identifier:           b.Identifier,
-				DuplicatePublication: existing.Hits[0],
-			}).Render(r.Context(), w)
-			return
-		}
-	}
-
-	AddSingleImport(w, r, legacyContext)
-}
-
 func AddSingleImport(w http.ResponseWriter, r *http.Request, legacyContext Context) {
 	c := ctx.Get(r)
 
@@ -218,6 +183,41 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request, legacyContext Conte
 		Publication:    p,
 		DisplayDetails: displays.PublicationDetails(legacyContext.User, legacyContext.Loc, p),
 	})
+}
+
+func AddSingleImportConfirm(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+	c := ctx.Get(r)
+
+	b := BindImportSingle{}
+	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
+		c.Log.Warnw("import confirm single publication: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
+		return
+	}
+
+	// check for duplicates
+	if b.Source == "crossref" && b.Identifier != "" {
+		args := models.NewSearchArgs().WithFilter("identifier", strings.ToLower(b.Identifier)).WithFilter("status", "public")
+
+		existing, err := c.PublicationSearchIndex.Search(args)
+		if err != nil {
+			c.Log.Warnw("import single publication: could not execute search for duplicates", "errors", err, "args", args, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
+			return
+		}
+
+		if existing.Total > 0 {
+			pages.AddIdentifier(c, pages.AddIdentifierArgs{
+				Step:                 1,
+				Source:               b.Source,
+				Identifier:           b.Identifier,
+				DuplicatePublication: existing.Hits[0],
+			}).Render(r.Context(), w)
+			return
+		}
+	}
+
+	AddSingleImport(w, r, legacyContext)
 }
 
 func (h *Handler) AddSingleDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
