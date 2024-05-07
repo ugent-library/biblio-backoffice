@@ -157,13 +157,13 @@ func (h *Handler) AddSingleImport(w http.ResponseWriter, r *http.Request, legacy
 				WithLevel("error").
 				WithBody(template.HTML(c.Loc.Get("publication.single_import.import_by_id.import_failed")))
 
-			c.Flash = append(c.Flash, *flash)
+			c.PersistFlash(w, *flash)
 
 			pages.AddIdentifier(c, pages.AddIdentifierArgs{
 				Step:       1,
 				Source:     b.Source,
 				Identifier: b.Identifier,
-			})
+			}).Render(r.Context(), w)
 			return
 		}
 	} else {
