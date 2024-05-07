@@ -99,6 +99,22 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 				return templ_7745c5c3_Err
 			}
 		}
+		if p.UsesPublicationStatus() {
+			templ_7745c5c3_Err = form.Select(form.SelectArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.publication_status"),
+					Name:  "publication_status",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/publication_status"),
+				},
+				Value:       p.PublicationStatus,
+				EmptyOption: true,
+				Options:     localize.VocabularySelectOptions(c.Loc, "publication_publishing_statuses"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li></ul></div><div class=\"modal-footer\"><div class=\"bc-toolbar\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

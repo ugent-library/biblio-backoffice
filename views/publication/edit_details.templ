@@ -40,12 +40,12 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 						}
 						if p.UsesAlternativeTitle() {
 							@form.TextRepeat(form.TextRepeatArgs{
-                                FieldArgs: form.FieldArgs{
-								Label:  c.Loc.Get("builder.alternative_title"),
-								Name:   "alternative_title",
-								Cols:   9,
-								Error:  localize.ValidationErrorAt(c.Loc, errors, "/alternative_title"),
-                                },
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.alternative_title"),
+									Name:  "alternative_title",
+									Cols:  9,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/alternative_title"),
+								},
 								Values: p.AlternativeTitle,
 							})
 						}
@@ -53,15 +53,28 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 					<li class="list-group-item">
 						if p.UsesLanguage() {
 							@form.SelectRepeat(form.SelectRepeatArgs{
-                                FieldArgs: form.FieldArgs{
-								Label:       c.Loc.Get("builder.language"),
-								Name:        "language",
-								Cols:        9,
-								Error:       localize.ValidationErrorAt(c.Loc, errors, "/language"),
-                                },
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.language"),
+									Name:  "language",
+									Cols:  9,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/language"),
+								},
 								Values:      p.Language,
 								EmptyOption: true,
 								Options:     localize.LanguageSelectOptions(),
+							})
+						}
+						if p.UsesPublicationStatus() {
+							@form.Select(form.SelectArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.publication_status"),
+									Name:  "publication_status",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/publication_status"),
+								},
+								Value:       p.PublicationStatus,
+								EmptyOption: true,
+								Options:     localize.VocabularySelectOptions(c.Loc, "publication_publishing_statuses"),
 							})
 						}
 					</li>
