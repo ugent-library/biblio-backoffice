@@ -174,7 +174,197 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li></ul></div><div class=\"modal-footer\"><div class=\"bc-toolbar\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li><li class=\"list-group-item\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if p.UsesSeriesTitle() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.series_title"),
+					Name:  "series_title",
+					Cols:  9,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/series_title"),
+				},
+				Value: p.SeriesTitle,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesVolume() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.volume"),
+					Name:  "volume",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/volume"),
+				},
+				Value: p.Volume,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesIssue() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.issue"),
+					Name:  "issue",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/issue"),
+				},
+				Value: p.Issue,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.issue_title"),
+					Name:  "issue_title",
+					Cols:  9,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/issue_title"),
+				},
+				Value: p.IssueTitle,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesEdition() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.edition"),
+					Name:  "edition",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/edition"),
+				},
+				Value: p.Edition,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesPage() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.page_first"),
+					Name:  "page_first",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/page_first"),
+				},
+				Value: p.PageFirst,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.page_last"),
+					Name:  "page_last",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/page_last"),
+				},
+				Value: p.PageLast,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesPageCount() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.page_count"),
+					Name:  "page_count",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/page_count"),
+					Help:  c.Loc.Get("builder.page_count.help"),
+				},
+				Value: p.PageCount,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesArticleNumber() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.article_number"),
+					Name:  "article_number",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/article_number"),
+				},
+				Value: p.ArticleNumber,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesReportNumber() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.report_number"),
+					Name:  "report_number",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/report_number"),
+				},
+				Value: p.ReportNumber,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if p.UsesDefense() {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label:    c.Loc.Get("builder.defense_date"),
+					Name:     "defense_date",
+					Cols:     3,
+					Error:    localize.ValidationErrorAt(c.Loc, errors, "/defense_date"),
+					Required: p.ShowDefenseAsRequired(),
+					Help:     c.Loc.Get("builder.defense_date.help"),
+				},
+				Value: p.DefenseDate,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label:    c.Loc.Get("builder.defense_place"),
+					Name:     "defense_place",
+					Cols:     3,
+					Error:    localize.ValidationErrorAt(c.Loc, errors, "/defense_place"),
+					Required: p.ShowDefenseAsRequired(),
+				},
+				Value: p.DefensePlace,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul></div><div class=\"modal-footer\"><div class=\"bc-toolbar\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
