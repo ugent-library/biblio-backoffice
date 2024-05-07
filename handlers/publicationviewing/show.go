@@ -74,20 +74,23 @@ func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx C
 	})
 }
 
-func (h *Handler) ShowDatasets(w http.ResponseWriter, r *http.Request, ctx Context) {
-	relatedDatasets, err := h.Repo.GetVisiblePublicationDatasets(ctx.User, ctx.Publication)
+func ShowDatasets(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
+	datasets, err := c.Repo.GetVisiblePublicationDatasets(c.User, p)
 	if err != nil {
-		h.Logger.Warn("show publication datasets: could not get publication datasets:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		c.Log.Warn("show publication datasets: could not get publication datasets:", "errors", err, "publication", p.ID, "user", c.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	render.View(w, "publication/show_datasets", YieldShowDatasets{
-		Context:         ctx,
-		SubNavs:         subNavs,
-		ActiveSubNav:    "datasets",
-		RelatedDatasets: relatedDatasets,
-	})
+	redirectURL := r.URL.Query().Get("redirect-url")
+	if redirectURL == "" {
+		redirectURL = c.PathTo("publications").String()
+	}
+
+	publicationviews.Datasets(c, p, datasets, redirectURL).Render(r.Context(), w)
 }
 
 func ShowActivity(w http.ResponseWriter, r *http.Request) {

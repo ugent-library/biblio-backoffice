@@ -324,8 +324,8 @@ func Register(c Config) {
 					r.Get("/", publicationviewing.Show).Name("publication")
 					r.With(ctx.SetSubNav("description")).Get("/description", publicationviewing.ShowDescription).Name("publication_description")
 					r.With(ctx.SetSubNav("files")).Get("/files", publicationviewing.ShowFiles).Name("publication_files")
+					r.With(ctx.SetSubNav("datasets")).Get("/datasets", publicationviewing.ShowDatasets).Name("publication_datasets")
 					r.With(ctx.SetSubNav("activity")).Get("/activity", publicationviewing.ShowActivity).Name("publication_activity")
-
 					r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 
 					// edit only
@@ -397,11 +397,9 @@ func Register(c Config) {
 
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
+					r.Use(ctx.RequireViewDataset)
 
 					// view only functions
-					r.Group(func(r *ich.Mux) {
-						r.Use(ctx.RequireViewDataset)
-					})
 
 					// edit only
 					r.Group(func(r *ich.Mux) {
@@ -677,9 +675,6 @@ func Register(c Config) {
 		r.Get("/publication/{id}/contributors",
 			publicationViewingHandler.Wrap(publicationViewingHandler.ShowContributors)).
 			Name("publication_contributors")
-		r.Get("/publication/{id}/datasets",
-			publicationViewingHandler.Wrap(publicationViewingHandler.ShowDatasets)).
-			Name("publication_datasets")
 
 		// edit publication activity
 		r.Get("/publication/{id}/message/edit",

@@ -165,7 +165,9 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								</ul>
 							</div>
 						</div>
-						@args.Footer
+						if args.Footer != nil {
+							@args.Footer
+						}
 						<div class="d-lg-flex flex-row-reverse align-items-center justify-content-end vstack gap-4 flex-wrap">
 							<ul class="c-meta-list c-meta-list-inline c-body-small">
 								<li class="c-meta-item">
@@ -185,11 +187,13 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								</div>
 							</div>
 						</div>
-						if c.UserRole == "curator" {
+						if args.Links != nil && c.UserRole == "curator" {
 							@args.Links
 						}
 					</div>
-					@args.Actions
+					if args.Actions != nil {
+						@args.Actions
+					}
 				</div>
 			</div>
 		</div>
