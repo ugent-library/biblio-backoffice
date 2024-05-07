@@ -68,12 +68,8 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, legacy
 	})
 }
 
-func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, legacyCtx Context) {
-	render.View(w, "dataset/show_contributors", YieldShowContributors{
-		Context:      legacyCtx,
-		SubNavs:      subNavs,
-		ActiveSubNav: "contributors",
-	})
+func ShowContributors(w http.ResponseWriter, r *http.Request) {
+	datasetviews.Contributors(ctx.Get(r), ctx.GetDataset(r), r.URL.Query().Get("redirect-url")).Render(r.Context(), w)
 }
 
 func ShowPublications(w http.ResponseWriter, r *http.Request) {
