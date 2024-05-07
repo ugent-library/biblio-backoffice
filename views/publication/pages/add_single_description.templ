@@ -1,0 +1,80 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+)
+
+type AddSingleDescriptionArgs struct {
+	Step         int
+	Publication  *models.Publication
+	ActiveSubNav string
+}
+
+templ AddSingleDescription(c *ctx.Ctx, args AddSingleDescriptionArgs) {
+	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
+		@publicationviews.AddSingleSidebar(c, args.Step)
+		<div class="w-100 u-scroll-wrapper">
+			<div class="bg-white">
+				<div class="bc-navbar bc-navbar--large bc-navbar--white">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<div class="bc-toolbar-item">
+								<div class="d-flex flex-column">
+									<span class="text-muted">Step { fmt.Sprint(args.Step) }</span>
+									<h4 class="bc-toolbar-title">Complete Description</h4>
+								</div>
+							</div>
+						</div>
+						<div class="bc-toolbar-right">
+							<div class="bc-toolbar-item">
+								<a class="btn btn-primary btn-submit-description" href={ templ.URL(c.PathTo("publication_add_single_confirm", "id", args.Publication.ID).String()) }>
+									<div class="btn-text">Complete Description</div>
+									<i class="if if-arrow-right"></i>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="c-divider mt-0 mx-6"></div>
+				<div id="summary">
+					<div class="mx-6">
+						<div class="d-flex w-100">
+							<div class="w-100">
+								<div class="d-flex align-items-start">
+									<h4 class="h4">
+										if args.Publication.Title != "" {
+											{ args.Publication.Title }
+										} else {
+											Untitled record
+										}
+									</h4>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="c-divider mb-2 mx-6"></div>
+				<div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<div class="bc-toolbar-item" id="show-nav">
+								@publicationviews.SubNav(c, args.Publication, "")
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div
+				class="u-scroll-wrapper__body p-6"
+				id="details-body"
+				hx-get={ c.PathTo("publication_"+args.ActiveSubNav, "id", args.Publication.ID).String() }
+				hx-trigger="load delay:100ms"
+				hx-target="#details-body"
+			></div>
+		</div>
+	}
+}

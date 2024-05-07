@@ -316,8 +316,8 @@ func Register(c Config) {
 
 					// import
 					r.Get("/add-publication", publicationcreating.Add).Name("publication_add")
-					r.Post("/add-publication/import/single", publicationCreatingHandler.Wrap(publicationcreating.AddSingleImport)).Name("publication_add_single_import")
-					r.Post("/add-publication/import/single/confirm", publicationCreatingHandler.Wrap(publicationcreating.AddSingleImportConfirm)).Name("publication_add_single_import_confirm")
+					r.Post("/add-publication/import/single", publicationcreating.AddSingleImport).Name("publication_add_single_import")
+					r.Post("/add-publication/import/single/confirm", publicationcreating.AddSingleImportConfirm).Name("publication_add_single_import_confirm")
 
 					r.Route("/publication/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetPublication(c.Services.Repo))
@@ -339,6 +339,9 @@ func Register(c Config) {
 						// edit only
 						r.Group(func(r *ich.Mux) {
 							r.Use(ctx.RequireEditPublication)
+
+							// add
+							r.Get("/add/description", publicationcreating.AddSingleDescription).Name("publication_add_single_description")
 
 							// edit publication type
 							r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
@@ -636,9 +639,6 @@ func Register(c Config) {
 			Name("dataset_delete_contributor")
 
 		// add publication
-		r.Get("/publication/{id}/add/description",
-			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleDescription)).
-			Name("publication_add_single_description")
 		r.Get("/publication/{id}/add/confirm",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleConfirm)).
 			Name("publication_add_single_confirm")

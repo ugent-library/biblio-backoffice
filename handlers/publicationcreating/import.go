@@ -12,7 +12,6 @@ import (
 
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -97,7 +96,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AddSingleImportConfirm(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+func AddSingleImportConfirm(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
 	b := BindImportSingle{}
@@ -129,10 +128,10 @@ func AddSingleImportConfirm(w http.ResponseWriter, r *http.Request, legacyContex
 		}
 	}
 
-	AddSingleImport(w, r, legacyContext)
+	AddSingleImport(w, r)
 }
 
-func AddSingleImport(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+func AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
 	b := BindImportSingle{}
@@ -196,7 +195,6 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request, legacyContext Conte
 	}
 
 	err = c.Repo.SavePublication(p, c.User)
-
 	if err != nil {
 		c.Log.Errorf("import single publication: could not save the publication:", "error", err, "identifier", b.Identifier, "user", c.User.ID)
 		c.HandleError(w, r, httperror.InternalServerError)
@@ -208,34 +206,26 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request, legacyContext Conte
 		subNav = "description"
 	}
 
-	render.Layout(w, "layouts/default", "publication/pages/add_single_description", YieldAddSingle{
-		Context:        legacyContext,
-		PageTitle:      "Add - Publications - Biblio",
-		Step:           2,
-		ActiveNav:      "publications",
-		SubNavs:        []string{"description", "files", "contributors", "datasets"},
-		ActiveSubNav:   subNav,
-		Publication:    p,
-		DisplayDetails: displays.PublicationDetails(legacyContext.User, legacyContext.Loc, p),
-	})
+	pages.AddSingleDescription(c, pages.AddSingleDescriptionArgs{
+		Step:         2,
+		ActiveSubNav: subNav,
+		Publication:  p,
+	}).Render(r.Context(), w)
 }
 
-func (h *Handler) AddSingleDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
+func AddSingleDescription(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	subNav := r.URL.Query().Get("show")
 	if subNav == "" {
 		subNav = "description"
 	}
 
-	render.Layout(w, "layouts/default", "publication/pages/add_single_description", YieldAddSingle{
-		Context:        ctx,
-		PageTitle:      "Add - Publications - Biblio",
-		Step:           2,
-		ActiveNav:      "publications",
-		SubNavs:        []string{"description", "files", "contributors", "datasets"},
-		ActiveSubNav:   subNav,
-		Publication:    ctx.Publication,
-		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Loc, ctx.Publication),
-	})
+	pages.AddSingleDescription(c, pages.AddSingleDescriptionArgs{
+		Step:         2,
+		Publication:  ctx.GetPublication(r),
+		ActiveSubNav: subNav,
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) AddSingleConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
