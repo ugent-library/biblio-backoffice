@@ -255,6 +255,54 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 							})
 						</li>
 					}
+					if p.UsesConfirmations() {
+						<li class="list-group-item">
+							@form.RadioGroup(form.RadioGroupArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.has_confidential_data"),
+									Name:     "has_confidential_data",
+									Cols:     9,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/has_confidential_data"),
+									Required: true,
+								},
+								Value:   p.HasConfidentialData,
+								Options: localize.VocabularySelectOptions(c.Loc, "confirmations"),
+							})
+							@form.RadioGroup(form.RadioGroupArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.has_patent_application"),
+									Name:     "has_patent_application",
+									Cols:     9,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/has_patent_application"),
+									Required: true,
+								},
+								Value:   p.HasPatentApplication,
+								Options: localize.VocabularySelectOptions(c.Loc, "confirmations"),
+							})
+							@form.RadioGroup(form.RadioGroupArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.has_publications_planned"),
+									Name:     "has_publications_planned",
+									Cols:     9,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/has_publications_planned"),
+									Required: true,
+								},
+								Value:   p.HasPublicationsPlanned,
+								Options: localize.VocabularySelectOptions(c.Loc, "confirmations"),
+							})
+							@form.RadioGroup(form.RadioGroupArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.has_published_material"),
+									Name:     "has_published_material",
+									Cols:     9,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/has_published_material"),
+									Required: true,
+								},
+								Value:   p.HasPublishedMaterial,
+								Options: localize.VocabularySelectOptions(c.Loc, "confirmations"),
+							})
+						</li>
+					}
 				</ul>
 			</div>
 			<div class="modal-footer">

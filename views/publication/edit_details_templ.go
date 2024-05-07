@@ -364,6 +364,72 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 				return templ_7745c5c3_Err
 			}
 		}
+		if p.UsesConfirmations() {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.RadioGroup(form.RadioGroupArgs{
+				FieldArgs: form.FieldArgs{
+					Label:    c.Loc.Get("builder.has_confidential_data"),
+					Name:     "has_confidential_data",
+					Cols:     9,
+					Error:    localize.ValidationErrorAt(c.Loc, errors, "/has_confidential_data"),
+					Required: true,
+				},
+				Value:   p.HasConfidentialData,
+				Options: localize.VocabularySelectOptions(c.Loc, "confirmations"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.RadioGroup(form.RadioGroupArgs{
+				FieldArgs: form.FieldArgs{
+					Label:    c.Loc.Get("builder.has_patent_application"),
+					Name:     "has_patent_application",
+					Cols:     9,
+					Error:    localize.ValidationErrorAt(c.Loc, errors, "/has_patent_application"),
+					Required: true,
+				},
+				Value:   p.HasPatentApplication,
+				Options: localize.VocabularySelectOptions(c.Loc, "confirmations"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.RadioGroup(form.RadioGroupArgs{
+				FieldArgs: form.FieldArgs{
+					Label:    c.Loc.Get("builder.has_publications_planned"),
+					Name:     "has_publications_planned",
+					Cols:     9,
+					Error:    localize.ValidationErrorAt(c.Loc, errors, "/has_publications_planned"),
+					Required: true,
+				},
+				Value:   p.HasPublicationsPlanned,
+				Options: localize.VocabularySelectOptions(c.Loc, "confirmations"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.RadioGroup(form.RadioGroupArgs{
+				FieldArgs: form.FieldArgs{
+					Label:    c.Loc.Get("builder.has_published_material"),
+					Name:     "has_published_material",
+					Cols:     9,
+					Error:    localize.ValidationErrorAt(c.Loc, errors, "/has_published_material"),
+					Required: true,
+				},
+				Value:   p.HasPublishedMaterial,
+				Options: localize.VocabularySelectOptions(c.Loc, "confirmations"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul></div><div class=\"modal-footer\"><div class=\"bc-toolbar\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

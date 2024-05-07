@@ -128,6 +128,55 @@ templ Checkbox(args CheckboxArgs) {
 	</div>
 }
 
+type RadioGroupArgs struct {
+	FieldArgs
+	Value   string
+	Options []Option
+}
+
+templ RadioGroup(args RadioGroupArgs) {
+	<div class={ "mb-6", "row", templ.KV("is-invalid", args.Error != "") }>
+		<label class="col-lg-3 col-form-label" for={ args.Name }>
+			<div class="w-100">
+				{ args.Label }
+				if args.Tooltip != "" {
+					<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
+						<i class="if if-info-circle if--small"></i>
+						<span class="visually-hidden">More info</span>
+					</a>
+				}
+			</div>
+			<div class="w-100">
+				if args.Required {
+					&nbsp;<span class="badge badge-outline-primary badge-sm ms-0">Required</span>
+				}
+			</div>
+		</label>
+		<div class={ fmt.Sprintf("col-lg-%d", args.Cols) }>
+			for _, o := range args.Options {
+				<label class="form-check form-check-inline active ps-0">
+					<input
+						class="pe-3"
+						type="radio"
+						name={ args.Name }
+						checked?={ o.Value == args.Value }
+						value={ args.Value }
+					/>
+					<span class="pe-5">{ o.Label }</span>
+				</label>
+			}
+			if args.Error != "" {
+				<small class="invalid-feedback">{ args.Error }</small>
+			}
+			if args.Help != "" {
+				<small class="form-text text-muted">
+					@html(args.Help)
+				</small>
+			}
+		</div>
+	</div>
+}
+
 type TextRepeatArgs struct {
 	FieldArgs
 	Values []string
