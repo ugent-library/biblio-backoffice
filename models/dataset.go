@@ -76,6 +76,13 @@ type Dataset struct {
 	Year                    string                 `json:"year,omitempty"`
 }
 
+func (d *Dataset) FirstIdentifier() (string, []string) { // TODO eliminate need for this
+	for typ, vals := range d.Identifiers {
+		return typ, vals
+	}
+	return "", nil
+}
+
 func (d *Dataset) HasRelatedPublication(id string) bool {
 	for _, r := range d.RelatedPublication {
 		if r.ID == id {

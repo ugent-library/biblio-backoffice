@@ -13,7 +13,7 @@ import "bytes"
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
+	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
 )
 
 func Datasets(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset, redirectURL string) templ.Component {
@@ -105,7 +105,7 @@ func DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = datasetviews.Summary(c, datasetviews.SummaryArgs{
+				templ_7745c5c3_Err = datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
 					Dataset: d,
 					URL:     c.PathTo("dataset", "id", d.ID),
 					Actions: datasetActions(c, p, d),

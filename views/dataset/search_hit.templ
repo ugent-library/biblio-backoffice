@@ -31,7 +31,7 @@ templ SummaryActions(c *ctx.Ctx, dataset *models.Dataset, url string) {
 						<span>Public Biblio Location</span>
 					</a>
 				}
-				if typ, vals := getFirstDatasetIdentifier(dataset); typ != "" {
+				if typ, vals := dataset.FirstIdentifier(); typ != "" {
 					<a class="dropdown-item" href={ templ.URL(identifiers.Resolve(typ, vals[0])) } target="_blank">
 						<i class="if if-external-link"></i>
 						<span>View in external repository</span>
@@ -77,7 +77,7 @@ templ SummaryLinks(c *ctx.Ctx, dataset *models.Dataset, url string) {
 		<li class="c-meta-item">
 			<a class="c-link-muted c-body-small" href={ templ.URL(url) }>View dataset</a>
 		</li>
-		if typ, vals := getFirstDatasetIdentifier(dataset); typ != "" {
+		if typ, vals := dataset.FirstIdentifier(); typ != "" {
 			<li class="c-meta-item">
 				<a class="c-link-muted c-body-small" href={ templ.URL(identifiers.Resolve(typ, vals[0])) } target="_blank">
 					View in external repository
