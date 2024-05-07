@@ -32,12 +32,6 @@ type YieldShowDescription struct {
 	DisplayDetails *display.Display
 }
 
-type YieldShowContributors struct {
-	Context
-	SubNavs      []string
-	ActiveSubNav string
-}
-
 type YieldShowActivity struct {
 	Context
 	SubNavs      []string
