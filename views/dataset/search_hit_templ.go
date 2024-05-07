@@ -57,7 +57,7 @@ func SummaryActions(c *ctx.Ctx, dataset *models.Dataset, url string) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		if typ, vals := getFirstDatasetIdentifier(dataset); typ != "" {
+		if typ, vals := dataset.FirstIdentifier(); typ != "" {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"dropdown-item\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -166,7 +166,7 @@ func SummaryLinks(c *ctx.Ctx, dataset *models.Dataset, url string) templ.Compone
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if typ, vals := getFirstDatasetIdentifier(dataset); typ != "" {
+		if typ, vals := dataset.FirstIdentifier(); typ != "" {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><a class=\"c-link-muted c-body-small\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

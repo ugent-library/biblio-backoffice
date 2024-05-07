@@ -1,4 +1,4 @@
-package dataset
+package datasetsummaryviews
 
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -16,13 +16,6 @@ type SummaryArgs struct {
 	Actions templ.Component
 	Footer  templ.Component
 	Links   templ.Component
-}
-
-func getFirstDatasetIdentifier(dataset *models.Dataset) (string, []string) {
-	for typ, vals := range dataset.Identifiers {
-		return typ, vals
-	}
-	return "", nil
 }
 
 templ Summary(c *ctx.Ctx, args SummaryArgs) {
@@ -125,7 +118,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								if args.Dataset.Publisher != "" {
 									<li class="c-meta-item">{ args.Dataset.Publisher }</li>
 								}
-								if typ, vals := getFirstDatasetIdentifier(args.Dataset); typ != "" {
+								if typ, vals := args.Dataset.FirstIdentifier(); typ != "" {
 									<li class="c-meta-item">{ typ }</li>
 									<li class="c-meta-item">{ vals[0] }</li>
 								}

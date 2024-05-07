@@ -3,7 +3,7 @@ package publication
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
+	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
 )
 
 templ Datasets(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset, redirectURL string) {
@@ -58,7 +58,7 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 					<li class="list-group-item">
 						<div class="d-flex w-100">
 							<div class="w-100">
-								@datasetviews.Summary(c, datasetviews.SummaryArgs{
+								@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
 									Dataset: d,
 									URL:     c.PathTo("dataset", "id", d.ID),
 									Actions: datasetActions(c, p, d),

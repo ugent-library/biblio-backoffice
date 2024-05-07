@@ -4,6 +4,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
 	"github.com/ugent-library/bind"
 	"net/url"
 )
@@ -133,7 +134,7 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 								for _, hit := range args.Hits.Hits {
 									<li class="list-group-item">
 										if datasetURL := views.URL(c.PathTo("dataset", "id", hit.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).URL(); datasetURL != nil {
-											@Summary(c, SummaryArgs{Dataset: hit, URL: datasetURL, Actions: SummaryActions(c, hit, datasetURL.String()), Footer: SummaryFooter(c, hit), Links: SummaryLinks(c, hit, datasetURL.String())})
+											@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{Dataset: hit, URL: datasetURL, Actions: SummaryActions(c, hit, datasetURL.String()), Footer: SummaryFooter(c, hit), Links: SummaryLinks(c, hit, datasetURL.String())})
 										}
 									</li>
 								}
