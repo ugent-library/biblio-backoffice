@@ -446,7 +446,9 @@ func Register(c Config) {
 						r.Post("/publications", datasetediting.CreatePublication).Name("dataset_create_publication")
 						r.Delete("/publications/{publication_id}", datasetediting.DeletePublication).Name("dataset_delete_publication")
 
-						r.With(ctx.SetNav("dataset"), ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
+						r.With(ctx.SetNav("datasets"), ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
+
+						r.With(ctx.SetNav("datasets"), ctx.SetSubNav("activity")).Get("/activity", datasetviewing.ShowActivity).Name("dataset_activity")
 					})
 
 					// curator actions
@@ -503,10 +505,6 @@ func Register(c Config) {
 		r.Get("/dataset/{id}/contributors",
 			datasetViewingHandler.Wrap(datasetViewingHandler.ShowContributors)).
 			Name("dataset_contributors")
-
-		r.Get("/dataset/{id}/activity",
-			datasetViewingHandler.Wrap(datasetViewingHandler.ShowActivity)).
-			Name("dataset_activity")
 
 		// edit dataset activity
 		r.Get("/dataset/{id}/message/edit",

@@ -1,0 +1,94 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+templ ShowActivity(c *ctx.Ctx, dataset *models.Dataset) {
+	<div hx-swap-oob="innerHTML:#show-nav">
+		@SubNav(c, dataset, c.CurrentURL.Query().Get("redirect-url"))
+	</div>
+	<div hx-swap-oob="innerHTML:#show-sidebar"></div>
+	<div class="row">
+		if c.User.CanCurate() {
+			<div class="col-lg-6">
+				<div class="card mb-6">
+					<div class="card-header">
+						<div class="bc-toolbar">
+							<div class="bc-toolbar-left">
+								<h3 class="card-title">Librarian tags</h3>
+							</div>
+							<div class="bc-toolbar-right">
+								<button
+									class="btn btn-outline-primary"
+									type="button"
+									hx-get={ c.PathTo("dataset_edit_reviewer_tags", "id", dataset.ID).String() }
+									hx-target="#modals"
+								>
+									<i class="if if-edit"></i>
+									<div class="btn-text">Edit</div>
+								</button>
+							</div>
+						</div>
+					</div>
+					<div id="reviewer-tags-body">
+						@ReviewerTagsBody(c, dataset)
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="card mb-6">
+					<div class="card-header">
+						<div class="bc-toolbar">
+							<div class="bc-toolbar-left">
+								<h3 class="card-title">Librarian note</h3>
+							</div>
+							<div class="bc-toolbar-right">
+								<button
+									class="btn btn-outline-primary"
+									type="button"
+									hx-get={ c.PathTo("dataset_edit_reviewer_note", "id", dataset.ID).String() }
+									hx-target="#modals"
+								>
+									<i class="if if-edit"></i>
+									<div class="btn-text">Edit</div>
+								</button>
+							</div>
+						</div>
+					</div>
+					<div id="reviewer-note-body">
+						@ReviewerNoteBody(c, dataset)
+					</div>
+				</div>
+			</div>
+		}
+		<div class="col-lg-6">
+			<div class="card mb-6">
+				<div class="card-header">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<h3 class="card-title">Messages from and for Biblio team</h3>
+						</div>
+						<div class="bc-toolbar-right">
+							if c.User.CanEditDataset(dataset) {
+								<button
+									class="btn btn-outline-primary"
+									type="button"
+									hx-get={ c.PathTo("dataset_edit_message", "id", dataset.ID).String() }
+									hx-target="#modals"
+								>
+									<i class="if if-edit"></i>
+									<div class="btn-text">Edit</div>
+								</button>
+							}
+						</div>
+					</div>
+				</div>
+				<div id="message-body">
+					@MessageBody(c, dataset)
+				</div>
+			</div>
+		</div>
+	</div>
+}
