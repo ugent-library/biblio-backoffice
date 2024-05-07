@@ -15,7 +15,7 @@ templ flashMessage(f flash.Flash) {
 		if f.Type == "simple" {
 			<div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
 				<div class="toast-body">
-					switch f.Type {
+					switch f.Level {
 						case "success":
 							<i class="if if--success if-check-circle-fill"></i>
 						case "info":
@@ -53,7 +53,7 @@ templ flashMessage(f flash.Flash) {
 					}
 				</div>
 				<div class="toast-body">
-					switch f.Type {
+					switch f.Level {
 						case "success":
 							<i class="if if--success if-check-circle-fill"></i>
 						case "info":
