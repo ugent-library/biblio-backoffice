@@ -4,25 +4,9 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 )
-
-var subNavs = []string{"description", "files", "contributors", "datasets", "activity"}
-
-type YieldShowContributors struct {
-	Context
-	SubNavs      []string
-	ActiveSubNav string
-}
-
-type YieldShowDatasets struct {
-	Context
-	SubNavs         []string
-	ActiveSubNav    string
-	RelatedDatasets []*models.Dataset
-}
 
 func Show(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
@@ -66,12 +50,16 @@ func ShowFiles(w http.ResponseWriter, r *http.Request) {
 	publicationviews.Files(c, p, redirectURL).Render(r.Context(), w)
 }
 
-func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.View(w, "publication/show_contributors", YieldShowContributors{
-		Context:      ctx,
-		SubNavs:      subNavs,
-		ActiveSubNav: "contributors",
-	})
+func ShowContributors(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
+	redirectURL := r.URL.Query().Get("redirect-url")
+	if redirectURL == "" {
+		redirectURL = c.PathTo("publications").String()
+	}
+
+	publicationviews.Contributors(c, p, redirectURL).Render(r.Context(), w)
 }
 
 func ShowDatasets(w http.ResponseWriter, r *http.Request) {

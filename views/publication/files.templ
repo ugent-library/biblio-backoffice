@@ -37,20 +37,20 @@ templ FilesBody(c *ctx.Ctx, p *models.Publication) {
 	<div class="card-body p-0">
 		if c.User.CanEditPublication(p) {
 			<form
- 				class="p-6"
- 				hx-post={ c.PathTo("publication_upload_file", "id", p.ID).String() }
- 				hx-encoding="multipart/form-data"
- 				hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
- 				hx-target="#modals"
- 				hx-trigger="change"
+				class="p-6"
+				hx-post={ c.PathTo("publication_upload_file", "id", p.ID).String() }
+				hx-encoding="multipart/form-data"
+				hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
+				hx-target="#modals"
+				hx-trigger="change"
 			>
 				<div class="c-file-upload file-upload-start">
 					<input
- 						class="upload-progress"
- 						type="file"
- 						name="file"
- 						data-max-size={ fmt.Sprint(c.MaxFileSize) }
- 						data-max-size-error={ fmt.Sprintf("Maximum file size is %s", friendly.Bytes(int64(c.MaxFileSize))) }
+						class="upload-progress"
+						type="file"
+						name="file"
+						data-max-size={ fmt.Sprint(c.MaxFileSize) }
+						data-max-size-error={ fmt.Sprintf("Maximum file size is %s", friendly.Bytes(int64(c.MaxFileSize))) }
 					/>
 					<div class="c-file-upload__content">
 						<p>Drag and drop or</p>
@@ -67,12 +67,12 @@ templ FilesBody(c *ctx.Ctx, p *models.Publication) {
 						</p>
 						<div class="progress w-75">
 							<div
- 								class="progress-bar progress-bar-striped progress-bar-animated"
- 								role="progressbar"
- 								style="width: 0%"
- 								aria-valuenow="0"
- 								aria-valuemin="0"
- 								aria-valuemax="100"
+								class="progress-bar progress-bar-striped progress-bar-animated"
+								role="progressbar"
+								style="width: 0%"
+								aria-valuenow="0"
+								aria-valuemin="0"
+								aria-valuemax="100"
 							></div>
 						</div>
 						<p class="mt-4 text-muted"><span class="progress-bar-percent">0</span>%</p>
@@ -149,21 +149,21 @@ templ FilesBody(c *ctx.Ctx, p *models.Publication) {
 													if c.User.CanEditPublication(p) {
 														<div class="c-button-toolbar">
 															<button
- 																class="btn btn-icon-only"
- 																type="button"
- 																hx-get={ c.PathTo("publication_edit_file", "id", p.ID, "file_id", f.ID).String() }
- 																hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
- 																hx-swap="innerHTML"
- 																hx-target="#modals"
+																class="btn btn-icon-only"
+																type="button"
+																hx-get={ c.PathTo("publication_edit_file", "id", p.ID, "file_id", f.ID).String() }
+																hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
+																hx-swap="innerHTML"
+																hx-target="#modals"
 															>
 																<i class="if if-edit"></i>
 															</button>
 															<button
- 																class="btn btn-icon-only"
- 																type="button"
- 																hx-get={ c.PathTo("publication_confirm_delete_file", "id", p.ID, "snapshot_id", p.SnapshotID, "file_id", f.ID).String() }
- 																hx-target="#modals"
- 																hx-trigger="click"
+																class="btn btn-icon-only"
+																type="button"
+																hx-get={ c.PathTo("publication_confirm_delete_file", "id", p.ID, "snapshot_id", p.SnapshotID, "file_id", f.ID).String() }
+																hx-target="#modals"
+																hx-trigger="click"
 															>
 																<i class="if if-delete"></i>
 															</button>

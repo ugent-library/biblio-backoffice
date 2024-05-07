@@ -10,92 +10,103 @@ templ Datasets(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset, re
 	<div hx-swap-oob="innerHTML:#show-nav">
 		@SubNav(c, p, redirectURL)
 	</div>
-
 	<div hx-swap-oob="innerHTML:#show-sidebar"></div>
-
-    <div class="card mb-6">
-        <div class="card-header">
-            <div class="bc-toolbar">
-                <div class="bc-toolbar-left">
-                    <h1 class="bc-toolbar-title">Related datasets</h1>
-                    <a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover"
-                        data-bs-placement="right" data-bs-content={ c.Loc.Get("tooltip.publication.related_datasets") }>
-                        <i class="if if-info-circle if--small"></i>
-                        <span class="visually-hidden">More info</span>
-                    </a>
-                </div>
-                <div class="bc-toolbar-right">
-                    if c.User.CanEditPublication(p) {
-                    <div class="c-button-toolbar" data-panel-state="read">
-                        <button class="btn btn-outline-primary"
-                            hx-get={ c.PathTo("publication_add_dataset", "id", p.ID).String() }
-                            hx-target="#modals"
-                        >
-                            <i class="if if-add"></i>
-                            <div class="btn-text">Add dataset</div>
-                        </button>
-                    </div>
-                    }
-                </div>
-            </div>
-        </div>
-        <div id="datasets-body">
-            @DatasetsBody(c, p, datasets)
-        </div>
-    </div>
+	<div class="card mb-6">
+		<div class="card-header">
+			<div class="bc-toolbar">
+				<div class="bc-toolbar-left">
+					<h1 class="bc-toolbar-title">Related datasets</h1>
+					<a
+						class="text-muted px-2"
+						href="#"
+						data-bs-container="body"
+						data-bs-toggle="popover"
+						data-bs-placement="right"
+						data-bs-content={ c.Loc.Get("tooltip.publication.related_datasets") }
+					>
+						<i class="if if-info-circle if--small"></i>
+						<span class="visually-hidden">More info</span>
+					</a>
+				</div>
+				<div class="bc-toolbar-right">
+					if c.User.CanEditPublication(p) {
+						<div class="c-button-toolbar" data-panel-state="read">
+							<button
+								class="btn btn-outline-primary"
+								hx-get={ c.PathTo("publication_add_dataset", "id", p.ID).String() }
+								hx-target="#modals"
+							>
+								<i class="if if-add"></i>
+								<div class="btn-text">Add dataset</div>
+							</button>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+		<div id="datasets-body">
+			@DatasetsBody(c, p, datasets)
+		</div>
+	</div>
 }
 
 templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset) {
-    if len(datasets) > 0 {
-    <div class="card-body p-0">
-        <ul class="list-group list-group-flush">
-            for _, d := range datasets {
-            <li class="list-group-item">
-                <div class="d-flex w-100">
-                    <div class="w-100">
-                        @datasetviews.Summary(c, datasetviews.SummaryArgs{
-                            Dataset: d,
-                            URL: c.PathTo("dataset", "id", d.ID),
-                            Actions: datasetActions(c, p, d),
-                        })
-                    </div>
-                </div>
-            </li>
-            }
-        </ul>
-    </div>
-    } else {
-    <div class="card-body">
-        <span class="text-muted">No datasets</span>
-    </div>
-    }
+	if len(datasets) > 0 {
+		<div class="card-body p-0">
+			<ul class="list-group list-group-flush">
+				for _, d := range datasets {
+					<li class="list-group-item">
+						<div class="d-flex w-100">
+							<div class="w-100">
+								@datasetviews.Summary(c, datasetviews.SummaryArgs{
+									Dataset: d,
+									URL:     c.PathTo("dataset", "id", d.ID),
+									Actions: datasetActions(c, p, d),
+								})
+							</div>
+						</div>
+					</li>
+				}
+			</ul>
+		</div>
+	} else {
+		<div class="card-body">
+			<span class="text-muted">No datasets</span>
+		</div>
+	}
 }
 
 templ datasetActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset) {
-    <div class="bc-toolbar-item ms-auto ms-lg-0">
-        <div class="c-button-toolbar">
-            <div class="dropdown dropleft">
-                <button class="btn btn-link btn-link-p-0 btn-icon-only"
-                    type="button" data-bs-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <i class="if if-more"></i>
-                </button>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href={ templ.URL(c.PathTo("dataset", "id", d.ID).String()) }>
-                        <i class="if if-eye"></i>
-                        <span>View dataset</span>
-                    </a>
-                    if c.User.CanEditPublication(p) {
-                    <button class="dropdown-item" type="button"
-                        hx-get={ c.PathTo("publication_confirm_delete_dataset", "id", p.ID, "snapshot_id", p.SnapshotID, "dataset_id", d.ID).String() }
-                        hx-target="#modals"
-                    >
-                        <i class="if if-delete"></i>
-                        <span>Remove from publication</span>
-                    </button>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="bc-toolbar-item ms-auto ms-lg-0">
+		<div class="c-button-toolbar">
+			<div class="dropdown dropleft">
+				<button
+					class="btn btn-link btn-link-p-0 btn-icon-only"
+					type="button"
+					data-bs-toggle="dropdown"
+					aria-haspopup="true"
+					aria-expanded="false"
+				>
+					<i class="if if-more"></i>
+				</button>
+				<div class="dropdown-menu">
+					<a class="dropdown-item" href={ templ.URL(c.PathTo("dataset", "id", d.ID).String()) }>
+						<i class="if if-eye"></i>
+						<span>View dataset</span>
+					</a>
+					if c.User.CanEditPublication(p) {
+						<button
+							class="dropdown-item"
+							type="button"
+							hx-get={ c.PathTo("publication_confirm_delete_dataset", "id", p.ID, "snapshot_id", p.SnapshotID, "dataset_id", d.ID).String() }
+							hx-target="#modals"
+						>
+							<i class="if if-delete"></i>
+							<span>Remove from publication</span>
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
 }

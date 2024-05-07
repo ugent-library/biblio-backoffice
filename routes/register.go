@@ -151,12 +151,6 @@ func Register(c Config) {
 		PersonService:             c.Services.PersonService,
 		PublicationSearchIndex:    c.Services.PublicationSearchIndex,
 	}
-	publicationViewingHandler := &publicationviewing.Handler{
-		BaseHandler: baseHandler,
-		Repo:        c.Services.Repo,
-		FileStore:   c.Services.FileStore,
-		MaxFileSize: c.MaxFileSize,
-	}
 	publicationCreatingHandler := &publicationcreating.Handler{
 		BaseHandler:            baseHandler,
 		Repo:                   c.Services.Repo,
@@ -323,6 +317,7 @@ func Register(c Config) {
 					// view only functions
 					r.Get("/", publicationviewing.Show).Name("publication")
 					r.With(ctx.SetSubNav("description")).Get("/description", publicationviewing.ShowDescription).Name("publication_description")
+					r.With(ctx.SetSubNav("contributors")).Get("/contributors", publicationviewing.ShowContributors).Name("publication_contributors")
 					r.With(ctx.SetSubNav("files")).Get("/files", publicationviewing.ShowFiles).Name("publication_files")
 					r.With(ctx.SetSubNav("datasets")).Get("/datasets", publicationviewing.ShowDatasets).Name("publication_datasets")
 					r.With(ctx.SetSubNav("activity")).Get("/activity", publicationviewing.ShowActivity).Name("publication_activity")
@@ -670,11 +665,6 @@ func Register(c Config) {
 		r.Get("/publication/add-multiple/{batch_id}/finish",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleFinish)).
 			Name("publication_add_multiple_finish")
-
-		// view publication
-		r.Get("/publication/{id}/contributors",
-			publicationViewingHandler.Wrap(publicationViewingHandler.ShowContributors)).
-			Name("publication_contributors")
 
 		// edit publication activity
 		r.Get("/publication/{id}/message/edit",
