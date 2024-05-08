@@ -19,6 +19,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
@@ -248,42 +249,34 @@ func (h *Handler) AddConfirm(w http.ResponseWriter, r *http.Request, ctx Context
 	})
 }
 
-func (h *Handler) AddPublish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanEditDataset(ctx.Dataset) {
-		h.Logger.Warn("publish dataset: user isn't allowed to edit the dataset:", "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.Forbidden(w, r)
+func AddPublish(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
+	dataset.Status = "public"
+
+	if err := dataset.Validate(); err != nil {
+		errors := form.Errors(localize.ValidationErrors(c.Loc, err.(*okay.Errors)))
+		//TODO: make FormErrorsDialog without the ShowModalLayout and use views.ShowModal
+		views.FormErrorsDialog(c, "Unable to publish this dataset due to the following errors", errors).Render(r.Context(), w)
 		return
 	}
 
-	ctx.Dataset.Status = "public"
-
-	if err := ctx.Dataset.Validate(); err != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, err.(*okay.Errors)))
-		render.Layout(w, "show_modal", "form_errors_dialog", struct {
-			Title  string
-			Errors form.Errors
-		}{
-			Title:  "Unable to publish this dataset due to the following errors",
-			Errors: errors,
-		})
-		return
-	}
-
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), dataset, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		render.InternalServerError(w, r, err)
-		h.Logger.Warnf("create dataset: Could not save the dataset:", "error", err, "identifier", ctx.Dataset.ID)
+		c.Log.Warnf("create dataset: Could not save the dataset:", "error", err, "identifier", dataset.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	redirectURL := h.PathFor("dataset_add_finish", "id", ctx.Dataset.ID)
+	redirectURL := c.PathTo("dataset_add_finish", "id", dataset.ID)
 	redirectURL.RawQuery = r.URL.Query().Encode()
 
 	w.Header().Set("HX-Redirect", redirectURL.String())

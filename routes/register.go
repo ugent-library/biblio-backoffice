@@ -406,6 +406,7 @@ func Register(c Config) {
 
 						// wizard
 						r.Post("/save", datasetcreating.AddSaveDraft).Name("dataset_add_save_draft")
+						r.Post("/add/publish", datasetcreating.AddPublish).Name("dataset_add_publish")
 
 						// delete
 						r.Get("/confirm-delete", datasetediting.ConfirmDelete).Name("dataset_confirm_delete")
@@ -490,9 +491,6 @@ func Register(c Config) {
 		r.Get("/dataset/{id}/add/confirm",
 			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddConfirm)).
 			Name("dataset_add_confirm")
-		r.Post("/dataset/{id}/add/publish",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddPublish)).
-			Name("dataset_add_publish")
 		r.Get("/dataset/{id}/add/finish",
 			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddFinish)).
 			Name("dataset_add_finish")
