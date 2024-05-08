@@ -63,7 +63,12 @@ func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, legacy
 }
 
 func ShowContributors(w http.ResponseWriter, r *http.Request) {
-	datasetviews.Contributors(ctx.Get(r), ctx.GetDataset(r), r.URL.Query().Get("redirect-url")).Render(r.Context(), w)
+	c := ctx.Get(r)
+	redirectURL := r.URL.Query().Get("redirect-url")
+	if redirectURL == "" {
+		redirectURL = c.PathTo("datasets").String()
+	}
+	datasetviews.Contributors(ctx.Get(r), ctx.GetDataset(r), redirectURL).Render(r.Context(), w)
 }
 
 func ShowPublications(w http.ResponseWriter, r *http.Request) {
