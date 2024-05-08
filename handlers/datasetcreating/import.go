@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/oklog/ulid/v2"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -226,15 +227,15 @@ func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Con
 	})
 }
 
-func (h *Handler) AddSaveDraft(w http.ResponseWriter, r *http.Request, ctx Context) {
+func AddSaveDraft(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
 	flash := flash.SimpleFlash().
 		WithLevel("success").
 		WithBody(template.HTML("<p>Dataset successfully saved as a draft.</p>"))
 
-	h.AddFlash(r, w, *flash)
+	c.PersistFlash(w, *flash)
 
-	redirectURL := h.PathFor("datasets")
-	w.Header().Set("HX-Redirect", redirectURL.String())
+	w.Header().Set("HX-Redirect", c.PathTo("datasets").String())
 }
 
 func (h *Handler) AddConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
