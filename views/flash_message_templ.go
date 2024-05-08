@@ -55,7 +55,7 @@ func flashMessage(f flash.Flash) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			switch f.Type {
+			switch f.Level {
 			case "success":
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if--success if-check-circle-fill\"></i>")
 				if templ_7745c5c3_Err != nil {
@@ -147,7 +147,7 @@ func flashMessage(f flash.Flash) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			switch f.Type {
+			switch f.Level {
 			case "success":
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if--success if-check-circle-fill\"></i>")
 				if templ_7745c5c3_Err != nil {
