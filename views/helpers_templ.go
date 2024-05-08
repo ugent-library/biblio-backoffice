@@ -17,7 +17,7 @@ import h "html"
 
 var reURL, _ = xurls.StrictMatchingScheme("https")
 
-func csrfField(c *ctx.Ctx) templ.Component {
+func CSRFTag(c *ctx.Ctx) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
