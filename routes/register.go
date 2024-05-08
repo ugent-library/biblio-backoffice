@@ -395,6 +395,7 @@ func Register(c Config) {
 					r.Use(ctx.RequireViewDataset)
 
 					// view only functions
+					r.With(ctx.SetNav("datasets")).Get("/", datasetviewing.Show).Name("dataset")
 
 					// edit only
 					r.Group(func(r *ich.Mux) {
@@ -494,9 +495,6 @@ func Register(c Config) {
 			Name("dataset_add_finish")
 
 		// view dataset
-		r.Get("/dataset/{id}",
-			datasetViewingHandler.Wrap(datasetViewingHandler.Show)).
-			Name("dataset")
 		r.Get("/dataset/{id}/description",
 			datasetViewingHandler.Wrap(datasetViewingHandler.ShowDescription)).
 			Name("dataset_description")

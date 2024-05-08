@@ -44,19 +44,15 @@ type YieldShowActivity struct {
 	ActiveSubNav string
 }
 
-func (h *Handler) Show(w http.ResponseWriter, r *http.Request, legacyCtx Context) {
+func Show(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
 	activeSubNav := r.URL.Query().Get("show")
 	if !slices.Contains(subNavs, activeSubNav) {
 		activeSubNav = "description"
 	}
+	c.SubNav = activeSubNav
 
-	render.Layout(w, "layouts/default", "dataset/pages/show", YieldShow{
-		Context:      legacyCtx,
-		PageTitle:    legacyCtx.Loc.Get("dataset.page.show.title"),
-		SubNavs:      subNavs,
-		ActiveNav:    "datasets",
-		ActiveSubNav: activeSubNav,
-	})
+	datasetviews.Show(c, ctx.GetDataset(r), r.URL.Query().Get("redirect-url")).Render(r.Context(), w)
 }
 
 func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, legacyCtx Context) {
