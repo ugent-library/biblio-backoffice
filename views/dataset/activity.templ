@@ -5,9 +5,9 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-templ ShowActivity(c *ctx.Ctx, dataset *models.Dataset) {
+templ Activity(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 	<div hx-swap-oob="innerHTML:#show-nav">
-		@SubNav(c, dataset, c.CurrentURL.Query().Get("redirect-url"))
+		@SubNav(c, dataset, redirectURL)
 	</div>
 	<div hx-swap-oob="innerHTML:#show-sidebar"></div>
 	<div class="row">

@@ -15,7 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-func ShowActivity(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
+func Activity(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -32,7 +32,7 @@ func ShowActivity(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = SubNav(c, dataset, c.CurrentURL.Query().Get("redirect-url")).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = SubNav(c, dataset, redirectURL).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
