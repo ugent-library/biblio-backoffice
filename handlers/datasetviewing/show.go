@@ -88,7 +88,7 @@ func ShowActivity(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	redirectURL := r.URL.Query().Get("redirect-url")
 	if redirectURL == "" {
-		redirectURL = c.PathTo("publications").String()
+		redirectURL = c.PathTo("datasets").String()
 	}
 	datasetviews.Activity(ctx.Get(r), ctx.GetDataset(r), redirectURL).Render(r.Context(), w)
 }
