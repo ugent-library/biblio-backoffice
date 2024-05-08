@@ -7,6 +7,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 )
@@ -31,39 +32,41 @@ type YieldDatasets struct {
 	RelatedDatasets []*models.Dataset
 }
 
-func (h *Handler) AddDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
-	hits, err := h.searchRelatedDatasets(ctx.User, ctx.Publication, "")
+func AddDataset(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	p := ctx.GetPublication(r)
+
+	hits, err := searchRelatedDatasets(c, p, "")
 	if err != nil {
-		h.Logger.Errorw("add publication dataset: could not execute search", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("add publication dataset: could not execute search", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.Layout(w, "show_modal", "publication/add_dataset", YieldAddDataset{
-		Context: ctx,
-		Hits:    hits,
-	})
+	publicationviews.AddDataset(c, p, hits).Render(r.Context(), w)
 }
 
-func (h *Handler) SuggestDatasets(w http.ResponseWriter, r *http.Request, ctx Context) {
+func SuggestDatasets(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	b := BindSuggestDatasets{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("suggest publication datasets: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("suggest publication datasets: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	hits, err := h.searchRelatedDatasets(ctx.User, ctx.Publication, b.Query)
+	p := ctx.GetPublication(r)
+
+	hits, err := searchRelatedDatasets(c, p, b.Query)
 	if err != nil {
-		h.Logger.Errorw("add publication dataset: could not execute search", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("add publication dataset: could not execute search", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.Partial(w, "publication/suggest_datasets", YieldAddDataset{
-		Context: ctx,
-		Hits:    hits,
-	})
+	publicationviews.SuggestDatasets(c, p, hits).Render(r.Context(), w)
 }
 
 func (h *Handler) CreateDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -190,7 +193,7 @@ func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Cont
 	})
 }
 
-func (h *Handler) searchRelatedDatasets(user *models.Person, p *models.Publication, q string) (*models.DatasetHits, error) {
+func searchRelatedDatasets(c *ctx.Ctx, p *models.Publication, q string) (*models.DatasetHits, error) {
 	args := models.NewSearchArgs().WithQuery(q)
 
 	// add exclusion filter if necessary
@@ -202,7 +205,7 @@ func (h *Handler) searchRelatedDatasets(user *models.Person, p *models.Publicati
 		args.Filters["!id"] = pubDatasetIDs
 	}
 
-	searchService := h.DatasetSearchIndex.WithScope("status", "public")
+	searchService := c.DatasetSearchIndex.WithScope("status", "public")
 
 	return searchService.Search(args)
 }

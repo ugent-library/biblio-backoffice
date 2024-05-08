@@ -1,0 +1,46 @@
+package publication
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+)
+
+templ AddDataset(c *ctx.Ctx, publication *models.Publication, hits *models.DatasetHits) {
+	@views.ShowModalLayout(c) {
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Select datasets</h2>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted">
+                        Select one or more datasets as already registered in Biblio
+                        <p class="text-muted">See <a href="https://onderzoektips.ugent.be/en/tips/00002061/" target="_blank">Documentation <i class="if if--small if-external-link"></i></a></p>
+                    </p>
+                    <label class="visually-hidden" for="publication-q">Search</label>
+                    <input 
+                        class="form-control"
+                        type="text"
+                        id="publication-q"
+                        name="q"
+                        placeholder="Search..."
+                        hx-get={ c.PathTo("publication_suggest_datasets", "id", publication.ID).String() }
+                        hx-trigger="keyup changed delay:500ms"
+                        hx-target="#dataset-suggestions"
+                    />
+                    <div id="dataset-suggestions">
+                        @SuggestDatasets(c, publication, hits)
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="bc-toolbar">
+                        <div class="bc-toolbar-left">
+                            <button class="btn btn-link modal-close" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

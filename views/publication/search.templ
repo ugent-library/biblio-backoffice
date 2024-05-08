@@ -120,8 +120,7 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 					</div>
 				</div>
 				if len(args.Scopes) > 0 {
-					<div class="c-divider my-0 mx-6"></div>
-					<div class="bc-navbar bc-navbar--white">
+					<div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white">
 						<ul class="nav nav-tabs">
 							for _, scope := range args.Scopes {
 								<li class="nav-item">
