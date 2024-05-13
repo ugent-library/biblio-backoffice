@@ -64,30 +64,33 @@ func (h *Handler) RefreshFiles(w http.ResponseWriter, r *http.Request, ctx Conte
 	})
 }
 
-func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context) {
+func UploadFile(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	// 2GB limit on request body
 	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
 
 	file, handler, err := r.FormFile("file")
 	if err != nil {
-		h.Logger.Errorf("publication upload file: could not process file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.file_upload_error"))).Render(r.Context(), w)
+		c.Log.Errorf("publication upload file: could not process file", "errors", err, "publication", p.ID, "user", c.User.ID)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.file_upload_error"))).Render(r.Context(), w)
 		return
 	}
 	defer file.Close()
 
 	// add file to filestore
-	checksum, err := h.FileStore.Add(r.Context(), file, "")
+	checksum, err := c.FileStore.Add(r.Context(), file, "")
 
 	if err != nil {
-		h.Logger.Errorf("publication upload file: could not save file", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.file_upload_error"))).Render(r.Context(), w)
+		c.Log.Errorf("publication upload file: could not save file", "errors", err, "publication", p.ID, "user", c.User.ID)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.file_upload_error"))).Render(r.Context(), w)
 		return
 	}
 
 	// save publication
 	// TODO check if file with same checksum is already present
-	pubFile := models.PublicationFile{
+	pubFile := &models.PublicationFile{
 		Relation:    "main_file",
 		AccessLevel: "info:eu-repo/semantics/restrictedAccess",
 		Name:        handler.Filename,
@@ -99,23 +102,25 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 		automatically generates extra fields:
 		id, date_created, date_updated
 	*/
-	ctx.Publication.AddFile(&pubFile)
+	p.AddFile(pubFile)
 
-	err = h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err = c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
-	// render edit file form
-	render.Layout(w, "show_modal", "publication/edit_file", YieldEditFile{
-		Context: ctx,
-		File:    &pubFile,
-		Form:    fileForm(ctx.Loc, ctx.Publication, &pubFile, nil),
-	})
+	idx := -1
+	for i, f := range p.File {
+		if f.ID == pubFile.ID {
+			idx = i
+			break
+		}
+	}
 
+	views.ShowModal(publicationviews.EditFileDialog(c, p, pubFile, idx, false, nil)).Render(r.Context(), w)
 }
 
 func EditFile(w http.ResponseWriter, r *http.Request) {
