@@ -381,6 +381,8 @@ func Register(c Config) {
 							r.Get("/{snapshot_id}/departments/{department_id}/confirm-delete", publicationediting.ConfirmDeleteDepartment).Name("publication_confirm_delete_department")
 
 							// datasets
+							r.Get("/datasets/add", publicationediting.AddDataset).Name("publication_add_dataset")
+							r.Get("/datasets/suggestions", publicationediting.SuggestDatasets).Name("publication_suggest_datasets")
 							r.Get("/{snapshot_id}/datasets/{dataset_id}/confirm-delete", publicationediting.ConfirmDeleteDataset).Name("publication_confirm_delete_dataset")
 
 							// publish
@@ -780,12 +782,6 @@ func Register(c Config) {
 			Name("publication_delete_lay_summary")
 
 		// edit publication datasets
-		r.Get("/publication/{id}/datasets/add",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddDataset)).
-			Name("publication_add_dataset")
-		r.Get("/publication/{id}/datasets/suggestions",
-			publicationEditingHandler.Wrap(publicationEditingHandler.SuggestDatasets)).
-			Name("publication_suggest_datasets")
 		r.Post("/publication/{id}/datasets",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateDataset)).
 			Name("publication_create_dataset")
