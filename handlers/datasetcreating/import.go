@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/oklog/ulid/v2"
+	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
@@ -18,6 +18,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	datasetpages "github.com/ugent-library/biblio-backoffice/views/dataset/pages"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -54,38 +55,40 @@ type YieldValidationErrors struct {
 	Errors form.Errors
 }
 
-func (h *Handler) Add(w http.ResponseWriter, r *http.Request, ctx Context) {
+func Add(w http.ResponseWriter, r *http.Request) {
+	//TODO: setnav "datasets"
+	//TODO: access?
+
+	c := ctx.Get(r)
+
 	b := BindAdd{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("add dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("add dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	tmpl := ""
 	switch b.Method {
 	case "identifier":
-		tmpl = "dataset/pages/add_identifier"
+		datasetpages.AddIdentifier(c, datasetpages.AddIdentifierArgs{
+			Step: 1,
+		}).Render(r.Context(), w)
 	case "manual":
-		h.ConfirmImport(w, r, ctx)
+		ConfirmImport(w, r)
 		return
 	default:
-		tmpl = "dataset/pages/add"
+		datasetpages.Add(c, 1).Render(r.Context(), w)
 	}
-
-	render.Layout(w, "layouts/default", tmpl, YieldAdd{
-		Context:   ctx,
-		PageTitle: "Add - Datasets - Biblio",
-		Step:      1,
-		ActiveNav: "datasets",
-	})
 }
 
-func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Context) {
+func ConfirmImport(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	c.SubNav = "description" //TODO: ok?
+
 	b := BindImport{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("confirm import dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("confirm import dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -93,36 +96,35 @@ func (h *Handler) ConfirmImport(w http.ResponseWriter, r *http.Request, ctx Cont
 	if b.Source == "datacite" {
 		args := models.NewSearchArgs().WithFilter("identifier", strings.ToLower(b.Identifier)).WithFilter("status", "public")
 
-		existing, err := h.DatasetSearchIndex.Search(args)
+		existing, err := c.DatasetSearchIndex.Search(args)
 
 		if err != nil {
-			h.Logger.Errorw("confirm import dataset: could not execute search", "errors", err, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			c.Log.Errorw("confirm import dataset: could not execute search", "errors", err, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
 
 		if existing.Total > 0 {
-			render.Layout(w, "layouts/default", "dataset/pages/add_identifier", YieldAdd{
-				Context:          ctx,
-				PageTitle:        "Add - Datasets - Biblio",
-				Step:             1,
-				ActiveNav:        "datasets",
+			datasetpages.AddIdentifier(c, datasetpages.AddIdentifierArgs{
+				Step:             1, // TODO: argument needed???
 				Source:           b.Source,
 				Identifier:       b.Identifier,
 				Dataset:          existing.Hits[0],
 				DuplicateDataset: true,
-			})
+			}).Render(r.Context(), w)
 			return
 		}
 	}
 
-	h.AddImport(w, r, ctx)
+	AddImport(w, r)
 }
 
-func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context) {
+func AddImport(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	b := BindImport{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("add import dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+		c.Log.Warnw("add import dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
@@ -133,23 +135,20 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	)
 
 	if b.Identifier != "" {
-		d, err = h.fetchDatasetByIdentifier(b.Source, b.Identifier)
+		d, err = fetchDatasetByIdentifier(*c.Services, b.Source, b.Identifier)
 		if err != nil {
 			flash := flash.SimpleFlash().
 				WithLevel("error").
 				WithTitle("Failed to save draft").
-				WithBody(template.HTML(ctx.Loc.Get("dataset.single_import.import_by_id.import_failed")))
+				WithBody(template.HTML(c.Loc.Get("dataset.single_import.import_by_id.import_failed")))
 
-			ctx.Flash = append(ctx.Flash, *flash)
+			c.PersistFlash(w, *flash)
 
-			render.Layout(w, "layouts/default", "dataset/pages/add_identifier", YieldAdd{
-				Context:    ctx,
-				PageTitle:  "Add - Datasets - Biblio",
-				Step:       1,
-				ActiveNav:  "datasets",
+			datasetpages.AddIdentifier(c, datasetpages.AddIdentifierArgs{
+				Step:       1, //TODO: step needed?
 				Source:     b.Source,
 				Identifier: b.Identifier,
-			})
+			}).Render(r.Context(), w)
 			return
 		}
 	} else {
@@ -158,38 +157,31 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 	}
 
 	d.ID = ulid.Make().String()
-	d.CreatorID = ctx.User.ID
-	d.Creator = ctx.User
-	d.UserID = ctx.User.ID
-	d.User = ctx.User
+	d.CreatorID = c.User.ID
+	d.Creator = c.User
+	d.UserID = c.User.ID
+	d.User = c.User
 	d.Status = "private"
 
-	if len(ctx.User.Affiliations) > 0 {
-		d.AddOrganization(ctx.User.Affiliations[0].Organization)
+	if len(c.User.Affiliations) > 0 {
+		d.AddOrganization(c.User.Affiliations[0].Organization)
 	}
 
 	if validationErrs := d.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(*okay.Errors)))
-		render.Layout(w, "layouts/default", "dataset/pages/add_identifier", YieldAdd{
-			Context:    ctx,
-			PageTitle:  "Add - Datasets - Biblio",
-			Step:       1,
-			ActiveNav:  "datasets",
+		datasetpages.AddIdentifier(c, datasetpages.AddIdentifierArgs{
+			Step:       1, //TODO: step needed?
 			Source:     b.Source,
 			Identifier: b.Identifier,
-			Errors: &YieldValidationErrors{
-				Title:  "Unable to import this dataset due to the following errors",
-				Errors: errors,
-			},
-		})
+			Errors:     form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors))),
+		}).Render(r.Context(), w)
 		return
 	}
 
-	err = h.Repo.SaveDataset(d, ctx.User)
+	err = c.Repo.SaveDataset(d, c.User)
 
 	if err != nil {
-		h.Logger.Warnw("add import dataset: could not save dataset:", "errors", err, "dataset", b.Identifier, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Warnw("add import dataset: could not save dataset:", "errors", err, "dataset", b.Identifier, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
@@ -198,34 +190,26 @@ func (h *Handler) AddImport(w http.ResponseWriter, r *http.Request, ctx Context)
 		subNav = "description"
 	}
 
-	render.Layout(w, "layouts/default", "dataset/pages/add_description", YieldAdd{
-		Context:        ctx,
-		PageTitle:      "Add - Datasets - Biblio",
-		Step:           2,
-		ActiveNav:      "datasets",
-		SubNavs:        []string{"description", "contributors", "publications"},
-		ActiveSubNav:   subNav,
-		Dataset:        d,
-		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Loc, d),
-	})
+	datasetpages.AddDescription(c, datasetpages.AddDescriptionArgs{
+		Step:    2, // TODO: step needed?
+		Dataset: d,
+		//ActiveSubNav: subNav, //TODO
+	}).Render(r.Context(), w)
 }
 
-func (h *Handler) AddDescription(w http.ResponseWriter, r *http.Request, ctx Context) {
+func AddDescription(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	subNav := r.URL.Query().Get("show")
 	if subNav == "" {
 		subNav = "description"
 	}
 
-	render.Layout(w, "layouts/default", "dataset/pages/add_description", YieldAdd{
-		Context:        ctx,
-		PageTitle:      "Add - Datasets - Biblio",
-		Step:           2,
-		ActiveNav:      "datasets",
-		SubNavs:        []string{"description", "contributors", "publications"},
-		ActiveSubNav:   subNav,
-		Dataset:        ctx.Dataset,
-		DisplayDetails: displays.DatasetDetails(ctx.User, ctx.Loc, ctx.Dataset),
-	})
+	datasetpages.AddDescription(c, datasetpages.AddDescriptionArgs{
+		Step:    2, //TODO: needed?
+		Dataset: ctx.GetDataset(r),
+		//ActiveSubNav: subNav, //TODO
+	}).Render(r.Context(), w)
 }
 
 func AddSaveDraft(w http.ResponseWriter, r *http.Request) {
@@ -239,14 +223,9 @@ func AddSaveDraft(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Redirect", c.PathTo("datasets").String())
 }
 
-func (h *Handler) AddConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "layouts/default", "dataset/pages/add_confirm", YieldAdd{
-		Context:   ctx,
-		PageTitle: "Add - Datasets - Biblio",
-		Step:      3,
-		ActiveNav: "datasets",
-		Dataset:   ctx.Dataset,
-	})
+func AddConfirm(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	datasetpages.AddConfirm(c, ctx.GetDataset(r), 3).Render(r.Context(), w)
 }
 
 func AddPublish(w http.ResponseWriter, r *http.Request) {
@@ -282,18 +261,13 @@ func AddPublish(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Redirect", redirectURL.String())
 }
 
-func (h *Handler) AddFinish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "layouts/default", "dataset/pages/add_finish", YieldAdd{
-		Context:   ctx,
-		PageTitle: "Add - Datasets - Biblio",
-		Step:      4,
-		ActiveNav: "datasets",
-		Dataset:   ctx.Dataset,
-	})
+func AddFinish(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	datasetpages.AddFinish(c, ctx.GetDataset(r), 4).Render(r.Context(), w)
 }
 
-func (h *Handler) fetchDatasetByIdentifier(source, identifier string) (*models.Dataset, error) {
-	s, ok := h.DatasetSources[source]
+func fetchDatasetByIdentifier(services backends.Services, source string, identifier string) (*models.Dataset, error) {
+	s, ok := services.DatasetSources[source]
 
 	if !ok {
 		return nil, fmt.Errorf("unkown dataset source: %s", source)

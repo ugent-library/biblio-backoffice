@@ -133,13 +133,6 @@ func Register(c Config) {
 		BaseHandler: baseHandler,
 		Repo:        c.Services.Repo,
 	}
-	datasetCreatingHandler := &datasetcreating.Handler{
-		BaseHandler:         baseHandler,
-		Repo:                c.Services.Repo,
-		DatasetSearchIndex:  c.Services.DatasetSearchIndex,
-		DatasetSources:      c.Services.DatasetSources,
-		OrganizationService: c.Services.OrganizationService,
-	}
 	datasetEditingHandler := &datasetediting.Handler{
 		BaseHandler:               baseHandler,
 		Repo:                      c.Services.Repo,
@@ -392,7 +385,18 @@ func Register(c Config) {
 				})
 
 				// datasets
-				r.With(ctx.SetNav("datasets")).Get("/dataset", datasetsearching.Search).Name("datasets")
+				r.Route("/dataset", func(r *ich.Mux) {
+					r.Use(ctx.SetNav("datasets"))
+
+					// search
+					r.Get("/", datasetsearching.Search).Name("datasets")
+
+					// wizard (part 1)
+					r.Post("/import/confirm", datasetcreating.ConfirmImport).Name("dataset_confirm_import")
+					r.Post("/import", datasetcreating.AddImport).Name("dataset_add_import")
+					r.Get("/add", datasetcreating.Add).Name("dataset_add")
+					r.Post("/add", datasetcreating.Add).Name("dataset_add")
+				})
 
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
@@ -404,9 +408,12 @@ func Register(c Config) {
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireEditDataset)
 
-						// wizard
+						// wizard (part 2)
 						r.Post("/save", datasetcreating.AddSaveDraft).Name("dataset_add_save_draft")
 						r.Post("/add/publish", datasetcreating.AddPublish).Name("dataset_add_publish")
+						r.Get("/add/finish", datasetcreating.AddFinish).Name("dataset_add_finish")
+						r.Get("/add/confirm", datasetcreating.AddConfirm).Name("dataset_add_confirm")
+						r.Get("/add/description", datasetcreating.AddDescription).Name("dataset_add_description")
 
 						// delete
 						r.Get("/confirm-delete", datasetediting.ConfirmDelete).Name("dataset_confirm_delete")
@@ -472,28 +479,6 @@ func Register(c Config) {
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// add dataset
-		r.Get("/dataset/add",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.Add)).
-			Name("dataset_add")
-		r.Post("/dataset/add",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.Add))
-		r.Post("/dataset/import",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddImport)).
-			Name("dataset_add_import")
-		r.Post("/dataset/import/confirm",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.ConfirmImport)).
-			Name("dataset_confirm_import")
-		r.Get("/dataset/{id}/add/description",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddDescription)).
-			Name("dataset_add_description")
-		r.Get("/dataset/{id}/add/confirm",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddConfirm)).
-			Name("dataset_add_confirm")
-		r.Get("/dataset/{id}/add/finish",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddFinish)).
-			Name("dataset_add_finish")
 
 		// view dataset
 		r.Get("/dataset/{id}",
