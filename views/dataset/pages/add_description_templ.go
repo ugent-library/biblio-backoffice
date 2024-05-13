@@ -17,12 +17,7 @@ import (
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 )
 
-type AddDescriptionArgs struct {
-	Dataset     *models.Dataset
-	RedirectURL string
-}
-
-func AddDescription(c *ctx.Ctx, args AddDescriptionArgs) templ.Component {
+func AddDescription(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -49,7 +44,7 @@ func AddDescription(c *ctx.Ctx, args AddDescriptionArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 templ.SafeURL = templ.URL(c.PathTo("dataset_add_confirm", "id", args.Dataset.ID).String())
+			var templ_7745c5c3_Var3 templ.SafeURL = templ.URL(c.PathTo("dataset_add_confirm", "id", dataset.ID).String())
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -58,11 +53,11 @@ func AddDescription(c *ctx.Ctx, args AddDescriptionArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if args.Dataset.Title != "" {
+			if dataset.Title != "" {
 				var templ_7745c5c3_Var4 string
-				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(args.Dataset.Title)
+				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_description.templ`, Line: 48, Col: 31}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_description.templ`, Line: 43, Col: 26}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -78,7 +73,7 @@ func AddDescription(c *ctx.Ctx, args AddDescriptionArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = datasetviews.SubNav(c, args.Dataset, args.RedirectURL).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = datasetviews.SubNav(c, dataset, c.PathTo("/dataset").String()).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -86,7 +81,7 @@ func AddDescription(c *ctx.Ctx, args AddDescriptionArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("dataset_"+c.SubNav, "id", args.Dataset.ID).String()))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("dataset_"+c.SubNav, "id", dataset.ID).String()))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

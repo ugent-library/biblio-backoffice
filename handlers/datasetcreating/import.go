@@ -160,9 +160,7 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 	}
 	c.SubNav = subNav
 
-	datasetpages.AddDescription(c, datasetpages.AddDescriptionArgs{
-		Dataset: d,
-	}).Render(r.Context(), w)
+	datasetpages.AddDescription(c, d).Render(r.Context(), w)
 }
 
 func AddDescription(w http.ResponseWriter, r *http.Request) {
@@ -174,9 +172,7 @@ func AddDescription(w http.ResponseWriter, r *http.Request) {
 	}
 	c.SubNav = subNav
 
-	datasetpages.AddDescription(c, datasetpages.AddDescriptionArgs{
-		Dataset: ctx.GetDataset(r),
-	}).Render(r.Context(), w)
+	datasetpages.AddDescription(c, ctx.GetDataset(r)).Render(r.Context(), w)
 }
 
 func AddSaveDraft(w http.ResponseWriter, r *http.Request) {
