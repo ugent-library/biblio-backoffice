@@ -397,6 +397,22 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 				return templ_7745c5c3_Err
 			}
 		}
+		templ_7745c5c3_Err = form.Select(form.SelectArgs{
+			FieldArgs: form.FieldArgs{
+				Label:   c.Loc.Get("builder.file.license"),
+				Name:    "license",
+				Error:   localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/license", idx)),
+				Tooltip: c.Loc.Get("tooltip.publication.file.license"),
+				Theme:   form.ThemeVertical,
+				Cols:    6,
+			},
+			Value:       f.License,
+			EmptyOption: true,
+			Options:     localize.VocabularySelectOptions(c.Loc, "publication_licenses"),
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</form></div><div class=\"modal-footer\"><div class=\"spinner-border\"><span class=\"visually-hidden\"></span></div><div class=\"bc-toolbar\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
