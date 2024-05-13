@@ -405,7 +405,7 @@ func Register(c Config) {
 					r.Use(ctx.SetNav("datasets"))
 
 					// view only functions
-					r.With(ctx.SetNav("datasets"), ctx.SetSubNav("description")).Get("/description", datasetviewing.ShowDescription).Name("dataset_description")
+					r.With(ctx.SetSubNav("description")).Get("/description", datasetviewing.ShowDescription).Name("dataset_description")
 
 					// edit only
 					r.Group(func(r *ich.Mux) {
