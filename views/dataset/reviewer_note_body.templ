@@ -1,0 +1,12 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+templ ReviewerNoteBody(c *ctx.Ctx, dataset *models.Dataset) {
+	<div class="card-body">
+		<p>{ dataset.ReviewerNote }</p>
+	</div>
+}
