@@ -314,7 +314,7 @@ func Register(c Config) {
 					// search
 					r.Get("/publication", publicationsearching.Search).Name("publications")
 
-					// import
+					// import (wizard part 1 - before save)
 					r.Get("/add-publication", publicationcreating.Add).Name("publication_add")
 					r.Post("/add-publication/import/single", publicationcreating.AddSingleImport).Name("publication_add_single_import")
 					r.Post("/add-publication/import/single/confirm", publicationcreating.AddSingleImportConfirm).Name("publication_add_single_import_confirm")
@@ -340,7 +340,7 @@ func Register(c Config) {
 						r.Group(func(r *ich.Mux) {
 							r.Use(ctx.RequireEditPublication)
 
-							// add
+							// add (wizard part 2 - after save)
 							r.Get("/add/description", publicationcreating.AddSingleDescription).Name("publication_add_single_description")
 							r.Get("/add/confirm", publicationcreating.AddSingleConfirm).Name("publication_add_single_confirm")
 							r.Post("/add/publish", publicationcreating.AddSinglePublish).Name("publication_add_single_publish")
