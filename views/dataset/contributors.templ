@@ -1,0 +1,266 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"fmt"
+)
+
+templ Contributors(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
+	<div hx-swap-oob="innerHTML:#show-nav">
+		@SubNav(c, dataset, redirectURL)
+	</div>
+	<div hx-swap-oob="innerHTML:#show-sidebar">
+		<div class="c-sub-sidebar c-sub-sidebar--bordered u-z-reset h-100" data-sidebar="">
+			<div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--large">
+				<button class="btn btn-link btn-icon-only ms-n3" type="button" data-sidebar-toggle="">
+					<i class="if if-menu"></i>
+					<span class="visually-hidden">Sections</span>
+				</button>
+			</div>
+			<div class="c-sub-sidebar__content">
+				<div class="p-4">
+					<nav class="nav nav-pills flex-column">
+						<a class="nav-link" href="#authors">Creators</a>
+						<a class="nav-link" href="#departments">Departments</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="authors" class="card mb-6">
+		<div class="card-header">
+			<div class="bc-toolbar">
+				<div class="bc-toolbar-left">
+					<h1 class="bc-toolbar-title">{ c.Loc.Get("dataset.contributor.title.author") }</h1>
+					<a
+						class="text-muted px-2"
+						href="#"
+						data-bs-container="body"
+						data-bs-toggle="popover"
+						data-bs-placement="right"
+						data-bs-content={ c.Loc.Get("tooltip.dataset.contributors") }
+					>
+						<i class="if if-info-circle if--small"></i>
+						<span class="visually-hidden">More info</span>
+					</a>
+				</div>
+				<div class="bc-toolbar-right">
+					if c.User.CanEditDataset(dataset) {
+						<button
+							type="button"
+							class="btn btn-outline-primary"
+							hx-get={ c.PathTo("dataset_add_contributor", "id", dataset.ID, "role", "author").String() }
+							hx-target="#modals"
+						>
+							<i class="if if-add"></i>
+							<div class="btn-text">Add { c.Loc.Get("dataset.contributor.role.author") }</div>
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+		<div id="contributors-author-body">
+			@ContributorsBody(c, dataset, "author")
+		</div>
+	</div>
+	<div id="departments" class="card mb-6">
+		<div class="card-header">
+			<div class="bc-toolbar">
+				<div class="bc-toolbar-left">
+					<h1 class="bc-toolbar-title">Departments</h1>
+				</div>
+				<div class="bc-toolbar-right">
+					if c.User.CanEditDataset(dataset) {
+						<button
+							class="btn btn-outline-primary"
+							type="button"
+							hx-get={ c.PathTo("dataset_add_department", "id", dataset.ID).String() }
+							hx-target="#modals"
+						>
+							<i class="if if-add"></i>
+							<div class="btn-text">Add department</div>
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+		<div id="departments-body">
+			@DepartmentsBody(c, dataset)
+		</div>
+	</div>
+}
+
+templ ContributorsBody(c *ctx.Ctx, dataset *models.Dataset, role string) {
+	if contributors := dataset.Contributors(role); len(contributors) > 0 {
+		<div class="table-responsive">
+			<table class="table" id={ fmt.Sprintf("contributors-%s-table", role) }>
+				<thead>
+					<tr>
+						<th class="ps-6">Name</th>
+						<th>Affiliation</th>
+						<th><span class="visually-hidden">Departments</span></th>
+						<th><span class="visually-hidden">Actions</span></th>
+					</tr>
+				</thead>
+				<tbody
+					if c.User.CanEditDataset(dataset) {
+						class="sortable"
+						hx-post={ c.PathTo("dataset_order_contributors", "id", dataset.ID, "role", role).String() }
+						hx-trigger="end"
+						hx-swap="none"
+						hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
+						hx-include={ fmt.Sprintf("#contributors-%s-table [name='position']", role) }
+						hx-disinherit="*"
+					}
+				>
+					for i, con := range contributors {
+						<tr id={ fmt.Sprintf("%s-%d", role, i) }>
+							@ContributorColumns(c, dataset, role, i, con)
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	} else {
+		<div class="card-body">
+			<span class="text-muted">Add at least one UGent { c.Loc.Get("dataset.contributor.role."+role) }.</span>
+		</div>
+	}
+}
+
+templ ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, position int, contributor *models.Contributor) {
+	<td>
+		if c.User.CanEditDataset(dataset) {
+			<input type="hidden" name="position" value={ fmt.Sprintf("%d", position) }/>
+		}
+		<div class="bc-avatar-and-text">
+			if contributor.Person != nil {
+				<div class="bc-avatar bc-avatar-icon bc-avatar--default">
+					<i class="if if-ghent-university"></i>
+				</div>
+			} else {
+				<div class="bc-avatar bc-avatar-icon bc-avatar--muted">
+					<i class="if if-user"></i>
+				</div>
+			}
+			<div class="bc-avatar-text">
+				{ contributor.Name() }
+				if orcid := contributor.ORCID(); orcid != "" {
+					<span class="text-muted c-body-small ms-4"><i class="if if-orcid if--small text-success"></i> { orcid }</span>
+				}
+			</div>
+		</div>
+	</td>
+	<td>
+		if contributor.Person != nil {
+			<i class="if if-ghent-university text-default"></i>
+			<span>UGent</span>
+		} else {
+			External
+		}
+	</td>
+	<td>
+		if contributor.Person != nil {
+			<ul class="c-meta-list c-meta-list-horizontal">
+				for _, cd := range contributor.Person.Affiliations {
+					<li class="c-meta-item">
+						<span class="badge rounded-pill badge-default">
+							<span class="badge-text">{ cd.OrganizationID }</span>
+							if cd.Organization != nil {
+								<a class="ms-4" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ cd.Organization.Name }>
+									<i class="if if-info-circle if--small"></i>
+									<span class="visually-hidden">More info</span>
+								</a>
+							}
+						</span>
+					</li>
+				}
+			</ul>
+		}
+	</td>
+	<td>
+		if c.User.CanEditDataset(dataset) {
+			<div class="c-button-toolbar">
+				<button
+					type="button"
+					class="btn btn-default"
+					hx-get={ c.PathTo("dataset_edit_contributor", "id", dataset.ID, "role", role, "position", fmt.Sprintf("%d", position)).String() }
+					hx-target="#modals"
+				>
+					<i class="if if-edit"></i>
+				</button>
+				<button
+					type="button"
+					class="btn btn-default"
+					hx-get={ c.PathTo("dataset_confirm_delete_contributor", "id", dataset.ID, "role", role, "position", fmt.Sprintf("%d", position)).String() }
+					hx-target="#modals"
+				>
+					<i class="if if-delete"></i>
+				</button>
+				<button class="sortable-handle btn btn-text"><b>::</b></button>
+			</div>
+		}
+	</td>
+}
+
+templ DepartmentsBody(c *ctx.Ctx, dataset *models.Dataset) {
+	if len(dataset.RelatedOrganizations) > 0 {
+		<div class="card-body p-0">
+			<table class="table">
+				<tbody>
+					for k, rel := range dataset.RelatedOrganizations {
+						<tr class={ fmt.Sprintf("row-k", k) }>
+							<td class="ps-6">
+								<div class="d-flex w-100">
+									<div class="w-100">
+										<div class="d-flex align-items-start">
+											<div class="list-group-item-content">
+												<div class="list-group-item-text">
+													<h4 class="c-h4">{ c.Loc.Get("organization."+rel.OrganizationID) }</h4>
+													<div class="text-muted c-body-small">Department ID: { rel.OrganizationID }</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</td>
+							<td class="pe-6">
+								if c.User.CanEditDataset(dataset) {
+									<div class="c-button-toolbar">
+										<div class="dropdown">
+											<button
+												class="btn btn-link btn-icon-only btn-link-muted"
+												type="button"
+												data-bs-toggle="dropdown"
+												aria-haspopup="true"
+												aria-expanded="false"
+											>
+												<i class="if if-more"></i>
+											</button>
+											<div class="dropdown-menu">
+												<button
+													class="dropdown-item"
+													type="button"
+													hx-get={ c.PathTo("dataset_confirm_delete_department", "id", dataset.ID, "snapshot_id", dataset.SnapshotID, "department_id", rel.OrganizationID).String() }
+													hx-target="#modals"
+												>
+													<i class="if if-delete"></i>
+													<span>Remove from dataset</span>
+												</button>
+											</div>
+										</div>
+									</div>
+								}
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	} else {
+		<div class="card-body">
+			<span class="text-muted">Add at least one department.</span>
+		</div>
+	}
+}
