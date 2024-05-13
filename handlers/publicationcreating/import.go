@@ -277,14 +277,15 @@ func AddSinglePublish(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Redirect", redirectURL)
 }
 
-func (h *Handler) AddSingleFinish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "layouts/default", "publication/pages/add_single_finish", YieldAddSingle{
-		Context:     ctx,
-		PageTitle:   "Add - Publications - Biblio",
-		Step:        4,
-		ActiveNav:   "publications",
-		Publication: ctx.Publication,
-	})
+func AddSingleFinish(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	publication := ctx.GetPublication(r)
+
+	pages.AddSingleFinish(c, pages.AddSingleFinishArgs{
+		Step:           4,
+		Publication:    publication,
+		PublicationURL: c.PathTo("publication", "id", publication.ID),
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx Context) {

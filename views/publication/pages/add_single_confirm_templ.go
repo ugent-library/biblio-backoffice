@@ -23,7 +23,6 @@ type AddSingleConfirmArgs struct {
 	Step           int
 	Publication    *models.Publication
 	PublicationURL *url.URL
-	ActiveSubNav   string
 }
 
 func AddSingleConfirm(c *ctx.Ctx, args AddSingleConfirmArgs) templ.Component {
@@ -56,7 +55,7 @@ func AddSingleConfirm(c *ctx.Ctx, args AddSingleConfirmArgs) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(args.Step))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_single_confirm.templ`, Line: 27, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_single_confirm.templ`, Line: 26, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -126,7 +125,7 @@ func AddSingleConfirm(c *ctx.Ctx, args AddSingleConfirmArgs) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.subnav.contributors"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_single_confirm.templ`, Line: 98, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_single_confirm.templ`, Line: 97, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
