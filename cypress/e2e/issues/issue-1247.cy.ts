@@ -43,7 +43,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
 
     cy.location("pathname").should(
       "eq",
-      "/publication/add-single/import/confirm",
+      "/add-publication/import/single/confirm",
     );
 
     assertUserMenuWorks();
