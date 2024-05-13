@@ -405,10 +405,9 @@ func Register(c Config) {
 					r.Use(ctx.SetNav("datasets"))
 
 					// view only functions
-					// tab publications
 					r.With(ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
-					// tab activity
 					r.With(ctx.SetSubNav("activity")).Get("/activity", datasetviewing.ShowActivity).Name("dataset_activity")
+					r.With(ctx.SetSubNav("description")).Get("/description", datasetviewing.ShowDescription).Name("dataset_description")
 
 					// edit only
 					r.Group(func(r *ich.Mux) {
@@ -510,9 +509,6 @@ func Register(c Config) {
 		r.Get("/dataset/{id}",
 			datasetViewingHandler.Wrap(datasetViewingHandler.Show)).
 			Name("dataset")
-		r.Get("/dataset/{id}/description",
-			datasetViewingHandler.Wrap(datasetViewingHandler.ShowDescription)).
-			Name("dataset_description")
 		r.Get("/dataset/{id}/contributors",
 			datasetViewingHandler.Wrap(datasetViewingHandler.ShowContributors)).
 			Name("dataset_contributors")
