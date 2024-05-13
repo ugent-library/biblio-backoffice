@@ -1,12 +1,14 @@
 package publication
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
-import "github.com/ugent-library/biblio-backoffice/models"
-import "github.com/ugent-library/biblio-backoffice/views"
-import relatedorganizationviews "github.com/ugent-library/biblio-backoffice/views/relatedorganization"
-import contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
-import "fmt"
-import "net/url"
+import (
+	"fmt"
+	"net/url"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	relatedorganizationviews "github.com/ugent-library/biblio-backoffice/views/relatedorganization"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+)
 
 type SummaryArgs struct {
 	Publication    *models.Publication

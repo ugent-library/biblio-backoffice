@@ -108,7 +108,9 @@ func AddSingleImportConfirm(w http.ResponseWriter, r *http.Request) {
 
 	// check for duplicates
 	if b.Source == "crossref" && b.Identifier != "" {
-		args := models.NewSearchArgs().WithFilter("identifier", strings.ToLower(b.Identifier)).WithFilter("status", "public")
+		args := models.NewSearchArgs().
+			WithFilter("identifier", strings.ToLower(b.Identifier)).
+			WithFilter("status", "public")
 
 		existing, err := c.PublicationSearchIndex.Search(args)
 		if err != nil {
@@ -228,14 +230,15 @@ func AddSingleDescription(w http.ResponseWriter, r *http.Request) {
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) AddSingleConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "layouts/default", "publication/pages/add_single_confirm", YieldAddSingle{
-		Context:     ctx,
-		PageTitle:   "Add - Publications - Biblio",
-		Step:        3,
-		ActiveNav:   "publications",
-		Publication: ctx.Publication,
-	})
+func AddSingleConfirm(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	publication := ctx.GetPublication(r)
+
+	pages.AddSingleConfirm(c, pages.AddSingleConfirmArgs{
+		Step:           3,
+		Publication:    publication,
+		PublicationURL: c.PathTo("publication_add_single_description", "id", publication.ID),
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx Context) {

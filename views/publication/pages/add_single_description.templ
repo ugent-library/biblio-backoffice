@@ -70,10 +70,10 @@ templ AddSingleDescription(c *ctx.Ctx, args AddSingleDescriptionArgs) {
 			</div>
 			<div
 				class="u-scroll-wrapper__body p-6"
-				id="details-body"
+				id="show-content"
 				hx-get={ c.PathTo("publication_"+args.ActiveSubNav, "id", args.Publication.ID).String() }
 				hx-trigger="load delay:100ms"
-				hx-target="#details-body"
+				hx-target="#show-content"
 			></div>
 		</div>
 	}

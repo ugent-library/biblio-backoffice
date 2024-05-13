@@ -10,13 +10,15 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
-import "github.com/ugent-library/biblio-backoffice/models"
-import "github.com/ugent-library/biblio-backoffice/views"
-import relatedorganizationviews "github.com/ugent-library/biblio-backoffice/views/relatedorganization"
-import contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
-import "fmt"
-import "net/url"
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+	relatedorganizationviews "github.com/ugent-library/biblio-backoffice/views/relatedorganization"
+	"net/url"
+)
 
 type SummaryArgs struct {
 	Publication    *models.Publication
@@ -142,7 +144,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(args.Publication.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 66, Col: 34}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 68, Col: 34}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -190,7 +192,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(args.Publication.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 79, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 81, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -278,7 +280,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(vabb)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 116, Col: 49}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 118, Col: 49}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -325,7 +327,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(args.Publication.RelatedDataset)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 134, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 136, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -353,7 +355,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(views.CreatedBy(c, args.Publication.DateCreated, args.Publication.Creator))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 146, Col: 85}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 148, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -366,7 +368,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(views.UpdatedBy(c, args.Publication.DateUpdated, args.Publication.User, args.Publication.LastUser))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 149, Col: 109}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 151, Col: 109}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -387,7 +389,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(args.Publication.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 158, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary.templ`, Line: 160, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
