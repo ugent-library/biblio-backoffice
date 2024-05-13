@@ -8,21 +8,19 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
-	"fmt"
 )
 
 type AddIdentifierArgs struct {
 	Dataset          *models.Dataset
 	Source           string
 	Identifier       string
-	Step             int
 	DuplicateDataset bool
 	Errors           form.Errors
 }
 
 templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 	@views.PageLayout(c, "Add - Datasets - Biblio", nil) {
-		@datasetviews.AddSidebar(c, args.Step)
+		@datasetviews.AddSidebar(c, 1)
 		<form class="w-100" action={ templ.URL(c.PathTo("dataset_confirm_import").String()) } method="POST">
 			@views.CSRFTag(c)
 			<div class="u-scroll-wrapper">
@@ -31,7 +29,7 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 						<div class="bc-toolbar-left">
 							<div class="bc-toolbar-item">
 								<div class="d-flex flex-column">
-									<span class="text-muted">{ fmt.Sprintf("Step %d", args.Step) }</span>
+									<span class="text-muted">Step 1</span>
 									<h4 class="bc-toolbar-title">Add dataset</h4>
 								</div>
 							</div>

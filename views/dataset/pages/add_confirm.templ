@@ -10,16 +10,16 @@ import (
 	"fmt"
 )
 
-templ AddConfirm(c *ctx.Ctx, dataset *models.Dataset, step int) {
+templ AddConfirm(c *ctx.Ctx, dataset *models.Dataset) {
 	@views.PageLayout(c, "Add - Datasets - Biblio", nil) {
-		@datasetviews.AddSidebar(c, step)
+		@datasetviews.AddSidebar(c, 3)
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
 				<div class="bc-toolbar">
 					<div class="bc-toolbar-left">
 						<div class="bc-toolbar-item">
 							<div class="d-flex flex-column">
-								<span class="text-muted">{ fmt.Sprintf("Step %d", step) }</span>
+								<span class="text-muted">Step 3</span>
 								<h4 class="bc-toolbar-title">Review and publish</h4>
 							</div>
 						</div>

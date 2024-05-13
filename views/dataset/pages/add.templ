@@ -4,12 +4,11 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
-	"fmt"
 )
 
-templ Add(c *ctx.Ctx, step int) {
+templ Add(c *ctx.Ctx) {
 	@views.PageLayout(c, "Add - Datasets - Biblio", nil) {
-		@datasetviews.AddSidebar(c, step)
+		@datasetviews.AddSidebar(c, 1)
 		<form class="w-100" action={ templ.URL(c.PathTo("dataset_add").String()) } method="POST">
 			@views.CSRFTag(c)
 			<div class="u-scroll-wrapper">
@@ -18,7 +17,7 @@ templ Add(c *ctx.Ctx, step int) {
 						<div class="bc-toolbar-left">
 							<div class="bc-toolbar-item">
 								<div class="d-flex flex-column">
-									<span class="text-muted">{ fmt.Sprintf("Step %d", step) }</span>
+									<span class="text-muted">Step 1</span>
 									<h4 class="bc-toolbar-title">Add dataset</h4>
 								</div>
 							</div>

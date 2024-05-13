@@ -6,18 +6,16 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
-	"fmt"
 )
 
 type AddDescriptionArgs struct {
 	Dataset     *models.Dataset
-	Step        int
 	RedirectURL string
 }
 
 templ AddDescription(c *ctx.Ctx, args AddDescriptionArgs) {
 	@views.PageLayout(c, "Add - Datasets - Biblio", nil) {
-		@datasetviews.AddSidebar(c, args.Step)
+		@datasetviews.AddSidebar(c, 2)
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bg-white">
 				<div class="bc-navbar bc-navbar--large bc-navbar--white">
@@ -25,7 +23,7 @@ templ AddDescription(c *ctx.Ctx, args AddDescriptionArgs) {
 						<div class="bc-toolbar-left">
 							<div class="bc-toolbar-item">
 								<div class="d-flex flex-column">
-									<span class="text-muted">{ fmt.Sprintf("Step %d", args.Step) }</span>
+									<span class="text-muted">Step 2</span>
 									<h4 class="bc-toolbar-title">Complete Description</h4>
 								</div>
 							</div>

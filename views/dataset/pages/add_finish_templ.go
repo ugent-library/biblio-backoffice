@@ -11,7 +11,6 @@ import "io"
 import "bytes"
 
 import (
-	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -19,7 +18,7 @@ import (
 	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
 )
 
-func AddFinish(c *ctx.Ctx, dataset *models.Dataset, step int) templ.Component {
+func AddFinish(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -38,29 +37,16 @@ func AddFinish(c *ctx.Ctx, dataset *models.Dataset, step int) templ.Component {
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = datasetviews.AddSidebar(c, step).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = datasetviews.AddSidebar(c, 4).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <div class=\"w-100 u-scroll-wrapper\"><div class=\"bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><div class=\"d-flex flex-column\"><span class=\"text-muted\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <div class=\"w-100 u-scroll-wrapper\"><div class=\"bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><div class=\"d-flex flex-column\"><span class=\"text-muted\">Step 4</span><h4 class=\"bc-toolbar-title\">Congratulations</h4></div></div></div><div class=\"bc-toolbar-right\"></div></div></div><div class=\"p-6 u-scroll-wrapper__body\"><div class=\"card mb-6\"><div class=\"card-header\">Congratulations!</div><div class=\"card-body\"><p class=\"mb-6\">Your dataset is published in Biblio and sent for review by the data curator team. The data curator team will process your dataset as soon as possible, taking into account reporting deadlines. For questions, the data curator team can be contacted at <a href=\"mailto:rdm.support@ugent.be\">rdm.support@ugent.be</a>.</p><a class=\"btn btn-outline-primary\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Step %d", step))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_finish.templ`, Line: 21, Col: 63}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span><h4 class=\"bc-toolbar-title\">Congratulations</h4></div></div></div><div class=\"bc-toolbar-right\"></div></div></div><div class=\"p-6 u-scroll-wrapper__body\"><div class=\"card mb-6\"><div class=\"card-header\">Congratulations!</div><div class=\"card-body\"><p class=\"mb-6\">Your dataset is published in Biblio and sent for review by the data curator team. The data curator team will process your dataset as soon as possible, taking into account reporting deadlines. For questions, the data curator team can be contacted at <a href=\"mailto:rdm.support@ugent.be\">rdm.support@ugent.be</a>.</p><a class=\"btn btn-outline-primary\" href=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var4 templ.SafeURL = templ.URL(c.PathTo("datasets").String())
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
+			var templ_7745c5c3_Var3 templ.SafeURL = templ.URL(c.PathTo("datasets").String())
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

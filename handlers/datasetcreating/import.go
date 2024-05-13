@@ -44,14 +44,12 @@ func Add(w http.ResponseWriter, r *http.Request) {
 
 	switch b.Method {
 	case "identifier":
-		datasetpages.AddIdentifier(c, datasetpages.AddIdentifierArgs{
-			Step: 1,
-		}).Render(r.Context(), w)
+		datasetpages.AddIdentifier(c, datasetpages.AddIdentifierArgs{}).Render(r.Context(), w)
 	case "manual":
 		ConfirmImport(w, r)
 		return
 	default:
-		datasetpages.Add(c, 1).Render(r.Context(), w)
+		datasetpages.Add(c).Render(r.Context(), w)
 	}
 }
 
@@ -80,7 +78,6 @@ func ConfirmImport(w http.ResponseWriter, r *http.Request) {
 
 		if existing.Total > 0 {
 			datasetpages.AddIdentifier(c, datasetpages.AddIdentifierArgs{
-				Step:             1, // TODO: argument needed???
 				Source:           b.Source,
 				Identifier:       b.Identifier,
 				Dataset:          existing.Hits[0],
@@ -119,7 +116,6 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 			c.PersistFlash(w, *flash)
 
 			datasetpages.AddIdentifier(c, datasetpages.AddIdentifierArgs{
-				Step:       1, //TODO: step needed?
 				Source:     b.Source,
 				Identifier: b.Identifier,
 			}).Render(r.Context(), w)
@@ -143,7 +139,6 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 
 	if validationErrs := d.Validate(); validationErrs != nil {
 		datasetpages.AddIdentifier(c, datasetpages.AddIdentifierArgs{
-			Step:       1, //TODO: step needed?
 			Source:     b.Source,
 			Identifier: b.Identifier,
 			Errors:     form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors))),
@@ -166,7 +161,6 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 	c.SubNav = subNav
 
 	datasetpages.AddDescription(c, datasetpages.AddDescriptionArgs{
-		Step:    2, // TODO: step needed?
 		Dataset: d,
 	}).Render(r.Context(), w)
 }
@@ -181,7 +175,6 @@ func AddDescription(w http.ResponseWriter, r *http.Request) {
 	c.SubNav = subNav
 
 	datasetpages.AddDescription(c, datasetpages.AddDescriptionArgs{
-		Step:    2, //TODO: needed?
 		Dataset: ctx.GetDataset(r),
 	}).Render(r.Context(), w)
 }
@@ -199,7 +192,7 @@ func AddSaveDraft(w http.ResponseWriter, r *http.Request) {
 
 func AddConfirm(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	datasetpages.AddConfirm(c, ctx.GetDataset(r), 3).Render(r.Context(), w)
+	datasetpages.AddConfirm(c, ctx.GetDataset(r)).Render(r.Context(), w)
 }
 
 func AddPublish(w http.ResponseWriter, r *http.Request) {
@@ -237,7 +230,7 @@ func AddPublish(w http.ResponseWriter, r *http.Request) {
 
 func AddFinish(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	datasetpages.AddFinish(c, ctx.GetDataset(r), 4).Render(r.Context(), w)
+	datasetpages.AddFinish(c, ctx.GetDataset(r)).Render(r.Context(), w)
 }
 
 func fetchDatasetByIdentifier(services backends.Services, source string, identifier string) (*models.Dataset, error) {
