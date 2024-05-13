@@ -7,7 +7,7 @@ import h "html"
 
 var reURL, _ = xurls.StrictMatchingScheme("https")
 
-templ csrfField(c *ctx.Ctx) {
+templ CSRFTag(c *ctx.Ctx) {
 	<input type="hidden" name={ c.CSRFName } value={ c.CSRFToken }/>
 }
 
