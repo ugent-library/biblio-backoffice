@@ -43,7 +43,7 @@ templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[strin
 		@views.Facet(c, "identifier_type", "Persistent identifier type", "identifier", "identifier_type", facets["identifier_type"], searchArgs)
 	}
 	@views.FacetLine() {
-		@views.Facet(c, "reviewer_tags", "Librarian tags", "reviewer_tags", "reviewer_tags", facets["reviewer_tags"], searchArgs)
+		@views.Facet(c, "reviewer_tags", "Librarian tags", "", "", facets["reviewer_tags"], searchArgs)
 		@views.Facet(c, "has_message", "Message", "has_message", "has_message", facets["has_message"], searchArgs)
 		@views.FacetSince(c, "created_since", "Created since", "Show records created since", searchArgs)
 		@views.FacetSince(c, "updated_since", "Updated since", "Show records updated since", searchArgs)

@@ -36,7 +36,7 @@ templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
 				if c.OriginalUser != nil {
 					<div class="alert alert-danger mb-0 py-1" role="alert">
 						<form action={ templ.URL(c.PathTo("delete_impersonation").String()) } method="POST">
-							@csrfField(c)
+							@CSRFTag(c)
 							<label class="my-1 me-2 fw-bold">Viewing the perspective of { c.User.FullName }.</label>
 							<button type="submit" class="btn btn-danger my-1">return to { c.OriginalUser.FullName }</button>.
 						</form>

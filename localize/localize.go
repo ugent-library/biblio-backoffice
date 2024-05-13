@@ -52,6 +52,17 @@ func LanguageNames(codes []string) []string {
 	return names
 }
 
+func ClassificationSelectOptions(loc *gotext.Locale, vals []string) []form.SelectOption {
+	opts := make([]form.SelectOption, len(vals))
+	for i, v := range vals {
+		opts[i] = form.SelectOption{
+			Value: v,
+			Label: loc.Get("publication_classifications." + v),
+		}
+	}
+	return opts
+}
+
 func LanguageSelectOptions() []form.SelectOption {
 	vals, ok := vocabularies.Map["language_codes"]
 	if !ok {
