@@ -1,0 +1,579 @@
+package publication
+
+import (
+	"fmt"
+	"github.com/ugent-library/okay"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/localize"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/display"
+)
+
+templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors *okay.Errors) {
+	<div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Edit publication details</h2>
+			</div>
+			<div class="modal-body">
+				if conflict {
+					<div class="alert alert-danger mb-0" role="alert">
+						<i class="if if--error if-error-circle-fill"></i>
+						The publication you are editing has been changed by someone else. Please copy your edits, then close this form.
+					</div>
+				}
+				@form.Errors(localize.ValidationErrors(c.Loc, errors))
+				<ul class="list-group list-group-flush" data-panel-state="edit">
+					<li class="list-group-item">
+						if c.User.CanChangeType(p) {
+							@form.Field(form.FieldArgs{
+								Label: c.Loc.Get("builder.type"),
+								Name:  "type",
+								Cols:  3,
+								Error: localize.ValidationErrorAt(c.Loc, errors, "/type"),
+								Help:  c.Loc.Get("builder.type.help"),
+							}, "type") {
+								<select
+									class={ "form-select", "form-control", templ.KV("is-invalid", errors != nil && errors.Get("/type") != nil) }
+									name="type"
+									id="type"
+									hx-get={ c.PathTo("publication_confirm_update_type", "id", p.ID).String() }
+									hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
+									hx-target="#modals"
+								>
+									for _, o := range localize.VocabularySelectOptions(c.Loc, "publication_types") {
+										<option value={ o.Value } selected?={ o.Value == p.Type }>{ o.Label }</option>
+									}
+								</select>
+							}
+						} else {
+							@display.Field(display.FieldArgs{
+								Label:   c.Loc.Get("builder.type"),
+								Value:   c.Loc.Get("publication_types." + p.Type),
+								Tooltip: c.Loc.Get("tooltip.publication.type"),
+							})
+						}
+						if p.UsesJournalArticleType() {
+							@form.Select(form.SelectArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.journal_article_type"),
+									Name:  "journal_article_type",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/journal_article_type"),
+								},
+								Value:       p.JournalArticleType,
+								EmptyOption: true,
+								Options:     localize.VocabularySelectOptions(c.Loc, "journal_article_types"),
+							})
+						}
+						if p.UsesConferenceType() {
+							@form.Select(form.SelectArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.conference_type"),
+									Name:  "conference_type",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/conference_type"),
+								},
+								Value:       p.ConferenceType,
+								EmptyOption: true,
+								Options:     localize.VocabularySelectOptions(c.Loc, "conference_types"),
+							})
+						}
+						if p.UsesMiscellaneousType() {
+							@form.Select(form.SelectArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.miscellaneous_type"),
+									Name:  "miscellaneous_type",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/miscellaneous_type"),
+								},
+								Value:       p.MiscellaneousType,
+								EmptyOption: true,
+								Options:     localize.VocabularySelectOptions(c.Loc, "miscellaneous_types"),
+							})
+						}
+						if p.UsesDOI() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.doi"),
+									Name:  "doi",
+									Cols:  9,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/doi"),
+									Help:  c.Loc.Get("builder.doi.help"),
+								},
+								Value: p.DOI,
+							})
+						}
+						if c.User.CanCurate() {
+							@form.Select(form.SelectArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.classification"),
+									Name:  "classification",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/classification"),
+								},
+								Value:       p.Classification,
+								EmptyOption: true,
+								Options:     localize.ClassificationSelectOptions(c.Loc, p.ClassificationChoices()),
+							})
+						} else {
+							@display.Field(display.FieldArgs{
+								Label:   c.Loc.Get("builder.classification"),
+								Value:   c.Loc.Get("publication_classifications." + p.Type),
+								Tooltip: c.Loc.Get("tooltip.publication.classification"),
+							})
+						}
+						if c.User.CanCurate() {
+							@form.Checkbox(form.CheckboxArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.legacy"),
+									Name:  "legacy",
+									Cols:  9,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/legacy"),
+								},
+								Value:   "true",
+								Checked: p.Legacy,
+							})
+						}
+					</li>
+					<li class="list-group-item">
+						if p.UsesTitle() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.title"),
+									Name:     "title",
+									Cols:     9,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/title"),
+									Required: true,
+								},
+								Value: p.Title,
+							})
+						}
+						if p.UsesAlternativeTitle() {
+							@form.TextRepeat(form.TextRepeatArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.alternative_title"),
+									Name:  "alternative_title",
+									Cols:  9,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/alternative_title"),
+								},
+								Values: p.AlternativeTitle,
+							})
+						}
+						if p.UsesPublication() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get(fmt.Sprintf("builder.%s.publication", p.Type)),
+									Name:     "publication",
+									Cols:     9,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/publication"),
+									Required: p.ShowPublicationAsRequired(),
+								},
+								Value: p.Publication,
+							})
+						}
+						if p.UsesPublicationAbbreviation() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get(fmt.Sprintf("builder.%s.publication_abbreviation", p.Type)),
+									Name:  "publication_abbreviation",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/publication_abbreviation"),
+								},
+								Value: p.PublicationAbbreviation,
+							})
+						}
+					</li>
+					<li class="list-group-item">
+						if p.UsesLanguage() {
+							@form.SelectRepeat(form.SelectRepeatArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.language"),
+									Name:  "language",
+									Cols:  9,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/language"),
+								},
+								Values:      p.Language,
+								EmptyOption: true,
+								Options:     localize.LanguageSelectOptions(),
+							})
+						}
+						if p.UsesPublicationStatus() {
+							@form.Select(form.SelectArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.publication_status"),
+									Name:  "publication_status",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/publication_status"),
+								},
+								Value:       p.PublicationStatus,
+								EmptyOption: true,
+								Options:     localize.VocabularySelectOptions(c.Loc, "publication_publishing_statuses"),
+							})
+						}
+						@form.Checkbox(form.CheckboxArgs{
+							FieldArgs: form.FieldArgs{
+								Label: c.Loc.Get("builder.extern"),
+								Name:  "extern",
+								Cols:  9,
+								Error: localize.ValidationErrorAt(c.Loc, errors, "/extern"),
+							},
+							Value:   "true",
+							Checked: p.Extern,
+						})
+						if p.UsesYear() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.year"),
+									Name:     "year",
+									Cols:     3,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/year"),
+									Required: true,
+									Help:     c.Loc.Get("builder.year.help"),
+								},
+								Value: p.Year,
+							})
+						}
+						if p.UsesPublisher() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.place_of_publication"),
+									Name:  "place_of_publication",
+									Cols:  9,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/place_of_publication"),
+								},
+								Value: p.PlaceOfPublication,
+							})
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.publisher"),
+									Name:  "publisher",
+									Cols:  9,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/publisher"),
+								},
+								Value: p.Publisher,
+							})
+						}
+					</li>
+					<li class="list-group-item">
+						if p.UsesSeriesTitle() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.series_title"),
+									Name:  "series_title",
+									Cols:  9,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/series_title"),
+								},
+								Value: p.SeriesTitle,
+							})
+						}
+						if p.UsesVolume() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.volume"),
+									Name:  "volume",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/volume"),
+								},
+								Value: p.Volume,
+							})
+						}
+						if p.UsesIssue() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.issue"),
+									Name:  "issue",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/issue"),
+								},
+								Value: p.Issue,
+							})
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.issue_title"),
+									Name:  "issue_title",
+									Cols:  9,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/issue_title"),
+								},
+								Value: p.IssueTitle,
+							})
+						}
+						if p.UsesEdition() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.edition"),
+									Name:  "edition",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/edition"),
+								},
+								Value: p.Edition,
+							})
+						}
+						if p.UsesPage() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.page_first"),
+									Name:  "page_first",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/page_first"),
+								},
+								Value: p.PageFirst,
+							})
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.page_last"),
+									Name:  "page_last",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/page_last"),
+								},
+								Value: p.PageLast,
+							})
+						}
+						if p.UsesPageCount() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.page_count"),
+									Name:  "page_count",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/page_count"),
+									Help:  c.Loc.Get("builder.page_count.help"),
+								},
+								Value: p.PageCount,
+							})
+						}
+						if p.UsesArticleNumber() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.article_number"),
+									Name:  "article_number",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/article_number"),
+								},
+								Value: p.ArticleNumber,
+							})
+						}
+						if p.UsesReportNumber() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.report_number"),
+									Name:  "report_number",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/report_number"),
+								},
+								Value: p.ReportNumber,
+							})
+						}
+					</li>
+					if p.UsesDefense() {
+						<li class="list-group-item">
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.defense_date"),
+									Name:     "defense_date",
+									Cols:     3,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/defense_date"),
+									Required: p.ShowDefenseAsRequired(),
+									Help:     c.Loc.Get("builder.defense_date.help"),
+								},
+								Value: p.DefenseDate,
+							})
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.defense_place"),
+									Name:     "defense_place",
+									Cols:     3,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/defense_place"),
+									Required: p.ShowDefenseAsRequired(),
+								},
+								Value: p.DefensePlace,
+							})
+						</li>
+					}
+					if p.UsesConfirmations() {
+						<li class="list-group-item">
+							@form.RadioGroup(form.RadioGroupArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.has_confidential_data"),
+									Name:     "has_confidential_data",
+									Cols:     9,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/has_confidential_data"),
+									Required: true,
+								},
+								Value:   p.HasConfidentialData,
+								Options: localize.VocabularySelectOptions(c.Loc, "confirmations"),
+							})
+							@form.RadioGroup(form.RadioGroupArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.has_patent_application"),
+									Name:     "has_patent_application",
+									Cols:     9,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/has_patent_application"),
+									Required: true,
+								},
+								Value:   p.HasPatentApplication,
+								Options: localize.VocabularySelectOptions(c.Loc, "confirmations"),
+							})
+							@form.RadioGroup(form.RadioGroupArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.has_publications_planned"),
+									Name:     "has_publications_planned",
+									Cols:     9,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/has_publications_planned"),
+									Required: true,
+								},
+								Value:   p.HasPublicationsPlanned,
+								Options: localize.VocabularySelectOptions(c.Loc, "confirmations"),
+							})
+							@form.RadioGroup(form.RadioGroupArgs{
+								FieldArgs: form.FieldArgs{
+									Label:    c.Loc.Get("builder.has_published_material"),
+									Name:     "has_published_material",
+									Cols:     9,
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/has_published_material"),
+									Required: true,
+								},
+								Value:   p.HasPublishedMaterial,
+								Options: localize.VocabularySelectOptions(c.Loc, "confirmations"),
+							})
+						</li>
+					}
+					<li class="list-group-item">
+						if p.UsesWOS() {
+							if c.User.CanCurate() {
+								@form.Text(form.TextArgs{
+									FieldArgs: form.FieldArgs{
+										Label:   c.Loc.Get("builder.wos_type"),
+										Name:    "wos_type",
+										Cols:    3,
+										Error:   localize.ValidationErrorAt(c.Loc, errors, "/wos_type"),
+										Tooltip: c.Loc.Get("tooltip.publication.wos_type"),
+									},
+									Value: p.WOSType,
+								})
+							} else {
+								@display.Field(display.FieldArgs{
+									Label:   c.Loc.Get("builder.wos_type"),
+									Value:   p.WOSType,
+									Tooltip: c.Loc.Get("tooltip.publication.wos_type"),
+								})
+							}
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.wos_id"),
+									Name:  "wos_type",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/wos_id"),
+									Help:  c.Loc.Get("builder.wos_id.help")},
+								Value: p.WOSID,
+							})
+						}
+						if p.UsesISSN() {
+							@form.TextRepeat(form.TextRepeatArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.issn"),
+									Name:  "issn",
+									Cols:  3,
+									Help:  c.Loc.Get("builder.issn.help"),
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/issn"),
+								},
+								Values: p.ISSN,
+							})
+							@form.TextRepeat(form.TextRepeatArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.eissn"),
+									Name:  "eissn",
+									Cols:  3,
+									Help:  c.Loc.Get("builder.eissn.help"),
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/eissn"),
+								},
+								Values: p.EISSN,
+							})
+						}
+						if p.UsesISBN() {
+							@form.TextRepeat(form.TextRepeatArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.isbn"),
+									Name:  "isbn",
+									Cols:  3,
+									Help:  c.Loc.Get("builder.isbn.help"),
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/isbn"),
+								},
+								Values: p.ISBN,
+							})
+							@form.TextRepeat(form.TextRepeatArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.eisbn"),
+									Name:  "eisbn",
+									Cols:  3,
+									Help:  c.Loc.Get("builder.eisbn.help"),
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/eisbn"),
+								},
+								Values: p.EISBN,
+							})
+						}
+						if p.UsesPubMedID() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.wos_id"),
+									Name:  "wos_type",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/wos_id"),
+									Help:  c.Loc.Get("builder.wos_id.help")},
+								Value: p.PubMedID,
+							})
+						}
+						if p.UsesArxivID() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.arxiv_id"),
+									Name:  "arxiv_id",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/arxiv_id"),
+									Help:  c.Loc.Get("builder.arxiv_id.help")},
+								Value: p.ArxivID,
+							})
+						}
+						if p.UsesESCIID() {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.esci_id"),
+									Name:  "esci_id",
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/esci_id"),
+									Help:  c.Loc.Get("builder.esci_id.help")},
+								Value: p.ESCIID,
+							})
+						}
+					</li>
+				</ul>
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					if conflict {
+						<div class="bc-toolbar-left">
+							<button class="btn btn-primary modal-close">Close</button>
+						</div>
+					} else {
+						<div class="bc-toolbar-left">
+							<button class="btn btn-link modal-close">Cancel</button>
+						</div>
+						<div class="bc-toolbar-right">
+							<button
+								type="button"
+								name="create"
+								class="btn btn-primary"
+								hx-put={ c.PathTo("publication_update_details", "id", p.ID).String() }
+								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
+								hx-include=".modal-body"
+								hx-swap="none"
+							>
+								Save
+							</button>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+}
