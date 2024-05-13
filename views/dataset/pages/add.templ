@@ -11,8 +11,7 @@ templ Add(c *ctx.Ctx, step int) {
 	@views.PageLayout(c, "Add - Datasets - Biblio", nil) {
 		@datasetviews.AddSidebar(c, step)
 		<form class="w-100" action={ templ.URL(c.PathTo("dataset_add").String()) } method="POST">
-			<!--TODO: use future views.CSRFTag-->
-			<input type="hidden" name={ c.CSRFName } value={ c.CSRFToken }/>
+			@views.CSRFTag(c)
 			<div class="u-scroll-wrapper">
 				<div class="bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
 					<div class="bc-toolbar">

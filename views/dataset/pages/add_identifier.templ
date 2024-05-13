@@ -24,8 +24,7 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 	@views.PageLayout(c, "Add - Datasets - Biblio", nil) {
 		@datasetviews.AddSidebar(c, args.Step)
 		<form class="w-100" action={ templ.URL(c.PathTo("dataset_confirm_import").String()) } method="POST">
-			<!-- TODO: use future views.CSRFTag-->
-			<input type="hidden" name={ c.CSRFName } value={ c.CSRFToken }/>
+			@views.CSRFTag(c)
 			<div class="u-scroll-wrapper">
 				<div class="bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
 					<div class="bc-toolbar">
@@ -140,8 +139,7 @@ templ addDuplicate(c *ctx.Ctx, args AddIdentifierArgs) {
 						</div>
 						<div class="bc-toolbar-right">
 							<form action={ templ.URL(c.PathTo("dataset_add_import").String()) } method="POST">
-								<!-- TODO: use future views.CSRFTag-->
-								<input type="hidden" name={ c.CSRFName } value={ c.CSRFToken }/>
+								@views.CSRFTag(c)
 								<input type="hidden" name="source" value={ args.Source }/>
 								<input type="hidden" name="identifier" value={ args.Identifier }/>
 								<button type="submit" class="btn btn-danger">

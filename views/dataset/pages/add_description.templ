@@ -10,9 +10,9 @@ import (
 )
 
 type AddDescriptionArgs struct {
-    Dataset *models.Dataset
-    Step int
-    RedirectURL string
+	Dataset     *models.Dataset
+	Step        int
+	RedirectURL string
 }
 
 templ AddDescription(c *ctx.Ctx, args AddDescriptionArgs) {
