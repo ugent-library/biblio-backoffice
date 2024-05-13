@@ -17,7 +17,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/form"
 	"github.com/ugent-library/okay"
-	// "github.com/ugent-library/biblio-backoffice/views/display"
+	"time"
 )
 
 func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile, idx int, conflict bool, errors *okay.Errors) templ.Component {
@@ -373,6 +373,25 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"row\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.Date(form.DateArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.file.embargo_date"),
+					Name:  "embargo_date",
+					Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/embargo_date", idx)),
+					Theme: form.ThemeVertical,
+					Cols:  6,
+					Help:  `More information about <a href="https://onderzoektips.ugent.be/en/tips/00002097" target="_blank">embargo periods</a>.`,
+				},
+				Value: f.EmbargoDate,
+				Min:   nextDay().Format("2006-01-02"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -426,4 +445,9 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 		}
 		return templ_7745c5c3_Err
 	})
+}
+
+func nextDay() time.Time {
+	now := time.Now()
+	return time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Add(24 * time.Hour)
 }

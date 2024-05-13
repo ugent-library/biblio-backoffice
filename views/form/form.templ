@@ -39,7 +39,7 @@ type FieldArgs struct {
 templ horizontalField(args FieldArgs, labelFor string) {
 	<div class={ "mb-6", "row", templ.KV("is-invalid", args.Error != "") }>
 		<label class="col-lg-3 col-form-label mt-2" for={ labelFor }>
-			@html(args.Label)
+			@templ.Raw(args.Label)
 			if args.Tooltip != "" {
 				<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
 					<i class="if if-info-circle if--small"></i>
@@ -57,7 +57,7 @@ templ horizontalField(args FieldArgs, labelFor string) {
 			}
 			if args.Help != "" {
 				<small class="form-text text-muted">
-					@html(args.Help)
+					@templ.Raw(args.Help)
 				</small>
 			}
 		</div>
@@ -65,9 +65,9 @@ templ horizontalField(args FieldArgs, labelFor string) {
 }
 
 templ verticalField(args FieldArgs, labelFor string) {
-	<div class={ "mb-6", "col", templ.KV("is-invalid", args.Error != "") }>
+	<div class={ "mb-6", templ.KV("col", args.Cols == 0), templ.KV("is-invalid", args.Error != "") }>
 		<label class="col-form-label" for={ labelFor }>
-			@html(args.Label)
+			@templ.Raw(args.Label)
 			if args.Tooltip != "" {
 				<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
 					<i class="if if-info-circle if--small"></i>
@@ -84,7 +84,7 @@ templ verticalField(args FieldArgs, labelFor string) {
 		}
 		if args.Help != "" {
 			<small class="form-text text-muted">
-				@html(args.Help)
+				@templ.Raw(args.Help)
 			</small>
 		}
 	</div>
@@ -98,7 +98,13 @@ templ Field(args FieldArgs, labelFor string) {
 			}
 		case ThemeVertical:
 			@verticalField(args, labelFor) {
-				{ children... }
+				if args.Cols > 0 {
+					<div class={ fmt.Sprintf("col-%d", args.Cols) }>
+						{ children... }
+					</div>
+				} else {
+					{ children... }
+				}
 			}
 	}
 }
@@ -169,7 +175,7 @@ templ Checkbox(args CheckboxArgs) {
 				}
 				if args.Help != "" {
 					<small class="form-text text-muted">
-						@html(args.Help)
+						@templ.Raw(args.Help)
 					</small>
 				}
 			</div>
@@ -219,7 +225,7 @@ templ RadioGroup(args RadioGroupArgs) {
 			}
 			if args.Help != "" {
 				<small class="form-text text-muted">
-					@html(args.Help)
+					@templ.Raw(args.Help)
 				</small>
 			}
 		</div>
@@ -324,10 +330,27 @@ templ SelectRepeat(args SelectRepeatArgs) {
 	}
 }
 
-// TODO remove need for this
-func html(text string) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
-		_, err := io.WriteString(w, text)
-		return err
-	})
+type DateArgs struct {
+	FieldArgs
+	Value string
+	Min   string
+	Max   string
+}
+
+templ Date(args DateArgs) {
+	@Field(args.FieldArgs, args.Name) {
+		<input
+			class={ "form-control", templ.KV("is-invalid", args.Error != "") }
+			id={ args.Name }
+			name={ args.Name }
+			type="date"
+			value={ args.Value }
+			if args.Min != "" {
+				min={ args.Min }
+			}
+			if args.Max != "" {
+				max={ args.Max }
+			}
+		/>
+	}
 }
