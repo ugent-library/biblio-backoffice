@@ -288,7 +288,9 @@ func AddSingleFinish(w http.ResponseWriter, r *http.Request) {
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx Context) {
+func AddMultipleImport(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	// 2GB limit on request body
 	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
 
@@ -296,8 +298,8 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 
 	file, _, err := r.FormFile("file")
 	if err != nil {
-		h.Logger.Warnw("add multiple import publication: could not retrieve file from request", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("add multiple import publication: could not retrieve file from request", "errors", err, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 	defer file.Close()
@@ -305,31 +307,22 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 	// TODO why does the code imports zero entries without this?
 	_, _ = file.Seek(0, io.SeekStart)
 
-	batchID, err := h.importPublications(ctx.User, source, file)
+	batchID, err := importPublications(c, source, file)
 	if err != nil {
-		h.Logger.Warnw("add multiple import publication: could not import publications", "errors", err, "batch", batchID, "user", ctx.User.ID)
+		c.Log.Warnw("add multiple import publication: could not import publications", "errors", err, "batch", batchID, "user", c.User.ID)
 
 		flash := flash.SimpleFlash().
 			WithLevel("error").
 			WithBody(template.HTML("<p>Sorry, something went wrong. Could not import the publications.</p>"))
 
-		ctx.Flash = append(ctx.Flash, *flash)
+		c.PersistFlash(w, *flash)
 
-		tmpl := ""
 		switch source {
 		case "wos":
-			tmpl = "publication/pages/add_wos"
+			pages.AddWebOfScience(c, 1).Render(r.Context(), w)
 		case "bibtex":
-			tmpl = "publication/pages/add_bibtex"
+			pages.AddBibTeX(c, 1).Render(r.Context(), w)
 		}
-
-		render.Layout(w, "layouts/default", tmpl, YieldAddSingle{
-			Context:   ctx,
-			PageTitle: "Add - Publications - Biblio",
-			Step:      1,
-			ActiveNav: "publications",
-			Source:    source,
-		})
 		return
 	}
 
@@ -337,11 +330,7 @@ func (h *Handler) AddMultipleImport(w http.ResponseWriter, r *http.Request, ctx 
 	time.Sleep(1 * time.Second)
 
 	// redirect to batch page so that pagination links work
-	http.Redirect(
-		w,
-		r,
-		h.PathFor("publication_add_multiple_confirm", "batch_id", batchID).String(),
-		http.StatusFound)
+	http.Redirect(w, r, c.PathTo("publication_add_multiple_confirm", "batch_id", batchID).String(), http.StatusFound)
 }
 
 func (h *Handler) AddMultipleSave(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -494,10 +483,10 @@ func fetchPublicationByIdentifier(c *ctx.Ctx, source, identifier string) (*model
 	return d, nil
 }
 
-func (h *Handler) importPublications(user *models.Person, source string, file io.Reader) (string, error) {
+func importPublications(c *ctx.Ctx, source string, file io.Reader) (string, error) {
 	batchID := ulid.Make().String()
 
-	decFactory, ok := h.PublicationDecoders[source]
+	decFactory, ok := c.Services.PublicationDecoders[source]
 	if !ok {
 		return "", errors.New("unknown publication source")
 	}
@@ -510,14 +499,14 @@ func (h *Handler) importPublications(user *models.Person, source string, file io
 			BatchID:        batchID,
 			Status:         "private",
 			Classification: "U",
-			CreatorID:      user.ID,
-			Creator:        user,
-			UserID:         user.ID,
-			User:           user,
+			CreatorID:      c.User.ID,
+			Creator:        c.User,
+			UserID:         c.User.ID,
+			User:           c.User,
 		}
 
-		if len(user.Affiliations) > 0 {
-			p.AddOrganization(user.Affiliations[0].Organization)
+		if len(c.User.Affiliations) > 0 {
+			p.AddOrganization(c.User.Affiliations[0].Organization)
 		}
 
 		if err := dec.Decode(&p); errors.Is(err, io.EOF) {
@@ -527,7 +516,7 @@ func (h *Handler) importPublications(user *models.Person, source string, file io
 			break
 		}
 
-		if err := h.Repo.SavePublication(&p, user); err != nil {
+		if err := c.Repo.SavePublication(&p, c.User); err != nil {
 			importErr = err
 			break
 		}
