@@ -141,7 +141,15 @@ func EditFile(w http.ResponseWriter, r *http.Request) {
 		file.Relation = "main_file"
 	}
 
-	views.ShowModal(publicationviews.EditFileDialog(c, p, file, nil)).Render(r.Context(), w)
+	idx := -1
+	for i, f := range p.File {
+		if f.ID == file.ID {
+			idx = i
+			break
+		}
+	}
+
+	views.ShowModal(publicationviews.EditFileDialog(c, p, file, idx, false, nil)).Render(r.Context(), w)
 }
 
 func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ctx Context) {

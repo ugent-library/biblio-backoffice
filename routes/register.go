@@ -129,10 +129,6 @@ func Register(c Config) {
 			BlockByDefault: true,
 		}),
 	}
-	datasetViewingHandler := &datasetviewing.Handler{
-		BaseHandler: baseHandler,
-		Repo:        c.Services.Repo,
-	}
 	datasetCreatingHandler := &datasetcreating.Handler{
 		BaseHandler:         baseHandler,
 		Repo:                c.Services.Repo,
