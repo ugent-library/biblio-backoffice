@@ -1,0 +1,284 @@
+package form
+
+import "fmt"
+import "github.com/ugent-library/biblio-backoffice/render/form"
+
+templ Errors(errors []string) {
+	if len(errors) > 0 {
+		<div class="alert alert-danger">
+			<ul class="ps-3">
+				for _, err := range errors {
+					<li>{ err }</li>
+				}
+			</ul>
+		</div>
+	}
+}
+
+type FieldArgs struct {
+	Label    string
+	Name     string
+	Readonly bool
+	Tooltip  string
+	Required bool
+	Error    string
+	Cols     int
+	Help     string
+}
+
+templ Field(args FieldArgs, labelFor string) {
+	<div class={ "mb-6", "row", templ.KV("is-invalid", args.Error != "") }>
+		<label class="col-lg-3 col-form-label mt-2" for={ labelFor }>
+			{ args.Label }
+			if args.Tooltip != "" {
+				<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
+					<i class="if if-info-circle if--small"></i>
+					<span class="visually-hidden">More info</span>
+				</a>
+			}
+			if args.Required {
+				&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>
+			}
+		</label>
+		<div class={ fmt.Sprintf("col-lg-%d", args.Cols) }>
+			{ children... }
+			if args.Error != "" {
+				<small class="invalid-feedback">{ args.Error }</small>
+			}
+			if args.Help != "" {
+				<small class="form-text text-muted">
+					@html(args.Help)
+				</small>
+			}
+		</div>
+	</div>
+}
+
+type TextArgs struct {
+	FieldArgs
+	Value string
+}
+
+templ Text(args TextArgs) {
+	@Field(args.FieldArgs, args.Name) {
+		<input
+			class={ "form-control", templ.KV("is-invalid", args.Error != "") }
+			id={ args.Name }
+			name={ args.Name }
+			type="text"
+			value={ args.Value }
+			readonly?={ args.Readonly }
+		/>
+	}
+}
+
+type SelectArgs struct {
+	FieldArgs
+	Value       string
+	EmptyOption bool
+	Options     []Option
+}
+
+templ Select(args SelectArgs) {
+	@Field(args.FieldArgs, args.Name) {
+		<select
+			class={ "form-select", "form-control", templ.KV("is-invalid", args.Error != "") }
+			id={ args.Name }
+			name={ args.Name }
+		>
+			if args.EmptyOption {
+				<option></option>
+			}
+			for _, o := range args.Options {
+				<option value={ o.Value } selected?={ o.Value == args.Value }>{ o.Label }</option>
+			}
+		</select>
+	}
+}
+
+type CheckboxArgs struct {
+	FieldArgs
+	Value   string
+	Checked bool
+}
+
+templ Checkbox(args CheckboxArgs) {
+	<div class={ "mb-6", "row", templ.KV("is-invalid", args.Error != "") }>
+		<div class={ fmt.Sprintf("col-%d", args.Cols), "offset-lg-3", "mt-2" }>
+			<div class="form-check">
+				<input
+					class={ "form-check-input", templ.KV("is-invalid", args.Error != "") }
+					id={ args.Name }
+					name={ args.Name }
+					value={ args.Value }
+					type="checkbox"
+					checked?={ args.Checked }
+				/>
+				<label class="form-check-label" for={ args.Name }>{ args.Label }</label>
+				if args.Error != "" {
+					<small class="invalid-feedback">{ args.Error }</small>
+				}
+				if args.Help != "" {
+					<small class="form-text text-muted">
+						@html(args.Help)
+					</small>
+				}
+			</div>
+		</div>
+	</div>
+}
+
+type RadioGroupArgs struct {
+	FieldArgs
+	Value   string
+	Options []Option
+}
+
+templ RadioGroup(args RadioGroupArgs) {
+	<div class={ "mb-6", "row", templ.KV("is-invalid", args.Error != "") }>
+		<label class="col-lg-3 col-form-label" for={ args.Name }>
+			<div class="w-100">
+				{ args.Label }
+				if args.Tooltip != "" {
+					<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
+						<i class="if if-info-circle if--small"></i>
+						<span class="visually-hidden">More info</span>
+					</a>
+				}
+			</div>
+			<div class="w-100">
+				if args.Required {
+					&nbsp;<span class="badge badge-outline-primary badge-sm ms-0">Required</span>
+				}
+			</div>
+		</label>
+		<div class={ fmt.Sprintf("col-lg-%d", args.Cols) }>
+			for _, o := range args.Options {
+				<label class="form-check form-check-inline active ps-0">
+					<input
+						class="pe-3"
+						type="radio"
+						name={ args.Name }
+						checked?={ o.Value == args.Value }
+						value={ args.Value }
+					/>
+					<span class="pe-5">{ o.Label }</span>
+				</label>
+			}
+			if args.Error != "" {
+				<small class="invalid-feedback">{ args.Error }</small>
+			}
+			if args.Help != "" {
+				<small class="form-text text-muted">
+					@html(args.Help)
+				</small>
+			}
+		</div>
+	</div>
+}
+
+type TextRepeatArgs struct {
+	FieldArgs
+	Values []string
+}
+
+templ TextRepeat(args TextRepeatArgs) {
+	@Field(args.FieldArgs, fmt.Sprintf("%s-0", args.Name)) {
+		<div class="form-values">
+			for i, v := range args.Values {
+				<div class="d-flex mb-3 form-value">
+					<input
+						class={ "form-control", templ.KV("is-invalid", args.Error != "") }
+						name={ args.Name }
+						id={ fmt.Sprintf("%s-%d", args.Name, i) }
+						data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
+						type="text"
+						value={ v }
+					/>
+					<button class="btn btn-link-muted btn-icon-only ms-3 form-value-delete" type="button">
+						<i class="if if-delete"></i>
+						<span class="visually-hidden">Delete</span>
+					</button>
+				</div>
+			}
+			<div class="d-flex mb-3 form-value">
+				<input
+					class={ "form-control", templ.KV("is-invalid", args.Error != "") }
+					name={ args.Name }
+					id={ fmt.Sprintf("%s-%d", args.Name, len(args.Values)) }
+					data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
+					type="text"
+					value=""
+				/>
+				<button class="btn btn-outline-primary btn-icon-only ms-3 form-value-add" type="button">
+					<i class="if if-add"></i>
+					<span class="visually-hidden">Add</span>
+				</button>
+			</div>
+		</div>
+	}
+}
+
+type Option = form.SelectOption
+
+type SelectRepeatArgs struct {
+	FieldArgs
+	Values      []string
+	EmptyOption bool
+	Options     []Option
+}
+
+templ SelectRepeat(args SelectRepeatArgs) {
+	@Field(args.FieldArgs, fmt.Sprintf("%s-0", args.Name)) {
+		<div class="form-values">
+			for i, v := range args.Values {
+				<div class="d-flex mb-3 form-value">
+					<select
+						class={ "form-select", "form-control", templ.KV("is-invalid", args.Error != "") }
+						name={ args.Name }
+						id={ fmt.Sprintf("%s-%d", args.Name, i) }
+						data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
+					>
+						if args.EmptyOption {
+							<option></option>
+						}
+						for _, o := range args.Options {
+							<option value={ o.Value } selected?={ o.Value == v }>{ o.Label }</option>
+						}
+					</select>
+					<button class="btn btn-link-muted btn-icon-only ms-3 form-value-delete" type="button">
+						<i class="if if-delete"></i>
+						<span class="visually-hidden">Delete</span>
+					</button>
+				</div>
+			}
+			<div class="d-flex mb-3 form-value">
+				<select
+					class={ "form-select", "form-control", templ.KV("is-invalid", args.Error != "") }
+					name={ args.Name }
+					id={ fmt.Sprintf("%s-%d", args.Name, len(args.Values)) }
+					data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
+				>
+					if args.EmptyOption {
+						<option></option>
+					}
+					for _, o := range args.Options {
+						<option value={ o.Value }>{ o.Label }</option>
+					}
+				</select>
+				<button class="btn btn-outline-primary btn-icon-only ms-3 form-value-add" type="button">
+					<i class="if if-add"></i>
+					<span class="visually-hidden">Add</span>
+				</button>
+			</div>
+		</div>
+	}
+}
+
+// TODO remove need for this
+func html(text string) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
+		_, err := io.WriteString(w, text)
+		return err
+	})
+}
