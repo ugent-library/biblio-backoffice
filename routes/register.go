@@ -356,6 +356,7 @@ func Register(c Config) {
 						r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
 
 						// files
+						r.Get("/files/{file_id}/edit", publicationediting.EditFile).Name("publication_edit_file")
 						r.Get("/{snapshot_id}/files/{file_id}/confirm-delete", publicationediting.ConfirmDeleteFile).Name("publication_confirm_delete_file")
 
 						// contributors
@@ -817,9 +818,6 @@ func Register(c Config) {
 		r.Post("/publication/{id}/files",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UploadFile)).
 			Name("publication_upload_file")
-		r.Get("/publication/{id}/files/{file_id}/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditFile)).
-			Name("publication_edit_file")
 		r.Get("/publication/{id}/refresh-files",
 			publicationEditingHandler.Wrap(publicationEditingHandler.RefreshFiles)).
 			Name("publication_refresh_files")

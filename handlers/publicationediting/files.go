@@ -14,6 +14,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -117,18 +118,21 @@ func (h *Handler) UploadFile(w http.ResponseWriter, r *http.Request, ctx Context
 
 }
 
-func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) {
+func EditFile(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	var b BindFile
 	if err := bind.Request(r, &b); err != nil {
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	file := ctx.Publication.GetFile(b.FileID)
+	file := p.GetFile(b.FileID)
 
 	if file == nil {
-		h.Logger.Warnw("publication upload file: could not find file", "fileid", b.FileID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		c.Log.Warnw("publication upload file: could not find file", "fileid", b.FileID, "publication", p.ID, "user", c.User.ID)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -137,12 +141,7 @@ func (h *Handler) EditFile(w http.ResponseWriter, r *http.Request, ctx Context) 
 		file.Relation = "main_file"
 	}
 
-	render.Layout(w, "show_modal", "publication/edit_file", YieldEditFile{
-		Context:  ctx,
-		File:     file,
-		Form:     fileForm(ctx.Loc, ctx.Publication, file, nil),
-		Conflict: false,
-	})
+	views.ShowModal(publicationviews.EditFileDialog(c, p, file, nil)).Render(r.Context(), w)
 }
 
 func (h *Handler) RefreshEditFileForm(w http.ResponseWriter, r *http.Request, ctx Context) {
