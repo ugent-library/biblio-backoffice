@@ -17,7 +17,7 @@ templ AddImpersonationSuggest(c *ctx.Ctx, firstName string, lastName string, hit
 						</div>
 						<div class="c-button-toolbar">
 							<form action={ templ.URL(c.PathTo("create_impersonation").String()) } method="POST">
-								@csrfField(c)
+								@CSRFTag(c)
 								<input type="hidden" name="id" value={ hit.ID }/>
 								<button type="submit" class="btn btn-primary">Change user</button>
 							</form>
