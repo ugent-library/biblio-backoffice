@@ -6,7 +6,6 @@ import (
 	"slices"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 	"github.com/ugent-library/httperror"
 )
@@ -26,7 +25,7 @@ type YieldShow struct {
 func Show(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-  activeSubNav := r.URL.Query().Get("show")
+	activeSubNav := r.URL.Query().Get("show")
 	if !slices.Contains(subNavs, activeSubNav) {
 		activeSubNav = "description"
 	}
