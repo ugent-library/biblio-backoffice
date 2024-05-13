@@ -56,7 +56,7 @@ templ AddDescription(c *ctx.Ctx, dataset *models.Dataset) {
 					<div class="bc-toolbar">
 						<div class="bc-toolbar-left">
 							<div class="bc-toolbar-item" id="show-nav">
-								@datasetviews.SubNav(c, dataset, c.PathTo("/dataset").String())
+								@datasetviews.SubNav(c, dataset, c.PathTo("datasets").String())
 							</div>
 						</div>
 						<div class="bc-toolbar-right"></div>

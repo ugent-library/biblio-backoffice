@@ -73,7 +73,7 @@ func AddDescription(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = datasetviews.SubNav(c, dataset, c.PathTo("/dataset").String()).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = datasetviews.SubNav(c, dataset, c.PathTo("datasets").String()).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
