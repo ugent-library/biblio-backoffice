@@ -313,6 +313,7 @@ func Register(c Config) {
 				r.Route("/publication/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetPublication(c.Services.Repo))
 					r.Use(ctx.RequireViewPublication)
+					r.Use(ctx.SetNav("publications"))
 
 					// view only functions
 					r.Get("/", publicationviewing.Show).Name("publication")
@@ -397,6 +398,7 @@ func Register(c Config) {
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 					r.Use(ctx.RequireViewDataset)
+					r.Use(ctx.SetNav("datasets"))
 
 					// view only functions
 
@@ -450,7 +452,7 @@ func Register(c Config) {
 						r.Post("/publications", datasetediting.CreatePublication).Name("dataset_create_publication")
 						r.Delete("/publications/{publication_id}", datasetediting.DeletePublication).Name("dataset_delete_publication")
 
-						r.With(ctx.SetNav("dataset"), ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
+						r.With(ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
 					})
 
 					// curator actions
