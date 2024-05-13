@@ -10,6 +10,8 @@ import (
 	"github.com/samber/lo"
 )
 
+const DetailsBodySelector = "#details-body"
+
 templ Details(c *ctx.Ctx, p *models.Publication) {
 	<div id="publication-details" class="card mb-6">
 		<div class="card-header">
@@ -33,7 +35,9 @@ templ Details(c *ctx.Ctx, p *models.Publication) {
 				</div>
 			</div>
 		</div>
-		@DetailsBody(c, p)
+		<div id="details-body">
+			@DetailsBody(c, p)
+		</div>
 	</div>
 }
 
