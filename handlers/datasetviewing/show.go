@@ -6,9 +6,7 @@ import (
 	"slices"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/render"
-	"github.com/ugent-library/biblio-backoffice/render/display"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 	"github.com/ugent-library/httperror"
 )
@@ -23,13 +21,6 @@ type YieldShow struct {
 	SubNavs      []string
 	ActiveNav    string
 	ActiveSubNav string
-}
-
-type YieldShowDescription struct {
-	Context
-	SubNavs        []string
-	ActiveSubNav   string
-	DisplayDetails *display.Display
 }
 
 type YieldShowContributors struct {
@@ -59,13 +50,15 @@ func (h *Handler) Show(w http.ResponseWriter, r *http.Request, legacyCtx Context
 	})
 }
 
-func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, legacyCtx Context) {
-	render.View(w, "dataset/show_description", YieldShowDescription{
-		Context:        legacyCtx,
-		SubNavs:        subNavs,
-		ActiveSubNav:   "description",
-		DisplayDetails: displays.DatasetDetails(legacyCtx.User, legacyCtx.Loc, legacyCtx.Dataset),
-	})
+func ShowDescription(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	redirectURL := r.URL.Query().Get("redirect-url")
+	if redirectURL == "" {
+		redirectURL = c.PathTo("datasets").String()
+	}
+
+	datasetviews.Description(c, ctx.GetDataset(r), redirectURL).Render(r.Context(), w)
 }
 
 func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, legacyCtx Context) {
