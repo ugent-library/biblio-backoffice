@@ -39,7 +39,7 @@ type FieldArgs struct {
 templ horizontalField(args FieldArgs, labelFor string) {
 	<div class={ "mb-6", "row", templ.KV("is-invalid", args.Error != "") }>
 		<label class="col-lg-3 col-form-label mt-2" for={ labelFor }>
-			{ args.Label }
+			@html(args.Label)
 			if args.Tooltip != "" {
 				<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
 					<i class="if if-info-circle if--small"></i>
@@ -67,7 +67,7 @@ templ horizontalField(args FieldArgs, labelFor string) {
 templ verticalField(args FieldArgs, labelFor string) {
 	<div class={ "mb-6", "col", templ.KV("is-invalid", args.Error != "") }>
 		<label class="col-form-label" for={ labelFor }>
-			{ args.Label }
+			@html(args.Label)
 			if args.Tooltip != "" {
 				<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
 					<i class="if if-info-circle if--small"></i>

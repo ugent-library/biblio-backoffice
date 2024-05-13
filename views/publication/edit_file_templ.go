@@ -335,7 +335,50 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></form></div><div class=\"modal-footer\"><div class=\"spinner-border\"><span class=\"visually-hidden\"></span></div><div class=\"bc-toolbar\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if f.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h3 class=\"mb-3\">Set your embargo</h3><p class=\"mb-5\">More information about <a href=\"https://onderzoektips.ugent.be/en/tips/00002097\" target=\"_blank\">embargoes</a>.</p><div class=\"row\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.Select(form.SelectArgs{
+				FieldArgs: form.FieldArgs{
+					Label: `Access level&nbsp;<strong>during</strong>&nbsp;embargo`,
+					Name:  "access_level_during_embargo",
+					Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/access_level_during_embargo", idx)),
+					Theme: form.ThemeVertical,
+				},
+				Value:       f.AccessLevelDuringEmbargo,
+				EmptyOption: true,
+				Options:     localize.VocabularySelectOptions(c.Loc, "publication_file_access_levels_during_embargo"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.Select(form.SelectArgs{
+				FieldArgs: form.FieldArgs{
+					Label: `Access level&nbsp;<strong>after</strong>&nbsp;embargo`,
+					Name:  "access_level_after_embargo",
+					Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/access_level_after_embargo", idx)),
+					Help:  "Open access is recommended for author accepted manuscripts (AAM) of journal articles, and if legally possible for other cases.",
+					Theme: form.ThemeVertical,
+				},
+				Value:       f.AccessLevelAfterEmbargo,
+				EmptyOption: true,
+				Options:     localize.VocabularySelectOptions(c.Loc, "publication_file_access_levels_after_embargo"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</form></div><div class=\"modal-footer\"><div class=\"spinner-border\"><span class=\"visually-hidden\"></span></div><div class=\"bc-toolbar\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
