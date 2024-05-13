@@ -390,17 +390,16 @@ func Register(c Config) {
 				})
 
 				// datasets
-				r.Route("/dataset", func(r *ich.Mux) {
+				r.With(ctx.SetNav("datasets")).Get("/dataset", datasetsearching.Search).Name("datasets")
+
+				// dataset wizard (part 1)
+				r.Route("/add-dataset", func(r *ich.Mux) {
 					r.Use(ctx.SetNav("datasets"))
 
-					// search
-					r.Get("/", datasetsearching.Search).Name("datasets")
-
-					// wizard (part 1)
+					r.Get("/", datasetcreating.Add).Name("dataset_add")
+					r.Post("/", datasetcreating.Add).Name("dataset_add")
 					r.Post("/import/confirm", datasetcreating.ConfirmImport).Name("dataset_confirm_import")
 					r.Post("/import", datasetcreating.AddImport).Name("dataset_add_import")
-					r.Get("/add", datasetcreating.Add).Name("dataset_add")
-					r.Post("/add", datasetcreating.Add).Name("dataset_add")
 				})
 
 				r.Route("/dataset/{id}", func(r *ich.Mux) {

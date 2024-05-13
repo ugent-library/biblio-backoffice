@@ -13,7 +13,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
-	"github.com/ugent-library/biblio-backoffice/render/display"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
@@ -33,32 +32,7 @@ type BindImport struct {
 	Identifier string `form:"identifier"`
 }
 
-type YieldAdd struct {
-	Context
-	PageTitle           string
-	Step                int
-	Source              string
-	Identifier          string
-	Dataset             *models.Dataset
-	DuplicateDataset    bool
-	DatasetPublications []*models.Publication
-	ActiveNav           string
-	SubNavs             []string // needed to render show_description
-	ActiveSubNav        string   // needed to render show_description
-	RedirectURL         string   // needed to render show_description
-	DisplayDetails      *display.Display
-	Errors              *YieldValidationErrors
-}
-
-type YieldValidationErrors struct {
-	Title  string
-	Errors form.Errors
-}
-
 func Add(w http.ResponseWriter, r *http.Request) {
-	//TODO: setnav "datasets"
-	//TODO: access?
-
 	c := ctx.Get(r)
 
 	b := BindAdd{}
@@ -189,11 +163,11 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 	if subNav == "" {
 		subNav = "description"
 	}
+	c.SubNav = subNav
 
 	datasetpages.AddDescription(c, datasetpages.AddDescriptionArgs{
 		Step:    2, // TODO: step needed?
 		Dataset: d,
-		//ActiveSubNav: subNav, //TODO
 	}).Render(r.Context(), w)
 }
 
@@ -204,11 +178,11 @@ func AddDescription(w http.ResponseWriter, r *http.Request) {
 	if subNav == "" {
 		subNav = "description"
 	}
+	c.SubNav = subNav
 
 	datasetpages.AddDescription(c, datasetpages.AddDescriptionArgs{
 		Step:    2, //TODO: needed?
 		Dataset: ctx.GetDataset(r),
-		//ActiveSubNav: subNav, //TODO
 	}).Render(r.Context(), w)
 }
 
