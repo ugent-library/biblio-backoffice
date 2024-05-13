@@ -175,7 +175,7 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = views.Facet(c, "reviewer_tags", "Librarian tags", "reviewer_tags", "reviewer_tags", facets["reviewer_tags"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, "reviewer_tags", "Librarian tags", "", "", facets["reviewer_tags"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -284,7 +284,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(args.Scopes) > 0 {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-divider my-0 mx-6\"></div><div class=\"bc-navbar bc-navbar--white\"><ul class=\"nav nav-tabs\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-navbar bc-navbar--bordered-bottom bc-navbar--white\"><ul class=\"nav nav-tabs\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -322,7 +322,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 					var templ_7745c5c3_Var13 string
 					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.search.scopes." + scope))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 98, Col: 53}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 97, Col: 53}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {
@@ -387,7 +387,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, args.Hits.Pagination))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 125, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 124, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -430,7 +430,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.search.empty.title." + args.CurrentScope))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 146, Col: 102}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 145, Col: 102}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
@@ -443,7 +443,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.search.empty.description." + args.CurrentScope))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 147, Col: 79}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 146, Col: 79}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -492,7 +492,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, args.Hits.Pagination))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 180, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search.templ`, Line: 179, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
