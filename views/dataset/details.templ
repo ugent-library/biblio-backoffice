@@ -1,0 +1,137 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/display"
+	"github.com/ugent-library/biblio-backoffice/identifiers"
+	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/localize"
+)
+
+templ Details(c *ctx.Ctx, dataset *models.Dataset) {
+	<div id="dataset-details" class="card mb-6">
+		<div class="card-header">
+			<div class="bc-toolbar">
+				<div class="bc-toolbar-left">
+					<h1 class="bc-toolbar-title">Dataset details</h1>
+				</div>
+				<div class="bc-toolbar-right">
+					if c.User.CanEditDataset(dataset) {
+						<div class="c-button-toolbar" data-panel-state="read">
+							<button
+								class="btn btn-outline-primary"
+								hx-get={ c.PathTo("dataset_edit_details", "id", dataset.ID).String() }
+								hx-target="#modals"
+							>
+								<i class="if if-edit"></i>
+								<div class="btn-text">Edit</div>
+							</button>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+		<div id="details-body">
+			@DetailsBody(c, dataset)
+		</div>
+	</div>
+}
+
+templ detailsSection() {
+	<li class="list-group-item">
+		{ children... }
+	</li>
+}
+
+func getDatasetIdentifierAndType(dataset *models.Dataset) (string, string) {
+	var identifierType, identifier string
+	for _, key := range vocabularies.Map["dataset_identifier_types"] {
+		if val := dataset.Identifiers.Get(key); val != "" {
+			identifierType = key
+			identifier = val
+			break
+		}
+	}
+	return identifierType, identifier
+}
+
+templ DetailsBody(c *ctx.Ctx, dataset *models.Dataset) {
+	<div class="card-body p-0">
+		<ul class="list-group list-group-flush" data-panel-state="read">
+			@detailsSection() {
+				@display.Field(display.FieldArgs{
+					Label:    c.Loc.Get("builder.title"),
+					Value:    dataset.Title,
+					Required: true,
+				})
+				if identifierType, identifier := getDatasetIdentifierAndType(dataset); identifierType != "" {
+					@display.Field(display.FieldArgs{
+						Label:    c.Loc.Get("builder.identifier_type"),
+						Value:    c.Loc.Get("identifier." + identifierType),
+						Required: true,
+					})
+					@display.Field(display.FieldArgs{
+						Label: c.Loc.Get("builder.identifier"),
+						Value: identifier,
+						Content: display.Link(identifier, func(_ string) string {
+							return identifiers.Resolve(identifierType, identifier)
+						}),
+						Required: true,
+					})
+				}
+			}
+			@detailsSection() {
+				@display.Field(display.FieldArgs{
+					Label:   c.Loc.Get("builder.language"),
+					Content: display.List(localize.LanguageNames(dataset.Language), nil),
+				})
+				@display.Field(display.FieldArgs{
+					Label:    c.Loc.Get("builder.year"),
+					Value:    dataset.Year,
+					Required: true,
+				})
+				@display.Field(display.FieldArgs{
+					Label:    c.Loc.Get("builder.publisher"),
+					Value:    dataset.Publisher,
+					Required: true,
+				})
+			}
+			@detailsSection() {
+				@display.Field(display.FieldArgs{
+					Label:    c.Loc.Get("builder.format"),
+					Required: true,
+					Content:  display.List(dataset.Format, nil),
+				})
+				@display.Field(display.FieldArgs{
+					Label:   c.Loc.Get("builder.keyword"),
+					Content: display.InlineList(dataset.Keyword, display.Badge),
+				})
+			}
+			@detailsSection() {
+				@display.Field(display.FieldArgs{
+					Label:    c.Loc.Get("builder.license"),
+					Value:    c.Loc.Get("dataset_licenses." + dataset.License),
+					Required: true,
+				})
+				@display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.other_license"),
+					Value: dataset.OtherLicense,
+				})
+				@display.Field(display.FieldArgs{
+					Label:    c.Loc.Get("builder.access_level"),
+					Value:    c.Loc.Get("dataset_access_levels." + dataset.AccessLevel),
+					Required: true,
+				})
+				@display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.embargo_date"),
+					Value: dataset.EmbargoDate,
+				})
+				@display.Field(display.FieldArgs{
+					Label: c.Loc.Get("builder.access_level_after_embargo"),
+					Value: c.Loc.Get("dataset_access_levels_after_embargo." + dataset.AccessLevelAfterEmbargo),
+				})
+			}
+		</ul>
+	</div>
+}

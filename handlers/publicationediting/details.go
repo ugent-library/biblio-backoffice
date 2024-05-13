@@ -4,12 +4,14 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/ugent-library/biblio-backoffice/displays"
-	"github.com/ugent-library/biblio-backoffice/render"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/render/display"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
@@ -68,23 +70,22 @@ type YieldEditDetails struct {
 	Conflict bool
 }
 
-func (h *Handler) EditDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "show_modal", "publication/edit_details", YieldEditDetails{
-		Context:  ctx,
-		Form:     detailsForm(ctx.User, ctx.Loc, ctx.Publication, nil),
-		Conflict: false,
-	})
+func EditDetails(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+	views.ShowModal(publicationviews.EditDetailsDialog(c, p, false, nil)).Render(r.Context(), w)
 }
 
-func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Context) {
+func UpdateDetails(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	var b BindDetails
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("update publication details: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("update publication details: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
-
-	p := ctx.Publication
 
 	p.AlternativeTitle = b.AlternativeTitle
 	p.ArticleNumber = b.ArticleNumber
@@ -127,41 +128,30 @@ func (h *Handler) UpdateDetails(w http.ResponseWriter, r *http.Request, ctx Cont
 	p.WOSID = b.WOSID
 	p.Year = b.Year
 
-	if ctx.User.CanCurate() {
+	if c.User.CanCurate() {
 		p.Classification = b.Classification
 		p.Legacy = b.Legacy
 		p.WOSType = b.WOSType
 	}
 
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
-			Context:  ctx,
-			Form:     detailsForm(ctx.User, ctx.Loc, ctx.Publication, validationErrs.(*okay.Errors)),
-			Conflict: false,
-		})
+	if validationErrs := p.Validate(); validationErrs != nil {
+		views.ReplaceModal(publicationviews.EditDetailsDialog(c, p, false, validationErrs.(*okay.Errors))).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
-			Context:  ctx,
-			Form:     detailsForm(ctx.User, ctx.Loc, ctx.Publication, nil),
-			Conflict: true,
-		})
+		views.ReplaceModal(publicationviews.EditDetailsDialog(c, p, true, nil)).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update publication details: Could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("update publication details: Could not save the publication:", "error", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_details", YieldDetails{
-		Context:        ctx,
-		DisplayDetails: displays.PublicationDetails(ctx.User, ctx.Loc, ctx.Publication),
-	})
+	views.CloseModalAndReplace(publicationviews.DetailsBodySelector, publicationviews.DetailsBody(c, p)).Render(r.Context(), w)
 }
