@@ -343,6 +343,7 @@ func Register(c Config) {
 							// add
 							r.Get("/add/description", publicationcreating.AddSingleDescription).Name("publication_add_single_description")
 							r.Get("/add/confirm", publicationcreating.AddSingleConfirm).Name("publication_add_single_confirm")
+							r.Post("/add/publish", publicationcreating.AddSinglePublish).Name("publication_add_single_publish")
 
 							// edit publication type
 							r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
@@ -642,9 +643,6 @@ func Register(c Config) {
 			Name("dataset_delete_contributor")
 
 		// add publication
-		r.Post("/publication/{id}/add/publish",
-			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSinglePublish)).
-			Name("publication_add_single_publish")
 		r.Get("/publication/{id}/add/finish",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddSingleFinish)).
 			Name("publication_add_single_finish")

@@ -241,45 +241,40 @@ func AddSingleConfirm(w http.ResponseWriter, r *http.Request) {
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) AddSinglePublish(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanPublishPublication(ctx.Publication) {
-		h.Logger.Warnw("add single publication publish: user has no permission to publish publication.", "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.Forbidden(w, r)
+func AddSinglePublish(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	publication := ctx.GetPublication(r)
+
+	if !c.User.CanPublishPublication(publication) {
+		c.Log.Warnw("add single publication publish: user has no permission to publish publication.", "publication", publication.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
 
-	ctx.Publication.Status = "public"
+	publication.Status = "public"
 
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(*okay.Errors)))
-		render.Layout(w, "show_modal", "form_errors_dialog", struct {
-			Title  string
-			Errors form.Errors
-		}{
-			Title:  "Unable to publish this publication due to the following errors",
-			Errors: errors,
-		})
+	if validationErrs := publication.Validate(); validationErrs != nil {
+		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
+		views.ShowModal(views.FormErrorsDialog(c, "Unable to publish this publication due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), publication, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("add single publication publish: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("add single publication publish: could not save the publication:", "errors", err, "publication", publication.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	redirectURL := h.PathFor("publication_add_single_finish", "id", ctx.Publication.ID)
-	redirectURL.RawQuery = r.URL.Query().Encode()
-
-	w.Header().Set("HX-Redirect", redirectURL.String())
+	redirectURL := views.URL(c.PathTo("publication_add_single_finish", "id", publication.ID)).Query(r.URL.Query()).String()
+	w.Header().Set("HX-Redirect", redirectURL)
 }
 
 func (h *Handler) AddSingleFinish(w http.ResponseWriter, r *http.Request, ctx Context) {
