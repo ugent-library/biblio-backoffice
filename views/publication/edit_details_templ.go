@@ -786,11 +786,11 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 		if p.UsesPubMedID() {
 			templ_7745c5c3_Err = form.Text(form.TextArgs{
 				FieldArgs: form.FieldArgs{
-					Label: c.Loc.Get("builder.wos_id"),
-					Name:  "wos_type",
+					Label: c.Loc.Get("builder.pubmed_id"),
+					Name:  "pubmed_id",
 					Cols:  3,
-					Error: localize.ValidationErrorAt(c.Loc, errors, "/wos_id"),
-					Help:  c.Loc.Get("builder.wos_id.help")},
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/pubmed_id"),
+					Help:  c.Loc.Get("builder.pubmed_id.help")},
 				Value: p.PubMedID,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
