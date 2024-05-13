@@ -23,21 +23,10 @@ type YieldShow struct {
 	ActiveSubNav string
 }
 
-type YieldShowContributors struct {
-	Context
-	SubNavs      []string
-	ActiveSubNav string
-}
-
-type YieldShowActivity struct {
-	Context
-	SubNavs      []string
-	ActiveSubNav string
-}
-
 func Show(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	activeSubNav := r.URL.Query().Get("show")
+
+  activeSubNav := r.URL.Query().Get("show")
 	if !slices.Contains(subNavs, activeSubNav) {
 		activeSubNav = "description"
 	}
@@ -57,12 +46,13 @@ func ShowDescription(w http.ResponseWriter, r *http.Request) {
 	datasetviews.Description(c, ctx.GetDataset(r), redirectURL).Render(r.Context(), w)
 }
 
-func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, legacyCtx Context) {
-	render.View(w, "dataset/show_contributors", YieldShowContributors{
-		Context:      legacyCtx,
-		SubNavs:      subNavs,
-		ActiveSubNav: "contributors",
-	})
+func ShowContributors(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	redirectURL := r.URL.Query().Get("redirect-url")
+	if redirectURL == "" {
+		redirectURL = c.PathTo("datasets").String()
+	}
+	datasetviews.Contributors(ctx.Get(r), ctx.GetDataset(r), redirectURL).Render(r.Context(), w)
 }
 
 func ShowPublications(w http.ResponseWriter, r *http.Request) {
@@ -79,10 +69,11 @@ func ShowPublications(w http.ResponseWriter, r *http.Request) {
 	datasetviews.ShowPublications(c, dataset, relatedPublications).Render(r.Context(), w)
 }
 
-func (h *Handler) ShowActivity(w http.ResponseWriter, r *http.Request, legacyCtx Context) {
-	render.View(w, "dataset/show_activity", YieldShowActivity{
-		Context:      legacyCtx,
-		SubNavs:      subNavs,
-		ActiveSubNav: "activity",
-	})
+func ShowActivity(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	redirectURL := r.URL.Query().Get("redirect-url")
+	if redirectURL == "" {
+		redirectURL = c.PathTo("datasets").String()
+	}
+	datasetviews.Activity(ctx.Get(r), ctx.GetDataset(r), redirectURL).Render(r.Context(), w)
 }

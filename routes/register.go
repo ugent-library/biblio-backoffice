@@ -407,6 +407,9 @@ func Register(c Config) {
 					// view only functions
 					r.Get("/", datasetviewing.Show).Name("dataset")
 					r.With(ctx.SetSubNav("description")).Get("/description", datasetviewing.ShowDescription).Name("dataset_description")
+					r.With(ctx.SetSubNav("contributors")).Get("/contributors", datasetviewing.ShowContributors).Name("dataset_contributors")
+					r.With(ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
+					r.With(ctx.SetSubNav("activity")).Get("/activity", datasetviewing.ShowActivity).Name("dataset_activity")
 
 					// edit only
 					r.Group(func(r *ich.Mux) {
@@ -458,7 +461,6 @@ func Register(c Config) {
 						r.Post("/publications", datasetediting.CreatePublication).Name("dataset_create_publication")
 						r.Delete("/publications/{publication_id}", datasetediting.DeletePublication).Name("dataset_delete_publication")
 
-						r.With(ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
 					})
 
 					// curator actions
@@ -504,15 +506,6 @@ func Register(c Config) {
 		r.Get("/dataset/{id}/add/finish",
 			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddFinish)).
 			Name("dataset_add_finish")
-
-		// view dataset
-		r.Get("/dataset/{id}/contributors",
-			datasetViewingHandler.Wrap(datasetViewingHandler.ShowContributors)).
-			Name("dataset_contributors")
-
-		r.Get("/dataset/{id}/activity",
-			datasetViewingHandler.Wrap(datasetViewingHandler.ShowActivity)).
-			Name("dataset_activity")
 
 		// edit dataset activity
 		r.Get("/dataset/{id}/message/edit",
