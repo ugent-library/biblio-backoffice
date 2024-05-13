@@ -113,7 +113,7 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 				WithTitle("Failed to save draft").
 				WithBody(template.HTML(c.Loc.Get("dataset.single_import.import_by_id.import_failed")))
 
-			c.PersistFlash(w, *flash)
+			c.Flash = append(c.Flash, *flash)
 
 			datasetpages.AddIdentifier(c, datasetpages.AddIdentifierArgs{
 				Source:     b.Source,
