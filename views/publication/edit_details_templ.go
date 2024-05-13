@@ -15,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/display"
 	"github.com/ugent-library/biblio-backoffice/views/form"
 	"github.com/ugent-library/okay"
 )
@@ -46,7 +47,220 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul class=\"list-group list-group-flush\" data-panel-state=\"edit\"><li class=\"list-group-item\"></li><li class=\"list-group-item\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul class=\"list-group list-group-flush\" data-panel-state=\"edit\"><li class=\"list-group-item\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if c.User.CanChangeType(p) {
+			templ_7745c5c3_Var2 := templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+				if !templ_7745c5c3_IsBuffer {
+					templ_7745c5c3_Buffer = templ.GetBuffer()
+					defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+				}
+				var templ_7745c5c3_Var3 = []any{"form-select", "form-control", templ.KV("is-invalid", errors != nil && errors.Get("/type") != nil)}
+				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<select class=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ.CSSClasses(templ_7745c5c3_Var3).String()))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" name=\"type\" id=\"type\" hx-get=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_confirm_update_type", "id", p.ID).String()))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-headers=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID)))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				for _, o := range localize.VocabularySelectOptions(c.Loc, "publication_types") {
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<option value=\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(o.Value))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					if o.Value == p.Type {
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" selected")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var4 string
+					templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 45, Col: 77}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if !templ_7745c5c3_IsBuffer {
+					_, templ_7745c5c3_Err = io.Copy(templ_7745c5c3_W, templ_7745c5c3_Buffer)
+				}
+				return templ_7745c5c3_Err
+			})
+			templ_7745c5c3_Err = form.Field(form.FieldArgs{
+				Label: c.Loc.Get("builder.type"),
+				Name:  "type",
+				Cols:  3,
+				Error: localize.ValidationErrorAt(c.Loc, errors, "/type"),
+				Help:  c.Loc.Get("builder.type.help"),
+			}, "type").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = display.Field(display.FieldArgs{
+				Label:   c.Loc.Get("builder.type"),
+				Value:   c.Loc.Get("publication_types." + p.Type),
+				Tooltip: c.Loc.Get("tooltip.publication.type"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesJournalArticleType() {
+			templ_7745c5c3_Err = form.Select(form.SelectArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.journal_article_type"),
+					Name:  "journal_article_type",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/journal_article_type"),
+				},
+				Value:       p.JournalArticleType,
+				EmptyOption: true,
+				Options:     localize.VocabularySelectOptions(c.Loc, "journal_article_types"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesConferenceType() {
+			templ_7745c5c3_Err = form.Select(form.SelectArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.conference_type"),
+					Name:  "conference_type",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/conference_type"),
+				},
+				Value:       p.ConferenceType,
+				EmptyOption: true,
+				Options:     localize.VocabularySelectOptions(c.Loc, "conference_types"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesMiscellaneousType() {
+			templ_7745c5c3_Err = form.Select(form.SelectArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.miscellaneous_type"),
+					Name:  "miscellaneous_type",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/miscellaneous_type"),
+				},
+				Value:       p.MiscellaneousType,
+				EmptyOption: true,
+				Options:     localize.VocabularySelectOptions(c.Loc, "miscellaneous_types"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesDOI() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.doi"),
+					Name:  "doi",
+					Cols:  9,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/doi"),
+					Help:  c.Loc.Get("builder.doi.help"),
+				},
+				Value: p.DOI,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if c.User.CanCurate() {
+			templ_7745c5c3_Err = form.Select(form.SelectArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.classification"),
+					Name:  "classification",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/classification"),
+				},
+				Value:       p.Classification,
+				EmptyOption: true,
+				Options:     localize.ClassificationSelectOptions(c.Loc, p.ClassificationChoices()),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = display.Field(display.FieldArgs{
+				Label:   c.Loc.Get("builder.classification"),
+				Value:   c.Loc.Get("publication_classifications." + p.Type),
+				Tooltip: c.Loc.Get("tooltip.publication.classification"),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if c.User.CanCurate() {
+			templ_7745c5c3_Err = form.Checkbox(form.CheckboxArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.legacy"),
+					Name:  "legacy",
+					Cols:  9,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/legacy"),
+				},
+				Value:   "true",
+				Checked: p.Legacy,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li><li class=\"list-group-item\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -74,6 +288,35 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 					Error: localize.ValidationErrorAt(c.Loc, errors, "/alternative_title"),
 				},
 				Values: p.AlternativeTitle,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesPublication() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label:    c.Loc.Get(fmt.Sprintf("builder.%s.publication", p.Type)),
+					Name:     "publication",
+					Cols:     9,
+					Error:    localize.ValidationErrorAt(c.Loc, errors, "/publication"),
+					Required: p.ShowPublicationAsRequired(),
+				},
+				Value: p.Publication,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesPublicationAbbreviation() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get(fmt.Sprintf("builder.%s.publication_abbreviation", p.Type)),
+					Name:  "publication_abbreviation",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/publication_abbreviation"),
+				},
+				Value: p.PublicationAbbreviation,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -430,7 +673,159 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul></div><div class=\"modal-footer\"><div class=\"bc-toolbar\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if p.UsesWOS() {
+			if c.User.CanCurate() {
+				templ_7745c5c3_Err = form.Text(form.TextArgs{
+					FieldArgs: form.FieldArgs{
+						Label:   c.Loc.Get("builder.wos_type"),
+						Name:    "wos_type",
+						Cols:    3,
+						Error:   localize.ValidationErrorAt(c.Loc, errors, "/wos_type"),
+						Tooltip: c.Loc.Get("tooltip.publication.wos_type"),
+					},
+					Value: p.WOSType,
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = display.Field(display.FieldArgs{
+					Label:   c.Loc.Get("builder.wos_type"),
+					Value:   p.WOSType,
+					Tooltip: c.Loc.Get("tooltip.publication.wos_type"),
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.wos_id"),
+					Name:  "wos_type",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/wos_id"),
+					Help:  c.Loc.Get("builder.wos_id.help")},
+				Value: p.WOSID,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesISSN() {
+			templ_7745c5c3_Err = form.TextRepeat(form.TextRepeatArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.issn"),
+					Name:  "issn",
+					Cols:  3,
+					Help:  c.Loc.Get("builder.issn.help"),
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/issn"),
+				},
+				Values: p.ISSN,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.TextRepeat(form.TextRepeatArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.eissn"),
+					Name:  "eissn",
+					Cols:  3,
+					Help:  c.Loc.Get("builder.eissn.help"),
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/eissn"),
+				},
+				Values: p.EISSN,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesISBN() {
+			templ_7745c5c3_Err = form.TextRepeat(form.TextRepeatArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.isbn"),
+					Name:  "isbn",
+					Cols:  3,
+					Help:  c.Loc.Get("builder.isbn.help"),
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/isbn"),
+				},
+				Values: p.ISBN,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = form.TextRepeat(form.TextRepeatArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.eisbn"),
+					Name:  "eisbn",
+					Cols:  3,
+					Help:  c.Loc.Get("builder.eisbn.help"),
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/eisbn"),
+				},
+				Values: p.EISBN,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesPubMedID() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.wos_id"),
+					Name:  "wos_type",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/wos_id"),
+					Help:  c.Loc.Get("builder.wos_id.help")},
+				Value: p.PubMedID,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesArxivID() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.arxiv_id"),
+					Name:  "arxiv_id",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/arxiv_id"),
+					Help:  c.Loc.Get("builder.arxiv_id.help")},
+				Value: p.ArxivID,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.UsesESCIID() {
+			templ_7745c5c3_Err = form.Text(form.TextArgs{
+				FieldArgs: form.FieldArgs{
+					Label: c.Loc.Get("builder.esci_id"),
+					Name:  "esci_id",
+					Cols:  3,
+					Error: localize.ValidationErrorAt(c.Loc, errors, "/esci_id"),
+					Help:  c.Loc.Get("builder.esci_id.help")},
+				Value: p.ESCIID,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li></ul></div><div class=\"modal-footer\"><div class=\"bc-toolbar\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -26,7 +26,7 @@ type FieldArgs struct {
 	Help     string
 }
 
-templ field(args FieldArgs, labelFor string) {
+templ Field(args FieldArgs, labelFor string) {
 	<div class={ "mb-6", "row", templ.KV("is-invalid", args.Error != "") }>
 		<label class="col-lg-3 col-form-label mt-2" for={ labelFor }>
 			{ args.Label }
@@ -60,7 +60,7 @@ type TextArgs struct {
 }
 
 templ Text(args TextArgs) {
-	@field(args.FieldArgs, args.Name) {
+	@Field(args.FieldArgs, args.Name) {
 		<input
 			class={ "form-control", templ.KV("is-invalid", args.Error != "") }
 			id={ args.Name }
@@ -80,7 +80,7 @@ type SelectArgs struct {
 }
 
 templ Select(args SelectArgs) {
-	@field(args.FieldArgs, args.Name) {
+	@Field(args.FieldArgs, args.Name) {
 		<select
 			class={ "form-select", "form-control", templ.KV("is-invalid", args.Error != "") }
 			id={ args.Name }
@@ -183,7 +183,7 @@ type TextRepeatArgs struct {
 }
 
 templ TextRepeat(args TextRepeatArgs) {
-	@field(args.FieldArgs, fmt.Sprintf("%s-0", args.Name)) {
+	@Field(args.FieldArgs, fmt.Sprintf("%s-0", args.Name)) {
 		<div class="form-values">
 			for i, v := range args.Values {
 				<div class="d-flex mb-3 form-value">
@@ -229,7 +229,7 @@ type SelectRepeatArgs struct {
 }
 
 templ SelectRepeat(args SelectRepeatArgs) {
-	@field(args.FieldArgs, fmt.Sprintf("%s-0", args.Name)) {
+	@Field(args.FieldArgs, fmt.Sprintf("%s-0", args.Name)) {
 		<div class="form-values">
 			for i, v := range args.Values {
 				<div class="d-flex mb-3 form-value">
