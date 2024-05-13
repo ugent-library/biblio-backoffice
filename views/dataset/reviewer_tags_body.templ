@@ -1,0 +1,16 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+templ ReviewerTagsBody(c *ctx.Ctx, dataset *models.Dataset) {
+	<div class="card-body">
+		<div class="badge-list">
+			for _, tag := range dataset.ReviewerTags {
+				<span class="badge rounded-pill badge-default">{ tag }</span>
+			}
+		</div>
+	</div>
+}
