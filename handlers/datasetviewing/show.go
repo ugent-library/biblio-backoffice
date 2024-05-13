@@ -6,9 +6,7 @@ import (
 	"slices"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/displays"
 	"github.com/ugent-library/biblio-backoffice/render"
-	"github.com/ugent-library/biblio-backoffice/render/display"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 	"github.com/ugent-library/httperror"
 )
@@ -25,55 +23,36 @@ type YieldShow struct {
 	ActiveSubNav string
 }
 
-type YieldShowDescription struct {
-	Context
-	SubNavs        []string
-	ActiveSubNav   string
-	DisplayDetails *display.Display
-}
+func Show(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
 
-type YieldShowContributors struct {
-	Context
-	SubNavs      []string
-	ActiveSubNav string
-}
-
-type YieldShowActivity struct {
-	Context
-	SubNavs      []string
-	ActiveSubNav string
-}
-
-func (h *Handler) Show(w http.ResponseWriter, r *http.Request, legacyCtx Context) {
-	activeSubNav := r.URL.Query().Get("show")
+  activeSubNav := r.URL.Query().Get("show")
 	if !slices.Contains(subNavs, activeSubNav) {
 		activeSubNav = "description"
 	}
+	c.SubNav = activeSubNav
 
-	render.Layout(w, "layouts/default", "dataset/pages/show", YieldShow{
-		Context:      legacyCtx,
-		PageTitle:    legacyCtx.Loc.Get("dataset.page.show.title"),
-		SubNavs:      subNavs,
-		ActiveNav:    "datasets",
-		ActiveSubNav: activeSubNav,
-	})
+	datasetviews.Show(c, ctx.GetDataset(r), r.URL.Query().Get("redirect-url")).Render(r.Context(), w)
 }
 
-func (h *Handler) ShowDescription(w http.ResponseWriter, r *http.Request, legacyCtx Context) {
-	render.View(w, "dataset/show_description", YieldShowDescription{
-		Context:        legacyCtx,
-		SubNavs:        subNavs,
-		ActiveSubNav:   "description",
-		DisplayDetails: displays.DatasetDetails(legacyCtx.User, legacyCtx.Loc, legacyCtx.Dataset),
-	})
+func ShowDescription(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	redirectURL := r.URL.Query().Get("redirect-url")
+	if redirectURL == "" {
+		redirectURL = c.PathTo("datasets").String()
+	}
+
+	datasetviews.Description(c, ctx.GetDataset(r), redirectURL).Render(r.Context(), w)
 }
 
-func (h *Handler) ShowContributors(w http.ResponseWriter, r *http.Request, legacyCtx Context) {
-	render.View(w, "dataset/show_contributors", YieldShowContributors{
-		Context:      legacyCtx,
-		SubNavs:      subNavs,
-		ActiveSubNav: "contributors",
-	})
+func ShowContributors(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	redirectURL := r.URL.Query().Get("redirect-url")
+	if redirectURL == "" {
+		redirectURL = c.PathTo("datasets").String()
+	}
+	datasetviews.Contributors(ctx.Get(r), ctx.GetDataset(r), redirectURL).Render(r.Context(), w)
 }
 
 func ShowPublications(w http.ResponseWriter, r *http.Request) {
@@ -90,10 +69,11 @@ func ShowPublications(w http.ResponseWriter, r *http.Request) {
 	datasetviews.ShowPublications(c, dataset, relatedPublications).Render(r.Context(), w)
 }
 
-func (h *Handler) ShowActivity(w http.ResponseWriter, r *http.Request, legacyCtx Context) {
-	render.View(w, "dataset/show_activity", YieldShowActivity{
-		Context:      legacyCtx,
-		SubNavs:      subNavs,
-		ActiveSubNav: "activity",
-	})
+func ShowActivity(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	redirectURL := r.URL.Query().Get("redirect-url")
+	if redirectURL == "" {
+		redirectURL = c.PathTo("datasets").String()
+	}
+	datasetviews.Activity(ctx.Get(r), ctx.GetDataset(r), redirectURL).Render(r.Context(), w)
 }
