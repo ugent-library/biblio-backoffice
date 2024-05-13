@@ -405,6 +405,7 @@ func Register(c Config) {
 					r.Use(ctx.SetNav("datasets"))
 
 					// view only functions
+					r.Get("/", datasetviewing.Show).Name("dataset")
 					r.With(ctx.SetSubNav("description")).Get("/description", datasetviewing.ShowDescription).Name("dataset_description")
 					r.With(ctx.SetSubNav("contributors")).Get("/contributors", datasetviewing.ShowContributors).Name("dataset_contributors")
 					r.With(ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
@@ -505,11 +506,6 @@ func Register(c Config) {
 		r.Get("/dataset/{id}/add/finish",
 			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddFinish)).
 			Name("dataset_add_finish")
-
-		// view dataset
-		r.Get("/dataset/{id}",
-			datasetViewingHandler.Wrap(datasetViewingHandler.Show)).
-			Name("dataset")
 
 		// edit dataset activity
 		r.Get("/dataset/{id}/message/edit",
