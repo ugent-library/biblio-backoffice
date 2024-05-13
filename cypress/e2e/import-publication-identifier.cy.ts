@@ -76,6 +76,22 @@ describe("Publication import", () => {
     cy.visitPublication();
   });
 
+  it("should show an error toast if the DOI is invalid", () => {
+    cy.loginAsResearcher();
+
+    cy.visit("/add-publication");
+
+    cy.contains("Import your publication via an identifier").click();
+    cy.contains(".btn", "Add publication(s)").click();
+
+    cy.get("input[name=identifier]").type("SOME/random/DOI.123");
+    cy.contains(".btn", "Add publication(s)").click();
+
+    cy.ensureToast(
+      "Sorry, something went wrong. Could not import the publication",
+    );
+  });
+
   it("should detect duplicates by DOI", () => {
     const title = getRandomText();
     cy.setUpPublication("Miscellaneous", { title, prepareForPublishing: true });

@@ -144,6 +144,23 @@ describe("Publication import", () => {
       .should("have.text", "Biblio public");
   });
 
+  it("should show an error toast if the import file contains an error", () => {
+    cy.loginAsResearcher();
+
+    cy.visit("/add-publication");
+
+    cy.contains("Import via BibTeX file").click();
+    cy.contains(".btn", "Add publication(s)").click();
+
+    cy.get("input[name=file]").selectFile(
+      "cypress/fixtures/import-from-bibtex-error.bib",
+    );
+
+    cy.ensureToast(
+      "Sorry, something went wrong. Could not import the publication(s).",
+    );
+  });
+
   // TODO: Not yet implemented
   it("should report errors after import");
 });

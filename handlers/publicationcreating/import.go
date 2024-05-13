@@ -157,8 +157,7 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request) {
 			flash := flash.SimpleFlash().
 				WithLevel("error").
 				WithBody(template.HTML(c.Loc.Get("publication.single_import.import_by_id.import_failed")))
-
-			c.PersistFlash(w, *flash)
+			c.Flash = append(c.Flash, *flash)
 
 			pages.AddIdentifier(c, pages.AddIdentifierArgs{
 				Step:       1,
@@ -313,9 +312,8 @@ func AddMultipleImport(w http.ResponseWriter, r *http.Request) {
 
 		flash := flash.SimpleFlash().
 			WithLevel("error").
-			WithBody(template.HTML("<p>Sorry, something went wrong. Could not import the publications.</p>"))
-
-		c.PersistFlash(w, *flash)
+			WithBody(template.HTML("<p>Sorry, something went wrong. Could not import the publication(s).</p>"))
+		c.Flash = append(c.Flash, *flash)
 
 		switch source {
 		case "wos":
