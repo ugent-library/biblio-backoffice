@@ -347,7 +347,12 @@ func Register(c Config) {
 						r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", publicationediting.ConfirmDeleteLink).Name("publication_confirm_delete_link")
 
 						// lay summaries
+						r.Get("/lay_summaries/add", publicationediting.AddLaySummary).Name("publication_add_lay_summary")
+						r.Post("/lay_summaries", publicationediting.CreateLaySummary).Name("publication_create_lay_summary")
+						r.Get("/lay_summaries/{lay_summary_id}/edit", publicationediting.EditLaySummary).Name("publication_edit_lay_summary")
+						r.Put("/lay_summaries/{lay_summary_id}", publicationediting.UpdateLaySummary).Name("publication_update_lay_summary")
 						r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
+						r.Delete("/lay_summaries/{lay_summary_id}", publicationediting.DeleteLaySummary).Name("publication_delete_lay_summary")
 
 						// files
 						r.Post("/files", publicationediting.UploadFile).Name("publication_upload_file")
@@ -716,23 +721,6 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/departments/{department_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
 			Name("publication_delete_department")
-
-		// edit publication lay summaries
-		r.Get("/publication/{id}/lay_summaries/add",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddLaySummary)).
-			Name("publication_add_lay_summary")
-		r.Post("/publication/{id}/lay_summaries",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateLaySummary)).
-			Name("publication_create_lay_summary")
-		r.Get("/publication/{id}/lay_summaries/{lay_summary_id}/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditLaySummary)).
-			Name("publication_edit_lay_summary")
-		r.Put("/publication/{id}/lay_summaries/{lay_summary_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLaySummary)).
-			Name("publication_update_lay_summary")
-		r.Delete("/publication/{id}/lay_summaries/{lay_summary_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLaySummary)).
-			Name("publication_delete_lay_summary")
 
 		// edit publication datasets
 		r.Post("/publication/{id}/datasets",
