@@ -71,7 +71,7 @@ func AddBibTeX(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"source\" value=\"bibtex\"><div class=\"c-file-upload\"><input type=\"file\" name=\"file\"><div class=\"c-file-upload__content\"><p>Drag and drop your .bib file or</p><button class=\"btn btn-outline-primary\">Upload .bib file<div class=\"spinner-border\"><span class=\"visually-hidden\"></span></div></button></div></div><small class=\"form-text text-muted my-3\"><a href=\"https://onderzoektips.ugent.be/en/tips/00002068/\" target=\"_blank\">BibTeX import instructions</a></small></form></div></div></div></div></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"source\" value=\"bibtex\"><div class=\"c-file-upload\"><input type=\"file\" name=\"file\"><div class=\"c-file-upload__content\"><p>Drag and drop your .bib file or</p><button class=\"btn btn-outline-primary mt-4\">Upload .bib file<div class=\"spinner-border ms-4\"><span class=\"visually-hidden\"></span></div></button></div></div><small class=\"form-text text-muted my-3\"><a href=\"https://onderzoektips.ugent.be/en/tips/00002068/\" target=\"_blank\">BibTeX import instructions</a></small></form></div></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
