@@ -14,14 +14,6 @@ var (
 	subNavs = []string{"description", "contributors", "publications", "activity"}
 )
 
-type YieldShow struct {
-	Context
-	PageTitle    string
-	SubNavs      []string
-	ActiveNav    string
-	ActiveSubNav string
-}
-
 func Show(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 

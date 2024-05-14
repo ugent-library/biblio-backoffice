@@ -1,0 +1,66 @@
+package pages
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
+	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
+)
+
+templ AddFinish(c *ctx.Ctx, dataset *models.Dataset) {
+	@views.PageLayout(c, "Add - Datasets - Biblio", nil) {
+		@datasetviews.AddSidebar(c, 4)
+		<div class="w-100 u-scroll-wrapper">
+			<div class="bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<div class="bc-toolbar-item">
+							<div class="d-flex flex-column">
+								<span class="text-muted">Step 4</span>
+								<h4 class="bc-toolbar-title">Congratulations</h4>
+							</div>
+						</div>
+					</div>
+					<div class="bc-toolbar-right"></div>
+				</div>
+			</div>
+			<div class="p-6 u-scroll-wrapper__body">
+				<div class="card mb-6">
+					<div class="card-header">Congratulations!</div>
+					<div class="card-body">
+						<p class="mb-6">
+							Your dataset is published in Biblio and sent for
+							review by the data curator team. The data curator team will
+							process your dataset as soon as possible, taking into account
+							reporting deadlines. For questions, the data curator team can be
+							contacted at <a href="mailto:rdm.support@ugent.be">rdm.support@ugent.be</a>.
+						</p>
+						<a class="btn btn-outline-primary" href={ templ.URL(c.PathTo("datasets").String()) }>Continue to overview</a>
+					</div>
+				</div>
+				<div class="card mb-6">
+					<div class="card-header">Dataset</div>
+					<div class="card-body p-0">
+						<ul class="list-group list-group-flush">
+							<li class="list-group-item">
+								<div class="d-flex w-100">
+									<div class="w-100">
+										<div class="d-flex align-items-start">
+											@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
+												Dataset: dataset,
+												URL:     c.PathTo("dataset", "id", dataset.ID),
+												Actions: datasetsummaryviews.DefaultActions(c, dataset),
+											})
+										</div>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}
