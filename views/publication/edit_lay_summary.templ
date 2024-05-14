@@ -9,15 +9,15 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views/form"
 )
 
-templ EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Text, idx int, conflict bool, errors *okay.Errors, isNew bool) {
+templ EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, laySummary *models.Text, idx int, conflict bool, errors *okay.Errors, isNew bool) {
 	<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h2 class="modal-title">
 					if isNew {
-						Add abstract
+						Add lay summary
 					} else {
-						Edit abstract
+						Edit lay summary
 					}
 				</h2>
 			</div>
@@ -31,22 +31,22 @@ templ EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, abstract *models.T
 				@form.Errors(localize.ValidationErrors(c.Loc, errors))
 				@form.TextArea(form.TextAreaArgs{
 					FieldArgs: form.FieldArgs{
-						Label: c.Loc.Get("builder.abstract.text"),
+						Label: c.Loc.Get("builder.lay_summary.text"),
 						Name:  "text",
-						Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/abstract/%d/text", idx)),
+						Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/lay_summary/%d/text", idx)),
 						Theme: form.ThemeVertical,
 					},
-					Value: abstract.Text,
+					Value: laySummary.Text,
 					Rows:  6,
 				})
 				@form.Select(form.SelectArgs{
 					FieldArgs: form.FieldArgs{
-						Label: c.Loc.Get("builder.abstract.lang"),
+						Label: c.Loc.Get("builder.lay_summary.lang"),
 						Name:  "lang",
-						Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/abstract/%d/lang", idx)),
+						Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/lay_summary/%d/lang", idx)),
 						Theme: form.ThemeVertical,
 					},
-					Value:   abstract.Lang,
+					Value:   laySummary.Lang,
 					Options: localize.LanguageSelectOptions(),
 				})
 			</div>
@@ -66,18 +66,18 @@ templ EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, abstract *models.T
 								name="create"
 								class="btn btn-primary"
 								if isNew {
-									hx-post={ c.PathTo("publication_create_abstract", "id", p.ID).String() }
+									hx-post={ c.PathTo("publication_create_lay_summary", "id", p.ID).String() }
 								} else {
-									hx-put={ c.PathTo("publication_update_abstract", "id", p.ID, "abstract_id", abstract.ID).String() }
+									hx-put={ c.PathTo("publication_update_lay_summary", "id", p.ID, "lay_summary_id", laySummary.ID).String() }
 								}
 								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
 								hx-include=".modal-body"
 								hx-swap="none"
 							>
 								if isNew {
-									Add abstract
+									Add lay summary
 								} else {
-									Update abstract
+									Update lay summary
 								}
 							</button>
 						</div>

@@ -19,7 +19,7 @@ import (
 	"github.com/ugent-library/okay"
 )
 
-func EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Text, idx int, conflict bool, errors *okay.Errors, isNew bool) templ.Component {
+func EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, laySummary *models.Text, idx int, conflict bool, errors *okay.Errors, isNew bool) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -37,12 +37,12 @@ func EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Te
 			return templ_7745c5c3_Err
 		}
 		if isNew {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Add abstract")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Add lay summary")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Edit abstract")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Edit lay summary")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -63,12 +63,12 @@ func EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Te
 		}
 		templ_7745c5c3_Err = form.TextArea(form.TextAreaArgs{
 			FieldArgs: form.FieldArgs{
-				Label: c.Loc.Get("builder.abstract.text"),
+				Label: c.Loc.Get("builder.lay_summary.text"),
 				Name:  "text",
-				Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/abstract/%d/text", idx)),
+				Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/lay_summary/%d/text", idx)),
 				Theme: form.ThemeVertical,
 			},
-			Value: abstract.Text,
+			Value: laySummary.Text,
 			Rows:  6,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -76,12 +76,12 @@ func EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Te
 		}
 		templ_7745c5c3_Err = form.Select(form.SelectArgs{
 			FieldArgs: form.FieldArgs{
-				Label: c.Loc.Get("builder.abstract.lang"),
+				Label: c.Loc.Get("builder.lay_summary.lang"),
 				Name:  "lang",
-				Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/abstract/%d/lang", idx)),
+				Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/lay_summary/%d/lang", idx)),
 				Theme: form.ThemeVertical,
 			},
-			Value:   abstract.Lang,
+			Value:   laySummary.Lang,
 			Options: localize.LanguageSelectOptions(),
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -106,7 +106,7 @@ func EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Te
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_create_abstract", "id", p.ID).String()))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_create_lay_summary", "id", p.ID).String()))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -119,7 +119,7 @@ func EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Te
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_update_abstract", "id", p.ID, "abstract_id", abstract.ID).String()))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_update_lay_summary", "id", p.ID, "lay_summary_id", laySummary.ID).String()))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -141,12 +141,12 @@ func EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Te
 				return templ_7745c5c3_Err
 			}
 			if isNew {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Add abstract")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Add lay summary")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Update abstract")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Update lay summary")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

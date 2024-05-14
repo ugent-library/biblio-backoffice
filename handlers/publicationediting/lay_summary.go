@@ -29,21 +29,6 @@ type BindDeleteLaySummary struct {
 	SnapshotID   string `path:"snapshot_id"`
 }
 
-type YieldLaySummaries struct {
-	Context
-}
-type YieldAddLaySummary struct {
-	Context
-	Form     *form.Form
-	Conflict bool
-}
-type YieldEditLaySummary struct {
-	Context
-	LaySummaryID string
-	Form         *form.Form
-	Conflict     bool
-}
-
 func (h *Handler) AddLaySummary(w http.ResponseWriter, r *http.Request, ctx Context) {
 	render.Layout(w, "show_modal", "publication/add_lay_summary", YieldAddLaySummary{
 		Context:  ctx,
