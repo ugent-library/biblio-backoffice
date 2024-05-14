@@ -47,7 +47,7 @@ func EditAbstractDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Text
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("x\t\t\t\t</h2></div><div class=\"modal-body\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></div><div class=\"modal-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
