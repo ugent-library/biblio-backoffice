@@ -15,7 +15,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
-	"github.com/ugent-library/biblio-backoffice/render/display"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
@@ -321,23 +320,18 @@ func (h *Handler) AddMultipleSave(w http.ResponseWriter, r *http.Request, ctx Co
 }
 
 // TODO after changing tabs, the wrong url is pushed in the history
-func (h *Handler) AddMultipleShow(w http.ResponseWriter, r *http.Request, ctx Context) {
-	batchID := bind.PathValue(r, "batch_id")
+func AddMultipleShow(w http.ResponseWriter, r *http.Request) {
 	subNav := r.URL.Query().Get("show")
 	if subNav == "" {
 		subNav = "description"
 	}
 
-	render.Layout(w, "layouts/default", "publication/pages/add_multiple_show", YieldAddMultipleShow{
-		Context:      ctx,
-		PageTitle:    "Add - Publications - Biblio",
+	pages.AddMultipleShow(ctx.Get(r), pages.AddMultipleShowArgs{
 		Step:         2,
-		ActiveNav:    "publications",
-		SubNavs:      []string{"description", "files", "contributors", "datasets"},
 		ActiveSubNav: subNav,
 		RedirectURL:  r.URL.Query().Get("redirect-url"),
-		BatchID:      batchID,
-	})
+		Publication:  ctx.GetPublication(r),
+	}).Render(r.Context(), w)
 }
 
 func AddMultipleConfirm(w http.ResponseWriter, r *http.Request) {
