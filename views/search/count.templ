@@ -1,0 +1,14 @@
+package search
+
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/pagination"
+)
+
+templ Count(p pagination.Pagination) {
+	Showing 
+	if p.TotalPages() > 1 {
+		{ fmt.Sprintf("%d-%d of ", p.FirstOnPage(), p.LastOnPage()) }
+	}
+	{ fmt.Sprint(p.Total) }
+}

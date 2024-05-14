@@ -362,11 +362,13 @@ func (h *Handler) AddMultipleShow(w http.ResponseWriter, r *http.Request, ctx Co
 	})
 }
 
-func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx Context) {
+func AddMultipleConfirm(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Query(r, searchArgs); err != nil {
-		h.Logger.Warnw("add multiple confirm publication: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("add multiple confirm publication: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -374,28 +376,25 @@ func (h *Handler) AddMultipleConfirm(w http.ResponseWriter, r *http.Request, ctx
 
 	batchID := bind.PathValue(r, "batch_id")
 
-	hits, err := h.PublicationSearchIndex.
+	hits, err := c.Services.PublicationSearchIndex.
 		WithScope("status", "private", "public").
-		WithScope("creator_id", ctx.User.ID).
+		WithScope("creator_id", c.User.ID).
 		WithScope("batch_id", batchID).
 		Search(searchArgs)
 
 	if err != nil {
-		h.Logger.Errorw("add multiple confirm publication: could not execute search", "errors", err, "batch", batchID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("add multiple confirm publication: could not execute search", "errors", err, "batch", batchID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.Layout(w, "layouts/default", "publication/pages/add_multiple_confirm", YieldAddMultiple{
-		Context:     ctx,
-		PageTitle:   "Add - Publications - Biblio",
+	pages.AddMultipleConfirm(c, pages.AddMultipleConfirmArgs{
 		Step:        2,
-		ActiveNav:   "publications",
 		RedirectURL: r.URL.String(),
 		BatchID:     batchID,
 		SearchArgs:  searchArgs,
 		Hits:        hits,
-	})
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) AddMultiplePublish(w http.ResponseWriter, r *http.Request, ctx Context) {

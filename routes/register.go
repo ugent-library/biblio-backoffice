@@ -315,6 +315,7 @@ func Register(c Config) {
 					r.Post("/add-publication/import/single", publicationcreating.AddSingleImport).Name("publication_add_single_import")
 					r.Post("/add-publication/import/single/confirm", publicationcreating.AddSingleImportConfirm).Name("publication_add_single_import_confirm")
 					r.Post("/add-publication/import/multiple", publicationcreating.AddMultipleImport).Name("publication_add_multiple_import")
+					r.Get("/add-publication/import/multiple/{batch_id}/confirm", publicationcreating.AddMultipleConfirm).Name("publication_add_multiple_confirm")
 
 					r.Route("/publication/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetPublication(c.Services.Repo))
@@ -636,9 +637,6 @@ func Register(c Config) {
 			Name("dataset_delete_contributor")
 
 		// add publication
-		r.Get("/publication/add-multiple/{batch_id}/confirm",
-			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleConfirm)).
-			Name("publication_add_multiple_confirm")
 		r.Get("/publication/add-multiple/{batch_id}/publication/{id}",
 			publicationCreatingHandler.Wrap(publicationCreatingHandler.AddMultipleShow)).
 			Name("publication_add_multiple_show")
