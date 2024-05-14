@@ -349,6 +349,10 @@ func Register(c Config) {
 						// lay summaries
 						r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
 
+						// additional info
+						r.Get("/additional-info/edit", publicationediting.EditAdditionalInfo).Name("publication_edit_additional_info")
+						r.Put("/additional-info", publicationediting.UpdateAdditionalInfo).Name("publication_update_additional_info")
+
 						// files
 						r.Post("/files", publicationediting.UploadFile).Name("publication_upload_file")
 						r.Get("/refresh-files", publicationediting.RefreshFiles).Name("publication_refresh_files")
@@ -674,14 +678,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/conference",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateConference)).
 			Name("publication_update_conference")
-
-		// edit publication additional info
-		r.Get("/publication/{id}/additional-info/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditAdditionalInfo)).
-			Name("publication_edit_additional_info")
-		r.Put("/publication/{id}/additional-info",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateAdditionalInfo)).
-			Name("publication_update_additional_info")
 
 		// edit publication projects
 		r.Post("/publication/{id}/projects",

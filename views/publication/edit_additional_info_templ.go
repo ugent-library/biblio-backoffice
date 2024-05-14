@@ -80,6 +80,19 @@ func EditAdditionalInfoDialog(c *ctx.Ctx, p *models.Publication, conflict bool, 
 				return templ_7745c5c3_Err
 			}
 		}
+		templ_7745c5c3_Err = form.TextArea(form.TextAreaArgs{
+			FieldArgs: form.FieldArgs{
+				Label: c.Loc.Get("builder.additional_info"),
+				Name:  "additional_info",
+				Cols:  9,
+				Error: localize.ValidationErrorAt(c.Loc, errors, "/additional_info"),
+			},
+			Rows:  4,
+			Value: p.AdditionalInfo,
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li></ul></div><div class=\"modal-footer\"><div class=\"bc-toolbar\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

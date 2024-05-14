@@ -49,6 +49,16 @@ templ EditAdditionalInfoDialog(c *ctx.Ctx, p *models.Publication, conflict bool,
 								Values: p.Keyword,
 							})
 						}
+						@form.TextArea(form.TextAreaArgs{
+							FieldArgs: form.FieldArgs{
+								Label: c.Loc.Get("builder.additional_info"),
+								Name:  "additional_info",
+								Cols:  9,
+								Error: localize.ValidationErrorAt(c.Loc, errors, "/additional_info"),
+							},
+							Rows:  4,
+							Value: p.AdditionalInfo,
+						})
 					</li>
 				</ul>
 			</div>
