@@ -127,6 +127,24 @@ templ Text(args TextArgs) {
 	}
 }
 
+type TextAreaArgs struct {
+	FieldArgs
+	Value string
+	Rows  int
+}
+
+templ TextArea(args TextAreaArgs) {
+	@Field(args.FieldArgs, args.Name) {
+		<textarea
+			class={ "form-control", templ.KV("is-invalid", args.Error != "") }
+			id={ args.Name }
+			name={ args.Name }
+			readonly?={ args.Readonly }
+			rows={ fmt.Sprint(args.Rows) }
+		>{ args.Value }</textarea>
+	}
+}
+
 type SelectArgs struct {
 	FieldArgs
 	Value       string

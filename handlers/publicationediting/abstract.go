@@ -2,17 +2,14 @@ package publicationediting
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
-	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -29,163 +26,148 @@ type BindDeleteAbstract struct {
 	SnapshotID string `path:"snapshot_id"`
 }
 
-type YieldAbstracts struct {
-	Context
-}
-type YieldAddAbstract struct {
-	Context
-	Form     *form.Form
-	Conflict bool
-}
-type YieldEditAbstract struct {
-	Context
-	AbstractID string
-	Form       *form.Form
-	Conflict   bool
+func AddAbstract(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
+	views.ShowModal(publicationviews.EditAbstractDialog(c, p, &models.Text{}, -1, false, nil, true)).Render(r.Context(), w)
 }
 
-func (h *Handler) AddAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "show_modal", "publication/add_abstract", YieldAddAbstract{
-		Context: ctx,
-		Form:    abstractForm(ctx.Loc, ctx.Publication, &models.Text{}, nil),
-	})
-}
+func CreateAbstract(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
 
-func (h *Handler) CreateAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("create publication abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+		c.Log.Warnw("create publication abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	abstract := models.Text{
+	abstract := &models.Text{
 		Lang: b.Lang,
 		Text: b.Text,
 	}
-	ctx.Publication.AddAbstract(&abstract)
 
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		render.Layout(w, "refresh_modal", "publication/add_abstract", YieldAddAbstract{
-			Context:  ctx,
-			Form:     abstractForm(ctx.Loc, ctx.Publication, &abstract, validationErrs.(*okay.Errors)),
-			Conflict: false,
-		})
+	p.AddAbstract(abstract)
+
+	idx := -1
+	for i, a := range p.Abstract {
+		if a.ID == abstract.ID {
+			idx = i
+		}
+	}
+
+	if validationErrs := p.Validate(); validationErrs != nil {
+		views.ReplaceModal(publicationviews.EditAbstractDialog(c, p, abstract, idx, false, validationErrs.(*okay.Errors), true)).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "publication/add_abstract", YieldAddAbstract{
-			Context:  ctx,
-			Form:     abstractForm(ctx.Loc, ctx.Publication, &abstract, nil),
-			Conflict: true,
-		})
+		views.ReplaceModal(publicationviews.EditAbstractDialog(c, p, abstract, idx, true, nil, true)).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("create publication abstract: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		c.Log.Errorf("create publication abstract: could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	render.View(w, "publication/refresh_abstracts", YieldAbstracts{
-		Context: ctx,
-	})
+	views.CloseModalAndReplace(publicationviews.AbstractsBodySelector, publicationviews.AbstractsBody(c, p)).Render(r.Context(), w)
 }
 
-func (h *Handler) EditAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
+func EditAbstract(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("edit publication abstract: could not bind request arguments", "error", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("edit publication abstract: could not bind request arguments", "error", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	abstract := ctx.Publication.GetAbstract(b.AbstractID)
+	abstract := p.GetAbstract(b.AbstractID)
 
 	if abstract == nil {
-		h.Logger.Warnf("edit publication abstract: Could not fetch the abstract:", "publication", ctx.Publication.ID, "abstract", b.AbstractID, "user", ctx.User.ID)
-		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		c.Log.Warnf("edit publication abstract: Could not fetch the abstract:", "publication", p.ID, "abstract", b.AbstractID, "user", c.User.ID)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
-	render.Layout(w, "show_modal", "publication/edit_abstract", YieldEditAbstract{
-		Context:    ctx,
-		AbstractID: b.AbstractID,
-		Form:       abstractForm(ctx.Loc, ctx.Publication, abstract, nil),
-	})
+	idx := -1
+	for i, a := range p.Abstract {
+		if a.ID == abstract.ID {
+			idx = i
+		}
+	}
+
+	views.ShowModal(publicationviews.EditAbstractDialog(c, p, abstract, idx, false, nil, false)).Render(r.Context(), w)
 }
 
-func (h *Handler) UpdateAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
+func UpdateAbstract(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("update publication abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("update publication abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	abstract := ctx.Publication.GetAbstract(b.AbstractID)
+	abstract := p.GetAbstract(b.AbstractID)
 
 	if abstract == nil {
 		abstract := &models.Text{
 			Text: b.Text,
 			Lang: b.Lang,
 		}
-		render.Layout(w, "refresh_modal", "publication/edit_abstract", YieldEditAbstract{
-			Context:    ctx,
-			AbstractID: b.AbstractID,
-			Form:       abstractForm(ctx.Loc, ctx.Publication, abstract, nil),
-			Conflict:   true,
-		})
+		views.ReplaceModal(publicationviews.EditAbstractDialog(c, p, abstract, -1, true, nil, false)).Render(r.Context(), w)
 		return
 	}
 
 	abstract.Text = b.Text
 	abstract.Lang = b.Lang
 
-	ctx.Publication.SetAbstract(abstract)
+	p.SetAbstract(abstract)
 
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		render.Layout(w, "refresh_modal", "publication/edit_abstract", YieldEditAbstract{
-			Context:    ctx,
-			AbstractID: b.AbstractID,
-			Form:       abstractForm(ctx.Loc, ctx.Publication, abstract, validationErrs.(*okay.Errors)),
-			Conflict:   false,
-		})
+	idx := -1
+	for i, a := range p.Abstract {
+		if a.ID == abstract.ID {
+			idx = i
+		}
+	}
+
+	if validationErrs := p.Validate(); validationErrs != nil {
+		views.ReplaceModal(publicationviews.EditAbstractDialog(c, p, abstract, idx, false, validationErrs.(*okay.Errors), false)).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "publication/edit_abstract", YieldEditAbstract{
-			Context:    ctx,
-			AbstractID: b.AbstractID,
-			Form:       abstractForm(ctx.Loc, ctx.Publication, abstract, nil),
-			Conflict:   true,
-		})
+		views.ReplaceModal(publicationviews.EditAbstractDialog(c, p, abstract, idx, true, nil, false)).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update publication abstract: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("update publication abstract: could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_abstracts", YieldAbstracts{
-		Context: ctx,
-	})
+	views.CloseModalAndReplace(publicationviews.AbstractsBodySelector, publicationviews.AbstractsBody(c, p)).Render(r.Context(), w)
 }
 
 func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	publication := ctx.GetPublication(r)
+	p := ctx.GetPublication(r)
 
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
@@ -194,7 +176,7 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if b.SnapshotID != publication.SnapshotID {
+	if b.SnapshotID != p.SnapshotID {
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
@@ -202,67 +184,37 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	views.ConfirmDelete(views.ConfirmDeleteArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this abstract?",
-		DeleteUrl:  c.PathTo("publication_delete_abstract", "id", publication.ID, "abstract_id", b.AbstractID),
-		SnapshotID: publication.SnapshotID,
+		DeleteUrl:  c.PathTo("publication_delete_abstract", "id", p.ID, "abstract_id", b.AbstractID),
+		SnapshotID: p.SnapshotID,
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) DeleteAbstract(w http.ResponseWriter, r *http.Request, ctx Context) {
+func DeleteAbstract(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete publication abstract: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
+		c.Log.Warnw("delete publication abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
 		render.BadRequest(w, r, err)
 		return
 	}
 
-	ctx.Publication.RemoveAbstract(b.AbstractID)
+	p.RemoveAbstract(b.AbstractID)
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("create publication abstract: could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("create publication abstract: could not save the publication:", "error", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_abstracts", YieldAbstracts{
-		Context: ctx,
-	})
-}
-
-func abstractForm(loc *gotext.Locale, publication *models.Publication, abstract *models.Text, errors *okay.Errors) *form.Form {
-	idx := -1
-	for i, a := range publication.Abstract {
-		if a.ID == abstract.ID {
-			idx = i
-		}
-	}
-
-	return form.New().
-		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(loc, errors)).
-		AddSection(
-			&form.TextArea{
-				Name:  "text",
-				Value: abstract.Text,
-				Label: loc.Get("builder.abstract.text"),
-				Cols:  12,
-				Rows:  6,
-				Error: localize.ValidationErrorAt(loc, errors, fmt.Sprintf("/abstract/%d/text", idx)),
-			},
-			&form.Select{
-				Name:    "lang",
-				Value:   abstract.Lang,
-				Label:   loc.Get("builder.abstract.lang"),
-				Options: localize.LanguageSelectOptions(),
-				Cols:    12,
-				Error:   localize.ValidationErrorAt(loc, errors, fmt.Sprintf("/abstract/%d/lang", idx)),
-			},
-		)
+	views.CloseModalAndReplace(publicationviews.AbstractsBodySelector, publicationviews.AbstractsBody(c, p)).Render(r.Context(), w)
 }

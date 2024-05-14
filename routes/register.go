@@ -336,7 +336,12 @@ func Register(c Config) {
 						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", publicationediting.ConfirmDeleteProject).Name("publication_confirm_delete_project")
 
 						// abstracts
+						r.Get("/abstracts/add", publicationediting.AddAbstract).Name("publication_add_abstract")
+						r.Post("/abstracts", publicationediting.CreateAbstract).Name("publication_create_abstract")
+						r.Get("/abstracts/{abstract_id}/edit", publicationediting.EditAbstract).Name("publication_edit_abstract")
+						r.Put("/abstracts/{abstract_id}", publicationediting.UpdateAbstract).Name("publication_update_abstract")
 						r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", publicationediting.ConfirmDeleteAbstract).Name("publication_confirm_delete_abstract")
+						r.Delete("/abstracts/{abstract_id}", publicationediting.DeleteAbstract).Name("publication_delete_abstract")
 
 						// links
 						r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", publicationediting.ConfirmDeleteLink).Name("publication_confirm_delete_link")
@@ -711,23 +716,6 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/departments/{department_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
 			Name("publication_delete_department")
-
-		// edit publication abstracts
-		r.Get("/publication/{id}/abstracts/add",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddAbstract)).
-			Name("publication_add_abstract")
-		r.Post("/publication/{id}/abstracts",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateAbstract)).
-			Name("publication_create_abstract")
-		r.Get("/publication/{id}/abstracts/{abstract_id}/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditAbstract)).
-			Name("publication_edit_abstract")
-		r.Put("/publication/{id}/abstracts/{abstract_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateAbstract)).
-			Name("publication_update_abstract")
-		r.Delete("/publication/{id}/abstracts/{abstract_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteAbstract)).
-			Name("publication_delete_abstract")
 
 		// edit publication lay summaries
 		r.Get("/publication/{id}/lay_summaries/add",
