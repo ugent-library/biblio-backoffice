@@ -43,7 +43,7 @@ templ EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFil
 							hx-trigger="change delay:50ms"
 						>
 							for _, o := range localize.VocabularySelectOptions(c.Loc, "publication_file_relations") {
-								<option value={ o.Value } selected?={ o.Value == p.Type }>{ o.Label }</option>
+								<option value={ o.Value } selected?={ o.Value == f.Relation }>{ o.Label }</option>
 							}
 						</select>
 					}

@@ -184,7 +184,7 @@ func (p *Publication) FileIndex(id string) int {
 			return i
 		}
 	}
-	return 0
+	return -1
 }
 
 func (p *Publication) SetFile(f *PublicationFile) {
