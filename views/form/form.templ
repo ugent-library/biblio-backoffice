@@ -354,3 +354,26 @@ templ Date(args DateArgs) {
 		/>
 	}
 }
+
+type TagsArgs struct {
+	FieldArgs
+	Values []string
+}
+
+func (args TagsArgs) jsonValue() string {
+	vals := args.Values
+	if vals == nil {
+		vals = []string{}
+	}
+	data, _ := json.Marshal(vals)
+	return string(data)
+}
+
+templ Tags(args TagsArgs) {
+	@Field(args.FieldArgs, args.Name) {
+		<div class="tags">
+			<span class="tags-real-values d-none"></span>
+			<textarea class="form-control tags-widget-values tagify-custom" data-input-name={ args.Name }>{ args.jsonValue() }</textarea>
+		</div>
+	}
+}
