@@ -14,7 +14,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
@@ -30,28 +29,6 @@ type BindImportSingle struct {
 	Source          string `form:"source"`
 	Identifier      string `form:"identifier"`
 	PublicationType string `form:"publication_type"`
-}
-
-type YieldAddMultiple struct {
-	Context
-	PageTitle   string
-	Step        int
-	ActiveNav   string
-	RedirectURL string
-	BatchID     string
-	SearchArgs  *models.SearchArgs
-	Hits        *models.PublicationHits
-}
-
-type YieldAddMultipleShow struct {
-	Context
-	PageTitle    string
-	Step         int
-	ActiveNav    string
-	SubNavs      []string // needed to render show_description
-	ActiveSubNav string   // needed to render show_description
-	RedirectURL  string   // needed to render show_description
-	BatchID      string
 }
 
 func Add(w http.ResponseWriter, r *http.Request) {
@@ -349,7 +326,7 @@ func AddMultipleConfirm(w http.ResponseWriter, r *http.Request) {
 
 	batchID := bind.PathValue(r, "batch_id")
 
-	hits, err := c.Services.PublicationSearchIndex.
+	hits, err := c.PublicationSearchIndex.
 		WithScope("status", "private", "public").
 		WithScope("creator_id", c.User.ID).
 		WithScope("batch_id", batchID).
@@ -397,11 +374,13 @@ func AddMultiplePublish(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("HX-Redirect", redirectURL.String())
 }
 
-func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx Context) {
+func AddMultipleFinish(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Query(r, searchArgs); err != nil {
-		h.Logger.Warnw("add multiple finish publication: could not bind request arguments", "errors", err, "request", r)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("add multiple finish publication: could not bind request arguments", "errors", err, "request", r)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -409,32 +388,29 @@ func (h *Handler) AddMultipleFinish(w http.ResponseWriter, r *http.Request, ctx 
 
 	batchID := bind.PathValue(r, "batch_id")
 
-	hits, err := h.PublicationSearchIndex.
+	hits, err := c.PublicationSearchIndex.
 		WithScope("status", "private", "public").
-		WithScope("creator_id", ctx.User.ID).
+		WithScope("creator_id", c.User.ID).
 		WithScope("batch_id", batchID).
 		Search(searchArgs)
 
 	if err != nil {
-		h.Logger.Errorw("add multiple finish publication: could not execute search", "errors", err, "batch", batchID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("add multiple finish publication: could not execute search", "errors", err, "batch", batchID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.Layout(w, "layouts/default", "publication/pages/add_multiple_finish", YieldAddMultiple{
-		Context:     ctx,
-		PageTitle:   "Add - Publications - Biblio",
+	pages.AddMultipleFinish(c, pages.AddMultipleFinishArgs{
 		Step:        3,
-		ActiveNav:   "publications",
 		RedirectURL: r.URL.String(),
 		BatchID:     batchID,
 		SearchArgs:  searchArgs,
 		Hits:        hits,
-	})
+	}).Render(r.Context(), w)
 }
 
 func fetchPublicationByIdentifier(c *ctx.Ctx, source, identifier string) (*models.Publication, error) {
-	s, ok := c.Services.PublicationSources[source]
+	s, ok := c.PublicationSources[source]
 
 	if !ok {
 		return nil, fmt.Errorf("unkown publication source: %s", source)
@@ -451,7 +427,7 @@ func fetchPublicationByIdentifier(c *ctx.Ctx, source, identifier string) (*model
 func importPublications(c *ctx.Ctx, source string, file io.Reader) (string, error) {
 	batchID := ulid.Make().String()
 
-	decFactory, ok := c.Services.PublicationDecoders[source]
+	decFactory, ok := c.PublicationDecoders[source]
 	if !ok {
 		return "", errors.New("unknown publication source")
 	}
