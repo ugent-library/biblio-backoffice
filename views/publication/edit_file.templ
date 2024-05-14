@@ -1,0 +1,253 @@
+package publication
+
+import (
+	"fmt"
+	"time"
+	"github.com/ugent-library/okay"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/localize"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+)
+
+templ EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile, idx int, conflict bool, errors *okay.Errors) {
+	<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header h-auto py-5">
+				<h2 class="modal-title">Document details for file { f.Name }</h2>
+			</div>
+			<div class="modal-body file-attributes">
+				if conflict {
+					<div class="alert alert-danger mb-5" role="alert">
+						<i class="if if--error if-error-circle-fill"></i>
+						The publication you are editing has been changed by someone else. Please copy your edits, then close this form.
+					</div>
+				}
+				@form.Errors(localize.ValidationErrors(c.Loc, errors))
+				<form>
+					<h3 class="mb-3">Document type</h3>
+					@form.Field(form.FieldArgs{
+						Label: c.Loc.Get("builder.file.relation"),
+						Name:  "relation",
+						Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/relation", idx)),
+						Theme: form.ThemeVertical,
+					}, "relation") {
+						<select
+							class={ "form-select", "form-control", templ.KV("is-invalid", errors != nil && errors.Get(fmt.Sprintf("/file/%d/relation", idx)) != nil) }
+							name="relation"
+							id="relation"
+							hx-get={ c.PathTo("publication_edit_file_refresh_form", "id", p.ID, "file_id", f.ID).String() }
+							hx-swap="none"
+							hx-include=".file-attributes"
+							hx-indicator=".modal-dialog .spinner-border"
+							hx-trigger="change delay:50ms"
+						>
+							for _, o := range localize.VocabularySelectOptions(c.Loc, "publication_file_relations") {
+								<option value={ o.Value } selected?={ o.Value == f.Relation }>{ o.Label }</option>
+							}
+						</select>
+					}
+					if f.Relation == "main_file" {
+						@form.Select(form.SelectArgs{
+							FieldArgs: form.FieldArgs{
+								Label: c.Loc.Get("builder.file.publication_version"),
+								Name:  "publication_version",
+								Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/publication_version", idx)),
+								Help:  `Upload the <a href="https://onderzoektips.ugent.be/en/tips/00002096" target="_blank">author accepted manuscript</a> for journal articles not published in open access to enable their public dissemination.`,
+								Theme: form.ThemeVertical,
+							},
+							Value:       f.PublicationVersion,
+							EmptyOption: true,
+							Options:     localize.VocabularySelectOptions(c.Loc, "publication_versions"),
+						})
+					}
+					<div class="c-divider"></div>
+					<h3 class="mb-3">Who can access this document?</h3>
+					if f.Relation == "main_file" {
+						<div class="alert alert-success mt-3 mb-5">
+							<i class="if if-check-circle"></i>
+							<div class="alert-content">
+								<p>
+									<a href="https://www.ugent.be/intranet/en/research/impact/schol-publishing/oa-belgian-law.htm" target="_blank">Belgian open access law</a> gives you the right to make the author accepted manuscript (AAM) of scientific journal articles publicly available after embargo.
+									<br/>
+									<small>For articles published in 2023 or later, <a href="https://www.ugent.be/intranet/en/research/impact/schol-publishing/policy-ugent.htm#OpenAccess(OA)" target="_blank">UGent policy</a> assumes you want to make use of this right, unless you opt out by sending us an email at <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.</small>
+								</p>
+							</div>
+						</div>
+					}
+					<div class="mb-6 radio-card-group">
+						<label class="col-form-label">
+							{ c.Loc.Get("builder.file.access_level") }
+							<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover-custom" data-bs-placement="right" data-popover-content="#access-level-tooltip">
+								<i class="if if-info-circle if--small"></i>
+								<span class="visually-hidden">More info</span>
+							</a>
+							<div class="u-hidden" id="access-level-tooltip">
+								<div class="popover-body p-0">
+									Full text files are set to <strong>UGent access</strong> by
+									default. However, you are strongly
+									encouraged to make publications available in
+									open access where possible.
+									<br/>
+									<a class="link-primary" target="_blank" href="https://onderzoektips.ugent.be/en/tips/00002074/">
+										<span class="text-decoration-underline">More info</span>
+										<i class="if if--small if-external-link"></i>
+									</a>
+								</div>
+							</div>
+						</label>
+						for _, o := range localize.VocabularySelectOptions(c.Loc, "publication_file_access_levels") {
+							<label
+								if o.Value == f.AccessLevel {
+									class="c-radio-card c-radio-card--selected"
+									aria-selected="true"
+								} else {
+									class="c-radio-card"
+									aria-selected="false"
+								}
+								hx-get={ c.PathTo("publication_edit_file_refresh_form", "id", p.ID, "file_id", f.ID).String() }
+								hx-swap="none"
+								hx-include=".file-attributes"
+								hx-indicator=".modal-dialog .spinner-border"
+								hx-trigger="click delay:50ms"
+							>
+								<div class="c-radio-card__radio">
+									<div class="form-check">
+										<input class="form-check-input" id={ fmt.Sprintf("access-level-%s", o.Value) } type="radio" name="access_level" value={ o.Value } checked?={ o.Value == f.AccessLevel }/>
+										<label class="form-check-label" for={ fmt.Sprintf("access-level-%s", o.Value) }></label>
+									</div>
+								</div>
+								<div class="c-radio-card__content d-flex align-content-center">
+									switch o.Value {
+										case "info:eu-repo/semantics/openAccess":
+											<i class="if if-download text-success align-self-center"></i>
+											<div class="ms-5">
+												<p class="mb-1 me-3">{ o.Label }</p>
+												<div>
+													<span class="badge rounded-pill badge-success-light">
+														<i class="if if-info-circle"></i>
+														<span class="badge-text">Recommended if legally possible</span>
+													</span>
+												</div>
+												<span class="text-muted c-body-small">Your file will be immediately available to anyone. Select "Local access – UGent only" if you are unsure.</span>
+											</div>
+										case "info:eu-repo/semantics/embargoedAccess":
+											<i class="if if-time text-muted align-self-center"></i>
+											<div class="ms-5">
+												<p class="mb-1 me-3">{ o.Label }</p>
+												<span class="text-muted c-body-small">Use to switch access levels after a specified embargo period. UGent selects this by default to open up the author accepted manuscript (AAM) of journal articles published since 2023.</span>
+											</div>
+										case "info:eu-repo/semantics/restrictedAccess":
+											<i class="if if-ghent-university text-primary align-self-center"></i>
+											<div class="ms-5">
+												<p class="mb-1 me-3">{ o.Label }</p>
+												<span class="text-muted c-body-small">Your file will be available to users within the UGent network only. Minimum expected by UGent policy.</span>
+											</div>
+										case "info:eu-repo/semantics/closedAccess":
+											<i class="if if-eye-off text-muted align-self-center"></i>
+											<div class="ms-5">
+												<p class="mb-1 me-3">{ o.Label }</p>
+												<span class="text-muted c-body-small">Only the authors and Biblio staff can access your file. Others will see metadata only. Use by exception.</span>
+											</div>
+									}
+								</div>
+							</label>
+						}
+					</div>
+					if f.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+						<h3 class="mb-3">Set your embargo</h3>
+						<p class="mb-5">More information about <a href="https://onderzoektips.ugent.be/en/tips/00002097" target="_blank">embargoes</a>.</p>
+						<div class="row">
+							@form.Select(form.SelectArgs{
+								FieldArgs: form.FieldArgs{
+									Label: `Access level&nbsp;<strong>during</strong>&nbsp;embargo`,
+									Name:  "access_level_during_embargo",
+									Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/access_level_during_embargo", idx)),
+									Theme: form.ThemeVertical,
+								},
+								Value:       f.AccessLevelDuringEmbargo,
+								EmptyOption: true,
+								Options:     localize.VocabularySelectOptions(c.Loc, "publication_file_access_levels_during_embargo"),
+							})
+							@form.Select(form.SelectArgs{
+								FieldArgs: form.FieldArgs{
+									Label: `Access level&nbsp;<strong>after</strong>&nbsp;embargo`,
+									Name:  "access_level_after_embargo",
+									Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/access_level_after_embargo", idx)),
+									Help:  "Open access is recommended for author accepted manuscripts (AAM) of journal articles, and if legally possible for other cases.",
+									Theme: form.ThemeVertical,
+								},
+								Value:       f.AccessLevelAfterEmbargo,
+								EmptyOption: true,
+								Options:     localize.VocabularySelectOptions(c.Loc, "publication_file_access_levels_after_embargo"),
+							})
+						</div>
+						<div class="row">
+							@form.Date(form.DateArgs{
+								FieldArgs: form.FieldArgs{
+									Label: c.Loc.Get("builder.file.embargo_date"),
+									Name:  "embargo_date",
+									Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/embargo_date", idx)),
+									Theme: form.ThemeVertical,
+									Cols:  6,
+									Help:  `More information about <a href="https://onderzoektips.ugent.be/en/tips/00002097" target="_blank">embargo periods</a>.`,
+								},
+								Value: f.EmbargoDate,
+								Min:   nextDay().Format("2006-01-02"),
+							})
+						</div>
+					}
+					@form.Select(form.SelectArgs{
+						FieldArgs: form.FieldArgs{
+							Label:   c.Loc.Get("builder.file.license"),
+							Name:    "license",
+							Error:   localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/license", idx)),
+							Tooltip: c.Loc.Get("tooltip.publication.file.license"),
+							Theme:   form.ThemeVertical,
+							Cols:    6,
+						},
+						Value:       f.License,
+						EmptyOption: true,
+						Options:     localize.VocabularySelectOptions(c.Loc, "publication_licenses"),
+					})
+				</form>
+			</div>
+			<div class="modal-footer">
+				<div class="spinner-border">
+					<span class="visually-hidden"></span>
+				</div>
+				<div class="bc-toolbar">
+					if conflict {
+						<div class="bc-toolbar-left">
+							<button class="btn btn-primary modal-close">Close</button>
+						</div>
+					} else {
+						<div class="bc-toolbar-left">
+							<button
+								class="btn btn-link modal-close"
+								hx-get={ c.PathTo("publication_refresh_files", "id", p.ID).String() }
+								hx-swap="none"
+							>Cancel</button>
+						</div>
+						<div class="bc-toolbar-right">
+							<button
+								type="button"
+								name="create"
+								class="btn btn-primary"
+								hx-put={ c.PathTo("publication_update_file", "id", p.ID, "file_id", f.ID).String() }
+								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
+								hx-include=".file-attributes"
+								hx-swap="none"
+							>Save</button>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+func nextDay() time.Time {
+	now := time.Now()
+	return time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Add(24 * time.Hour)
+}

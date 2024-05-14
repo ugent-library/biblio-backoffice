@@ -7,6 +7,8 @@ import (
 	"github.com/ugent-library/friendly"
 )
 
+const FilesBodySelector = "#files-body"
+
 templ Files(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 	<div hx-swap-oob="innerHTML:#show-nav">
 		@SubNav(c, p, redirectURL)

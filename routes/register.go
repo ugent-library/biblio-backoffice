@@ -129,13 +129,6 @@ func Register(c Config) {
 			BlockByDefault: true,
 		}),
 	}
-	datasetCreatingHandler := &datasetcreating.Handler{
-		BaseHandler:         baseHandler,
-		Repo:                c.Services.Repo,
-		DatasetSearchIndex:  c.Services.DatasetSearchIndex,
-		DatasetSources:      c.Services.DatasetSources,
-		OrganizationService: c.Services.OrganizationService,
-	}
 	datasetEditingHandler := &datasetediting.Handler{
 		BaseHandler:               baseHandler,
 		Repo:                      c.Services.Repo,
@@ -373,7 +366,13 @@ func Register(c Config) {
 							r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
 
 							// files
+							r.Post("/files", publicationediting.UploadFile).Name("publication_upload_file")
+							r.Get("/refresh-files", publicationediting.RefreshFiles).Name("publication_refresh_files")
+							r.Get("/files/{file_id}/edit", publicationediting.EditFile).Name("publication_edit_file")
+							r.Get("/files/{file_id}/refresh-form", publicationediting.RefreshEditFileForm).Name("publication_edit_file_refresh_form")
+							r.Put("/files/{file_id}", publicationediting.UpdateFile).Name("publication_update_file")
 							r.Get("/{snapshot_id}/files/{file_id}/confirm-delete", publicationediting.ConfirmDeleteFile).Name("publication_confirm_delete_file")
+							r.Delete("/files/{file_id}", publicationediting.DeleteFile).Name("publication_delete_file")
 
 							// contributors
 							r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
@@ -415,6 +414,16 @@ func Register(c Config) {
 				// datasets
 				r.With(ctx.SetNav("datasets")).Get("/dataset", datasetsearching.Search).Name("datasets")
 
+				// dataset wizard (part 1)
+				r.Route("/add-dataset", func(r *ich.Mux) {
+					r.Use(ctx.SetNav("datasets"))
+
+					r.Get("/", datasetcreating.Add).Name("dataset_add")
+					r.Post("/", datasetcreating.Add).Name("dataset_add")
+					r.Post("/import/confirm", datasetcreating.ConfirmImport).Name("dataset_confirm_import")
+					r.Post("/import", datasetcreating.AddImport).Name("dataset_add_import")
+				})
+
 				r.Route("/dataset/{id}", func(r *ich.Mux) {
 					r.Use(ctx.SetDataset(c.Services.Repo))
 					r.Use(ctx.RequireViewDataset)
@@ -430,6 +439,13 @@ func Register(c Config) {
 					// edit only
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireEditDataset)
+
+						// wizard (part 2)
+						r.Post("/save", datasetcreating.AddSaveDraft).Name("dataset_add_save_draft")
+						r.Post("/add/publish", datasetcreating.AddPublish).Name("dataset_add_publish")
+						r.Get("/add/finish", datasetcreating.AddFinish).Name("dataset_add_finish")
+						r.Get("/add/confirm", datasetcreating.AddConfirm).Name("dataset_add_confirm")
+						r.Get("/add/description", datasetcreating.AddDescription).Name("dataset_add_description")
 
 						// delete
 						r.Get("/confirm-delete", datasetediting.ConfirmDelete).Name("dataset_confirm_delete")
@@ -494,34 +510,6 @@ func Register(c Config) {
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// add dataset
-		r.Get("/dataset/add",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.Add)).
-			Name("dataset_add")
-		r.Post("/dataset/add",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.Add))
-		r.Post("/dataset/import",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddImport)).
-			Name("dataset_add_import")
-		r.Post("/dataset/import/confirm",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.ConfirmImport)).
-			Name("dataset_confirm_import")
-		r.Get("/dataset/{id}/add/description",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddDescription)).
-			Name("dataset_add_description")
-		r.Get("/dataset/{id}/add/confirm",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddConfirm)).
-			Name("dataset_add_confirm")
-		r.Post("/dataset/{id}/save",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddSaveDraft)).
-			Name("dataset_add_save_draft")
-		r.Post("/dataset/{id}/add/publish",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddPublish)).
-			Name("dataset_add_publish")
-		r.Get("/dataset/{id}/add/finish",
-			datasetCreatingHandler.Wrap(datasetCreatingHandler.AddFinish)).
-			Name("dataset_add_finish")
 
 		// edit dataset activity
 		r.Get("/dataset/{id}/message/edit",
@@ -776,25 +764,5 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/contributors/{role}/{position}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteContributor)).
 			Name("publication_delete_contributor")
-
-		// edit publication files
-		r.Post("/publication/{id}/files",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UploadFile)).
-			Name("publication_upload_file")
-		r.Get("/publication/{id}/files/{file_id}/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditFile)).
-			Name("publication_edit_file")
-		r.Get("/publication/{id}/refresh-files",
-			publicationEditingHandler.Wrap(publicationEditingHandler.RefreshFiles)).
-			Name("publication_refresh_files")
-		r.Get("/publication/{id}/files/{file_id}/refresh-form",
-			publicationEditingHandler.Wrap(publicationEditingHandler.RefreshEditFileForm)).
-			Name("publication_edit_file_refresh_form")
-		r.Put("/publication/{id}/files/{file_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateFile)).
-			Name("publication_update_file")
-		r.Delete("/publication/{id}/files/{file_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteFile)).
-			Name("publication_delete_file")
 	})
 }
