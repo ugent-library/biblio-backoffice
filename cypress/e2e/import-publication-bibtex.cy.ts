@@ -46,7 +46,10 @@ describe("Publication import", () => {
     cy.contains("Review and publish").should("be.visible");
     cy.wait(1000); // Give elastic some extra time to index imports
     cy.reload();
-    cy.contains("Imported publications Showing 1").should("be.visible");
+    cy.contains(".card-header", "Imported publications").should(
+      "contain",
+      "Showing 1",
+    );
 
     cy.extractBiblioId();
 
@@ -121,7 +124,9 @@ describe("Publication import", () => {
       .should("have.text", "Biblio draft");
 
     // Publish
-    cy.intercept("POST", "/publication/add-multiple/*/publish").as("publish");
+    cy.intercept("POST", "/add-publication/import/multiple/*/publish").as(
+      "publish",
+    );
     cy.contains(".btn", "Publish all to Biblio").click();
     cy.wait("@publish");
 
@@ -130,7 +135,10 @@ describe("Publication import", () => {
     cy.get("@steps").eq(0).should("have.class", "c-stepper__step--complete");
     cy.get("@steps").eq(1).should("have.class", "c-stepper__step--complete");
     cy.get("@steps").eq(2).should("have.class", "c-stepper__step--active");
-    cy.contains("Imported publications Showing 1").should("be.visible");
+    cy.contains(".card-header", "Imported publications").should(
+      "contain",
+      "Showing 1",
+    );
 
     cy.contains(".btn", "Continue to overview").click();
     cy.location("pathname").should("eq", "/publication");

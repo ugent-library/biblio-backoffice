@@ -215,7 +215,9 @@ describe("Publication import", () => {
       .should("have.text", "Biblio draft");
 
     // Publish
-    cy.intercept("POST", "/publication/add-multiple/*/publish").as("publish");
+    cy.intercept("POST", "/add-publication/import/multiple/*/publish").as(
+      "publish",
+    );
     cy.contains(".btn", "Publish all to Biblio").click();
     cy.wait("@publish");
 

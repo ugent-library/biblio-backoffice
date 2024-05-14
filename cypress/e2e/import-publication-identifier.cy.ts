@@ -1,11 +1,8 @@
 import { getRandomText } from "support/util";
 
 describe("Publication import", () => {
-  beforeEach(() => {
-    cy.loginAsResearcher();
-  });
-
   it("should be a possible to import publications by DOI", () => {
+    cy.loginAsResearcher();
     cy.visit("/");
 
     cy.contains(".btn", "Add research").click();
@@ -93,6 +90,34 @@ describe("Publication import", () => {
   });
 
   it("should detect duplicates by DOI", () => {
+    const DOI = "10.2307/2323707";
+
+    // First clean up existing publications with the same DOI
+    cy.loginAsLibrarian();
+    cy.switchMode("Librarian");
+    const selector =
+      ".card .card-body .list-group .list-group-item .c-button-toolbar .dropdown .dropdown-item:contains('Delete')";
+
+    deleteNextPublication();
+
+    function deleteNextPublication() {
+      cy.visit("/publication", { qs: { q: DOI, "page-size": 1000 } }).then(
+        () => {
+          const deleteButton = Cypress.$(selector).first();
+
+          if (deleteButton.length > 0) {
+            cy.wrap(deleteButton).click({ force: true });
+
+            cy.intercept("DELETE", "/publication/*").as("deletePublication");
+            cy.ensureModal("Confirm deletion").closeModal("Delete");
+            cy.wait("@deletePublication").then(deleteNextPublication);
+          }
+        },
+      );
+    }
+
+    // Actual test starts here
+    cy.loginAsResearcher();
     const title = getRandomText();
     cy.setUpPublication("Miscellaneous", { title, prepareForPublishing: true });
     cy.visitPublication();
@@ -100,12 +125,10 @@ describe("Publication import", () => {
     cy.updateFields(
       "Publication details",
       () => {
-        cy.setFieldByLabel("DOI", "DOI/test/123.98");
+        cy.setFieldByLabel("DOI", DOI);
       },
       true,
     );
-
-    //10.1016/j.ese.2024.100396
 
     cy.contains(".btn", "Publish to Biblio").click();
     cy.ensureModal("Are you sure?").closeModal("Publish");
@@ -116,7 +139,7 @@ describe("Publication import", () => {
     cy.contains("Import your publication via an identifier").click();
     cy.contains(".btn", "Add publication(s)").click();
 
-    cy.get('input[name="identifier"]').type("DOI/test/123.98");
+    cy.get('input[name="identifier"]').type(DOI);
     cy.contains(".btn", "Add publication(s)").click();
 
     // TODO: convert this to a regular dialog so we can use cy.ensureModal here
