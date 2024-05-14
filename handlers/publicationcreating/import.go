@@ -308,15 +308,16 @@ func AddMultipleImport(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, c.PathTo("publication_add_multiple_confirm", "batch_id", batchID).String(), http.StatusFound)
 }
 
-func (h *Handler) AddMultipleSave(w http.ResponseWriter, r *http.Request, ctx Context) {
+func AddMultipleSave(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	flash := flash.SimpleFlash().
 		WithLevel("success").
 		WithBody(template.HTML("<p>Publications successfully saved as draft.</p>"))
 
-	h.AddFlash(r, w, *flash)
+	c.PersistFlash(w, *flash)
 
-	redirectURL := h.PathFor("publications")
-	w.Header().Set("HX-Redirect", redirectURL.String())
+	w.Header().Set("HX-Redirect", c.PathTo("publications").String())
 }
 
 // TODO after changing tabs, the wrong url is pushed in the history

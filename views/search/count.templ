@@ -6,7 +6,7 @@ import (
 )
 
 templ Count(p pagination.Pagination) {
-	Showing 
+	Showing
 	if p.TotalPages() > 1 {
 		{ fmt.Sprintf("%d-%d of ", p.FirstOnPage(), p.LastOnPage()) }
 	}
