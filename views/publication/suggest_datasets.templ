@@ -1,37 +1,38 @@
 package publication
 
 import (
-    "fmt"
+	"fmt"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-    datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
+	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
 )
 
 templ SuggestDatasets(c *ctx.Ctx, publication *models.Publication, hits *models.DatasetHits) {
-    <ul class="list-group mt-6">
-    for _, h := range hits.Hits {
-        <li class="list-group-item">
-            @datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
-                Dataset: h,
-                URL:     c.PathTo("dataset", "id", h.ID),
-                Actions: suggestDatasetActions(c, publication, h),
-            })
-        </li>
-    }
-    </ul>
+	<ul class="list-group mt-6">
+		for _, h := range hits.Hits {
+			<li class="list-group-item">
+				@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
+					Dataset: h,
+					URL:     c.PathTo("dataset", "id", h.ID),
+					Actions: suggestDatasetActions(c, publication, h),
+				})
+			</li>
+		}
+	</ul>
 }
 
 templ suggestDatasetActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset) {
-    <div class="bc-toolbar-item ms-auto ms-lg-0">
-        <div class="c-button-toolbar">
-            <button class="btn btn-primary"
-            hx-post={ c.PathTo("publication_create_dataset", "id", p.ID, "snapshot_id", p.SnapshotID, "dataset_id", d.ID).String() }
-            hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
-            hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
-            hx-vals={ fmt.Sprintf(`{"dataset_id": "%s"}`, d.ID) }
-            hx-swap="none"
-            >Add dataset</button>
-        </div>
-    </div>
+	<div class="bc-toolbar-item ms-auto ms-lg-0">
+		<div class="c-button-toolbar">
+			<button
+				class="btn btn-primary"
+				hx-post={ c.PathTo("publication_create_dataset", "id", p.ID, "snapshot_id", p.SnapshotID, "dataset_id", d.ID).String() }
+				hx-headers='{"If-Match": "{{.Publication.SnapshotID}}"}'
+				hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
+				hx-vals={ fmt.Sprintf(`{"dataset_id": "%s"}`, d.ID) }
+				hx-swap="none"
+			>Add dataset</button>
+		</div>
+	</div>
 }

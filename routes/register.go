@@ -345,7 +345,13 @@ func Register(c Config) {
 						r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
 
 						// files
+						r.Post("/files", publicationediting.UploadFile).Name("publication_upload_file")
+						r.Get("/refresh-files", publicationediting.RefreshFiles).Name("publication_refresh_files")
+						r.Get("/files/{file_id}/edit", publicationediting.EditFile).Name("publication_edit_file")
+						r.Get("/files/{file_id}/refresh-form", publicationediting.RefreshEditFileForm).Name("publication_edit_file_refresh_form")
+						r.Put("/files/{file_id}", publicationediting.UpdateFile).Name("publication_update_file")
 						r.Get("/{snapshot_id}/files/{file_id}/confirm-delete", publicationediting.ConfirmDeleteFile).Name("publication_confirm_delete_file")
+						r.Delete("/files/{file_id}", publicationediting.DeleteFile).Name("publication_delete_file")
 
 						// contributors
 						r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
@@ -779,25 +785,5 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/contributors/{role}/{position}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteContributor)).
 			Name("publication_delete_contributor")
-
-		// edit publication files
-		r.Post("/publication/{id}/files",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UploadFile)).
-			Name("publication_upload_file")
-		r.Get("/publication/{id}/files/{file_id}/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditFile)).
-			Name("publication_edit_file")
-		r.Get("/publication/{id}/refresh-files",
-			publicationEditingHandler.Wrap(publicationEditingHandler.RefreshFiles)).
-			Name("publication_refresh_files")
-		r.Get("/publication/{id}/files/{file_id}/refresh-form",
-			publicationEditingHandler.Wrap(publicationEditingHandler.RefreshEditFileForm)).
-			Name("publication_edit_file_refresh_form")
-		r.Put("/publication/{id}/files/{file_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateFile)).
-			Name("publication_update_file")
-		r.Delete("/publication/{id}/files/{file_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteFile)).
-			Name("publication_delete_file")
 	})
 }
