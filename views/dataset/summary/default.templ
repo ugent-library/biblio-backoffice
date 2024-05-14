@@ -1,0 +1,17 @@
+package datasetsummaryviews
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+templ DefaultActions(c *ctx.Ctx, dataset *models.Dataset) {
+	<div class="bc-toolbar-item ms-auto ms-lg-0">
+		<div class="c-button-toolbar">
+			<a class="btn btn-tertiary" href={ templ.URL(c.PathTo("dataset", "id", dataset.ID).String()) }>
+				<i class="if if-eye"></i>
+				<span class="btn-text">View dataset</span>
+			</a>
+		</div>
+	</div>
+}
