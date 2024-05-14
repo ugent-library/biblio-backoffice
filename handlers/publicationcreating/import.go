@@ -33,23 +33,6 @@ type BindImportSingle struct {
 	PublicationType string `form:"publication_type"`
 }
 
-type YieldAddSingle struct {
-	Context
-	PageTitle            string
-	Step                 int
-	Source               string
-	Identifier           string
-	Publication          *models.Publication
-	DuplicatePublication bool
-	PublicationDatasets  []*models.Dataset
-	ActiveNav            string
-	SubNavs              []string // needed to render show_description
-	ActiveSubNav         string   // needed to render show_description
-	RedirectURL          string   // needed to render show_description
-	DisplayDetails       *display.Display
-	Errors               *YieldValidationErrors
-}
-
 type YieldAddMultiple struct {
 	Context
 	PageTitle   string
@@ -70,11 +53,6 @@ type YieldAddMultipleShow struct {
 	ActiveSubNav string   // needed to render show_description
 	RedirectURL  string   // needed to render show_description
 	BatchID      string
-}
-
-type YieldValidationErrors struct {
-	Title  string
-	Errors form.Errors
 }
 
 func Add(w http.ResponseWriter, r *http.Request) {
