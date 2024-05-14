@@ -370,35 +370,30 @@ func AddMultipleConfirm(w http.ResponseWriter, r *http.Request) {
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) AddMultiplePublish(w http.ResponseWriter, r *http.Request, ctx Context) {
+func AddMultiplePublish(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	batchID := bind.PathValue(r, "batch_id")
 
-	err := h.batchPublishPublications(batchID, ctx.User)
+	err := batchPublishPublications(c, batchID, c.User)
 
-	// TODO this is useless to the user unless we point to the publication in
-	// question
+	// TODO this is useless to the user unless we point to the publication in question
 	var validationErrs *okay.Errors
 	if errors.As(err, &validationErrs) {
-		h.Logger.Warnw("add multiple publish publication: could not validate abstract:", "errors", validationErrs, "batch", batchID, "user", ctx.User.ID)
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs))
-		render.Layout(w, "show_modal", "form_errors_dialog", struct {
-			Title  string
-			Errors form.Errors
-		}{
-			Title:  "Unable to publish a publication due to the following errors",
-			Errors: errors,
-		})
+		c.Log.Warnw("add multiple publish publication: could not validate abstract:", "errors", validationErrs, "batch", batchID, "user", c.User.ID)
+
+		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs))
+		views.ShowModal(views.FormErrorsDialog(c, "Unable to publish a publication due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorw("add multiple publish publication: could not publish publications", "errors", err, "batch", batchID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("add multiple publish publication: could not publish publications", "errors", err, "batch", batchID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	redirectURL := h.PathFor("publication_add_multiple_finish", "batch_id", batchID)
-
+	redirectURL := c.PathTo("publication_add_multiple_finish", "batch_id", batchID)
 	w.Header().Set("HX-Redirect", redirectURL.String())
 }
 
@@ -501,8 +496,8 @@ func importPublications(c *ctx.Ctx, source string, file io.Reader) (string, erro
 }
 
 // TODO check conflicts?
-func (h *Handler) batchPublishPublications(batchID string, user *models.Person) (err error) {
-	searcher := h.PublicationSearchIndex.
+func batchPublishPublications(c *ctx.Ctx, batchID string, user *models.Person) (err error) {
+	searcher := c.PublicationSearchIndex.
 		WithScope("status", "private", "public").
 		WithScope("creator_id", user.ID).
 		WithScope("batch_id", batchID)
@@ -520,7 +515,7 @@ func (h *Handler) batchPublishPublications(batchID string, user *models.Person) 
 			if err = pub.Validate(); err != nil {
 				return
 			}
-			if err = h.Repo.SavePublication(pub, user); err != nil {
+			if err = c.Repo.SavePublication(pub, user); err != nil {
 				return
 			}
 		}
