@@ -361,14 +361,6 @@ func Register(c Config) {
 							r.Get("/confirm-delete", publicationediting.ConfirmDelete).Name("publication_confirm_delete")
 							r.Delete("/", publicationediting.Delete).Name("publication_delete")
 
-							// lay summaries
-							r.Get("/lay_summaries/add", publicationediting.AddLaySummary).Name("publication_add_lay_summary")
-							r.Post("/lay_summaries", publicationediting.CreateLaySummary).Name("publication_create_lay_summary")
-							r.Get("/lay_summaries/{lay_summary_id}/edit", publicationediting.EditLaySummary).Name("publication_edit_lay_summary")
-							r.Put("/lay_summaries/{lay_summary_id}", publicationediting.UpdateLaySummary).Name("publication_update_lay_summary")
-							r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
-							r.Delete("/lay_summaries/{lay_summary_id}", publicationediting.DeleteLaySummary).Name("publication_delete_lay_summary")
-
 							// details
 							r.Get("/details/edit", publicationediting.EditDetails).Name("publication_edit_details")
 							r.Put("/details", publicationediting.UpdateDetails).Name("publication_update_details")
@@ -399,7 +391,12 @@ func Register(c Config) {
 							r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", publicationediting.ConfirmDeleteLink).Name("publication_confirm_delete_link")
 
 							// lay summaries
+							r.Get("/lay_summaries/add", publicationediting.AddLaySummary).Name("publication_add_lay_summary")
+							r.Post("/lay_summaries", publicationediting.CreateLaySummary).Name("publication_create_lay_summary")
+							r.Get("/lay_summaries/{lay_summary_id}/edit", publicationediting.EditLaySummary).Name("publication_edit_lay_summary")
+							r.Put("/lay_summaries/{lay_summary_id}", publicationediting.UpdateLaySummary).Name("publication_update_lay_summary")
 							r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
+							r.Delete("/lay_summaries/{lay_summary_id}", publicationediting.DeleteLaySummary).Name("publication_delete_lay_summary")
 
 							// additional info
 							r.Get("/additional-info/edit", publicationediting.EditAdditionalInfo).Name("publication_edit_additional_info")
@@ -512,7 +509,11 @@ func Register(c Config) {
 						r.Get("/{snapshot_id}/departments/{department_id}/confirm-delete", datasetediting.ConfirmDeleteDepartment).Name("dataset_confirm_delete_department")
 
 						// publications
+						r.Get("/publications/add", datasetediting.AddPublication).Name("dataset_add_publication")
+						r.Get("/publications/suggestions", datasetediting.SuggestPublications).Name("dataset_suggest_publications")
+						r.Post("/publications", datasetediting.CreatePublication).Name("dataset_create_publication")
 						r.Get("/{snapshot_id}/publications/{publication_id}/confirm-delete", datasetediting.ConfirmDeletePublication).Name("dataset_confirm_delete_publication")
+						r.Delete("/publications/{publication_id}", datasetediting.DeletePublication).Name("dataset_delete_publication")
 
 						// publish
 						r.Get("/publish/confirm", datasetediting.ConfirmPublish).Name("dataset_confirm_publish")
@@ -525,14 +526,6 @@ func Register(c Config) {
 						// re-publish
 						r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
 						r.Post("/republish", datasetediting.Republish).Name("dataset_republish")
-
-						// publications
-						r.Get("/publications/add", datasetediting.AddPublication).Name("dataset_add_publication")
-						r.Get("/publications/suggestions", datasetediting.SuggestPublications).Name("dataset_suggest_publications")
-
-						r.Post("/publications", datasetediting.CreatePublication).Name("dataset_create_publication")
-						r.Delete("/publications/{publication_id}", datasetediting.DeletePublication).Name("dataset_delete_publication")
-
 					})
 
 					// curator actions
