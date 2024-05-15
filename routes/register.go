@@ -325,6 +325,12 @@ func Register(c Config) {
 							r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 						})
 
+						// projects
+						r.Get("/projects/add", publicationediting.AddProject).Name("publication_add_project")
+						r.Get("/projects/suggestions", publicationediting.SuggestProjects).Name("publication_suggest_projects")
+						// project_id is last part of url because some id's contain slashes
+						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", publicationediting.ConfirmDeleteProject).Name("publication_confirm_delete_project")
+
 						// edit only
 						r.Group(func(r *ich.Mux) {
 							r.Use(ctx.RequireEditPublication)
@@ -362,6 +368,10 @@ func Register(c Config) {
 							// edit publication type
 							r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
 							r.Put("/type", publicationEditingHandler.Wrap(publicationediting.UpdateType)).Name("publication_update_type")
+
+							// conference
+							r.Get("/conference/edit", publicationediting.EditConference).Name("publication_edit_conference")
+							r.Put("/conference", publicationediting.UpdateConference).Name("publication_update_conference")
 
 							// projects
 							r.Get("/projects/add", publicationediting.AddProject).Name("publication_add_project")
@@ -662,14 +672,6 @@ func Register(c Config) {
 		r.Put("/publication/{id}/reviewer-note",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateReviewerNote)).
 			Name("publication_update_reviewer_note")
-
-		// edit publication conference
-		r.Get("/publication/{id}/conference/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditConference)).
-			Name("publication_edit_conference")
-		r.Put("/publication/{id}/conference",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateConference)).
-			Name("publication_update_conference")
 
 		// edit publication projects
 		r.Post("/publication/{id}/projects",

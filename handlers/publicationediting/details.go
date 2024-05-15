@@ -5,8 +5,6 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render/display"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
@@ -57,17 +55,6 @@ type BindDetails struct {
 	WOSID                   string   `form:"wos_id"`
 	WOSType                 string   `form:"wos_type"`
 	Year                    string   `form:"year"`
-}
-
-type YieldDetails struct {
-	Context
-	DisplayDetails *display.Display
-}
-
-type YieldEditDetails struct {
-	Context
-	Form     *form.Form
-	Conflict bool
 }
 
 func EditDetails(w http.ResponseWriter, r *http.Request) {

@@ -5,10 +5,9 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
-	"github.com/ugent-library/biblio-backoffice/views/publication"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -27,11 +26,12 @@ func ConfirmUpdateType(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
 	// TODO validate type
-	publication.ConfirmUpdateType(c, ctx.GetPublication(r), r.URL.Query().Get("type")).Render(r.Context(), w)
+	publicationviews.ConfirmUpdateType(c, ctx.GetPublication(r), r.URL.Query().Get("type")).Render(r.Context(), w)
 }
 
-func UpdateType(w http.ResponseWriter, r *http.Request, legacyContext Context) {
+func UpdateType(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
 
 	b := BindType{}
 	if err := bind.Body(r, &b); err != nil {
@@ -40,20 +40,14 @@ func UpdateType(w http.ResponseWriter, r *http.Request, legacyContext Context) {
 		return
 	}
 
-	legacyContext.Publication.ChangeType(b.Type)
+	p.ChangeType(b.Type)
 
-	if validationErrs := legacyContext.Publication.Validate(); validationErrs != nil {
-		form := detailsForm(c.User, c.Loc, legacyContext.Publication, validationErrs.(*okay.Errors))
-
-		// TODO: refactor to templ
-		render.Layout(w, "refresh_modal", "publication/edit_details", YieldEditDetails{
-			Context: legacyContext,
-			Form:    form,
-		})
+	if validationErrs := p.Validate(); validationErrs != nil {
+		views.ReplaceModal(publicationviews.EditDetailsDialog(c, p, false, validationErrs.(*okay.Errors))).Render(r.Context(), w)
 		return
 	}
 
-	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), legacyContext.Publication, c.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
@@ -62,11 +56,11 @@ func UpdateType(w http.ResponseWriter, r *http.Request, legacyContext Context) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("update publication type: Could not save the publication:", "error", err, "publication", legacyContext.Publication.ID, "user", c.User.ID)
+		c.Log.Errorf("update publication type: Could not save the publication:", "error", err, "publication", p.ID, "user", c.User.ID)
 		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	redirectURL := c.PathTo("publication", "id", legacyContext.Publication.ID)
+	redirectURL := c.PathTo("publication", "id", p.ID)
 	w.Header().Set("HX-Redirect", redirectURL.String())
 }
