@@ -1,0 +1,89 @@
+package publication
+
+import (
+	"fmt"
+	"github.com/ugent-library/okay"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/localize"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+)
+
+templ EditAbstractDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Text, idx int, conflict bool, errors *okay.Errors, isNew bool) {
+	<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">
+					if isNew {
+						Add abstract
+					} else {
+						Edit abstract
+					}
+				</h2>
+			</div>
+			<div class="modal-body">
+				if conflict {
+					<div class="alert alert-danger mb-0" role="alert">
+						<i class="if if--error if-error-circle-fill"></i>
+						The publication you are editing has been changed by someone else. Please copy your edits, then close this form.
+					</div>
+				}
+				@form.Errors(localize.ValidationErrors(c.Loc, errors))
+				@form.TextArea(form.TextAreaArgs{
+					FieldArgs: form.FieldArgs{
+						Label: c.Loc.Get("builder.abstract.text"),
+						Name:  "text",
+						Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/abstract/%d/text", idx)),
+						Theme: form.ThemeVertical,
+					},
+					Value: abstract.Text,
+					Rows:  6,
+				})
+				@form.Select(form.SelectArgs{
+					FieldArgs: form.FieldArgs{
+						Label: c.Loc.Get("builder.abstract.lang"),
+						Name:  "lang",
+						Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/abstract/%d/lang", idx)),
+						Theme: form.ThemeVertical,
+					},
+					Value:   abstract.Lang,
+					Options: localize.LanguageSelectOptions(),
+				})
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					if conflict {
+						<div class="bc-toolbar-left">
+							<button class="btn btn-primary modal-close">Close</button>
+						</div>
+					} else {
+						<div class="bc-toolbar-left">
+							<button class="btn btn-link modal-close">Cancel</button>
+						</div>
+						<div class="bc-toolbar-right">
+							<button
+								type="button"
+								name="create"
+								class="btn btn-primary"
+								if isNew {
+									hx-post={ c.PathTo("publication_create_abstract", "id", p.ID).String() }
+								} else {
+									hx-put={ c.PathTo("publication_update_abstract", "id", p.ID, "abstract_id", abstract.ID).String() }
+								}
+								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
+								hx-include=".modal-body"
+								hx-swap="none"
+							>
+								if isNew {
+									Add abstract
+								} else {
+									Update abstract
+								}
+							</button>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+}

@@ -336,13 +336,22 @@ func Register(c Config) {
 						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", publicationediting.ConfirmDeleteProject).Name("publication_confirm_delete_project")
 
 						// abstracts
+						r.Get("/abstracts/add", publicationediting.AddAbstract).Name("publication_add_abstract")
+						r.Post("/abstracts", publicationediting.CreateAbstract).Name("publication_create_abstract")
+						r.Get("/abstracts/{abstract_id}/edit", publicationediting.EditAbstract).Name("publication_edit_abstract")
+						r.Put("/abstracts/{abstract_id}", publicationediting.UpdateAbstract).Name("publication_update_abstract")
 						r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", publicationediting.ConfirmDeleteAbstract).Name("publication_confirm_delete_abstract")
+						r.Delete("/abstracts/{abstract_id}", publicationediting.DeleteAbstract).Name("publication_delete_abstract")
 
 						// links
 						r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", publicationediting.ConfirmDeleteLink).Name("publication_confirm_delete_link")
 
 						// lay summaries
 						r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
+
+						// additional info
+						r.Get("/additional-info/edit", publicationediting.EditAdditionalInfo).Name("publication_edit_additional_info")
+						r.Put("/additional-info", publicationediting.UpdateAdditionalInfo).Name("publication_update_additional_info")
 
 						// files
 						r.Post("/files", publicationediting.UploadFile).Name("publication_upload_file")
@@ -670,14 +679,6 @@ func Register(c Config) {
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateConference)).
 			Name("publication_update_conference")
 
-		// edit publication additional info
-		r.Get("/publication/{id}/additional-info/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditAdditionalInfo)).
-			Name("publication_edit_additional_info")
-		r.Put("/publication/{id}/additional-info",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateAdditionalInfo)).
-			Name("publication_update_additional_info")
-
 		// edit publication projects
 		r.Post("/publication/{id}/projects",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
@@ -711,23 +712,6 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/departments/{department_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
 			Name("publication_delete_department")
-
-		// edit publication abstracts
-		r.Get("/publication/{id}/abstracts/add",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddAbstract)).
-			Name("publication_add_abstract")
-		r.Post("/publication/{id}/abstracts",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateAbstract)).
-			Name("publication_create_abstract")
-		r.Get("/publication/{id}/abstracts/{abstract_id}/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditAbstract)).
-			Name("publication_edit_abstract")
-		r.Put("/publication/{id}/abstracts/{abstract_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateAbstract)).
-			Name("publication_update_abstract")
-		r.Delete("/publication/{id}/abstracts/{abstract_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteAbstract)).
-			Name("publication_delete_abstract")
 
 		// edit publication lay summaries
 		r.Get("/publication/{id}/lay_summaries/add",

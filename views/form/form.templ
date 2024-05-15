@@ -2,6 +2,7 @@ package form
 
 import (
 	"fmt"
+	"encoding/json"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 )
 
@@ -129,6 +130,24 @@ templ Text(args TextArgs) {
 			value={ args.Value }
 			readonly?={ args.Readonly }
 		/>
+	}
+}
+
+type TextAreaArgs struct {
+	FieldArgs
+	Value string
+	Rows  int
+}
+
+templ TextArea(args TextAreaArgs) {
+	@Field(args.FieldArgs, args.Name) {
+		<textarea
+			class={ "form-control", templ.KV("is-invalid", args.Error != "") }
+			id={ args.Name }
+			name={ args.Name }
+			readonly?={ args.Readonly }
+			rows={ fmt.Sprint(args.Rows) }
+		>{ args.Value }</textarea>
 	}
 }
 
@@ -357,5 +376,28 @@ templ Date(args DateArgs) {
 				max={ args.Max }
 			}
 		/>
+	}
+}
+
+type TagsArgs struct {
+	FieldArgs
+	Values []string
+}
+
+func (args TagsArgs) jsonValue() string {
+	vals := args.Values
+	if vals == nil {
+		vals = []string{}
+	}
+	data, _ := json.Marshal(vals)
+	return string(data)
+}
+
+templ Tags(args TagsArgs) {
+	@Field(args.FieldArgs, args.Name) {
+		<div class="tags">
+			<span class="tags-real-values d-none"></span>
+			<textarea class="form-control tags-widget-values tagify-custom" data-input-name={ args.Name }>{ args.jsonValue() }</textarea>
+		</div>
 	}
 }
