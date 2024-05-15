@@ -11,7 +11,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
     "/add-publication?method=manual": "add manual publication page",
     "/add-publication?method=bibtex": "add BibTeX publication page",
     "/dataset": "datasets page",
-    "/dataset/add": "add dataset page",
+    "/add-dataset": "add dataset page",
     "/dashboard/publications/faculties":
       "publications - faculties dashboard page",
     "/dashboard/publications/socs": "publications - SOCs dashboard page",
@@ -107,14 +107,14 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
   });
 
   it("should fully display the user menu on all pages during manual dataset set-up", () => {
-    cy.visit("/dataset/add");
+    cy.visit("/add-dataset");
 
     assertUserMenuWorks();
 
     cy.contains("Register a dataset manually").click("left");
     cy.contains(".btn", "Add dataset").click();
 
-    cy.location("pathname").should("eq", "/dataset/add");
+    cy.location("pathname").should("eq", "/add-dataset");
 
     assertUserMenuWorks();
 
