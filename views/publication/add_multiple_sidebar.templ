@@ -1,0 +1,37 @@
+package publication
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/views/shared"
+)
+
+templ AddMultipleSidebar(c *ctx.Ctx, step int) {
+	<div class="c-sub-sidebar c-sidebar--bordered d-none d-lg-block">
+		<div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom">
+			<div class="bc-toolbar">
+				<div class="bc-toolbar-left">
+					<div class="bc-toolbar-item">
+						<div class="d-flex flex-column">
+							<a class="btn btn-link btn-link-muted btn-sm mt-3 p-0" href={ templ.URL(c.PathTo("publications").String()) }>
+								<i class="if if-arrow-left"></i>
+								<div class="btn-text">Biblio publications</div>
+							</a>
+							<h4 class="bc-toolbar-title mb-3">Add publication</h4>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="c-sub-sidebar__menu">
+			<nav>
+				<div class="c-sub-sidebar-menu">
+					<ol class="c-stepper my-6">
+						@shared.SidebarStep(1, "Add publication(s)", step, c.PathTo("publication_add"))
+						@shared.SidebarStep(2, "Review and publish", step, nil)
+						@shared.SidebarStep(3, "Finished", step, nil)
+					</ol>
+				</div>
+			</nav>
+		</div>
+	</div>
+}

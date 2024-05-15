@@ -57,9 +57,8 @@ describe("Issue #1241: As a researcher or librarian, I should not be able to sel
 
           cy.get("#embargo_date")
             .scrollIntoView()
-            .parent()
             .should("have.class", "is-invalid")
-            .find(".invalid-feedback")
+            .next(".invalid-feedback")
             .should("be.visible")
             .should(
               "have.text",

@@ -38,7 +38,7 @@ export default function setUpPublication(
     publicationType,
   );
 
-  cy.visit("/publication/add", NO_LOG);
+  cy.visit("/add-publication", NO_LOG);
 
   cy.contains("Enter a publication manually", NO_LOG)
     .find(":radio", NO_LOG)
@@ -87,10 +87,19 @@ export default function setUpPublication(
     cy.updateFields(
       "Authors",
       () => {
+        cy.intercept("/publication/*/contributors/author/suggestions?*").as(
+          "suggestAuthor",
+        );
         cy.setFieldByLabel("First name", "John");
+        cy.wait("@suggestAuthor");
         cy.setFieldByLabel("Last name", "Doe");
+        cy.wait("@suggestAuthor");
 
+        cy.intercept("/publication/*/contributors/author/confirm-create?*").as(
+          "createAuthor",
+        );
         cy.contains(".btn", "Add author", NO_LOG).click(NO_LOG);
+        cy.wait("@createAuthor");
       },
       true,
     );

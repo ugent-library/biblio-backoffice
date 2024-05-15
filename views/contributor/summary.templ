@@ -5,6 +5,7 @@ import (
 	"strings"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
 )
 
 templ Summary(c *ctx.Ctx,  role string, contribs []*models.Contributor, url string) {
@@ -40,7 +41,10 @@ templ Summary(c *ctx.Ctx,  role string, contribs []*models.Contributor, url stri
 			}
 		</div>
 	} else {
-		<em>UGent { role + "s" } missing</em>
+		<a href={ views.URLFromString(url).SetQueryParam("show", "contributors").SafeURL() } class="c-link-muted">
+			<i class="if if-edit if--small"></i>
+			<em>UGent { role + "s" } missing</em>
+		</a>
 	}
 }
 

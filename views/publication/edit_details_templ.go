@@ -709,7 +709,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 			templ_7745c5c3_Err = form.Text(form.TextArgs{
 				FieldArgs: form.FieldArgs{
 					Label: c.Loc.Get("builder.wos_id"),
-					Name:  "wos_type",
+					Name:  "wos_id",
 					Cols:  3,
 					Error: localize.ValidationErrorAt(c.Loc, errors, "/wos_id"),
 					Help:  c.Loc.Get("builder.wos_id.help")},
