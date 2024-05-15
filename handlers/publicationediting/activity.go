@@ -214,7 +214,7 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 	render.View(w, "publication/refresh_reviewer_note", ctx)
 }
 
-func messageForm(user *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {
+func messageForm(_ *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(loc, errors)).
@@ -234,7 +234,7 @@ func messageForm(user *models.Person, loc *gotext.Locale, p *models.Publication,
 		)
 }
 
-func reviewerTagsForm(user *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {
+func reviewerTagsForm(_ *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(loc, errors)).
@@ -253,7 +253,7 @@ func reviewerTagsForm(user *models.Person, loc *gotext.Locale, p *models.Publica
 		)
 }
 
-func reviewerNoteForm(user *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {
+func reviewerNoteForm(_ *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
 		WithErrors(localize.ValidationErrors(loc, errors)).

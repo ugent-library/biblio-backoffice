@@ -492,7 +492,7 @@ func MapPublication(p *models.Publication, repo *repositories.Repo) *Record {
 
 	if p.Status == "private" {
 		rec.Status = "unsubmitted"
-	} else if p.HasBeenPublic && p.Status != "public" {
+	} else if p.HasBeenPublic && p.Status == "deleted" {
 		rec.Status = "pdeleted"
 	} else {
 		rec.Status = p.Status
@@ -1017,9 +1017,9 @@ func MapDataset(d *models.Dataset, repo *repositories.Repo) *Record {
 		}
 	}
 
-	if d.Status == "private" {
+	if d.Status == "private" { // private is called unsubmitted in frontoffice
 		rec.Status = "unsubmitted"
-	} else if d.HasBeenPublic && d.Status != "public" {
+	} else if d.HasBeenPublic && d.Status != "public" {  // the frontoffice has an extra status pdeleted for records that are deleted but have bene public in the past
 		rec.Status = "pdeleted"
 	} else {
 		rec.Status = d.Status

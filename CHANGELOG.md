@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.55] - 2024-05-03
+
+### Added
+
+### Fixed
+
+- Fix bug in frontoffice handler pdeleted mapping 
+
 ## [v1.0.54] - 2024-03-28
 
 ### Added
@@ -563,7 +571,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.54...HEAD
+[unreleased]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.55...HEAD
+[v1.0.55]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.54...v1.0.55
 [v1.0.54]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.53...v1.0.54
 [v1.0.53]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.52...v1.0.53
 [v1.0.52]:  https://github.com/ugent-library/biblio-backoffice/compare/v1.0.51...v1.0.52
