@@ -502,8 +502,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
               .select("Social Sciences");
 
             cy.getLabel("Keywords")
-              .next(".tags")
-              .find("span[contenteditable]")
+              .next()
+              .find(".tags span[contenteditable]")
               .type("these{enter}are{enter}the{enter}keywords", { delay: 10 });
 
             cy.setFieldByLabel(
@@ -527,7 +527,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.ensureModal("Edit additional information")
           .within(() => {
             cy.getLabel("Research field")
-              .next(".form-values")
+              .next()
+              .find(".form-values")
               .as("formValues")
               .contains("select", "Performing Arts")
               .next("button:contains(Delete)")
