@@ -1,0 +1,87 @@
+package pages
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/search"
+	"github.com/ugent-library/biblio-backoffice/views/publication"
+)
+
+type AddMultipleFinishArgs struct {
+	Step        int
+	BatchID     string
+	Hits        *models.PublicationHits
+	SearchArgs  *models.SearchArgs
+	RedirectURL string
+}
+
+func generatePublicationSummaryArgs(c *ctx.Ctx, pub *models.Publication, redirectURL string) publication.SummaryArgs {
+	url := c.PathTo("publication", "id", pub.ID, "redirect-url", redirectURL)
+
+	args := publication.SummaryArgs{
+		Publication:    pub,
+		PublicationURL: url,
+		Actions:        publication.SummaryActions(c, pub, url),
+		Footer:         publication.SummaryFooter(c, pub),
+	}
+
+	if c.UserRole == "curator" {
+		args.Links = publication.SummaryLinks(c, pub, url)
+	}
+
+	return args
+}
+
+templ AddMultipleFinish(c *ctx.Ctx, args AddMultipleFinishArgs) {
+	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
+		@publication.AddMultipleSidebar(c, args.Step)
+		<div class="w-100 u-scroll-wrapper">
+			<div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<div class="bc-toolbar-item">
+							<div class="d-flex flex-column">
+								<h4 class="bc-toolbar-title">Congratulations!</h4>
+							</div>
+						</div>
+					</div>
+					<div class="bc-toolbar-right"></div>
+				</div>
+			</div>
+			<div class="p-6 u-scroll-wrapper__body">
+				<div class="card mb-6">
+					<div class="card-header">Next steps</div>
+					<div class="card-body">
+						<p class="mb-6">
+							Your publications are published in Biblio and sent for review to the Biblio team. 
+							The Biblio reviewer team will process your publications as soon as possible, 
+							taking into account reporting deadlines. For questions or to indicate deadlines, 
+							the Biblio team can be contacted at <a href={ templ.URL("mailto:biblio@ugent.be") }>biblio@ugent.be</a>.
+						</p>
+						<a class="btn btn-primary" href={ templ.URL(c.PathTo("publication_add").String()) }>Add new publication</a>
+						<a class="btn btn-outline-primary" href={ templ.URL(c.PathTo("publications").String()) }>Continue to overview</a>
+					</div>
+				</div>
+				<div class="card mb-6">
+					<div class="card-header">
+						<h4 class="me-5 mb-0 d-inline">Imported publications</h4>
+						@search.Count(args.Hits.Pagination)
+					</div>
+					<div class="card-body p-0">
+						<ul class="list-group list-group-flush">
+							for _, hit := range args.Hits.Hits {
+								<li class="list-group-item">
+									@publication.Summary(c, generatePublicationSummaryArgs(c, hit, args.RedirectURL))
+								</li>
+							}
+						</ul>
+					</div>
+				</div>
+				<nav aria-label="Page navigation">
+					@views.Pagination(c, c.PathTo("publication_add_multiple_finish", "batch_id", args.BatchID), args.SearchArgs, args.Hits.Pagination)
+				</nav>
+			</div>
+		</div>
+	}
+}

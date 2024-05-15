@@ -16,6 +16,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views/display"
 )
 
+const AdditionalInfoBodySelector = "#additional-info-body"
+
 func AdditionalInfo(c *ctx.Ctx, p *models.Publication) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -92,7 +94,7 @@ func AdditionalInfoBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 		}
 		templ_7745c5c3_Err = display.Field(display.FieldArgs{
 			Label:   c.Loc.Get("builder.keyword"),
-			Content: display.List(p.Keyword, display.Badge),
+			Content: display.InlineList(p.Keyword, display.Badge),
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

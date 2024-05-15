@@ -70,15 +70,15 @@ templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[strin
 }
 
 func genPublicationSummaryArgs(c *ctx.Ctx, pub *models.Publication) SummaryArgs {
-	pubURL := views.URL(c.PathTo("publication", "id", pub.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).URL()
+	pubURL := c.PathTo("publication", "id", pub.ID, "redirect-url", c.CurrentURL.String())
 	args := SummaryArgs{
 		Publication:    pub,
 		PublicationURL: pubURL,
-		Actions:        pubSummaryActions(c, pub, pubURL),
-		Footer:         pubSummaryFooter(c, pub),
+		Actions:        SummaryActions(c, pub, pubURL),
+		Footer:         SummaryFooter(c, pub),
 	}
 	if c.UserRole == "curator" {
-		args.Links = pubSummaryLinks(c, pub, pubURL)
+		args.Links = SummaryLinks(c, pub, pubURL)
 	}
 	return args
 }
@@ -237,7 +237,7 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 	}
 }
 
-templ pubSummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
+templ SummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
 	<div class="c-button-toolbar">
 		<button class="btn btn-tertiary btn-lg-only-responsive pt-0" data-collapsible-card-toggle>
 			<i class="if if-info-circle"></i>
@@ -314,7 +314,7 @@ templ pubSummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
 	</div>
 }
 
-templ pubSummaryFooter(c *ctx.Ctx, pub *models.Publication) {
+templ SummaryFooter(c *ctx.Ctx, pub *models.Publication) {
 	if pub.Message != "" {
 		<div class="alert alert-info mb-0">
 			<i class="if if-message"></i>
@@ -328,7 +328,7 @@ templ pubSummaryFooter(c *ctx.Ctx, pub *models.Publication) {
 	}
 }
 
-templ pubSummaryLinks(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
+templ SummaryLinks(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
 	<ul class="c-meta-list c-meta-list-inline">
 		<li class="c-meta-item">
 			<a class="c-link-muted c-body-small" href={ templ.URL(pubURL.String()) }>View publication</a>

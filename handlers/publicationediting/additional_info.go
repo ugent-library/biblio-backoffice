@@ -1,20 +1,15 @@
 package publicationediting
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 
-	"github.com/leonelquinteros/gotext"
-	"github.com/ugent-library/biblio-backoffice/displays"
-	"github.com/ugent-library/biblio-backoffice/localize"
-	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
-	"github.com/ugent-library/biblio-backoffice/render/display"
-	"github.com/ugent-library/biblio-backoffice/render/form"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
-	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
@@ -24,125 +19,46 @@ type BindAdditionalInfo struct {
 	ResearchField  []string `form:"research_field"`
 }
 
-type YieldAdditionalInfo struct {
-	Context
-	DisplayAdditionalInfo *display.Display
+func EditAdditionalInfo(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+	views.ShowModal(publicationviews.EditAdditionalInfoDialog(c, p, false, nil)).Render(r.Context(), w)
 }
 
-type YieldEditAdditionalInfo struct {
-	Context
-	Form     *form.Form
-	Conflict bool
-}
+func UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
 
-func (h *Handler) EditAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "show_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
-		Context:  ctx,
-		Form:     additionalInfoForm(ctx.User, ctx.Loc, ctx.Publication, nil),
-		Conflict: false,
-	})
-}
-
-func (h *Handler) UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAdditionalInfo{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("update publication additional info: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("update publication additional info: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	p := ctx.Publication
 	p.AdditionalInfo = b.AdditionalInfo
 	p.Keyword = b.Keyword
 	p.ResearchField = b.ResearchField
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		h.Logger.Warnw("update publication additional info: could not validate additional info:", "errors", validationErrs, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.Layout(w, "refresh_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
-			Context:  ctx,
-			Form:     additionalInfoForm(ctx.User, ctx.Loc, p, validationErrs.(*okay.Errors)),
-			Conflict: false,
-		})
+		c.Log.Warnw("update publication additional info: could not validate additional info:", "errors", validationErrs, "publication", p.ID, "user", c.User.ID)
+		views.ReplaceModal(publicationviews.EditAdditionalInfoDialog(c, p, false, validationErrs.(*okay.Errors))).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "publication/edit_additional_info", YieldEditAdditionalInfo{
-			Context:  ctx,
-			Form:     additionalInfoForm(ctx.User, ctx.Loc, p, nil),
-			Conflict: true,
-		})
+		views.ReplaceModal(publicationviews.EditAdditionalInfoDialog(c, p, true, nil)).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update publication additional info: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("update publication additional info: could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_additional_info", YieldAdditionalInfo{
-		Context:               ctx,
-		DisplayAdditionalInfo: displays.PublicationAdditionalInfo(ctx.User, ctx.Loc, p),
-	})
-}
-
-func additionalInfoForm(user *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {
-	researchFieldOptions := make([]form.SelectOption, len(vocabularies.Map["research_fields"]))
-	for i, v := range vocabularies.Map["research_fields"] {
-		researchFieldOptions[i].Label = v
-		researchFieldOptions[i].Value = v
-	}
-
-	if p.Keyword == nil {
-		p.Keyword = []string{}
-	}
-	keywordBytes, _ := json.Marshal(p.Keyword)
-	keywordStr := string(keywordBytes)
-
-	return form.New().
-		WithTheme("default").
-		WithErrors(localize.ValidationErrors(loc, errors)).
-		AddSection(
-			&form.SelectRepeat{
-				Name:        "research_field",
-				Options:     researchFieldOptions,
-				Values:      p.ResearchField,
-				EmptyOption: true,
-				Label:       loc.Get("builder.research_field"),
-				Cols:        9,
-				Error: localize.ValidationErrorAt(
-					loc,
-					errors,
-					"/research_field",
-				),
-			},
-			&form.Text{
-				Name:     "keyword",
-				Value:    keywordStr,
-				Template: "tags",
-				Label:    loc.Get("builder.keyword"),
-				Cols:     9,
-				Error: localize.ValidationErrorAt(
-					loc,
-					errors,
-					"/keyword",
-				),
-			},
-			&form.TextArea{
-				Name:  "additional_info",
-				Value: p.AdditionalInfo,
-				Label: loc.Get("builder.additional_info"),
-				Cols:  9,
-				Rows:  4,
-				Error: localize.ValidationErrorAt(
-					loc,
-					errors,
-					"/additional_info",
-				),
-			},
-		)
+	views.CloseModalAndReplace(publicationviews.AdditionalInfoBodySelector, publicationviews.AdditionalInfoBody(c, p)).Render(r.Context(), w)
 }
