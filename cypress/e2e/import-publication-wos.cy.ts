@@ -30,6 +30,75 @@ describe("Publication import", () => {
       .get(".spinner-border")
       .should("not.be.visible");
     cy.get("input[name=file]").selectFile(
+      "cypress/fixtures/import-from-wos-single.txt",
+    );
+    cy.contains(".btn", "Upload .txt file")
+      .get(".spinner-border")
+      .should("be.visible");
+
+    // Review and publish
+    cy.contains("Step 2").should("be.visible");
+    cy.contains(".bc-toolbar-title", "Review and publish").should("be.visible");
+    cy.get("@steps").eq(0).should("have.class", "c-stepper__step--complete");
+    cy.get("@steps").eq(1).should("have.class", "c-stepper__step--active");
+    cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
+
+    cy.contains("Review and publish").should("be.visible");
+    cy.wait(1000); // Give elastic some extra time to index imports
+    cy.reload();
+    cy.contains(".card-header", "Imported publications").should(
+      "contain",
+      "Showing 1",
+    );
+
+    cy.extractBiblioId();
+
+    // Verify publication is still draft
+    cy.get(".list-group-item .badge")
+      .should("have.class", "badge-warning-light")
+      .find(".badge-text")
+      .should("have.text", "Biblio draft");
+
+    // Publish
+    cy.intercept("POST", "/add-publication/import/multiple/*/save").as("save");
+    cy.contains(".btn", "Save all as draft").click();
+    cy.wait("@save");
+
+    cy.ensureToast("Publications successfully saved as draft.");
+    cy.location("pathname").should("eq", "/publication");
+  });
+
+  it("should be a possible to import publications from Web of Science and publish", () => {
+    cy.loginAsResearcher();
+
+    cy.visit("/");
+
+    cy.contains("Biblio Publications").click();
+
+    cy.contains("Add Publication").click();
+
+    // Add publication(s)
+    cy.contains("Step 1").should("be.visible");
+    cy.contains(".bc-toolbar-title", "Start: add publication(s)").should(
+      "be.visible",
+    );
+    cy.get(".c-stepper__step").as("steps").should("have.length", 3);
+    cy.get("@steps").eq(0).should("have.class", "c-stepper__step--active");
+    cy.get("@steps").eq(1).should("not.have.class", "c-stepper__step--active");
+    cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
+
+    cy.contains("Import from Web of Science").click();
+    cy.contains(".btn", "Add publication(s)").click();
+
+    // Upload WoS file
+    cy.get(".c-file-upload").should(
+      "contain.text",
+      "Drag and drop your .txt file or",
+    );
+    cy.contains(".btn", "Upload .txt file")
+      .get(".spinner-border")
+      .should("not.be.visible");
+    cy.get("input[name=file]").selectFile(
       "cypress/fixtures/import-from-wos.txt",
     );
     cy.contains(".btn", "Upload .txt file")
@@ -46,13 +115,19 @@ describe("Publication import", () => {
     cy.contains("Review and publish").should("be.visible");
     cy.wait(1000); // Give elastic some extra time to index imports
     cy.reload();
-    cy.contains("Imported publications Showing 3").should("be.visible");
+    cy.contains(".card-header", "Imported publications").should(
+      "contain",
+      "Showing 3",
+    );
 
     // Delete 2 publications
     deletePublication(
       "Enhancing bioflocculation in high-rate activated sludge improves effluent quality yet increases sensitivity to surface overflow rate",
     );
-    cy.contains("Imported publications Showing 2").should("be.visible");
+    cy.contains(".card-header", "Imported publications").should(
+      "contain",
+      "Showing 2",
+    );
 
     cy.ensureToast("Publication was successfully deleted.").closeToast();
 
@@ -62,7 +137,10 @@ describe("Publication import", () => {
 
     cy.ensureToast("Publication was successfully deleted.").closeToast();
 
-    cy.contains("Imported publications Showing 1").should("be.visible");
+    cy.contains(".card-header", "Imported publications").should(
+      "contain",
+      "Showing 1",
+    );
 
     cy.extractBiblioId();
 
@@ -137,7 +215,9 @@ describe("Publication import", () => {
       .should("have.text", "Biblio draft");
 
     // Publish
-    cy.intercept("POST", "/publication/add-multiple/*/publish").as("publish");
+    cy.intercept("POST", "/add-publication/import/multiple/*/publish").as(
+      "publish",
+    );
     cy.contains(".btn", "Publish all to Biblio").click();
     cy.wait("@publish");
 
@@ -146,7 +226,10 @@ describe("Publication import", () => {
     cy.get("@steps").eq(0).should("have.class", "c-stepper__step--complete");
     cy.get("@steps").eq(1).should("have.class", "c-stepper__step--complete");
     cy.get("@steps").eq(2).should("have.class", "c-stepper__step--active");
-    cy.contains("Imported publications Showing 1").should("be.visible");
+    cy.contains(".card-header", "Imported publications").should(
+      "contain",
+      "Showing 1",
+    );
 
     cy.contains(".btn", "Continue to overview").click();
     cy.location("pathname").should("eq", "/publication");
@@ -163,27 +246,27 @@ describe("Publication import", () => {
   // TODO: Not yet implemented
   // Example publication: "How can we possibly resolve the planet's nitrogen dilemma?" in import-from-wos.txt
   it("should report errors after import");
+
+  function deletePublication(title) {
+    cy.ensureNoModal();
+
+    cy.contains(".list-group-item-title", title)
+      .closest(".list-group-item")
+      .find(".c-button-toolbar")
+      // The "..." dropdown toggle button
+      .find(".dropdown .btn:has(i.if.if-more)")
+      .click()
+      .closest(".dropdown")
+      .contains("button", "Delete")
+      .click();
+
+    cy.ensureModal("Confirm deletion")
+      .within(() => {
+        cy.get(".modal-body > p").should(
+          "have.text",
+          "Are you sure you want to delete this publication?",
+        );
+      })
+      .closeModal("Delete");
+  }
 });
-
-function deletePublication(title) {
-  cy.ensureNoModal();
-
-  cy.contains(".list-group-item-title", title)
-    .closest(".list-group-item")
-    .find(".c-button-toolbar")
-    // The "..." dropdown toggle button
-    .find(".dropdown .btn:has(i.if.if-more)")
-    .click()
-    .closest(".dropdown")
-    .contains("button", "Delete")
-    .click();
-
-  cy.ensureModal("Confirm deletion")
-    .within(() => {
-      cy.get(".modal-body > p").should(
-        "have.text",
-        "Are you sure you want to delete this publication?",
-      );
-    })
-    .closeModal("Delete");
-}

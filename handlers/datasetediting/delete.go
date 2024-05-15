@@ -61,5 +61,9 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	// see: https://github.com/ugent-library/biblio-backoffice/issues/590
 	time.Sleep(1250 * time.Millisecond)
 
-	w.Header().Set("HX-Redirect", r.URL.Query().Get("redirect-url"))
+	redirectURL := r.URL.Query().Get("redirect-url")
+	if redirectURL == "" {
+		redirectURL = c.PathTo("datasets").String()
+	}
+	w.Header().Set("HX-Redirect", redirectURL)
 }

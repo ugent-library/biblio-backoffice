@@ -1,0 +1,117 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/publication"
+)
+
+templ Add(c *ctx.Ctx, step int) {
+	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
+		@publication.AddMultipleSidebar(c, step)
+		<form class="w-100" action={ templ.URL(c.PathTo("publication_add").String()) } method="GET">
+			<div class="u-scroll-wrapper">
+				<div class="bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<div class="bc-toolbar-item">
+								<div class="d-flex flex-column">
+									<span class="text-muted">Step { fmt.Sprint(step) }</span>
+									<h4 class="bc-toolbar-title">Start: add publication(s)</h4>
+								</div>
+							</div>
+						</div>
+						<div class="bc-toolbar-right">
+							<div class="bc-toolbar-item">
+								<button type="submit" class="btn btn-primary">
+									<div class="btn-text">Add publication(s)</div>
+									<i class="if if-arrow-right"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="p-6 u-scroll-wrapper__body">
+					<div class="card mb-6">
+						<div class="card-header">
+							<div class="bc-toolbar">
+								<div class="bc-toolbar-left">
+									<h5>Add publication(s)?</h5>
+								</div>
+							</div>
+						</div>
+						<div class="card-body radio-card-group">
+							<label class="c-radio-card">
+								<div class="c-radio-card__radio" aria-selected="false">
+									<div class="form-check">
+										<input class="form-check-input" id="add-method-wos" type="radio" name="method" value="wos"/>
+										<label class="form-check-label" for="add-method-wos"></label>
+									</div>
+								</div>
+								<div class="c-radio-card__content">
+									<h6>
+										Import from Web of Science
+										<span class="badge rounded-pill badge-success-light ms-3">Recommended for records in WoS</span>
+									</h6>
+									<p class="text-muted">Import one or more publications. This option saves you the most time.</p>
+								</div>
+							</label>
+							<label class="c-radio-card" aria-selected="false">
+								<div class="c-radio-card__radio">
+									<div class="form-check">
+										<input class="form-check-input" id="add-method-identifier" type="radio" name="method" value="identifier"/>
+										<label class="form-check-label" for="add-method-identifier"></label>
+									</div>
+								</div>
+								<div class="c-radio-card__content">
+									<h6>Import your publication via an identifier</h6>
+									<p class="text-muted">Use DOI, PubMed ID or arXiv ID. A good second option.</p>
+								</div>
+							</label>
+							<label class="c-radio-card">
+								<div class="c-radio-card__radio" aria-selected="false">
+									<div class="form-check">
+										<input class="form-check-input" id="add-method-manual" type="radio" name="method" value="manual"/>
+										<label class="form-check-label" for="add-method-manual"></label>
+									</div>
+								</div>
+								<div class="c-radio-card__content">
+									<h6>Enter a publication manually</h6>
+									<p class="text-muted">Create a publication record from scratch using a template. Recommended for publications such as dissertations.</p>
+								</div>
+							</label>
+							<label class="c-radio-card" aria-selected="false">
+								<div class="c-radio-card__radio">
+									<div class="form-check">
+										<input class="form-check-input" id="add-method-bibtex" type="radio" name="method" value="bibtex"/>
+										<label class="form-check-label" for="add-method-bibtex"></label>
+									</div>
+								</div>
+								<div class="c-radio-card__content">
+									<h6>Import via BibTeX file</h6>
+									<p class="text-muted">Import multiple publications via library files. Use this options if there is no Web of Science import or identifier import available.</p>
+								</div>
+							</label>
+						</div>
+					</div>
+					<div class="card mb-6">
+						<div class="card-header">
+							<div class="bc-toolbar">
+								<div class="bc-toolbar-left">
+									Tips for adding your publications
+								</div>
+							</div>
+						</div>
+						<div class="card-body">
+							<ol>
+								<li>Follow a <a href="https://onderzoektips.ugent.be/en/tips/00002065/" target="_blank">step by step guide</a> about deposit and registration of publications.</li>
+								<li>Read general <a href="https://onderzoektips.ugent.be/en/tips/00002064/" target="_blank">documentation</a> about deposit and registration of publications.</li>
+							</ol>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	}
+}

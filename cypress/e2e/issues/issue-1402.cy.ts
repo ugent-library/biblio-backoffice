@@ -502,8 +502,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
               .select("Social Sciences");
 
             cy.getLabel("Keywords")
-              .next(".tags")
-              .find("span[contenteditable]")
+              .next()
+              .find(".tags span[contenteditable]")
               .type("these{enter}are{enter}the{enter}keywords", { delay: 10 });
 
             cy.setFieldByLabel(
@@ -527,7 +527,8 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.ensureModal("Edit additional information")
           .within(() => {
             cy.getLabel("Research field")
-              .next(".form-values")
+              .next()
+              .find(".form-values")
               .as("formValues")
               .contains("select", "Performing Arts")
               .next("button:contains(Delete)")
@@ -1174,11 +1175,6 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
     });
 
     describe("for datasets", () => {
-      beforeEach(() => {
-        cy.setUpDataset();
-        cy.visitDataset();
-      });
-
       it("should be possible to delete a dataset", () => {
         cy.setUpDataset();
         cy.visitDataset();
@@ -1207,6 +1203,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       });
 
       it("should be possible to add and delete projects", () => {
+        cy.setUpDataset();
+        cy.visitDataset();
+
         cy.get("#projects-body").should("contain", "No projects");
 
         cy.contains(".card", "Project").contains(".btn", "Add project").click();
@@ -1245,6 +1244,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       });
 
       it("should be possible to add, edit and delete abstracts", () => {
+        cy.setUpDataset();
+        cy.visitDataset();
+
         cy.get("#abstracts-body").should("contain", "No abstracts");
 
         cy.contains(".btn", "Add abstract").click();
@@ -1383,6 +1385,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       });
 
       it("should be possible to add, edit and delete links", () => {
+        cy.setUpDataset();
+        cy.visitDataset();
+
         cy.get("#links-body").should("contain", "No links");
 
         cy.contains(".btn", "Add link").click();
@@ -1534,6 +1539,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       });
 
       it("should be possible to add and delete departments", () => {
+        cy.setUpDataset();
+        cy.visitDataset();
+
         cy.contains(".nav .nav-item", "People & Affiliations").click();
 
         cy.get("#departments .card-body").should(
@@ -1660,6 +1668,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       });
 
       it("should be possible to add and edit Biblio message", () => {
+        cy.setUpDataset();
+        cy.visitDataset();
+
         cy.contains(".nav .nav-item", "Biblio Messages").click();
 
         cy.contains(".card", "Messages from and for Biblio team")
@@ -1997,12 +2008,10 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
     });
 
     describe("for datasets", () => {
-      beforeEach(() => {
+      it("should be possible to add and edit librarian tags", () => {
         cy.setUpDataset();
         cy.visitDataset();
-      });
 
-      it("should be possible to add and edit librarian tags", () => {
         cy.contains(".nav .nav-item", "Biblio Messages").click();
 
         cy.contains(".card", "Librarian tags").contains(".btn", "Edit").click();
@@ -2055,6 +2064,9 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       });
 
       it("should be possible to add and edit librarian notes", () => {
+        cy.setUpDataset();
+        cy.visitDataset();
+
         cy.contains(".nav .nav-item", "Biblio Messages").click();
 
         cy.contains(".card", "Librarian note").contains(".btn", "Edit").click();

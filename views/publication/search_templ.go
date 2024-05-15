@@ -355,15 +355,15 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 }
 
 func genPublicationSummaryArgs(c *ctx.Ctx, pub *models.Publication) SummaryArgs {
-	pubURL := views.URL(c.PathTo("publication", "id", pub.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).URL()
+	pubURL := c.PathTo("publication", "id", pub.ID, "redirect-url", c.CurrentURL.String())
 	args := SummaryArgs{
 		Publication:    pub,
 		PublicationURL: pubURL,
-		Actions:        pubSummaryActions(c, pub, pubURL),
-		Footer:         pubSummaryFooter(c, pub),
+		Actions:        SummaryActions(c, pub, pubURL),
+		Footer:         SummaryFooter(c, pub),
 	}
 	if c.UserRole == "curator" {
-		args.Links = pubSummaryLinks(c, pub, pubURL)
+		args.Links = SummaryLinks(c, pub, pubURL)
 	}
 	return args
 }
@@ -675,7 +675,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 	})
 }
 
-func pubSummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Component {
+func SummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -834,7 +834,7 @@ func pubSummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) tem
 	})
 }
 
-func pubSummaryFooter(c *ctx.Ctx, pub *models.Publication) templ.Component {
+func SummaryFooter(c *ctx.Ctx, pub *models.Publication) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -868,7 +868,7 @@ func pubSummaryFooter(c *ctx.Ctx, pub *models.Publication) templ.Component {
 	})
 }
 
-func pubSummaryLinks(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Component {
+func SummaryLinks(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
