@@ -1,0 +1,28 @@
+package publication
+
+import (
+	"net/url"
+)
+
+type DefaultSummaryArgs struct {
+	PublicationURL *url.URL
+	Target         string
+}
+
+// TODO: rename component
+templ DefaultSummary(args DefaultSummaryArgs) {
+	<div class="bc-toolbar-item ms-auto ms-lg-0">
+		<div class="c-button-toolbar">
+			<a
+				class="btn btn-tertiary"
+				href={ templ.URL(args.PublicationURL.String()) }
+				if args.Target != "" {
+					target={ args.Target }
+				}
+			>
+				<i class="if if-eye"></i>
+				<span class="btn-text">View publication</span>
+			</a>
+		</div>
+	</div>
+}

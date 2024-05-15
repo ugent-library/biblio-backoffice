@@ -4,12 +4,12 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
   const testCases = {
     "/": "home page",
     "/publication": "publications page",
-    "/publication/add": "add publication page",
-    "/publication/add?method=wos": "add Web of Science publication page",
-    "/publication/add?method=identifier":
+    "/add-publication": "add publication page",
+    "/add-publication?method=wos": "add Web of Science publication page",
+    "/add-publication?method=identifier":
       "add publication from identifier page",
-    "/publication/add?method=manual": "add manual publication page",
-    "/publication/add?method=bibtex": "add BibTeX publication page",
+    "/add-publication?method=manual": "add manual publication page",
+    "/add-publication?method=bibtex": "add BibTeX publication page",
     "/dataset": "datasets page",
     "/add-dataset": "add dataset page",
     "/dashboard/publications/faculties":
@@ -34,7 +34,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
   });
 
   it("should fully display the user menu on all pages during manual publication set-up", () => {
-    cy.visit("/publication/add?method=manual");
+    cy.visit("/add-publication?method=manual");
 
     assertUserMenuWorks();
 
@@ -43,7 +43,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
 
     cy.location("pathname").should(
       "eq",
-      "/publication/add-single/import/confirm",
+      "/add-publication/import/single/confirm",
     );
 
     assertUserMenuWorks();

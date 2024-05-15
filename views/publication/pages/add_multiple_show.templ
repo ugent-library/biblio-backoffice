@@ -1,0 +1,67 @@
+package pages
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/publication"
+)
+
+type AddMultipleShowArgs struct {
+	Step         int
+	Publication  *models.Publication
+	RedirectURL  string
+	ActiveSubNav string
+}
+
+templ AddMultipleShow(c *ctx.Ctx, args AddMultipleShowArgs) {
+	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
+		@publication.AddMultipleSidebar(c, args.Step)
+		<div class="w-100 u-scroll-wrapper">
+			<div class="bg-white" data-collapsed="true">
+				<div class="bc-navbar bc-navbar--large bc-navbar--white">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<div class="bc-toolbar-item">
+								<a class="btn btn-link btn-link-muted" href={ templ.URL(args.RedirectURL) }>
+									<i class="if if-arrow-left"></i>
+									<div class="btn-text">Back to "Review and publish" overview</div>
+								</a>
+							</div>
+						</div>
+						<div class="bc-toolbar-right"></div>
+					</div>
+				</div>
+				<div class="c-divider mt-0 mx-6"></div>
+				<div id="summary">
+					<div class="mx-6">
+						<h4 class="h4">
+							if args.Publication.Title != "" {
+								{ args.Publication.Title }
+							} else {
+								Untitled record
+							}
+						</h4>
+					</div>
+				</div>
+				<div class="c-divider mb-2 mx-6"></div>
+				<div class="bc-navbar bc-navbar--white bc-navbar--bordered-bottom">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<div class="bc-toolbar-item" id="show-nav">
+								@publication.SubNav(c, args.Publication, args.RedirectURL)
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div
+				class="u-scroll-wrapper__body p-6"
+				id="show-content"
+				hx-get={ c.PathTo("publication_"+args.ActiveSubNav, "id", args.Publication.ID, "redirect-url", args.RedirectURL).String() }
+				hx-trigger="load delay:100ms"
+				hx-target="#show-content"
+			></div>
+		</div>
+	}
+}

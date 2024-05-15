@@ -1,0 +1,25 @@
+package shared
+
+import (
+	"fmt"
+	"net/url"
+)
+
+templ SidebarStep(step int, label string, activeStep int, href *url.URL) {
+	<li class={ "c-stepper__item", templ.KV("c-stepper__item--active", step == activeStep) }>
+		<a
+			if href != nil {
+				href={ templ.URL(href.String()) }
+			} else {
+				href="#"
+			}
+		>
+			if activeStep > step {
+				<div class="c-stepper__step c-stepper__step--complete"><i class="if if-check"></i></div>
+			} else {
+				<div class={ "c-stepper__step", templ.KV("c-stepper__step--active", step == activeStep) }>{ fmt.Sprint(step) }</div>
+			}
+			<span class="c-stepper__text">{ label }</span>
+		</a>
+	</li>
+}
