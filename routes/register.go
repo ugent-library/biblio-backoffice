@@ -367,7 +367,7 @@ func Register(c Config) {
 
 							// edit publication type
 							r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
-							r.Put("/type", publicationEditingHandler.Wrap(publicationediting.UpdateType)).Name("publication_update_type")
+							r.Put("/type", publicationediting.UpdateType).Name("publication_update_type")
 
 							// conference
 							r.Get("/conference/edit", publicationediting.EditConference).Name("publication_edit_conference")
