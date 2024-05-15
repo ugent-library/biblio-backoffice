@@ -507,6 +507,10 @@ func Register(c Config) {
 						r.Get("/{snapshot_id}/publications/{publication_id}/confirm-delete", datasetediting.ConfirmDeletePublication).Name("dataset_confirm_delete_publication")
 						r.Delete("/publications/{publication_id}", datasetediting.DeletePublication).Name("dataset_delete_publication")
 
+						// activity
+						r.Get("/message/edit", datasetediting.EditMessage).Name("dataset_edit_message")
+						r.Put("/message", datasetediting.UpdateMessage).Name("dataset_update_message")
+
 						// publish
 						r.Get("/publish/confirm", datasetediting.ConfirmPublish).Name("dataset_confirm_publish")
 						r.Post("/publish", datasetediting.Publish).Name("dataset_publish")
@@ -537,12 +541,6 @@ func Register(c Config) {
 		// END NEW STYLE HANDLERS
 
 		// edit dataset activity
-		r.Get("/dataset/{id}/message/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditMessage)).
-			Name("dataset_edit_message")
-		r.Put("/dataset/{id}/message",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateMessage)).
-			Name("dataset_update_message")
 		r.Get("/dataset/{id}/reviewer-tags/edit",
 			datasetEditingHandler.Wrap(datasetEditingHandler.EditReviewerTags)).
 			Name("dataset_edit_reviewer_tags")
