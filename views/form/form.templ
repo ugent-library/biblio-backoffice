@@ -37,30 +37,46 @@ type FieldArgs struct {
 	Theme    Theme
 }
 
+templ fieldTooltip(args FieldArgs) {
+	if args.Tooltip != "" {
+		<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
+			<i class="if if-info-circle if--small"></i>
+			<span class="visually-hidden">More info</span>
+		</a>
+	}
+}
+
+templ fieldRequired(args FieldArgs) {
+	if args.Required {
+		&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>
+	}
+}
+
+templ fieldError(args FieldArgs) {
+	if args.Error != "" {
+		<small class="invalid-feedback">{ args.Error }</small>
+	}
+}
+
+templ fieldHelp(args FieldArgs) {
+	if args.Help != "" {
+		<small class="form-text text-muted">
+			@templ.Raw(args.Help)
+		</small>
+	}
+}
+
 templ horizontalField(args FieldArgs, labelFor string) {
 	<div class={ "mb-6", "row", templ.KV("is-invalid", args.Error != "") }>
 		<label class="col-lg-3 col-form-label mt-2" for={ labelFor }>
 			@templ.Raw(args.Label)
-			if args.Tooltip != "" {
-				<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
-					<i class="if if-info-circle if--small"></i>
-					<span class="visually-hidden">More info</span>
-				</a>
-			}
-			if args.Required {
-				&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>
-			}
+			@fieldTooltip(args)
+			@fieldRequired(args)
 		</label>
 		<div class={ fmt.Sprintf("col-lg-%d", args.Cols) }>
 			{ children... }
-			if args.Error != "" {
-				<small class="invalid-feedback">{ args.Error }</small>
-			}
-			if args.Help != "" {
-				<small class="form-text text-muted">
-					@templ.Raw(args.Help)
-				</small>
-			}
+			@fieldError(args)
+			@fieldHelp(args)
 		</div>
 	</div>
 }
@@ -69,24 +85,19 @@ templ verticalField(args FieldArgs, labelFor string) {
 	<div class={ "mb-6", templ.KV("col", args.Cols == 0), templ.KV("is-invalid", args.Error != "") }>
 		<label class="col-form-label" for={ labelFor }>
 			@templ.Raw(args.Label)
-			if args.Tooltip != "" {
-				<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content={ args.Tooltip }>
-					<i class="if if-info-circle if--small"></i>
-					<span class="visually-hidden">More info</span>
-				</a>
-			}
-			if args.Required {
-				&nbsp;<span class="badge badge-outline-primary badge-sm">Required</span>
-			}
+			@fieldTooltip(args)
+			@fieldRequired(args)
 		</label>
-		{ children... }
-		if args.Error != "" {
-			<small class="invalid-feedback">{ args.Error }</small>
-		}
-		if args.Help != "" {
-			<small class="form-text text-muted">
-				@templ.Raw(args.Help)
-			</small>
+		if args.Cols > 0 {
+			<div class={ fmt.Sprintf("col-%d", args.Cols) }>
+				{ children... }
+				@fieldError(args)
+				@fieldHelp(args)
+			</div>
+		} else {
+			{ children... }
+			@fieldError(args)
+			@fieldHelp(args)
 		}
 	</div>
 }
@@ -99,13 +110,7 @@ templ Field(args FieldArgs, labelFor string) {
 			}
 		case ThemeVertical:
 			@verticalField(args, labelFor) {
-				if args.Cols > 0 {
-					<div class={ fmt.Sprintf("col-%d", args.Cols) }>
-						{ children... }
-					</div>
-				} else {
-					{ children... }
-				}
+				{ children... }
 			}
 	}
 }

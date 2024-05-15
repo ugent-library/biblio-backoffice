@@ -104,9 +104,7 @@ export default function updateFields(
 
   cy.location("pathname", NO_LOG).then((pathname) => {
     if (
-      !pathname.match(
-        /^\/(publication|dataset)\/([A-Z0-9]+|add|add-single\/import\/confirm)$/,
-      )
+      !pathname.match(/^\/(publication|dataset|add-publication|add-dataset).*$/)
     ) {
       throw new Error(
         "The updateFields command can only be called from the details page of a publication or dataset.",
