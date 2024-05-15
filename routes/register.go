@@ -329,6 +329,14 @@ func Register(c Config) {
 						r.Group(func(r *ich.Mux) {
 							r.Use(ctx.RequireEditPublication)
 
+							// abstracts
+							r.Get("/abstracts/add", publicationediting.AddAbstract).Name("publication_add_abstract")
+							r.Post("/abstracts", publicationediting.CreateAbstract).Name("publication_create_abstract")
+							r.Get("/abstracts/{abstract_id}/edit", publicationediting.EditAbstract).Name("publication_edit_abstract")
+							r.Put("/abstracts/{abstract_id}", publicationediting.UpdateAbstract).Name("publication_update_abstract")
+							r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", publicationediting.ConfirmDeleteAbstract).Name("publication_confirm_delete_abstract")
+							r.Delete("/abstracts/{abstract_id}", publicationediting.DeleteAbstract).Name("publication_delete_abstract")
+
 							// add (wizard part 2 - after save)
 							r.Get("/add/description", publicationcreating.AddSingleDescription).Name("publication_add_single_description")
 							r.Get("/add/confirm", publicationcreating.AddSingleConfirm).Name("publication_add_single_confirm")
@@ -338,6 +346,14 @@ func Register(c Config) {
 							// delete
 							r.Get("/confirm-delete", publicationediting.ConfirmDelete).Name("publication_confirm_delete")
 							r.Delete("/", publicationediting.Delete).Name("publication_delete")
+
+							// lay summaries
+							r.Get("/lay_summaries/add", publicationediting.AddLaySummary).Name("publication_add_lay_summary")
+							r.Post("/lay_summaries", publicationediting.CreateLaySummary).Name("publication_create_lay_summary")
+							r.Get("/lay_summaries/{lay_summary_id}/edit", publicationediting.EditLaySummary).Name("publication_edit_lay_summary")
+							r.Put("/lay_summaries/{lay_summary_id}", publicationediting.UpdateLaySummary).Name("publication_update_lay_summary")
+							r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
+							r.Delete("/lay_summaries/{lay_summary_id}", publicationediting.DeleteLaySummary).Name("publication_delete_lay_summary")
 
 							// details
 							r.Get("/details/edit", publicationediting.EditDetails).Name("publication_edit_details")
@@ -688,23 +704,6 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/departments/{department_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
 			Name("publication_delete_department")
-
-		// edit publication lay summaries
-		r.Get("/publication/{id}/lay_summaries/add",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddLaySummary)).
-			Name("publication_add_lay_summary")
-		r.Post("/publication/{id}/lay_summaries",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateLaySummary)).
-			Name("publication_create_lay_summary")
-		r.Get("/publication/{id}/lay_summaries/{lay_summary_id}/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditLaySummary)).
-			Name("publication_edit_lay_summary")
-		r.Put("/publication/{id}/lay_summaries/{lay_summary_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLaySummary)).
-			Name("publication_update_lay_summary")
-		r.Delete("/publication/{id}/lay_summaries/{lay_summary_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLaySummary)).
-			Name("publication_delete_lay_summary")
 
 		// edit publication datasets
 		r.Post("/publication/{id}/datasets",
