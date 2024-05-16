@@ -8,4 +8,8 @@ Cypress.Keyboard.defaults({ keystrokeDelay: 0 });
 beforeEach(() => {
   // Keep dashboard-icon polling from Cypress command log
   cy.intercept({ method: "GET", url: "/dashboard-icon" }, { log: false });
+  cy.intercept(
+    { method: "GET", url: "/candidate-records-icon" },
+    { log: false },
+  );
 });

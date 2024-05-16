@@ -107,6 +107,23 @@ func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.SearchHits,
 
 			query["aggs"].(M)["facets"].(M)["aggs"].(M)[field] = facet
 		}
+
+		// Dynamically add variable facet values
+		preIncludeFields := []string{}
+		for _, facet := range args.Facets {
+			if _, ok := facetDefinitions[facet]; ok {
+				preIncludeFields = append(preIncludeFields, facet)
+			}
+		}
+		if len(preIncludeFields) > 0 {
+			facetValues, err := pi.getScopedFacetValues(preIncludeFields...)
+			if err != nil {
+				return nil, err
+			}
+			for field, values := range facetValues {
+				query["aggs"].(M)["facets"].(M)["aggs"].(M)[field].(M)["aggs"].(M)["facet"].(M)["terms"].(M)["include"] = values
+			}
+		}
 	}
 
 	// ADD QUERY FILTERS
@@ -342,6 +359,75 @@ func (pi *PublicationIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn
 	}
 
 	return fn(res.Body)
+}
+
+func (pi *PublicationIndex) getScopedFacetValues(fields ...string) (map[string][]string, error) {
+	req := M{
+		"query": M{
+			"bool": M{
+				"filter": pi.scopes,
+			},
+		},
+		"size": 0,
+		"aggs": M{},
+	}
+	for _, field := range fields {
+		req["aggs"].(M)[field] = M{
+			"terms": M{
+				"field":         field,
+				"order":         M{"_key": "asc"},
+				"size":          999,
+				"min_doc_count": 1,
+			},
+		}
+	}
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(req); err != nil {
+		return nil, err
+	}
+
+	opts := []func(*esapi.SearchRequest){
+		pi.client.Search.WithContext(context.Background()),
+		pi.client.Search.WithIndex(pi.index),
+		pi.client.Search.WithTrackTotalHits(false),
+		pi.client.Search.WithBody(&buf),
+	}
+
+	var res map[string]any
+	err := pi.searchWithOpts(opts, func(r io.ReadCloser) error {
+		if err := json.NewDecoder(r).Decode(&res); err != nil {
+			return fmt.Errorf("error parsing the response body")
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	m := map[string][]string{}
+
+	for field, agg := range res["aggregations"].(map[string]any) {
+		buckets := agg.(map[string]any)["buckets"].([]any)
+		m[field] = make([]string, 0, len(buckets))
+		for _, bucket := range buckets {
+			fv := bucket.(map[string]any)
+			if v, e := fv["key_as_string"]; e {
+				m[field] = append(m[field], v.(string))
+			} else {
+				switch v := fv["key"].(type) {
+				case string:
+					m[field] = append(m[field], v)
+				case int:
+					m[field] = append(m[field], fmt.Sprintf("%d", v))
+				case float64:
+					m[field] = append(m[field], fmt.Sprintf("%.2f", v))
+				}
+			}
+		}
+	}
+
+	return m, nil
 }
 
 func buildPublicationUserQuery(args *models.SearchArgs) M {

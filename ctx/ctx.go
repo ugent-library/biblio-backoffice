@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -21,7 +20,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/mix"
-	"github.com/ugent-library/oidc"
 	"github.com/ugent-library/zaphttp"
 	"github.com/unrolled/secure"
 	"go.uber.org/zap"
@@ -75,12 +73,12 @@ func Set(config Config) func(http.Handler) http.Handler {
 			}
 			user, err := c.getUserFromSession(r, session, UserIDKey)
 			if err != nil {
-				c.HandleError(w, r, fmt.Errorf("could not get user from session: %w", err))
+				c.HandleError(w, r, err)
 				return
 			}
 			originalUser, err := c.getUserFromSession(r, session, OriginalUserIDKey)
 			if err != nil {
-				c.HandleError(w, r, fmt.Errorf("could not get original user from session: %w", err))
+				c.HandleError(w, r, err)
 				return
 			}
 
@@ -104,20 +102,19 @@ func Set(config Config) func(http.Handler) http.Handler {
 
 type Config struct {
 	*backends.Services
-	Router        *ich.Mux
-	Assets        mix.Manifest
-	MaxFileSize   int
-	Timezone      *time.Location
-	Loc           *gotext.Locale
-	Env           string
-	ErrorHandlers map[int]http.HandlerFunc
-	SessionName   string
-	SessionStore  sessions.Store
-	BaseURL       *url.URL
-	FrontendURL   string
-	CSRFName      string
-	OIDCAuth      *oidc.Auth
-	UsernameClaim string
+	Router              *ich.Mux
+	Assets              mix.Manifest
+	MaxFileSize         int
+	Timezone            *time.Location
+	Loc                 *gotext.Locale
+	Env                 string
+	StatusErrorHandlers map[int]http.HandlerFunc
+	ErrorHandlers       map[error]http.HandlerFunc
+	SessionName         string
+	SessionStore        sessions.Store
+	BaseURL             *url.URL
+	FrontendURL         string
+	CSRFName            string
 }
 
 type Ctx struct {
@@ -140,8 +137,9 @@ type Ctx struct {
 }
 
 func (c *Ctx) HandleError(w http.ResponseWriter, r *http.Request, err error) {
-	if err == models.ErrNotFound {
-		err = httperror.NotFound
+	if h, ok := c.ErrorHandlers[err]; ok {
+		h(w, r)
+		return
 	}
 
 	var httpErr *httperror.Error
@@ -149,7 +147,7 @@ func (c *Ctx) HandleError(w http.ResponseWriter, r *http.Request, err error) {
 		httpErr = httperror.InternalServerError
 	}
 
-	if h, ok := c.ErrorHandlers[httpErr.StatusCode]; ok {
+	if h, ok := c.StatusErrorHandlers[httpErr.StatusCode]; ok {
 		h(w, r)
 		return
 	}
@@ -233,6 +231,9 @@ func (c *Ctx) getUserFromSession(_ *http.Request, session *sessions.Session, ses
 	}
 
 	user, err := c.UserService.GetUser(userID.(string))
+	if errors.Is(err, models.ErrNotFound) {
+		return nil, models.ErrUserNotFound
+	}
 	if err != nil {
 		return nil, err
 	}

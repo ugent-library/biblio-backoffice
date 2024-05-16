@@ -1891,7 +1891,8 @@ msgstr "You can no longer change the publication type after publishing."
 
 msgid "tooltip.publication.file.license"
 msgstr ""
-"<a href=\"#\" target=\"_blank\">More info&nbsp;<i class=\"if if--small if-"
+"<a href=\"https://onderzoektips.ugent.be/en/tips/00002073\" "
+"target=\"_blank\">More info <i class=\"if if--small if-"
 "external-link\"></i></a>"
 
 msgid "tooltip.dataset.access_level"

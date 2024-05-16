@@ -1,0 +1,41 @@
+﻿FN Clarivate Analytics Web of Science
+VR 1.0
+PT J
+AU Henning, D
+AF Henning, D
+TI From Kangars to Rubiks. The long line of traitors in the historical
+   political culture of Latvia [CYPRESSTEST]
+SO JOURNAL OF BALTIC STUDIES
+LA English
+DT Article
+AB This article discusses the hypothesis that the tumultuous history of Latvia and its predecessors is rich in symbolic personalities who perpetuate the stereotype of the traitor in cultural expression and political language. The most important of these "traitors" will be briefly introduced, beginning with the figure of Kangars from the Latvian folk poem The Bearslayer, whose name is used in Latvian political vocabulary to denote "collaboration." The article continues by looking at such famous personalities as Fridrichs Veinbergs, Andrievs Niedra, Pateris Stucka, Vilis Lacis and, last but not least, Alfreds Rubiks, who in 1995 was imprisoned for having betrayed the Latvian Republic by participating in the Moscow putsch in August 1991.
+C1 Nordost Inst, Luneburg, Germany.
+RP Henning, D (corresponding author), Nordost Inst, Luneburg, Germany.
+NR 54
+TC 1
+Z9 1
+U1 0
+U2 1
+PU ASSN ADVANCEMENT BALTIC STUDIES INC,
+PI PORTLAND
+PA 3465 EAST BURNSIDE ST, PORTLAND, OR 97214-2050 USA
+SN 0162-9778
+J9 J BALTIC STUD
+JI J. Baltic Stud.
+PD SUM
+PY 2006
+VL 37
+IS 2
+BP 179
+EP 193
+DI 10.1080/01629770608628878
+PG 15
+WC Area Studies; Humanities, Multidisciplinary
+WE Social Science Citation Index (SSCI)
+SC Area Studies; Arts & Humanities - Other Topics
+GA 057KT
+UT WOS:000238595400003
+DA 2024-05-14
+ER
+
+EF

@@ -14,16 +14,28 @@ import (
 	"github.com/ugent-library/oidc"
 )
 
-func Callback(w http.ResponseWriter, r *http.Request) {
+type AuthHandler struct {
+	auth          *oidc.Auth
+	usernameClaim string
+}
+
+func NewAuthHandler(auth *oidc.Auth, usernameClaim string) *AuthHandler {
+	return &AuthHandler{
+		auth:          auth,
+		usernameClaim: usernameClaim,
+	}
+}
+
+func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	claims := &oidc.Claims{}
-	if err := c.OIDCAuth.CompleteAuth(w, r, &claims); err != nil {
+	if err := h.auth.CompleteAuth(w, r, &claims); err != nil {
 		c.Log.Errorw("authentication: OIDC client could not complete exchange:", "errors", err)
 		c.HandleError(w, r, err)
 		return
 	}
 
-	username := claims.GetString(c.UsernameClaim)
+	username := claims.GetString(h.usernameClaim)
 
 	user, err := c.UserService.GetUserByUsername(username)
 	if err != nil {
@@ -53,16 +65,16 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, c.PathTo("home").String(), http.StatusFound)
 }
 
-func Login(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	if err := c.OIDCAuth.BeginAuth(w, r); err != nil {
+	if err := h.auth.BeginAuth(w, r); err != nil {
 		c.Log.Errorw("authentication: OIDC client could not begin exchange:", "errors", err)
 		c.HandleError(w, r, err)
 		return
 	}
 }
 
-func Logout(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	session, err := c.SessionStore.Get(r, c.SessionName)
 	if err != nil {

@@ -1,16 +1,19 @@
 package publication
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
-import "github.com/ugent-library/biblio-backoffice/models"
-import "github.com/ugent-library/biblio-backoffice/views"
-import relatedorganizationviews "github.com/ugent-library/biblio-backoffice/views/relatedorganization"
-import contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
-import "fmt"
-import "net/url"
+import (
+	"fmt"
+	"net/url"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	relatedorganizationviews "github.com/ugent-library/biblio-backoffice/views/relatedorganization"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+)
 
 type SummaryArgs struct {
 	Publication    *models.Publication
 	PublicationURL *url.URL
+	Target         string
 	Actions        templ.Component
 	Footer         templ.Component
 	Links          templ.Component
@@ -21,7 +24,12 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 		<div class="c-thumbnail-and-text align-items-start w-100">
 			if c.UserRole == "curator" {
 				<div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-md-small c-thumbnail-lg-large d-none d-lg-block">
-					<a href={ templ.URL(args.PublicationURL.String()) }>
+					<a
+						href={ templ.URL(args.PublicationURL.String()) }
+						if args.Target != "" {
+							target={ args.Target }
+						}
+					>
 						<div class="c-thumbnail-inner">
 							<i class="if if-article"></i>
 						</div>
@@ -42,7 +50,13 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									@SummaryAccessLevel(c, mainFile)
 								} else if !args.Publication.Extern {
 									<span class="c-subline ps-2 me-3 pe-3">
-										<a href={ views.URL(args.PublicationURL).SetQueryParam("show", "files").SafeURL() } class="c-link-muted">
+										<a
+											href={ views.URL(args.PublicationURL).SetQueryParam("show", "files").SafeURL() }
+											class="c-link-muted"
+											if args.Target != "" {
+												target={ args.Target }
+											}
+										>
 											<i class="if if-edit if--small"></i>
 											<em>Add document type: full text</em>
 										</a>
@@ -57,7 +71,12 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 										Untitled record
 									}
 								} else {
-									<a href={ templ.URL(args.PublicationURL.String()) }>
+									<a
+										href={ templ.URL(args.PublicationURL.String()) }
+										if args.Target != "" {
+											target={ args.Target }
+										}
+									>
 										<span class="list-group-item-title">
 											if args.Publication.Title != "" {
 												{ args.Publication.Title }
@@ -69,6 +88,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								}
 							</h4>
 							@SummaryParts(c, args.Publication)
+							// TODO: pass on args.Target
 							@contributorviews.Summary(c, "author", args.Publication.Author, views.URL(args.PublicationURL).SetQueryParam("show", "contributors").String())
 						</div>
 						<div class="collapsible-card-content collapse" data-collapsible-card-content>
@@ -76,9 +96,16 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								<div class="d-flex align-items-center">
 									<i class="if if-building if--small if--muted me-2"></i>
 									if len(args.Publication.RelatedOrganizations) > 0 {
+										// TODO: pass on args.Target
 										@relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.PublicationURL).SetQueryParam("show", "contributors").String())
 									} else {
-										<a href={ views.URL(args.PublicationURL).SetQueryParam("show", "contributors").SafeURL() } class="c-link-muted">
+										<a
+											href={ views.URL(args.PublicationURL).SetQueryParam("show", "contributors").SafeURL() }
+											class="c-link-muted"
+											if args.Target != "" {
+												target={ args.Target }
+											}
+										>
 											<i class="if if-edit if--small"></i>
 											<em>Add department</em>
 										</a>

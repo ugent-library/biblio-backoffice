@@ -19,7 +19,7 @@ export default function setUpDataset({
     "Biblio ID alias": biblioIDAlias,
   });
 
-  cy.visit("/dataset/add", NO_LOG);
+  cy.visit("/add-dataset", NO_LOG);
 
   cy.intercept("/dataset/*/description*").as("completeDescription");
 

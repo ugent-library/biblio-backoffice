@@ -7,6 +7,8 @@ import (
 	"github.com/ugent-library/friendly"
 )
 
+const FilesBodySelector = "#files-body"
+
 templ Files(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 	<div hx-swap-oob="innerHTML:#show-nav">
 		@SubNav(c, p, redirectURL)
@@ -38,11 +40,10 @@ templ FilesBody(c *ctx.Ctx, p *models.Publication) {
 		if c.User.CanEditPublication(p) {
 			<form
 				class="p-6"
-				hx-post={ c.PathTo("publication_upload_file", "id", p.ID).String() }
-				hx-encoding="multipart/form-data"
-				hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
-				hx-target="#modals"
-				hx-trigger="change"
+				method="POST"
+				action={ templ.URL(c.PathTo("publication_upload_file", "id", p.ID).String()) }
+				data-headers={ fmt.Sprintf(`{"If-Match": "%s", "X-CSRF-Token": "%s"}`, p.SnapshotID, c.CSRFToken) }
+				data-target="#modals"
 			>
 				<div class="c-file-upload file-upload-start">
 					<input
@@ -51,6 +52,10 @@ templ FilesBody(c *ctx.Ctx, p *models.Publication) {
 						name="file"
 						data-max-size={ fmt.Sprint(c.MaxFileSize) }
 						data-max-size-error={ fmt.Sprintf("Maximum file size is %s", friendly.Bytes(int64(c.MaxFileSize))) }
+						data-upload-msg-record-not-found="File upload failed: record has been removed. Please reload"
+						data-upload-msg-file-aborted="File upload aborted by you"
+						data-upload-msg-file-too-large={ fmt.Sprintf("File is too large. Maximum file size is %s", friendly.Bytes(int64(c.MaxFileSize))) }
+						data-upload-msg-unexpected="File upload failed: unexpected server error"
 					/>
 					<div class="c-file-upload__content">
 						<p>Drag and drop or</p>
