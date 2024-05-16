@@ -30,24 +30,33 @@ func Process(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	done := 0
-	var errorMsgs []string
+	var (
+		done      int
+		errorMsgs []string
+		currentID string
+		mutations []repositories.Mutation
+		lineNum   int
+	)
 
 	for i, line := range lines {
-		if len(line) == 0 {
+		line = strings.TrimSpace(line)
+
+		if len(line) == 0 || strings.HasPrefix(line, "#") {
 			continue
 		}
 
-		rdr := csv.NewReader(strings.NewReader(strings.TrimSpace(line)))
-		rec, err := rdr.Read()
+		lineNum = i + 1
+
+		reader := csv.NewReader(strings.NewReader(line))
+		rec, err := reader.Read()
 
 		if err != nil {
-			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>error parsing line %d</p>", i))
+			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>error parsing line %d</p>", lineNum))
 			continue
 		}
 
 		if len(rec) < 2 {
-			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>error parsing line %d</p>", i))
+			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>error parsing line %d</p>", lineNum))
 			continue
 		}
 
@@ -58,17 +67,35 @@ func Process(w http.ResponseWriter, r *http.Request) {
 			args[i] = strings.TrimSpace(arg)
 		}
 
-		err = c.Repo.MutatePublication(id, c.User, repositories.Mutation{
-			Op:   op,
-			Args: args,
-		})
-
-		if err != nil {
-			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not process publication %s at line %d</p>", id, i))
+		if id == "" {
+			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>empty id at line %d</p>", lineNum))
 			continue
 		}
 
-		done++
+		if currentID != "" && id != currentID {
+			err := c.Repo.MutatePublication(currentID, c.User, mutations...)
+			if err == nil {
+				done++
+			} else {
+				errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not process publication %s at line %d</p>", currentID, lineNum-1))
+			}
+			mutations = nil
+		}
+
+		currentID = id
+		mutations = append(mutations, repositories.Mutation{
+			Op:   op,
+			Args: args,
+		})
+	}
+
+	if len(mutations) > 0 {
+		err := c.Repo.MutatePublication(currentID, c.User, mutations...)
+		if err == nil {
+			done++
+		} else {
+			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not process publication %s at line %d</p>", currentID, lineNum))
+		}
 	}
 
 	if done > 0 {
