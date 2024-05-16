@@ -402,6 +402,7 @@ func Register(c Config) {
 							r.Get("/datasets/add", publicationediting.AddDataset).Name("publication_add_dataset")
 							r.Get("/datasets/suggestions", publicationediting.SuggestDatasets).Name("publication_suggest_datasets")
 							r.Delete("/datasets/{dataset_id}", publicationediting.DeleteDataset).Name("publication_delete_dataset")
+							r.Post("/datasets", publicationediting.CreateDataset).Name("publication_create_dataset")
 
 							// additional info
 							r.Get("/additional-info/edit", publicationediting.EditAdditionalInfo).Name("publication_edit_additional_info")
@@ -712,11 +713,6 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/departments/{department_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
 			Name("publication_delete_department")
-
-		// edit publication datasets
-		r.Post("/publication/{id}/datasets",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateDataset)).
-			Name("publication_create_dataset")
 
 		// edit publication contributors
 		r.Post("/publication/{id}/contributors/{role}/order",
