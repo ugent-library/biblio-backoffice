@@ -228,7 +228,7 @@ func RemoveEISSN(p *models.Publication, args []string) error {
 	return nil
 }
 
-func SetExternalFields(p *models.Publication, args []string) error {
+func SetExternalField(p *models.Publication, args []string) error {
 	if len(args) < 1 {
 		return errors.New("no key supplied")
 	}

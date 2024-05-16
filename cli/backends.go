@@ -394,7 +394,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 			"remove_issn":              mutate.RemoveISSN,
 			"add_eissn":                mutate.AddEISSN,
 			"remove_eissn":             mutate.RemoveEISSN,
-			"set_external_fields":      mutate.SetExternalFields,
+			"set_external_field":       mutate.SetExternalField,
 			"set_status":               mutate.SetStatus,
 			"set_locked":               mutate.SetLocked,
 		},
