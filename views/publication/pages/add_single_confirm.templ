@@ -77,8 +77,8 @@ templ AddSingleConfirm(c *ctx.Ctx, args AddSingleConfirmArgs) {
 									<div class="w-100">
 										<div class="d-flex align-items-start">
 											@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
-												Publication:    args.Publication,
-												URL: args.PublicationURL,
+												Publication: args.Publication,
+												URL:         args.PublicationURL,
 												Actions: publicationsummaryviews.DefaultActions(publicationsummaryviews.DefaultActionsArgs{
 													URL: args.PublicationURL,
 												}),

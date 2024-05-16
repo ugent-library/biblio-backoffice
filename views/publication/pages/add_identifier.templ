@@ -129,12 +129,12 @@ templ addIdentifierDuplicate(c *ctx.Ctx, args addIdentifierDuplicateArgs) {
 							<div class="w-100">
 								<div class="d-flex align-items-start">
 									@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
-										Publication:    args.Publication,
-										URL: args.PublicationURL,
-										Target:         "_blank",
+										Publication: args.Publication,
+										URL:         args.PublicationURL,
+										Target:      "_blank",
 										Actions: publicationsummaryviews.DefaultActions(publicationsummaryviews.DefaultActionsArgs{
-											URL: args.PublicationURL,
-											Target:         "_blank",
+											URL:    args.PublicationURL,
+											Target: "_blank",
 										}),
 									})
 								</div>

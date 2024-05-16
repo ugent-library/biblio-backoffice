@@ -90,8 +90,8 @@ templ AddMultipleConfirm(c *ctx.Ctx, args AddMultipleConfirmArgs) {
 										<div class="w-100">
 											<div class="d-flex align-items-start">
 												@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
-													Publication:    hit,
-													URL: c.PathTo("publication_add_multiple_show", "batch_id", args.BatchID, "id", hit.ID, "redirect-url", args.RedirectURL),
+													Publication: hit,
+													URL:         c.PathTo("publication_add_multiple_show", "batch_id", args.BatchID, "id", hit.ID, "redirect-url", args.RedirectURL),
 													Actions: publication.AddMultipleSummary(publication.AddMultipleSummaryArgs{
 														ViewURL:   c.PathTo("publication_add_multiple_show", "batch_id", args.BatchID, "id", hit.ID, "redirect-url", args.RedirectURL),
 														DeleteURL: c.PathTo("publication_confirm_delete", "id", hit.ID),
