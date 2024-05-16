@@ -10,8 +10,11 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-func ProjectAdd(projectService backends.ProjectService) func(*models.Publication, []string) error {
+func AddProject(projectService backends.ProjectService) func(*models.Publication, []string) error {
 	return func(p *models.Publication, args []string) error {
+		if !p.UsesProject() {
+			return errors.New("project not used")
+		}
 		if len(args) != 1 {
 			return errors.New("project id is missing")
 		}
@@ -24,7 +27,18 @@ func ProjectAdd(projectService backends.ProjectService) func(*models.Publication
 	}
 }
 
-func ClassificationSet(p *models.Publication, args []string) error {
+func RemoveProject(p *models.Publication, args []string) error {
+	if !p.UsesProject() {
+		return errors.New("project not used")
+	}
+	if len(args) != 1 {
+		return errors.New("project id is missing")
+	}
+	p.RemoveProject(args[0])
+	return nil
+}
+
+func SetClassification(p *models.Publication, args []string) error {
 	if len(args) != 1 {
 		return errors.New("classification is missing")
 	}
@@ -32,7 +46,7 @@ func ClassificationSet(p *models.Publication, args []string) error {
 	return nil
 }
 
-func KeywordAdd(p *models.Publication, args []string) error {
+func AddKeyword(p *models.Publication, args []string) error {
 	for _, arg := range args {
 		if !slices.Contains(p.Keyword, arg) {
 			p.Keyword = append(p.Keyword, arg)
@@ -41,7 +55,7 @@ func KeywordAdd(p *models.Publication, args []string) error {
 	return nil
 }
 
-func KeywordRemove(p *models.Publication, args []string) error {
+func RemoveKeyword(p *models.Publication, args []string) error {
 	var vals []string
 	for _, val := range p.Keyword {
 		if !slices.Contains(args, val) {
@@ -52,7 +66,7 @@ func KeywordRemove(p *models.Publication, args []string) error {
 	return nil
 }
 
-func VABBTypeSet(p *models.Publication, args []string) error {
+func SetVABBType(p *models.Publication, args []string) error {
 	if len(args) != 1 {
 		return errors.New("vabb type is missing")
 	}
@@ -60,7 +74,7 @@ func VABBTypeSet(p *models.Publication, args []string) error {
 	return nil
 }
 
-func VABBIDSet(p *models.Publication, args []string) error {
+func SetVABBID(p *models.Publication, args []string) error {
 	if len(args) != 1 {
 		return errors.New("vabb id is missing")
 	}
@@ -68,7 +82,7 @@ func VABBIDSet(p *models.Publication, args []string) error {
 	return nil
 }
 
-func VABBApprovedSet(p *models.Publication, args []string) error {
+func SetVABBApproved(p *models.Publication, args []string) error {
 	if len(args) != 1 {
 		return errors.New("vabb approved value must be 'true' or 'false'")
 	}
@@ -83,7 +97,7 @@ func VABBApprovedSet(p *models.Publication, args []string) error {
 	return nil
 }
 
-func VABBYearAdd(p *models.Publication, args []string) error {
+func AddVABBYear(p *models.Publication, args []string) error {
 	for _, arg := range args {
 		if !slices.Contains(p.VABBYear, arg) {
 			p.VABBYear = append(p.VABBYear, arg)
@@ -92,7 +106,7 @@ func VABBYearAdd(p *models.Publication, args []string) error {
 	return nil
 }
 
-func ReviewerTagAdd(p *models.Publication, args []string) error {
+func AddReviewerTag(p *models.Publication, args []string) error {
 	for _, arg := range args {
 		if !slices.Contains(p.ReviewerTags, arg) {
 			p.ReviewerTags = append(p.ReviewerTags, arg)
@@ -101,7 +115,7 @@ func ReviewerTagAdd(p *models.Publication, args []string) error {
 	return nil
 }
 
-func ReviewerTagRemove(p *models.Publication, args []string) error {
+func RemoveReviewerTag(p *models.Publication, args []string) error {
 	var vals []string
 	for _, val := range p.ReviewerTags {
 		if !slices.Contains(args, val) {
@@ -112,7 +126,7 @@ func ReviewerTagRemove(p *models.Publication, args []string) error {
 	return nil
 }
 
-func JournalTitleSet(p *models.Publication, args []string) error {
+func SetJournalTitle(p *models.Publication, args []string) error {
 	if len(args) != 1 {
 		return errors.New("journal title is missing")
 	}
@@ -123,7 +137,7 @@ func JournalTitleSet(p *models.Publication, args []string) error {
 	return nil
 }
 
-func JournalAbbreviationSet(p *models.Publication, args []string) error {
+func SetJournalAbbreviation(p *models.Publication, args []string) error {
 	if len(args) != 1 {
 		return errors.New("journal abbreviation is missing")
 	}
@@ -134,7 +148,7 @@ func JournalAbbreviationSet(p *models.Publication, args []string) error {
 	return nil
 }
 
-func ISBNAdd(p *models.Publication, args []string) error {
+func AddISBN(p *models.Publication, args []string) error {
 	for _, arg := range args {
 		if !slices.Contains(p.ISBN, arg) {
 			p.ISBN = append(p.ISBN, arg)
@@ -143,7 +157,7 @@ func ISBNAdd(p *models.Publication, args []string) error {
 	return nil
 }
 
-func ISBNRemove(p *models.Publication, args []string) error {
+func RemoveISBN(p *models.Publication, args []string) error {
 	var vals []string
 	for _, val := range p.ISBN {
 		if !slices.Contains(args, val) {
@@ -154,7 +168,7 @@ func ISBNRemove(p *models.Publication, args []string) error {
 	return nil
 }
 
-func EISBNAdd(p *models.Publication, args []string) error {
+func AddEISBN(p *models.Publication, args []string) error {
 	for _, arg := range args {
 		if !slices.Contains(p.EISBN, arg) {
 			p.EISBN = append(p.EISBN, arg)
@@ -163,7 +177,7 @@ func EISBNAdd(p *models.Publication, args []string) error {
 	return nil
 }
 
-func EISBNRemove(p *models.Publication, args []string) error {
+func RemoveEISBN(p *models.Publication, args []string) error {
 	var vals []string
 	for _, val := range p.EISBN {
 		if !slices.Contains(args, val) {
@@ -174,7 +188,7 @@ func EISBNRemove(p *models.Publication, args []string) error {
 	return nil
 }
 
-func ISSNAdd(p *models.Publication, args []string) error {
+func AddISSN(p *models.Publication, args []string) error {
 	for _, arg := range args {
 		if !slices.Contains(p.ISSN, arg) {
 			p.ISSN = append(p.ISSN, arg)
@@ -183,7 +197,7 @@ func ISSNAdd(p *models.Publication, args []string) error {
 	return nil
 }
 
-func ISSNRemove(p *models.Publication, args []string) error {
+func RemoveISSN(p *models.Publication, args []string) error {
 	var vals []string
 	for _, val := range p.ISSN {
 		if !slices.Contains(args, val) {
@@ -194,7 +208,7 @@ func ISSNRemove(p *models.Publication, args []string) error {
 	return nil
 }
 
-func EISSNAdd(p *models.Publication, args []string) error {
+func AddEISSN(p *models.Publication, args []string) error {
 	for _, arg := range args {
 		if !slices.Contains(p.EISSN, arg) {
 			p.EISSN = append(p.EISSN, arg)
@@ -203,7 +217,7 @@ func EISSNAdd(p *models.Publication, args []string) error {
 	return nil
 }
 
-func EISSNRemove(p *models.Publication, args []string) error {
+func RemoveEISSN(p *models.Publication, args []string) error {
 	var vals []string
 	for _, val := range p.EISSN {
 		if !slices.Contains(args, val) {
@@ -214,7 +228,7 @@ func EISSNRemove(p *models.Publication, args []string) error {
 	return nil
 }
 
-func ExternalFieldsSet(p *models.Publication, args []string) error {
+func SetExternalFields(p *models.Publication, args []string) error {
 	if len(args) < 1 {
 		return errors.New("no key supplied")
 	}
@@ -228,7 +242,7 @@ func ExternalFieldsSet(p *models.Publication, args []string) error {
 	return nil
 }
 
-func StatusSet(p *models.Publication, args []string) error {
+func SetStatus(p *models.Publication, args []string) error {
 	if len(args) < 1 {
 		return errors.New("no status given")
 	}
@@ -236,12 +250,17 @@ func StatusSet(p *models.Publication, args []string) error {
 	return nil
 }
 
-func Lock(p *models.Publication, args []string) error {
-	p.Locked = true
-	return nil
-}
-
-func Unlock(p *models.Publication, args []string) error {
-	p.Locked = false
+func SetLocked(p *models.Publication, args []string) error {
+	if len(args) != 1 {
+		return errors.New("locked value must be 'true' or 'false'")
+	}
+	switch args[0] {
+	case "true":
+		p.Locked = true
+	case "false":
+		p.Locked = false
+	default:
+		return errors.New("locked value must be 'true' or 'false'")
+	}
 	return nil
 }
