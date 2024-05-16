@@ -73,7 +73,7 @@ func ShowDatasets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publicationviews.ShowDatasets(c, p, datasets).Render(r.Context(), w)
+	publicationviews.Datasets(c, p, datasets).Render(r.Context(), w)
 }
 
 func ShowActivity(w http.ResponseWriter, r *http.Request) {

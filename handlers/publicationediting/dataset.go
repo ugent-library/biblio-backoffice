@@ -112,7 +112,7 @@ func CreateDataset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publicationviews.RefreshDatasets(c, publication, relatedDatasets).Render(r.Context(), w)
+	views.CloseModalAndReplace(publicationviews.DatasetsBodySelector, publicationviews.DatasetsBody(c, publication, relatedDatasets)).Render(r.Context(), w)
 }
 
 func ConfirmDeleteDataset(w http.ResponseWriter, r *http.Request) {
@@ -189,7 +189,7 @@ func DeleteDataset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publicationviews.RefreshDatasets(c, publication, relatedDatasets).Render(r.Context(), w)
+	views.CloseModalAndReplace(publicationviews.DatasetsBodySelector, publicationviews.DatasetsBody(c, publication, relatedDatasets)).Render(r.Context(), w)
 }
 
 func searchRelatedDatasets(c *ctx.Ctx, p *models.Publication, q string) (*models.DatasetHits, error) {
