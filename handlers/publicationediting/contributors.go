@@ -703,7 +703,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 	})
 }
 
-func contributorForm(ctx Context, c *models.Contributor, suggestURL string) *form.Form {
+func contributorForm(_ Context, c *models.Contributor, suggestURL string) *form.Form {
 	return form.New().
 		WithTheme("cols").
 		AddSection(
