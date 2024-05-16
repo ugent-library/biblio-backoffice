@@ -2140,10 +2140,6 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
       testForbiddenPublicationRoute("/message/edit", "GET", "PUT");
       testForbiddenPublicationRoute("/message", "PUT");
-      testForbiddenPublicationRoute("/reviewer-tags/edit");
-      testForbiddenPublicationRoute("/reviewer-tags", "PUT");
-      testForbiddenPublicationRoute("/reviewer-note/edit");
-      testForbiddenPublicationRoute("/reviewer-note", "PUT");
 
       testForbiddenPublicationRoute("/details/edit", "GET", "PUT");
       testForbiddenPublicationRoute("/type/confirm");
@@ -2268,10 +2264,6 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
       testForbiddenDatasetRoute("/message/edit", "GET", "PUT");
       testForbiddenDatasetRoute("/message", "PUT");
-      testForbiddenDatasetRoute("/reviewer-tags/edit");
-      testForbiddenDatasetRoute("/reviewer-tags", "PUT");
-      testForbiddenDatasetRoute("/reviewer-note/edit");
-      testForbiddenDatasetRoute("/reviewer-note", "PUT");
 
       testForbiddenDatasetRoute("/details/edit", "GET", "PUT");
       testForbiddenDatasetRoute("/details/edit/refresh-form", "PUT");
@@ -2336,39 +2328,105 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
       );
     });
 
-    function testForbiddenDatasetRoute(
+    it("should not be possible to edit publication reviewer tags and notes as a regular user", () => {
+      cy.loginAsResearcher();
+
+      cy.setUpPublication();
+
+      testUnauthorizedPublicationRoute("/reviewer-tags/edit");
+      testUnauthorizedPublicationRoute("/reviewer-tags", "PUT");
+      testUnauthorizedPublicationRoute("/reviewer-note/edit");
+      testUnauthorizedPublicationRoute("/reviewer-note", "PUT");
+    });
+
+    it("should not be possible to edit dataset reviewer tags and notes as a regular user", () => {
+      cy.loginAsResearcher();
+
+      cy.setUpDataset();
+
+      testUnauthorizedDatasetRoute("/reviewer-tags/edit");
+      testUnauthorizedDatasetRoute("/reviewer-tags", "PUT");
+      testUnauthorizedDatasetRoute("/reviewer-note/edit");
+      testUnauthorizedDatasetRoute("/reviewer-note", "PUT");
+    });
+
+    type HttpMethods = ("GET" | "PUT" | "POST" | "DELETE")[];
+
+    function testForbiddenDatasetRoute(route: string, ...methods: HttpMethods) {
+      cy.then(function () {
+        testRouteHttpStatus(
+          403,
+          `/dataset/${this.biblioId}${route}`,
+          ...methods,
+        );
+      });
+    }
+
+    function testUnauthorizedDatasetRoute(
       route: string,
-      ...methods: ("GET" | "PUT" | "POST" | "DELETE")[]
+      ...methods: HttpMethods
     ) {
       cy.then(function () {
-        testForbiddenRoute(`/dataset/${this.biblioId}${route}`, ...methods);
+        testRouteHttpStatus(
+          307,
+          `/dataset/${this.biblioId}${route}`,
+          ...methods,
+        ).should("have.nested.property", "headers.location", "/login");
       });
     }
 
     function testForbiddenPublicationRoute(
       route: string,
-      ...methods: ("GET" | "PUT" | "POST" | "DELETE")[]
+      ...methods: HttpMethods
     ) {
       cy.then(function () {
-        testForbiddenRoute(`/publication/${this.biblioId}${route}`, ...methods);
+        testRouteHttpStatus(
+          403,
+          `/publication/${this.biblioId}${route}`,
+          ...methods,
+        );
       });
     }
 
-    function testForbiddenRoute(
+    function testUnauthorizedPublicationRoute(
       route: string,
-      ...methods: ("GET" | "PUT" | "POST" | "DELETE")[]
+      ...methods: HttpMethods
+    ) {
+      cy.then(function () {
+        testRouteHttpStatus(
+          307,
+          `/publication/${this.biblioId}${route}`,
+          ...methods,
+        ).should("have.nested.property", "headers.location", "/login");
+      });
+    }
+
+    function testRouteHttpStatus(
+      httpStatus: number,
+      url: string,
+      ...methods: HttpMethods
     ) {
       if (methods.length === 0) {
         methods.push("GET");
       }
 
-      for (const method of methods) {
-        cy.request({ url: route, method, failOnStatusCode: false }).should(
-          "have.property",
-          "status",
-          403,
-        );
-      }
+      return cy.then(function () {
+        for (const method of methods) {
+          return cy
+            .request({
+              url,
+              method,
+              headers: {
+                "X-CSRF-Token": this.CSRFToken,
+              },
+              followRedirect: false,
+              failOnStatusCode: false,
+            })
+            .should((response) => {
+              expect(response.status).to.equal(httpStatus);
+            });
+        }
+      });
     }
   });
 });
