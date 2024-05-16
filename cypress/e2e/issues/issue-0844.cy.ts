@@ -38,7 +38,10 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
     cy.updateFields(
       "Librarian tags",
       () => {
-        cy.setFieldByLabel("Librarian tags", "dummy librarian tag");
+        cy.getLabel("Librarian tags")
+          .next()
+          .find("tags")
+          .type("dummy librarian tag{enter}");
       },
       true,
     );

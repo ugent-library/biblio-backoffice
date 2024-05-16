@@ -517,6 +517,10 @@ func Register(c Config) {
 						r.Get("/{snapshot_id}/publications/{publication_id}/confirm-delete", datasetediting.ConfirmDeletePublication).Name("dataset_confirm_delete_publication")
 						r.Delete("/publications/{publication_id}", datasetediting.DeletePublication).Name("dataset_delete_publication")
 
+						// activity
+						r.Get("/message/edit", datasetediting.EditMessage).Name("dataset_edit_message")
+						r.Put("/message", datasetediting.UpdateMessage).Name("dataset_update_message")
+
 						// publish
 						r.Get("/publish/confirm", datasetediting.ConfirmPublish).Name("dataset_confirm_publish")
 						r.Post("/publish", datasetediting.Publish).Name("dataset_publish")
@@ -539,6 +543,12 @@ func Register(c Config) {
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
 
+						// activity
+						r.Get("/reviewer-tags/edit", datasetediting.EditReviewerTags).Name("dataset_edit_reviewer_tags")
+						r.Put("/reviewer-tags", datasetediting.UpdateReviewerTags).Name("dataset_update_reviewer_tags")
+						r.Get("/reviewer-note/edit", datasetediting.EditReviewerNote).Name("dataset_edit_reviewer_note")
+						r.Put("/reviewer-note", datasetediting.UpdateReviewerNote).Name("dataset_update_reviewer_note")
+
 						// (un)lock dataset
 						r.Post("/lock", datasetediting.Lock).Name("dataset_lock")
 						r.Post("/unlock", datasetediting.Unlock).Name("dataset_unlock")
@@ -550,26 +560,6 @@ func Register(c Config) {
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// edit dataset activity
-		r.Get("/dataset/{id}/message/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditMessage)).
-			Name("dataset_edit_message")
-		r.Put("/dataset/{id}/message",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateMessage)).
-			Name("dataset_update_message")
-		r.Get("/dataset/{id}/reviewer-tags/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditReviewerTags)).
-			Name("dataset_edit_reviewer_tags")
-		r.Put("/dataset/{id}/reviewer-tags",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateReviewerTags)).
-			Name("dataset_update_reviewer_tags")
-		r.Get("/dataset/{id}/reviewer-note/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditReviewerNote)).
-			Name("dataset_edit_reviewer_note")
-		r.Put("/dataset/{id}/reviewer-note",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateReviewerNote)).
-			Name("dataset_update_reviewer_note")
 
 		// edit dataset projects
 		r.Post("/dataset/{id}/projects",
