@@ -422,7 +422,9 @@ func Register(c Config) {
 							// datasets
 							r.Get("/datasets/add", publicationediting.AddDataset).Name("publication_add_dataset")
 							r.Get("/datasets/suggestions", publicationediting.SuggestDatasets).Name("publication_suggest_datasets")
+							r.Post("/datasets", publicationediting.CreateDataset).Name("publication_create_dataset")
 							r.Get("/{snapshot_id}/datasets/{dataset_id}/confirm-delete", publicationediting.ConfirmDeleteDataset).Name("publication_confirm_delete_dataset")
+							r.Delete("/datasets/{dataset_id}", publicationediting.DeleteDataset).Name("publication_delete_dataset")
 
 							// publish
 							r.Get("/publish/confirm", publicationediting.ConfirmPublish).Name("publication_confirm_publish")
@@ -530,6 +532,11 @@ func Register(c Config) {
 						// re-publish
 						r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
 						r.Post("/republish", datasetediting.Republish).Name("dataset_republish")
+
+						// edit details
+						r.Get("/details/edit", datasetediting.EditDetails).Name("dataset_edit_details")
+						r.Put("/details/edit/refresh", datasetediting.RefreshEditDetails).Name("dataset_refresh_edit_details")
+						r.Put("/details", datasetediting.UpdateDetails).Name("dataset_update_details")
 					})
 
 					// curator actions
@@ -553,17 +560,6 @@ func Register(c Config) {
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// edit dataset details
-		r.Get("/dataset/{id}/details/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditDetails)).
-			Name("dataset_edit_details")
-		r.Put("/dataset/{id}/details/edit/refresh-form",
-			datasetEditingHandler.Wrap(datasetEditingHandler.RefreshEditFileForm)).
-			Name("dataset_edit_file_refresh_form")
-		r.Put("/dataset/{id}/details",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateDetails)).
-			Name("dataset_update_details")
 
 		// edit dataset projects
 		r.Post("/dataset/{id}/projects",
@@ -697,14 +693,6 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/departments/{department_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
 			Name("publication_delete_department")
-
-		// edit publication datasets
-		r.Post("/publication/{id}/datasets",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateDataset)).
-			Name("publication_create_dataset")
-		r.Delete("/publication/{id}/datasets/{dataset_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDataset)).
-			Name("publication_delete_dataset")
 
 		// edit publication contributors
 		r.Post("/publication/{id}/contributors/{role}/order",

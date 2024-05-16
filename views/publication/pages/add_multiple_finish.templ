@@ -6,6 +6,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/search"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 )
 
 type AddMultipleFinishArgs struct {
@@ -14,23 +15,6 @@ type AddMultipleFinishArgs struct {
 	Hits        *models.PublicationHits
 	SearchArgs  *models.SearchArgs
 	RedirectURL string
-}
-
-func generatePublicationSummaryArgs(c *ctx.Ctx, pub *models.Publication, redirectURL string) publication.SummaryArgs {
-	url := c.PathTo("publication", "id", pub.ID, "redirect-url", redirectURL)
-
-	args := publication.SummaryArgs{
-		Publication:    pub,
-		PublicationURL: url,
-		Actions:        publication.SummaryActions(c, pub, url),
-		Footer:         publication.SummaryFooter(c, pub),
-	}
-
-	if c.UserRole == "curator" {
-		args.Links = publication.SummaryLinks(c, pub, url)
-	}
-
-	return args
 }
 
 templ AddMultipleFinish(c *ctx.Ctx, args AddMultipleFinishArgs) {
@@ -72,7 +56,9 @@ templ AddMultipleFinish(c *ctx.Ctx, args AddMultipleFinishArgs) {
 						<ul class="list-group list-group-flush">
 							for _, hit := range args.Hits.Hits {
 								<li class="list-group-item">
-									@publication.Summary(c, generatePublicationSummaryArgs(c, hit, args.RedirectURL))
+									if publicationURL := views.URL(c.PathTo("publication", "id", hit.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).URL(); publicationURL != nil {
+										@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{Publication: hit, URL: publicationURL, Actions: publication.SummaryActions(c, hit, publicationURL), Footer: publication.SummaryFooter(c, hit), Links: publication.SummaryLinks(c, hit, publicationURL)})
+									}
 								</li>
 							}
 						</ul>

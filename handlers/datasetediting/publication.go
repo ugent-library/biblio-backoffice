@@ -101,7 +101,7 @@ func CreatePublication(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	datasetviews.RefreshPublications(c, dataset, relatedPublications).Render(r.Context(), w)
+	views.CloseModalAndReplace(datasetviews.PublicationsBodySelector, datasetviews.PublicationsBody(c, dataset, relatedPublications)).Render(r.Context(), w)
 }
 
 func ConfirmDeletePublication(w http.ResponseWriter, r *http.Request) {
@@ -173,7 +173,7 @@ func DeletePublication(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	datasetviews.RefreshPublications(c, dataset, relatedPublications).Render(r.Context(), w)
+	views.CloseModalAndReplace(datasetviews.PublicationsBodySelector, datasetviews.PublicationsBody(c, dataset, relatedPublications)).Render(r.Context(), w)
 }
 
 func searchRelatedPublications(c *ctx.Ctx, d *models.Dataset, q string) (*models.PublicationHits, error) {
