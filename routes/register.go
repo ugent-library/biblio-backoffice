@@ -398,6 +398,12 @@ func Register(c Config) {
 							r.Get("/{snapshot_id}/lay_summaries/{lay_summary_id}/confirm-delete", publicationediting.ConfirmDeleteLaySummary).Name("publication_confirm_delete_lay_summary")
 							r.Delete("/lay_summaries/{lay_summary_id}", publicationediting.DeleteLaySummary).Name("publication_delete_lay_summary")
 
+							// datasets
+							r.Get("/datasets/add", publicationediting.AddDataset).Name("publication_add_dataset")
+							r.Get("/datasets/suggestions", publicationediting.SuggestDatasets).Name("publication_suggest_datasets")
+							r.Delete("/datasets/{dataset_id}", publicationediting.DeleteDataset).Name("publication_delete_dataset")
+							r.Post("/datasets", publicationediting.CreateDataset).Name("publication_create_dataset")
+
 							// additional info
 							r.Get("/additional-info/edit", publicationediting.EditAdditionalInfo).Name("publication_edit_additional_info")
 							r.Put("/additional-info", publicationediting.UpdateAdditionalInfo).Name("publication_update_additional_info")
@@ -701,14 +707,6 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/departments/{department_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
 			Name("publication_delete_department")
-
-		// edit publication datasets
-		r.Post("/publication/{id}/datasets",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateDataset)).
-			Name("publication_create_dataset")
-		r.Delete("/publication/{id}/datasets/{dataset_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDataset)).
-			Name("publication_delete_dataset")
 
 		// edit publication contributors
 		r.Post("/publication/{id}/contributors/{role}/order",

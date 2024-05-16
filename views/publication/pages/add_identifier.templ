@@ -8,6 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 	"github.com/ugent-library/biblio-backoffice/views/shared"
 )
 
@@ -127,12 +128,12 @@ templ addIdentifierDuplicate(c *ctx.Ctx, args addIdentifierDuplicateArgs) {
 						<div class="d-flex w-100">
 							<div class="w-100">
 								<div class="d-flex align-items-start">
-									@publicationviews.Summary(c, publicationviews.SummaryArgs{
+									@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
 										Publication:    args.Publication,
-										PublicationURL: args.PublicationURL,
+										URL: args.PublicationURL,
 										Target:         "_blank",
-										Actions: publicationviews.DefaultSummary(publicationviews.DefaultSummaryArgs{
-											PublicationURL: args.PublicationURL,
+										Actions: publicationsummaryviews.DefaultActions(publicationsummaryviews.DefaultActionsArgs{
+											URL: args.PublicationURL,
 											Target:         "_blank",
 										}),
 									})

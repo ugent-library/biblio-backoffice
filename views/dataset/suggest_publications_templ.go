@@ -15,7 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
-	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 )
 
 func SuggestPublications(c *ctx.Ctx, dataset *models.Dataset, publicationHits *models.PublicationHits) templ.Component {
@@ -40,8 +40,8 @@ func SuggestPublications(c *ctx.Ctx, dataset *models.Dataset, publicationHits *m
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = publicationviews.Summary(c,
-				publicationviews.SummaryArgs{Publication: hit, PublicationURL: c.PathTo("publication", "id", hit.ID), Actions: suggestPublicationSummaryActions(c, dataset, hit)}).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = publicationsummaryviews.Summary(c,
+				publicationsummaryviews.SummaryArgs{Publication: hit, URL: c.PathTo("publication", "id", hit.ID), Actions: suggestPublicationSummaryActions(c, dataset, hit)}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

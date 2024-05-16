@@ -73,12 +73,7 @@ func ShowDatasets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirectURL := r.URL.Query().Get("redirect-url")
-	if redirectURL == "" {
-		redirectURL = c.PathTo("publications").String()
-	}
-
-	publicationviews.Datasets(c, p, datasets, redirectURL).Render(r.Context(), w)
+	publicationviews.ShowDatasets(c, p, datasets).Render(r.Context(), w)
 }
 
 func ShowActivity(w http.ResponseWriter, r *http.Request) {

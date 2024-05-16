@@ -1,4 +1,4 @@
-package publication
+package publicationsummaryviews
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 
 type SummaryArgs struct {
 	Publication    *models.Publication
-	PublicationURL *url.URL
+	URL *url.URL
 	Target         string
 	Actions        templ.Component
 	Footer         templ.Component
@@ -25,7 +25,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 			if c.UserRole == "curator" {
 				<div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-md-small c-thumbnail-lg-large d-none d-lg-block">
 					<a
-						href={ templ.URL(args.PublicationURL.String()) }
+						href={ templ.URL(args.URL.String()) }
 						if args.Target != "" {
 							target={ args.Target }
 						}
@@ -45,13 +45,51 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								if args.Publication.Locked {
 									@views.BadgeLocked()
 								}
-								@BadgeType(c, args.Publication)
+                                <span class="c-subline ps-2 me-3 pe-3 border-end">
+                                    if args.Publication.Classification != "" {
+                                        { fmt.Sprintf("%s: %s", c.Loc.Get("publication_types." + args.Publication.Type), args.Publication.Classification) }
+                                    } else {
+                                        { c.Loc.Get("publication_types." + args.Publication.Type) }
+                                    }
+                                </span>
 								if mainFile := args.Publication.MainFile(); mainFile != nil {
-									@SummaryAccessLevel(c, mainFile)
+                                    <span class={ "c-subline", "me-3", "pe-3", templ.KV("border-end", mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }>
+                                        if mainFile.AccessLevel == "info:eu-repo/semantics/openAccess" {
+                                            <i class="if if-download if--small if--success"></i>
+                                            <span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+                                        } else if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+                                            <i class="if if-time if--small if--muted"></i>
+                                            <span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+                                        } else if mainFile.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
+                                            <i class="if if-ghent-university if--small if--primary"></i>
+                                            <span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+                                        } else if mainFile.AccessLevel == "info:eu-repo/semantics/closedAccess" {
+                                            <i class="if if-eye-off if--small if--muted"></i>
+                                            <span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+                                        }
+                                    </span>
+                                    if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+                                        <span class="c-subline me-3 pe-3 border-end">
+                                            if mainFile.AccessLevelDuringEmbargo == "info:eu-repo/semantics/closedAccess" {
+                                                <i class="if if-eye-off if--small if--muted"></i>
+                                            } else {
+                                                <i class="if if-ghent-university if--small if--primary"></i>
+                                            }
+                                            <span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels_during_embargo." + mainFile.AccessLevelDuringEmbargo) }</span>
+                                        </span>
+                                        <span class="c-subline me-3 pe-3">
+                                            if mainFile.AccessLevelAfterEmbargo == "info:eu-repo/semantics/openAccess" {
+                                                <i class="if if-download if--small if--success"></i>
+                                            } else {
+                                                <i class="if if-ghent-university if--small if--primary"></i>
+                                            }
+                                            { c.Loc.Get("publication_file_access_levels_after_embargo." + mainFile.AccessLevelAfterEmbargo) } from { mainFile.EmbargoDate }
+                                        </span>
+                                    }
 								} else if !args.Publication.Extern {
 									<span class="c-subline ps-2 me-3 pe-3">
 										<a
-											href={ views.URL(args.PublicationURL).SetQueryParam("show", "files").SafeURL() }
+											href={ views.URL(args.URL).SetQueryParam("show", "files").SafeURL() }
 											class="c-link-muted"
 											if args.Target != "" {
 												target={ args.Target }
@@ -72,7 +110,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									}
 								} else {
 									<a
-										href={ templ.URL(args.PublicationURL.String()) }
+										href={ templ.URL(args.URL.String()) }
 										if args.Target != "" {
 											target={ args.Target }
 										}
@@ -87,9 +125,13 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									</a>
 								}
 							</h4>
-							@SummaryParts(c, args.Publication)
+                            <ul class="c-meta-list c-meta-list-inline">
+                                for _, summaryPart := range args.Publication.SummaryParts() {
+                                    <li class="c-meta-item">{ summaryPart }</li>
+                                }
+                            </ul>
 							// TODO: pass on args.Target
-							@contributorviews.Summary(c, "author", args.Publication.Author, views.URL(args.PublicationURL).SetQueryParam("show", "contributors").String())
+							@contributorviews.Summary(c, "author", args.Publication.Author, views.URL(args.URL).SetQueryParam("show", "contributors").String())
 						</div>
 						<div class="collapsible-card-content collapse" data-collapsible-card-content>
 							<div class="vstack gap-3">
@@ -97,10 +139,10 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									<i class="if if-building if--small if--muted me-2"></i>
 									if len(args.Publication.RelatedOrganizations) > 0 {
 										// TODO: pass on args.Target
-										@relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.PublicationURL).SetQueryParam("show", "contributors").String())
+										@relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
 									} else {
 										<a
-											href={ views.URL(args.PublicationURL).SetQueryParam("show", "contributors").SafeURL() }
+											href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
 											class="c-link-muted"
 											if args.Target != "" {
 												target={ args.Target }
@@ -162,7 +204,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								</div>
 							</div>
 						</div>
-						if args.Links != nil {
+						if args.Links != nil && c.UserRole == "curator" {
 							@args.Links
 						}
 					</div>

@@ -15,9 +15,41 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 					<div class="bc-toolbar-left mb-1">
 						<div class="d-inline-flex align-items-center flex-wrap">
 							<span class={ "c-subline", "text-nowrap", "me-3", "pe-3", templ.KV("border-end", p.MainFile() != nil) }>{ c.Loc.Get("publication_types." + p.Type) }</span>
-							if f := p.MainFile(); f != nil {
-								@SummaryAccessLevel(c, f)
-							}
+								if mainFile := p.MainFile(); mainFile != nil {
+									<span class={ "c-subline", "me-3", "pe-3", templ.KV("border-end", mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }>
+                                        if mainFile.AccessLevel == "info:eu-repo/semantics/openAccess" {
+                                            <i class="if if-download if--small if--success"></i>
+                                            <span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+                                        } else if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+                                            <i class="if if-time if--small if--muted"></i>
+                                            <span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+                                        } else if mainFile.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
+                                            <i class="if if-ghent-university if--small if--primary"></i>
+                                            <span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+                                        } else if mainFile.AccessLevel == "info:eu-repo/semantics/closedAccess" {
+                                            <i class="if if-eye-off if--small if--muted"></i>
+                                            <span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+                                        }
+                                    </span>
+                                    if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+                                        <span class="c-subline me-3 pe-3 border-end">
+                                            if mainFile.AccessLevelDuringEmbargo == "info:eu-repo/semantics/closedAccess" {
+                                                <i class="if if-eye-off if--small if--muted"></i>
+                                            } else {
+                                                <i class="if if-ghent-university if--small if--primary"></i>
+                                            }
+                                            <span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels_during_embargo." + mainFile.AccessLevelDuringEmbargo) }</span>
+                                        </span>
+                                        <span class="c-subline me-3 pe-3">
+                                            if mainFile.AccessLevelAfterEmbargo == "info:eu-repo/semantics/openAccess" {
+                                                <i class="if if-download if--small if--success"></i>
+                                            } else {
+                                                <i class="if if-ghent-university if--small if--primary"></i>
+                                            }
+                                            { c.Loc.Get("publication_file_access_levels_after_embargo." + mainFile.AccessLevelAfterEmbargo) } from { mainFile.EmbargoDate }
+                                        </span>
+                                    }
+								}
 						</div>
 					</div>
 					<div class="bc-toolbar-right mb-3 mb-lg-0">
