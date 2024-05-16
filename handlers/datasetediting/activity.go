@@ -30,12 +30,6 @@ type BindReviewerNote struct {
 	ReviewerNote string `form:"reviewer_note"`
 }
 
-type YieldEditReviewerTags struct {
-	Context
-	Form     *form.Form
-	Conflict bool
-}
-
 type YieldEditReviewerNote struct {
 	Context
 	Form     *form.Form
