@@ -65,10 +65,6 @@ func Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction 
 			return templ_7745c5c3_Err
 		}
 		if f := p.MainFile(); f != nil {
-			templ_7745c5c3_Err = SummaryAccessLevel(c, f).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"bc-toolbar-right mb-3 mb-lg-0\"><div class=\"bc-toolbar-item\"><div class=\"d-flex align-items-center my-2\"><div class=\"c-button-toolbar\"><button class=\"btn btn-tertiary modal-close\" data-bs-dismiss=\"modal\"><i class=\"if if-close\"></i> <span class=\"btn-text\">Close</span></button> ")
 		if templ_7745c5c3_Err != nil {

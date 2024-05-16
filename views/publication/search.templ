@@ -4,10 +4,9 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
-	"github.com/ugent-library/biblio-backoffice/identifiers"
+    publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 	"github.com/ugent-library/bind"
 	"net/url"
-	"fmt"
 )
 
 type SearchArgs struct {
@@ -67,20 +66,6 @@ templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[strin
 		@views.FacetSince(c, "updated_since", "Updated since", "Show records updated since", searchArgs)
 		@views.Facet(c, "legacy", "Legacy", "legacy", "legacy", facets["legacy"], searchArgs)
 	}
-}
-
-func genPublicationSummaryArgs(c *ctx.Ctx, pub *models.Publication) SummaryArgs {
-	pubURL := views.URL(c.PathTo("publication", "id", pub.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).URL()
-	args := SummaryArgs{
-		Publication:    pub,
-		PublicationURL: pubURL,
-		Actions:        pubSummaryActions(c, pub, pubURL),
-		Footer:         pubSummaryFooter(c, pub),
-	}
-	if c.UserRole == "curator" {
-		args.Links = pubSummaryLinks(c, pub, pubURL)
-	}
-	return args
 }
 
 templ Search(c *ctx.Ctx, args *SearchArgs) {
@@ -165,7 +150,9 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 							<ul class="list-group list-group-flush">
 								for _, hit := range args.Hits.Hits {
 									<li class="list-group-item">
-										@Summary(c, genPublicationSummaryArgs(c, hit))
+										if publicationURL := views.URL(c.PathTo("publication", "id", hit.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).URL(); publicationURL != nil {
+											@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{Publication: hit, URL: publicationURL, Actions: SummaryActions(c, hit, publicationURL), Footer: SummaryFooter(c, hit), Links: SummaryLinks(c, hit, publicationURL)})
+										}
 									</li>
 								}
 							</ul>
@@ -235,126 +222,4 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 			</div>
 		</div>
 	}
-}
-
-templ pubSummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
-	<div class="c-button-toolbar">
-		<button class="btn btn-tertiary btn-lg-only-responsive pt-0" data-collapsible-card-toggle>
-			<i class="if if-info-circle"></i>
-			<span class="btn-text d-md-none d-lg-inline-block">More info</span>
-			<span class="visually-hidden">View more details</span>
-		</button>
-		<div class="dropdown">
-			<button class="btn btn-tertiary btn-lg-only-responsive pt-0" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				<i class="if if-more"></i>
-				<span class="btn-text d-md-none d-lg-inline-block">Actions</span>
-				<span class="visually-hidden">View more actions</span>
-			</button>
-			<div class="dropdown-menu me-3">
-				<a class="dropdown-item" href={ templ.URL(pubURL.String()) }>
-					<i class="if if-eye"></i>
-					<span>View publication</span>
-				</a>
-				<div class="dropdown-divider"></div>
-				if pub.Status == "public" {
-					<a class="dropdown-item" href={ templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, pub.ID)) } target="_blank">
-						<i class="if if-book"></i>
-						<span>Public Biblio Location</span>
-					</a>
-				}
-				if c.UserRole == "curator" {
-					<a class="dropdown-item" href={ views.URL(pubURL).SetQueryParam("show", "files").SafeURL() }>
-						<i class="if if-file"></i>
-						<span>View full texts &amp; files</span>
-					</a>
-					if pub.DOI != "" {
-						<a class="dropdown-item" href={ templ.URL(identifiers.Resolve("DOI", pub.DOI)) } target="_blank">
-							<i class="if if-external-link"></i>
-							<span>DOI</span>
-						</a>
-					}
-					if pub.WOSID != "" {
-						<a class="dropdown-item" href={ templ.URL(identifiers.Resolve("WebOfScience", pub.WOSID)) } target="_blank">
-							<i class="if if-external-link"></i>
-							<span>WoS</span>
-						</a>
-					}
-					if pub.PubMedID != "" {
-						<a class="dropdown-item" href={ templ.URL(identifiers.Resolve("PubMed", pub.PubMedID)) } target="_blank">
-							<i class="if if-external-link"></i>
-							<span>PubMed</span>
-						</a>
-					}
-				} else {
-					if pub.DOI != "" {
-						<a class="dropdown-item" href={ views.URLFromString("https://www.altmetric.com/explorer/outputs?scope=all").SetQueryParam("identifier", pub.DOI).SafeURL() } target="_blank">
-							<i class="if if-external-link"></i>
-							<span>Altmetric</span>
-						</a>
-					}
-				}
-				if c.User.CanDeletePublication(pub) {
-					<div class="dropdown-divider"></div>
-					<button
-						class="dropdown-item"
-						hx-get={ views.URL(c.PathTo("publication_confirm_delete", "id", pub.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).String() }
-						hx-target="#modals"
-					>
-						<i class="if if-delete"></i>
-						<span>Delete</span>
-					</button>
-				}
-			</div>
-		</div>
-		<a class="btn btn-tertiary btn-lg-only-responsive pt-0" href={ templ.URL(pubURL.String()) }>
-			<i class="if if-eye"></i>
-			<span class="btn-text d-md-none d-lg-inline-block">View</span>
-			<span class="visually-hidden">Go to record</span>
-		</a>
-	</div>
-}
-
-templ pubSummaryFooter(c *ctx.Ctx, pub *models.Publication) {
-	if pub.Message != "" {
-		<div class="alert alert-info mb-0">
-			<i class="if if-message"></i>
-			<div class="alert-content">
-				<h3 class="Biblio message">Biblio message</h3>
-				<p class="mt-2">
-					@templ.Raw(views.Linkify(pub.Message))
-				</p>
-			</div>
-		</div>
-	}
-}
-
-templ pubSummaryLinks(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
-	<ul class="c-meta-list c-meta-list-inline">
-		<li class="c-meta-item">
-			<a class="c-link-muted c-body-small" href={ templ.URL(pubURL.String()) }>View publication</a>
-		</li>
-		<li class="c-meta-item">
-			<a class="c-link-muted c-body-small" href={ views.URL(pubURL).SetQueryParam("show", "files").SafeURL() }>Full texts &amp; files</a>
-		</li>
-		if pub.DOI != "" {
-			<li class="c-meta-item">
-				<a class="c-link-muted c-body-small" href={ templ.URL(identifiers.Resolve("DOI", pub.DOI)) } target="_blank">DOI</a>
-			</li>
-		}
-		if pub.WOSID != "" {
-			<li class="c-meta-item">
-				<a class="c-link-muted c-body-small" href={ templ.URL(identifiers.Resolve("WebOfScience", pub.WOSID)) } target="_blank">WoS</a>
-			</li>
-		}
-		if pub.PubMedID != "" {
-			<li class="c-meta-item">
-				<a class="c-link-muted c-body-small" href={ templ.URL(identifiers.Resolve("PubMed", pub.PubMedID)) } target="_blank">PubMed</a>
-			</li>
-		}
-		if pub.Status == "public" {
-			<li class="c-meta-item">
-				<a class="c-link-muted c-body-small" href={ templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, pub.ID)) } target="_blank">Public Biblio Location</a>
-			</li>
-		}
-	</ul>
 }

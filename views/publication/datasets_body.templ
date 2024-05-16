@@ -6,51 +6,7 @@ import (
 	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
 )
 
-templ Datasets(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset, redirectURL string) {
-	<div hx-swap-oob="innerHTML:#show-nav">
-		@SubNav(c, p, redirectURL)
-	</div>
-	<div hx-swap-oob="innerHTML:#show-sidebar"></div>
-	<div class="card mb-6">
-		<div class="card-header">
-			<div class="bc-toolbar">
-				<div class="bc-toolbar-left">
-					<h1 class="bc-toolbar-title">Related datasets</h1>
-					<a
-						class="text-muted px-2"
-						href="#"
-						data-bs-container="body"
-						data-bs-toggle="popover"
-						data-bs-placement="right"
-						data-bs-content={ c.Loc.Get("tooltip.publication.related_datasets") }
-					>
-						<i class="if if-info-circle if--small"></i>
-						<span class="visually-hidden">More info</span>
-					</a>
-				</div>
-				<div class="bc-toolbar-right">
-					if c.User.CanEditPublication(p) {
-						<div class="c-button-toolbar" data-panel-state="read">
-							<button
-								class="btn btn-outline-primary"
-								hx-get={ c.PathTo("publication_add_dataset", "id", p.ID).String() }
-								hx-target="#modals"
-							>
-								<i class="if if-add"></i>
-								<div class="btn-text">Add dataset</div>
-							</button>
-						</div>
-					}
-				</div>
-			</div>
-		</div>
-		<div id="datasets-body">
-			@DatasetsBody(c, p, datasets)
-		</div>
-	</div>
-}
-
-templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset) {
+templ datasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset) {
 	if len(datasets) > 0 {
 		<div class="card-body p-0">
 			<ul class="list-group list-group-flush">
@@ -61,7 +17,7 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 								@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
 									Dataset: d,
 									URL:     c.PathTo("dataset", "id", d.ID),
-									Actions: datasetActions(c, p, d),
+									Actions: datasetSummaryActions(c, p, d),
 								})
 							</div>
 						</div>
@@ -76,7 +32,7 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 	}
 }
 
-templ datasetActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset) {
+templ datasetSummaryActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset) {
 	<div class="bc-toolbar-item ms-auto ms-lg-0">
 		<div class="c-button-toolbar">
 			<div class="dropdown dropleft">

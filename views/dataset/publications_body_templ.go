@@ -13,7 +13,7 @@ import "bytes"
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 )
 
 func publicationsBody(c *ctx.Ctx, dataset *models.Dataset, relatedPublications []*models.Publication) templ.Component {
@@ -39,7 +39,7 @@ func publicationsBody(c *ctx.Ctx, dataset *models.Dataset, relatedPublications [
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = publicationviews.Summary(c, publicationviews.SummaryArgs{Publication: pub, PublicationURL: c.PathTo("publication", "id", pub.ID), Actions: publicationSummaryActions(c, dataset, pub)}).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{Publication: pub, URL: c.PathTo("publication", "id", pub.ID), Actions: publicationSummaryActions(c, dataset, pub)}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

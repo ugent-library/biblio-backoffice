@@ -140,57 +140,57 @@ func ConfirmDeleteDataset(w http.ResponseWriter, r *http.Request) {
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) DeleteDataset(w http.ResponseWriter, r *http.Request, ctx Context) {
+func DeleteDataset(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	publication := ctx.GetPublication(r)
+
 	b := BindDeleteDataset{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete publication dataset: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("delete publication dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	if !ctx.Publication.HasRelatedDataset(b.DatasetID) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+	if !publication.HasRelatedDataset(b.DatasetID) {
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	// TODO reduce calls to repository
-	d, err := h.Repo.GetDataset(b.DatasetID)
+	d, err := c.Repo.GetDataset(b.DatasetID)
 	if err != nil {
-		h.Logger.Errorw("delete publication dataset: could not get dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("delete publication dataset: could not get dataset", "errors", err, "publication", publication.ID, "dataset", b.DatasetID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
 	// TODO handle validation errors
 	// TODO pass If-Match
 	// TODO handle conflict
-	err = h.Repo.RemovePublicationDataset(ctx.Publication, d, ctx.User)
+	err = c.Repo.RemovePublicationDataset(publication, d, c.User)
 
 	if err != nil {
-		h.Logger.Errorw("delete publication dataset: could not remove dataset", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("delete publication dataset: could not remove dataset", "errors", err, "publication", publication.ID, "dataset", b.DatasetID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
 	// Refresh the ctx.Publication: it still carries the old snapshotID
-	ctx.Publication, err = h.Repo.GetPublication(ctx.Publication.ID)
+	publication, err = c.Repo.GetPublication(publication.ID)
 	if err != nil {
-		h.Logger.Errorw("delete publication dataset: could not get publication", "errors", err, "publication", ctx.Publication.ID, "dataset", b.DatasetID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("delete publication dataset: could not get publication", "errors", err, "publication", publication.ID, "dataset", b.DatasetID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	relatedDatasets, err := h.Repo.GetVisiblePublicationDatasets(ctx.User, ctx.Publication)
+	relatedDatasets, err := c.Repo.GetVisiblePublicationDatasets(c.User, publication)
 	if err != nil {
-		h.Logger.Errorw("create publication dataset: could not get related datasets", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("create publication dataset: could not get related datasets", "errors", err, "publication", publication.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_datasets", YieldDatasets{
-		Context:         ctx,
-		RelatedDatasets: relatedDatasets,
-	})
+	publicationviews.RefreshDatasets(c, publication, relatedDatasets).Render(r.Context(), w)
 }
 
 func searchRelatedDatasets(c *ctx.Ctx, p *models.Publication, q string) (*models.DatasetHits, error) {

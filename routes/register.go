@@ -388,6 +388,7 @@ func Register(c Config) {
 						// datasets
 						r.Get("/datasets/add", publicationediting.AddDataset).Name("publication_add_dataset")
 						r.Get("/datasets/suggestions", publicationediting.SuggestDatasets).Name("publication_suggest_datasets")
+						r.Delete("/datasets/{dataset_id}", publicationediting.DeleteDataset).Name("publication_delete_dataset")
 					})
 
 					// curator actions
@@ -734,9 +735,6 @@ func Register(c Config) {
 		r.Post("/publication/{id}/datasets",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateDataset)).
 			Name("publication_create_dataset")
-		r.Delete("/publication/{id}/datasets/{dataset_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDataset)).
-			Name("publication_delete_dataset")
 
 		// edit publication contributors
 		r.Post("/publication/{id}/contributors/{role}/order",

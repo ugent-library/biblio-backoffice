@@ -16,7 +16,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 						<div class="d-inline-flex align-items-center flex-wrap">
 							<span class={ "c-subline", "text-nowrap", "me-3", "pe-3", templ.KV("border-end", p.MainFile() != nil) }>{ c.Loc.Get("publication_types." + p.Type) }</span>
 							if f := p.MainFile(); f != nil {
-								@SummaryAccessLevel(c, f)
+								// @SummaryAccessLevel(c, f)
 							}
 						</div>
 					</div>
