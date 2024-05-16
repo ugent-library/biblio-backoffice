@@ -526,6 +526,11 @@ func Register(c Config) {
 						// re-publish
 						r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
 						r.Post("/republish", datasetediting.Republish).Name("dataset_republish")
+
+						// edit details
+						r.Get("/details/edit", datasetediting.EditDetails).Name("dataset_edit_details")
+						r.Put("/details/edit/refresh", datasetediting.RefreshEditDetails).Name("dataset_refresh_edit_details")
+						r.Put("/details", datasetediting.UpdateDetails).Name("dataset_update_details")
 					})
 
 					// curator actions
@@ -563,17 +568,6 @@ func Register(c Config) {
 		r.Put("/dataset/{id}/reviewer-note",
 			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateReviewerNote)).
 			Name("dataset_update_reviewer_note")
-
-		// edit dataset details
-		r.Get("/dataset/{id}/details/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditDetails)).
-			Name("dataset_edit_details")
-		r.Put("/dataset/{id}/details/edit/refresh-form",
-			datasetEditingHandler.Wrap(datasetEditingHandler.RefreshEditFileForm)).
-			Name("dataset_edit_file_refresh_form")
-		r.Put("/dataset/{id}/details",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateDetails)).
-			Name("dataset_update_details")
 
 		// edit dataset projects
 		r.Post("/dataset/{id}/projects",
