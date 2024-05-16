@@ -528,6 +528,10 @@ func Register(c Config) {
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
 
+						// activity
+						r.Get("/reviewer-tags/edit", datasetediting.EditReviewerTags).Name("dataset_edit_reviewer_tags")
+						r.Put("/reviewer-tags", datasetediting.UpdateReviewerTags).Name("dataset_update_reviewer_tags")
+
 						// (un)lock dataset
 						r.Post("/lock", datasetediting.Lock).Name("dataset_lock")
 						r.Post("/unlock", datasetediting.Unlock).Name("dataset_unlock")
@@ -541,12 +545,6 @@ func Register(c Config) {
 		// END NEW STYLE HANDLERS
 
 		// edit dataset activity
-		r.Get("/dataset/{id}/reviewer-tags/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditReviewerTags)).
-			Name("dataset_edit_reviewer_tags")
-		r.Put("/dataset/{id}/reviewer-tags",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateReviewerTags)).
-			Name("dataset_update_reviewer_tags")
 		r.Get("/dataset/{id}/reviewer-note/edit",
 			datasetEditingHandler.Wrap(datasetEditingHandler.EditReviewerNote)).
 			Name("dataset_edit_reviewer_note")

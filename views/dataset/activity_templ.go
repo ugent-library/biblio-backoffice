@@ -15,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
+const ReviewerTagsSelector = "#reviewer-tags-body"
 const MessageBodySelector = "#message-body"
 
 func Activity(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Component {
