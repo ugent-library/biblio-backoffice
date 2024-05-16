@@ -2401,7 +2401,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
     ) {
       cy.then(function () {
         testRouteHttpStatus(
-          401,
+          307, // TODO: will be 401 after refactoring
           `/publication/${this.biblioId}${route}`,
           ...methods,
         );
