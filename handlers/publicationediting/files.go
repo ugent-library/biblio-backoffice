@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -54,18 +56,24 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 	p := ctx.GetPublication(r)
 
 	// 2GB limit on request body
-	r.Body = http.MaxBytesReader(w, r.Body, 2000000000)
+	fileSize, _ := strconv.ParseInt(r.Header.Get("Content-Length"), 10, 64)
 
-	file, handler, err := r.FormFile("file")
-	if err != nil {
-		c.Log.Errorf("publication upload file: could not process file", "errors", err, "publication", p.ID, "user", c.User.ID)
-		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.file_upload_error"))).Render(r.Context(), w)
-		return
-	}
-	defer file.Close()
+	// request header only accepts ISO-8859-1 so we had to escape it
+	fileName, _ := url.QueryUnescape(r.Header.Get("X-Upload-Filename"))
+
+	// server side limit on request body
+	r.Body = http.MaxBytesReader(w, r.Body, int64(c.MaxFileSize))
 
 	// add file to filestore
-	checksum, err := c.FileStore.Add(r.Context(), file, "")
+	checksum, err := c.FileStore.Add(r.Context(), r.Body, "")
+
+	maxBytesErr := &http.MaxBytesError{}
+	if errors.As(err, &maxBytesErr) {
+		c.Log.Errorf("publication upload file: could not save file", "errors", err, "publication", p.ID, "user", c.User.ID)
+		// TODO show friendly error
+		http.Error(w, http.StatusText(http.StatusRequestEntityTooLarge), http.StatusRequestEntityTooLarge)
+		return
+	}
 
 	if err != nil {
 		c.Log.Errorf("publication upload file: could not save file", "errors", err, "publication", p.ID, "user", c.User.ID)
@@ -73,14 +81,19 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	contentType := r.Header.Get("Content-Type")
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+
 	// save publication
 	// TODO check if file with same checksum is already present
 	pubFile := &models.PublicationFile{
 		Relation:    "main_file",
 		AccessLevel: "info:eu-repo/semantics/restrictedAccess",
-		Name:        handler.Filename,
-		Size:        int(handler.Size),
-		ContentType: handler.Header.Get("Content-Type"),
+		Name:        fileName,
+		Size:        int(fileSize),
+		ContentType: contentType,
 		SHA256:      checksum,
 	}
 	/*

@@ -209,6 +209,8 @@ var updateOai = &cobra.Command{
 		repo.EachDataset(func(d *models.Dataset) bool {
 			oaiID := "oai:archive.ugent.be:" + d.ID
 
+			 // any record that has been part of the oai set but is now not visible anymore
+			 // because it is returned or deleted is marked as deleted in oai
 			if d.HasBeenPublic && d.Status != "public" {
 				for _, metadataPrefix := range []string{"oai_dc", "mods_36"} {
 					err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{

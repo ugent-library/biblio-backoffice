@@ -17,6 +17,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views/display"
 )
 
+const ConferenceBodySelector = "#conference-body"
+
 func Conference(c *ctx.Ctx, p *models.Publication) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)

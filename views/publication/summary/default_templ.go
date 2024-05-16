@@ -11,11 +11,15 @@ import "io"
 import "bytes"
 
 import (
-	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/models"
+	"net/url"
 )
 
-func DefaultActions(c *ctx.Ctx, publication *models.Publication) templ.Component {
+type DefaultActionsArgs struct {
+	URL    *url.URL
+	Target string
+}
+
+func DefaultActions(args DefaultActionsArgs) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -32,12 +36,30 @@ func DefaultActions(c *ctx.Ctx, publication *models.Publication) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var2 templ.SafeURL = templ.URL(c.PathTo("publication", "id", publication.ID).String())
+		var templ_7745c5c3_Var2 templ.SafeURL = templ.URL(args.URL.String())
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-eye\"></i> <span class=\"btn-text\">View publication</span></a></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if args.Target != "" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" target=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(args.Target))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("><i class=\"if if-eye\"></i> <span class=\"btn-text\">View publication</span></a></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -35,6 +36,7 @@ type BaseHandler struct {
 	Loc             *gotext.Locale
 	BaseURL         *url.URL
 	FrontendBaseUrl string
+	ErrorHandlers   map[error]func(http.ResponseWriter, *http.Request, BaseContext)
 }
 
 // also add fields to Yield method
@@ -99,6 +101,10 @@ func (h BaseHandler) Wrap(fn func(http.ResponseWriter, *http.Request, BaseContex
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, err := h.NewContext(r, w)
 		if err != nil {
+			if fn, ok := h.ErrorHandlers[err]; ok {
+				fn(w, r, ctx)
+				return
+			}
 			h.Logger.Errorw("could not create new context.", err)
 			render.InternalServerError(w, r, err)
 			return
@@ -114,11 +120,17 @@ func (h BaseHandler) NewContext(r *http.Request, w http.ResponseWriter) (BaseCon
 	}
 
 	user, err := h.getUserFromSession(session, r, UserIDKey)
+	if errors.Is(err, models.ErrUserNotFound) {
+		return BaseContext{}, err
+	}
 	if err != nil {
 		return BaseContext{}, fmt.Errorf("could not get user from session: %w", err)
 	}
 
 	originalUser, err := h.getUserFromSession(session, r, OriginalUserIDKey)
+	if errors.Is(err, models.ErrUserNotFound) {
+		return BaseContext{}, err
+	}
 	if err != nil {
 		return BaseContext{}, fmt.Errorf("could not get original user from session: %w", err)
 	}
@@ -198,6 +210,9 @@ func (h BaseHandler) getUserFromSession(session *sessions.Session, _ *http.Reque
 	}
 
 	user, err := h.UserService.GetUser(userID.(string))
+	if errors.Is(err, models.ErrNotFound) {
+		return nil, models.ErrUserNotFound
+	}
 	if err != nil {
 		return nil, err
 	}

@@ -10,17 +10,20 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
-import "github.com/ugent-library/biblio-backoffice/models"
-import "github.com/ugent-library/biblio-backoffice/views"
-import relatedorganizationviews "github.com/ugent-library/biblio-backoffice/views/relatedorganization"
-import contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
-import "fmt"
-import "net/url"
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+	relatedorganizationviews "github.com/ugent-library/biblio-backoffice/views/relatedorganization"
+	"net/url"
+)
 
 type SummaryArgs struct {
 	Publication *models.Publication
 	URL         *url.URL
+	Target      string
 	Actions     templ.Component
 	Footer      templ.Component
 	Links       templ.Component
@@ -53,7 +56,25 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"c-thumbnail-inner\"><i class=\"if if-article\"></i></div></a></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if args.Target != "" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" target=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(args.Target))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("><div class=\"c-thumbnail-inner\"><i class=\"if if-article\"></i></div></a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -80,7 +101,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s: %s", c.Loc.Get("publication_types."+args.Publication.Type), args.Publication.Classification))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 41, Col: 153}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 49, Col: 153}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -90,7 +111,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_types." + args.Publication.Type))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 43, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 51, Col: 97}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -127,7 +148,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 50, Col: 151}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 58, Col: 151}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -145,7 +166,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 53, Col: 148}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 61, Col: 148}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -163,7 +184,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 56, Col: 148}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 64, Col: 148}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -181,7 +202,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 59, Col: 148}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 67, Col: 148}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -219,7 +240,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels_during_embargo." + mainFile.AccessLevelDuringEmbargo))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 69, Col: 179}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 77, Col: 179}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -243,7 +264,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels_after_embargo." + mainFile.AccessLevelAfterEmbargo))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 77, Col: 139}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 85, Col: 139}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -256,7 +277,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(mainFile.EmbargoDate)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 77, Col: 169}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 85, Col: 169}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -277,7 +298,25 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"c-link-muted\"><i class=\"if if-edit if--small\"></i> <em>Add document type: full text</em></a></span>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"c-link-muted\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if args.Target != "" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" target=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(args.Target))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("><i class=\"if if-edit if--small\"></i> <em>Add document type: full text</em></a></span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -291,7 +330,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(args.Publication.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 92, Col: 34}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 106, Col: 34}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -313,7 +352,25 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><span class=\"list-group-item-title\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if args.Target != "" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" target=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(args.Target))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("><span class=\"list-group-item-title\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -321,7 +378,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(args.Publication.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 100, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 119, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
@@ -350,7 +407,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(summaryPart)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 110, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 129, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -374,6 +431,10 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if len(args.Publication.RelatedOrganizations) > 0 {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			templ_7745c5c3_Err = relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String()).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -388,7 +449,25 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"c-link-muted\"><i class=\"if if-edit if--small\"></i> <em>Add department</em></a>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"c-link-muted\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if args.Target != "" {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" target=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(args.Target))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("><i class=\"if if-edit if--small\"></i> <em>Add department</em></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -406,7 +485,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(vabb)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 133, Col: 49}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 160, Col: 49}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -453,7 +532,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(args.Publication.RelatedDataset)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 151, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 178, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -481,7 +560,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(views.CreatedBy(c, args.Publication.DateCreated, args.Publication.Creator))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 163, Col: 85}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 190, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -494,7 +573,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(views.UpdatedBy(c, args.Publication.DateUpdated, args.Publication.User, args.Publication.LastUser))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 166, Col: 109}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 193, Col: 109}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -515,7 +594,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(args.Publication.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 175, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 202, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
