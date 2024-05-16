@@ -16,6 +16,7 @@ import (
 )
 
 const ReviewerTagsSelector = "#reviewer-tags-body"
+const ReviewerNoteSelector = "#reviewer-note-body"
 const MessageBodySelector = "#message-body"
 
 func Activity(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Component {

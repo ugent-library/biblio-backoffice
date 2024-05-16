@@ -531,6 +531,8 @@ func Register(c Config) {
 						// activity
 						r.Get("/reviewer-tags/edit", datasetediting.EditReviewerTags).Name("dataset_edit_reviewer_tags")
 						r.Put("/reviewer-tags", datasetediting.UpdateReviewerTags).Name("dataset_update_reviewer_tags")
+						r.Get("/reviewer-note/edit", datasetediting.EditReviewerNote).Name("dataset_edit_reviewer_note")
+						r.Put("/reviewer-note", datasetediting.UpdateReviewerNote).Name("dataset_update_reviewer_note")
 
 						// (un)lock dataset
 						r.Post("/lock", datasetediting.Lock).Name("dataset_lock")
@@ -543,14 +545,6 @@ func Register(c Config) {
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// edit dataset activity
-		r.Get("/dataset/{id}/reviewer-note/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditReviewerNote)).
-			Name("dataset_edit_reviewer_note")
-		r.Put("/dataset/{id}/reviewer-note",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateReviewerNote)).
-			Name("dataset_update_reviewer_note")
 
 		// edit dataset details
 		r.Get("/dataset/{id}/details/edit",
