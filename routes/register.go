@@ -450,8 +450,8 @@ func Register(c Config) {
 							// activity
 							r.Get("/reviewer-tags/edit", publicationediting.EditReviewerTags).Name("publication_edit_reviewer_tags")
 							r.Put("/reviewer-tags", publicationediting.UpdateReviewerTags).Name("publication_update_reviewer_tags")
-							r.Get("/reviewer-note/edit", publicationEditingHandler.Wrap(publicationEditingHandler.EditReviewerNote)).Name("publication_edit_reviewer_note")
-							r.Put("/reviewer-note", publicationEditingHandler.Wrap(publicationEditingHandler.UpdateReviewerNote)).Name("publication_update_reviewer_note")
+							r.Get("/reviewer-note/edit", publicationediting.EditReviewerNote).Name("publication_edit_reviewer_note")
+							r.Put("/reviewer-note", publicationediting.UpdateReviewerNote).Name("publication_update_reviewer_note")
 
 							// (un)lock publication
 							r.Post("/lock", publicationediting.Lock).Name("publication_lock")

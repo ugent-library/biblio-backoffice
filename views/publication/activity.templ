@@ -8,6 +8,7 @@ import (
 
 const MessageBodySelector = "#message-body"
 const ReviewerTagsBodySelector = "#reviewer-tags-body"
+const ReviewerNoteBodySelector = "#reviewer-note-body"
 
 templ Activity(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 	<div hx-swap-oob="innerHTML:#show-nav">
