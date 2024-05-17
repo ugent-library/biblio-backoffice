@@ -293,16 +293,18 @@ func (d *Dataset) Validate() error {
 		errs.Add(okay.NewError("/access_level", "dataset.access_level.invalid"))
 	}
 
-	if d.Status == "public" && len(d.Identifiers) == 0 {
+	if len(d.Identifiers) == 0 {
+		errs.Add(okay.NewError("/identifier_type", "dataset.identifier_type.required"))
 		errs.Add(okay.NewError("/identifier", "dataset.identifier.required"))
 	}
 	for key, vals := range d.Identifiers {
 		if key == "" {
-			errs.Add(okay.NewError("/identifier", "dataset.identifier.required"))
-			break
+			errs.Add(okay.NewError("/identifier_type", "dataset.identifier_type.required"))
 		} else if !slices.Contains(vocabularies.Map["dataset_identifier_types"], key) {
-			errs.Add(okay.NewError("/identifier", "dataset.identifier.invalid"))
-			break
+			errs.Add(okay.NewError("/identifier_type", "dataset.identifier_type.invalid"))
+		}
+		if len(vals) == 0 {
+			errs.Add(okay.NewError("/identifier", "dataset.identifier.required"))
 		}
 		for _, val := range vals {
 			if val == "" {
