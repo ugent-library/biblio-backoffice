@@ -575,9 +575,7 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
         cy.get("input[name=file]").selectFile("cypress/fixtures/empty-pdf.pdf");
         cy.ensureModal("Document details for file empty-pdf.pdf")
           .within(() => {
-            cy.intercept("/publication/*/files/*/refresh-form*").as(
-              "refreshForm",
-            );
+            cy.intercept("/publication/*/files/*/refresh*").as("refreshForm");
 
             cy.setFieldByLabel("Document type", "Peer review report");
             cy.wait("@refreshForm");

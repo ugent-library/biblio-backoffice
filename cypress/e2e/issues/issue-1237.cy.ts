@@ -675,7 +675,7 @@ describe("Issue #1237: Accessibility and mark-up: make sure labels are clickable
         cy.visitDataset();
 
         cy.updateFields("Dataset details", () => {
-          cy.intercept("PUT", "/dataset/*/details/edit/refresh-form*").as(
+          cy.intercept("PUT", "/dataset/*/details/edit/refresh*").as(
             "refreshForm",
           );
           cy.setFieldByLabel("License", "The license is not listed here");
