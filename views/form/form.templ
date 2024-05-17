@@ -298,6 +298,71 @@ templ TextRepeat(args TextRepeatArgs) {
 	}
 }
 
+type TextRepeatWithAutocompleteArgs struct {
+	FieldArgs
+	Values          []string
+	AutocompleteURL string
+}
+
+templ TextRepeatWithAutocomplete(args TextRepeatWithAutocompleteArgs) {
+	@Field(args.FieldArgs, fmt.Sprintf("%s-0", args.Name)) {
+		<div class="form-values">
+			for i, v := range args.Values {
+				<div class="d-flex mb-3 form-value">
+					<div class="w-100 autocomplete" data-target={ fmt.Sprintf(`#%s-%d`, args.Name, i) } data-tmpl-data-target={ fmt.Sprintf(`#%s-{i}`, args.Name) }>
+						<input
+							class={ "form-control", templ.KV("is-invalid", args.Error != "") }
+							name={ args.Name }
+							id={ fmt.Sprintf("%s-%d", args.Name, i) }
+							data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
+							type="text"
+							value={ v }
+							autocomplete="off"
+							hx-get={ args.AutocompleteURL }
+							hx-trigger="keyup changed delay:100ms"
+							hx-target={ fmt.Sprintf("#%s-%d-autocomplete", args.Name, i) }
+							data-tmpl-hx-target={ fmt.Sprintf(`#%s-{i}-autocomplete`, args.Name) }
+							hx-vals={ fmt.Sprintf(`{"input": "%s"}`, args.Name) }
+						/>
+						<div class="autocomplete-hits" id={ fmt.Sprintf("%s-%d-autocomplete", args.Name, i) } data-tmpl-id={ fmt.Sprintf(`%s-{i}-autocomplete`, args.Name) }></div>
+					</div>
+					<button class="btn btn-link-muted btn-icon-only ms-3 form-value-delete" type="button">
+						<i class="if if-delete"></i>
+						<span class="visually-hidden">Delete</span>
+					</button>
+				</div>
+			}
+			<div class="d-flex mb-3 form-value">
+				<div class="w-100 autocomplete" data-target={ fmt.Sprintf(`#%s-%d`, args.Name, len(args.Values)) } data-tmpl-data-target={ fmt.Sprintf(`#%s-{i}`, args.Name) }>
+					<input
+						class={ "form-control", templ.KV("is-invalid", args.Error != "") }
+						name={ args.Name }
+						id={ fmt.Sprintf("%s-%d", args.Name, len(args.Values)) }
+						data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
+						type="text"
+						value=""
+						autocomplete="off"
+						hx-get={ args.AutocompleteURL }
+						hx-trigger="keyup changed delay:100ms"
+						hx-target={ fmt.Sprintf(`#%s-%d-autocomplete`, args.Name, len(args.Values)) }
+						data-tmpl-hx-target={ fmt.Sprintf(`#%s-{i}-autocomplete`, args.Name) }
+						hx-vals={ fmt.Sprintf(`{"input": "%s"}`, args.Name) }
+					/>
+					<div
+						class="autocomplete-hits"
+						id={ fmt.Sprintf(`%s-%d-autocomplete`, args.Name, len(args.Values)) }
+						data-tmpl-id={ fmt.Sprintf(`%s-{i}-autocomplete`, args.Name) }
+					></div>
+				</div>
+				<button class="btn btn-outline-primary btn-icon-only ms-3 form-value-add" type="button">
+					<i class="if if-add"></i>
+					<span class="visually-hidden">Add</span>
+				</button>
+			</div>
+		</div>
+	}
+}
+
 type Option = form.SelectOption
 
 type SelectRepeatArgs struct {

@@ -16,6 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 	"github.com/ugent-library/biblio-backoffice/views/search"
 )
 
@@ -57,7 +58,7 @@ func AddMultipleConfirm(c *ctx.Ctx, args AddMultipleConfirmArgs) templ.Component
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(args.Step))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_multiple_confirm.templ`, Line: 28, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_multiple_confirm.templ`, Line: 29, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -96,9 +97,9 @@ func AddMultipleConfirm(c *ctx.Ctx, args AddMultipleConfirmArgs) templ.Component
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = publication.Summary(c, publication.SummaryArgs{
-					Publication:    hit,
-					PublicationURL: c.PathTo("publication_add_multiple_show", "batch_id", args.BatchID, "id", hit.ID, "redirect-url", args.RedirectURL),
+				templ_7745c5c3_Err = publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
+					Publication: hit,
+					URL:         c.PathTo("publication_add_multiple_show", "batch_id", args.BatchID, "id", hit.ID, "redirect-url", args.RedirectURL),
 					Actions: publication.AddMultipleSummary(publication.AddMultipleSummaryArgs{
 						ViewURL:   c.PathTo("publication_add_multiple_show", "batch_id", args.BatchID, "id", hit.ID, "redirect-url", args.RedirectURL),
 						DeleteURL: c.PathTo("publication_confirm_delete", "id", hit.ID),
@@ -132,7 +133,7 @@ func AddMultipleConfirm(c *ctx.Ctx, args AddMultipleConfirmArgs) templ.Component
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.subnav.contributors"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_multiple_confirm.templ`, Line: 111, Col: 80}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_multiple_confirm.templ`, Line: 112, Col: 80}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {

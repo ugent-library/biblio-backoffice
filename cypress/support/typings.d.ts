@@ -3,7 +3,7 @@ export {};
 declare global {
   namespace Cypress {
     interface cy {
-      state(state: string): unknown;
+      state<T = unknown>(state: string): T;
     }
   }
 }

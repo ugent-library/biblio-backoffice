@@ -4,7 +4,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
-	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 	"fmt"
 )
 
@@ -12,8 +12,8 @@ templ SuggestPublications(c *ctx.Ctx, dataset *models.Dataset, publicationHits *
 	<ul class="list-group mt-6">
 		for _, hit := range publicationHits.Hits {
 			<li class="list-group-item">
-				@publicationviews.Summary(c,
-					publicationviews.SummaryArgs{Publication: hit, PublicationURL: c.PathTo("publication", "id", hit.ID), Actions: suggestPublicationSummaryActions(c, dataset, hit)})
+				@publicationsummaryviews.Summary(c,
+					publicationsummaryviews.SummaryArgs{Publication: hit, URL: c.PathTo("publication", "id", hit.ID), Actions: suggestPublicationSummaryActions(c, dataset, hit)})
 			</li>
 		}
 	</ul>

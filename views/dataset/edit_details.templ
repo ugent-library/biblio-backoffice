@@ -1,0 +1,267 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/localize"
+	"github.com/ugent-library/biblio-backoffice/vocabularies"
+	"github.com/ugent-library/okay"
+	"github.com/leonelquinteros/gotext"
+	"fmt"
+	"time"
+)
+
+func datasetIdentifierAndType(dataset *models.Dataset) (string, string) {
+	var identifierType, identifier string
+	for _, key := range vocabularies.Map["dataset_identifier_types"] {
+		if val := dataset.Identifiers.Get(key); val != "" {
+			identifierType = key
+			identifier = val
+			break
+		}
+	}
+	return identifier, identifierType
+}
+
+func datasetIdentifierOptions(loc *gotext.Locale) []form.Option {
+	identifierTypeOptions := make([]form.Option, len(vocabularies.Map["dataset_identifier_types"]))
+	for i, v := range vocabularies.Map["dataset_identifier_types"] {
+		identifierTypeOptions[i].Label = loc.Get("identifier." + v)
+		identifierTypeOptions[i].Value = v
+	}
+	return identifierTypeOptions
+}
+
+func nextDay() time.Time {
+	now := time.Now()
+	return time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Add(24 * time.Hour)
+}
+
+templ EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, errors *okay.Errors) {
+	<div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Edit dataset details</h2>
+			</div>
+			<div class="modal-body">
+				if conflict {
+					<div class="alert alert-danger mb-0" role="alert">
+						<i class="if if--error if-error-circle-fill"></i>
+						The dataset you are editing has been changed by someone else. Please copy your edits, then close this form.
+					</div>
+				}
+				@form.Errors(localize.ValidationErrors(c.Loc, errors))
+				<ul class="list-group list-group-flush" data-panel-state="edit">
+					<li class="list-group-item">
+						@form.Text(form.TextArgs{
+							FieldArgs: form.FieldArgs{
+								Name:     "title",
+								Label:    c.Loc.Get("builder.title"),
+								Cols:     9,
+								Error:    localize.ValidationErrorAt(c.Loc, errors, "/title"),
+								Required: true,
+							},
+							Value: dataset.Title,
+						})
+						if identifier, identifierType := datasetIdentifierAndType(dataset); identifierType != "" {
+							@form.Select(form.SelectArgs{
+								FieldArgs: form.FieldArgs{
+									Name:     "identifier_type",
+									Label:    c.Loc.Get("builder.identifier_type"),
+									Cols:     3,
+									Help:     c.Loc.Get("builder.identifier_type.help"),
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/identifier"),
+									Required: true,
+								},
+								Value:       identifierType,
+								EmptyOption: true,
+								Options:     datasetIdentifierOptions(c.Loc),
+							})
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Name:     "identifier",
+									Label:    c.Loc.Get("builder.identifier"),
+									Required: true,
+									Cols:     3,
+									Help:     c.Loc.Get("builder.identifier.help"),
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/identifier"),
+									Tooltip:  c.Loc.Get("tooltip.dataset.identifier"),
+								},
+								Value: identifier,
+							})
+						}
+					</li>
+					<li class="list-group-item">
+						@form.SelectRepeat(form.SelectRepeatArgs{
+							FieldArgs: form.FieldArgs{
+								Name:  "language",
+								Label: c.Loc.Get("builder.language"),
+								Cols:  9,
+								Error: localize.ValidationErrorAt(c.Loc, errors, "/language"),
+							},
+							Options:     localize.LanguageSelectOptions(),
+							Values:      dataset.Language,
+							EmptyOption: true,
+						})
+						@form.Text(form.TextArgs{
+							FieldArgs: form.FieldArgs{
+								Name:     "year",
+								Label:    c.Loc.Get("builder.year"),
+								Cols:     3,
+								Help:     c.Loc.Get("builder.year.help"),
+								Error:    localize.ValidationErrorAt(c.Loc, errors, "/year"),
+								Required: true,
+							},
+							Value: dataset.Year,
+						})
+						@form.Text(form.TextArgs{
+							FieldArgs: form.FieldArgs{
+								Name:     "publisher",
+								Label:    c.Loc.Get("builder.publisher"),
+								Cols:     9,
+								Error:    localize.ValidationErrorAt(c.Loc, errors, "/publisher"),
+								Required: true,
+								Tooltip:  c.Loc.Get("tooltip.dataset.publisher"),
+							},
+							Value: dataset.Publisher,
+						})
+					</li>
+					<li class="list-group-item">
+						@form.TextRepeatWithAutocomplete(form.TextRepeatWithAutocompleteArgs{
+							FieldArgs: form.FieldArgs{
+								Name:     "format",
+								Label:    c.Loc.Get("builder.format"),
+								Cols:     9,
+								Error:    localize.ValidationErrorAt(c.Loc, errors, "/format"),
+								Required: true,
+								Tooltip:  c.Loc.Get("tooltip.dataset.format"),
+							},
+							Values:          dataset.Format,
+							AutocompleteURL: c.PathTo("suggest_media_types").String(),
+						})
+						@form.Tags(form.TagsArgs{
+							FieldArgs: form.FieldArgs{
+								Name:  "keyword",
+								Label: c.Loc.Get("builder.keyword"),
+								Cols:  9,
+								Error: localize.ValidationErrorAt(c.Loc, errors, "/keyword"),
+							},
+							Values: dataset.Keyword,
+						})
+					</li>
+					<li class="list-group-item">
+						@form.Field(form.FieldArgs{
+							Name:     "license",
+							Label:    c.Loc.Get("builder.license"),
+							Cols:     3,
+							Error:    localize.ValidationErrorAt(c.Loc, errors, "/license"),
+							Tooltip:  c.Loc.Get("tooltip.dataset.license"),
+							Required: true,
+						}, "license") {
+							<select
+								class={ "form-select", "form-control", templ.KV("is-invalid", errors != nil && errors.Get("/license") != nil) }
+								id="license"
+								name="license"
+								hx-put={ c.PathTo("dataset_refresh_edit_details", "id", dataset.ID).String() }
+								hx-include=".modal-body"
+								hx-swap="none scroll:.modal-body:bottom"
+							>
+								<option></option>
+								for _, o := range localize.VocabularySelectOptions(c.Loc, "dataset_licenses") {
+									<option value={ o.Value } selected?={ o.Value == dataset.License }>{ o.Label }</option>
+								}
+							</select>
+						}
+						if dataset.License == "LicenseNotListed" {
+							@form.Text(form.TextArgs{
+								FieldArgs: form.FieldArgs{
+									Name:     "other_license",
+									Label:    c.Loc.Get("builder.other_license"),
+									Cols:     9,
+									Help:     c.Loc.Get("builder.other_license.help"),
+									Error:    localize.ValidationErrorAt(c.Loc, errors, "/other_license"),
+									Required: true,
+								},
+								Value: dataset.OtherLicense,
+							})
+						}
+					</li>
+					<li class="list-group-item">
+						@form.Field(form.FieldArgs{
+							Name:     "access_level",
+							Label:    c.Loc.Get("builder.access_level"),
+							Cols:     3,
+							Error:    localize.ValidationErrorAt(c.Loc, errors, "/access_level"),
+							Tooltip:  c.Loc.Get("tooltip.dataset.access_level"),
+							Required: true,
+						}, "access_level") {
+							<select
+								class={ "form-select", "form-control", templ.KV("is-invalid", errors != nil && errors.Get("/access_level") != nil) }
+								id="access_level"
+								name="access_level"
+								hx-put={ c.PathTo("dataset_refresh_edit_details", "id", dataset.ID).String() }
+								hx-include=".modal-body"
+								hx-swap="none scroll:.modal-body:bottom"
+							>
+								<option></option>
+								for _, o := range localize.VocabularySelectOptions(c.Loc, "dataset_access_levels") {
+									<option value={ o.Value } selected?={ o.Value == dataset.AccessLevel }>{ o.Label }</option>
+								}
+							</select>
+						}
+						if dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+							@form.Date(form.DateArgs{
+								FieldArgs: form.FieldArgs{
+									Name:  "embargo_date",
+									Label: c.Loc.Get("builder.embargo_date"),
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/embargo_date"),
+								},
+								Value: dataset.EmbargoDate,
+								Min:   nextDay().Format("2006-01-02"),
+							})
+							@form.Select(form.SelectArgs{
+								FieldArgs: form.FieldArgs{
+									Name:  "access_level_after_embargo",
+									Label: c.Loc.Get("builder.access_level_after_embargo"),
+									Cols:  3,
+									Error: localize.ValidationErrorAt(c.Loc, errors, "/access_level_after_embargo"),
+								},
+								EmptyOption: true,
+								Options:     localize.VocabularySelectOptions(c.Loc, "dataset_access_levels_after_embargo"),
+								Value:       dataset.AccessLevelAfterEmbargo,
+							})
+						}
+					</li>
+				</ul>
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					if conflict {
+						<div class="bc-toolbar-left">
+							<button class="btn btn-primary modal-close">Close</button>
+						</div>
+					} else {
+						<div class="bc-toolbar-left">
+							<button class="btn btn-link modal-close">Cancel</button>
+						</div>
+						<div class="bc-toolbar-right">
+							<button
+								type="button"
+								name="create"
+								class="btn btn-primary"
+								hx-put={ c.PathTo("dataset_update_details", "id", dataset.ID).String() }
+								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
+								hx-include=".modal-body"
+								hx-swap="none"
+							>
+								Save
+							</button>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+}

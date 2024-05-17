@@ -268,7 +268,7 @@ func ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, positi
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("%d", position)))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprint(position)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -403,7 +403,7 @@ func ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, positi
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("dataset_edit_contributor", "id", dataset.ID, "role", role, "position", fmt.Sprintf("%d", position)).String()))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("dataset_edit_contributor", "id", dataset.ID, "role", role, "position", fmt.Sprint(position)).String()))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -411,7 +411,7 @@ func ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, positi
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("dataset_confirm_delete_contributor", "id", dataset.ID, "role", role, "position", fmt.Sprintf("%d", position)).String()))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("dataset_confirm_delete_contributor", "id", dataset.ID, "role", role, "position", fmt.Sprint(position)).String()))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -449,8 +449,8 @@ func DepartmentsBody(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			for k, rel := range dataset.RelatedOrganizations {
-				var templ_7745c5c3_Var11 = []any{fmt.Sprintf("row-k", k)}
+			for i, rel := range dataset.RelatedOrganizations {
+				var templ_7745c5c3_Var11 = []any{fmt.Sprintf("row-%d", i)}
 				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var11...)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
