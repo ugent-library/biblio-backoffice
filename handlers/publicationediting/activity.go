@@ -195,26 +195,6 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 	render.View(w, "publication/refresh_reviewer_note", ctx)
 }
 
-func messageForm(_ *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {
-	return form.New().
-		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(loc, errors)).
-		AddSection(
-			&form.TextArea{
-				Name:  "message",
-				Value: p.Message,
-				Label: loc.Get("builder.message"),
-				Cols:  9,
-				Rows:  10,
-				Error: localize.ValidationErrorAt(
-					loc,
-					errors,
-					"/message",
-				),
-			},
-		)
-}
-
 func reviewerTagsForm(_ *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {
 	return form.New().
 		WithTheme("cols").
