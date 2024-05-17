@@ -2,12 +2,14 @@ package publicationbatch
 
 import (
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
 	"strings"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/mutate"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -73,9 +75,12 @@ func Process(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if currentID != "" && id != currentID {
+			var argumentError *mutate.ArgumentError
 			err := c.Repo.MutatePublication(currentID, c.User, mutations...)
 			if err == nil {
 				done++
+			} else if errors.As(err, &argumentError) {
+				errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not process publication %s at line %d: %s</p>", currentID, lineNum-1, argumentError.Error()))
 			} else {
 				errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not process publication %s at line %d</p>", currentID, lineNum-1))
 			}
@@ -84,15 +89,18 @@ func Process(w http.ResponseWriter, r *http.Request) {
 
 		currentID = id
 		mutations = append(mutations, repositories.Mutation{
-			Op:   op,
+			Name: op,
 			Args: args,
 		})
 	}
 
 	if len(mutations) > 0 {
+		var argumentError *mutate.ArgumentError
 		err := c.Repo.MutatePublication(currentID, c.User, mutations...)
 		if err == nil {
 			done++
+		} else if errors.As(err, &argumentError) {
+			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not process publication %s at line %d: %s</p>", currentID, lineNum, argumentError.Error()))
 		} else {
 			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not process publication %s at line %d</p>", currentID, lineNum))
 		}

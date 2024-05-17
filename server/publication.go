@@ -336,7 +336,7 @@ func (s *server) MutatePublications(stream api.Biblio_MutatePublicationsServer) 
 		}
 
 		mut := repositories.Mutation{
-			Op:   req.Op,
+			Name: req.Op,
 			Args: req.Args,
 		}
 

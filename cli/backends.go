@@ -373,7 +373,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 		},
 
 		PublicationMutators: map[string]repositories.PublicationMutator{
-			"add_project":              mutate.AddProject(projectService),
+			"add_project":              mutate.AddProject(projectService.GetProject),
 			"remove_project":           mutate.RemoveProject,
 			"set_classification":       mutate.SetClassification,
 			"add_keyword":              mutate.AddKeyword,

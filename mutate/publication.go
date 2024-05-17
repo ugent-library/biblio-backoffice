@@ -1,24 +1,30 @@
 package mutate
 
 import (
-	"errors"
-	"fmt"
-
 	"slices"
 
-	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-func AddProject(projectService backends.ProjectService) func(*models.Publication, []string) error {
+type ArgumentError struct {
+	Msg string
+}
+
+func (e *ArgumentError) Error() string {
+	return e.Msg
+}
+
+type ProjectGetter func(string) (*models.Project, error)
+
+func AddProject(projectGetter ProjectGetter) func(*models.Publication, []string) error {
 	return func(p *models.Publication, args []string) error {
 		if !p.UsesProject() {
-			return errors.New("project not used")
+			return &ArgumentError{"project not used for this publication type"}
 		}
 		if len(args) != 1 {
-			return errors.New("project id is missing")
+			return &ArgumentError{"project id is missing"}
 		}
-		project, err := projectService.GetProject(args[0])
+		project, err := projectGetter(args[0])
 		if err != nil {
 			return err
 		}
@@ -29,10 +35,10 @@ func AddProject(projectService backends.ProjectService) func(*models.Publication
 
 func RemoveProject(p *models.Publication, args []string) error {
 	if !p.UsesProject() {
-		return errors.New("project not used")
+		return &ArgumentError{"project not used for this publication type"}
 	}
 	if len(args) != 1 {
-		return errors.New("project id is missing")
+		return &ArgumentError{"project id is missing"}
 	}
 	p.RemoveProject(args[0])
 	return nil
@@ -40,7 +46,7 @@ func RemoveProject(p *models.Publication, args []string) error {
 
 func SetClassification(p *models.Publication, args []string) error {
 	if len(args) != 1 {
-		return errors.New("classification is missing")
+		return &ArgumentError{"classification is missing"}
 	}
 	p.Classification = args[0]
 	return nil
@@ -68,7 +74,7 @@ func RemoveKeyword(p *models.Publication, args []string) error {
 
 func SetVABBType(p *models.Publication, args []string) error {
 	if len(args) != 1 {
-		return errors.New("vabb type is missing")
+		return &ArgumentError{"vabb type is missing"}
 	}
 	p.VABBType = args[0]
 	return nil
@@ -76,7 +82,7 @@ func SetVABBType(p *models.Publication, args []string) error {
 
 func SetVABBID(p *models.Publication, args []string) error {
 	if len(args) != 1 {
-		return errors.New("vabb id is missing")
+		return &ArgumentError{"vabb id is missing"}
 	}
 	p.VABBID = args[0]
 	return nil
@@ -84,7 +90,7 @@ func SetVABBID(p *models.Publication, args []string) error {
 
 func SetVABBApproved(p *models.Publication, args []string) error {
 	if len(args) != 1 {
-		return errors.New("vabb approved value must be 'true' or 'false'")
+		return &ArgumentError{"value must be 'true' or 'false'"}
 	}
 	switch args[0] {
 	case "true":
@@ -92,7 +98,7 @@ func SetVABBApproved(p *models.Publication, args []string) error {
 	case "false":
 		p.VABBApproved = false
 	default:
-		return errors.New("vabb approved value must be 'true' or 'false'")
+		return &ArgumentError{"value must be 'true' or 'false'"}
 	}
 	return nil
 }
@@ -128,10 +134,10 @@ func RemoveReviewerTag(p *models.Publication, args []string) error {
 
 func SetJournalTitle(p *models.Publication, args []string) error {
 	if len(args) != 1 {
-		return errors.New("journal title is missing")
+		return &ArgumentError{"journal title is missing"}
 	}
 	if p.Type != "journal_article" {
-		return errors.New("record is not of type journal_article")
+		return &ArgumentError{"record is not of type journal_article"}
 	}
 	p.Publication = args[0]
 	return nil
@@ -139,10 +145,10 @@ func SetJournalTitle(p *models.Publication, args []string) error {
 
 func SetJournalAbbreviation(p *models.Publication, args []string) error {
 	if len(args) != 1 {
-		return errors.New("journal abbreviation is missing")
+		return &ArgumentError{"journal abbreviation is missing"}
 	}
 	if p.Type != "journal_article" {
-		return errors.New("record is not of type journal_article")
+		return &ArgumentError{"record is not of type journal_article"}
 	}
 	p.PublicationAbbreviation = args[0]
 	return nil
@@ -230,10 +236,10 @@ func RemoveEISSN(p *models.Publication, args []string) error {
 
 func SetExternalField(p *models.Publication, args []string) error {
 	if len(args) < 1 {
-		return errors.New("no key supplied")
+		return &ArgumentError{"key is missing"}
 	}
 	if len(args) < 2 {
-		return fmt.Errorf("no values supplied for %s", args[0])
+		return &ArgumentError{"values are missing"}
 	}
 	if p.ExternalFields == nil {
 		p.ExternalFields = models.Values{}
@@ -243,8 +249,8 @@ func SetExternalField(p *models.Publication, args []string) error {
 }
 
 func SetStatus(p *models.Publication, args []string) error {
-	if len(args) < 1 {
-		return errors.New("no status given")
+	if len(args) != 1 {
+		return &ArgumentError{"status is missing"}
 	}
 	p.Status = args[0]
 	return nil
@@ -252,7 +258,7 @@ func SetStatus(p *models.Publication, args []string) error {
 
 func SetLocked(p *models.Publication, args []string) error {
 	if len(args) != 1 {
-		return errors.New("locked value must be 'true' or 'false'")
+		return &ArgumentError{"value must be 'true' or 'false'"}
 	}
 	switch args[0] {
 	case "true":
@@ -260,7 +266,7 @@ func SetLocked(p *models.Publication, args []string) error {
 	case "false":
 		p.Locked = false
 	default:
-		return errors.New("locked value must be 'true' or 'false'")
+		return &ArgumentError{"value must be 'true' or 'false'"}
 	}
 	return nil
 }
