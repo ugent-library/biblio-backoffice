@@ -1,70 +1,66 @@
-package publication
+package dataset
 
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 )
 
-const DatasetsBodySelector = "#datasets-body"
+const PublicationsBodySelector = "#publications-body"
 
-templ Datasets(c *ctx.Ctx, publication *models.Publication, datasets []*models.Dataset) {
+templ Publications(c *ctx.Ctx, dataset *models.Dataset, publications []*models.Publication) {
 	<div hx-swap-oob="innerHTML:#show-nav">
-		@SubNav(c, publication, c.CurrentURL.Query().Get("redirect-url"))
+		@SubNav(c, dataset, c.CurrentURL.Query().Get("redirect-url"))
 	</div>
 	<div hx-swap-oob="innerHTML:#show-sidebar"></div>
 	<div class="card mb-6">
 		<div class="card-header">
 			<div class="bc-toolbar">
 				<div class="bc-toolbar-left">
-					<h1 class="bc-toolbar-title">Related datasets</h1>
+					<h1 class="bc-toolbar-title">Related publications</h1>
 					<a
 						class="text-muted px-2"
 						href="#"
 						data-bs-container="body"
 						data-bs-toggle="popover"
 						data-bs-placement="right"
-						data-bs-content={ c.Loc.Get("tooltip.publication.related_datasets") }
+						data-bs-content={ c.Loc.Get("tooltip.dataset.related_publications") }
 					>
 						<i class="if if-info-circle if--small"></i>
 						<span class="visually-hidden">More info</span>
 					</a>
 				</div>
 				<div class="bc-toolbar-right">
-					if c.User.CanEditPublication(publication) {
+					if c.User.CanEditDataset(dataset) {
 						<div class="c-button-toolbar" data-panel-state="read">
 							<button
 								class="btn btn-outline-primary"
-								hx-get={ c.PathTo("publication_add_dataset", "id", publication.ID).String() }
+								hx-get={ c.PathTo("dataset_add_publication", "id", dataset.ID).String() }
 								hx-target="#modals"
 							>
 								<i class="if if-add"></i>
-								<div class="btn-text">Add dataset</div>
+								<div class="btn-text">Add publication</div>
 							</button>
 						</div>
 					}
 				</div>
 			</div>
 		</div>
-		<div id="datasets-body">
-			@DatasetsBody(c, publication, datasets)
+		<div id="publications-body">
+			@PublicationsBody(c, dataset, publications)
 		</div>
 	</div>
 }
 
-templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset) {
-	if len(datasets) > 0 {
+templ PublicationsBody(c *ctx.Ctx, dataset *models.Dataset, relatedPublications []*models.Publication) {
+	if len(relatedPublications) > 0 {
 		<div class="card-body p-0">
 			<ul class="list-group list-group-flush">
-				for _, d := range datasets {
+				for _, pub := range relatedPublications {
 					<li class="list-group-item">
 						<div class="d-flex w-100">
 							<div class="w-100">
-								@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
-									Dataset: d,
-									URL:     c.PathTo("dataset", "id", d.ID),
-									Actions: datasetSummaryActions(c, p, d),
-								})
+								@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{Publication: pub, URL: c.PathTo("publication", "id", pub.ID), Actions: publicationSummaryActions(c, dataset, pub)})
 							</div>
 						</div>
 					</li>
@@ -73,12 +69,12 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 		</div>
 	} else {
 		<div class="card-body">
-			<span class="text-muted">No datasets</span>
+			<span class="text-muted">No publications</span>
 		</div>
 	}
 }
 
-templ datasetSummaryActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset) {
+templ publicationSummaryActions(c *ctx.Ctx, dataset *models.Dataset, pub *models.Publication) {
 	<div class="bc-toolbar-item ms-auto ms-lg-0">
 		<div class="c-button-toolbar">
 			<div class="dropdown dropleft">
@@ -92,19 +88,19 @@ templ datasetSummaryActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset
 					<i class="if if-more"></i>
 				</button>
 				<div class="dropdown-menu">
-					<a class="dropdown-item" href={ templ.URL(c.PathTo("dataset", "id", d.ID).String()) }>
+					<a class="dropdown-item" href={ templ.URL(c.PathTo("publication", "id", pub.ID).String()) }>
 						<i class="if if-eye"></i>
-						<span>View dataset</span>
+						<span>View publication</span>
 					</a>
-					if c.User.CanEditPublication(p) {
+					if c.User.CanEditDataset(dataset) {
 						<button
 							class="dropdown-item"
 							type="button"
-							hx-get={ c.PathTo("publication_confirm_delete_dataset", "id", p.ID, "snapshot_id", p.SnapshotID, "dataset_id", d.ID).String() }
+							hx-get={ c.PathTo("dataset_confirm_delete_publication", "id", dataset.ID, "snapshot_id", dataset.SnapshotID, "publication_id", pub.ID).String() }
 							hx-target="#modals"
 						>
 							<i class="if if-delete"></i>
-							<span>Remove from publication</span>
+							<span>Remove from dataset</span>
 						</button>
 					}
 				</div>

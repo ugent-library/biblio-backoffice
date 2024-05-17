@@ -388,7 +388,12 @@ func Register(c Config) {
 							r.Delete("/abstracts/{abstract_id}", publicationediting.DeleteAbstract).Name("publication_delete_abstract")
 
 							// links
+							r.Get("/links/add", publicationediting.AddLink).Name("publication_add_link")
+							r.Post("/links", publicationediting.CreateLink).Name("publication_create_link")
+							r.Get("/links/{link_id}/edit", publicationediting.EditLink).Name("publication_edit_link")
+							r.Put("/links/{link_id}", publicationediting.UpdateLink).Name("publication_update_link")
 							r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", publicationediting.ConfirmDeleteLink).Name("publication_confirm_delete_link")
+							r.Delete("/links/{link_id}", publicationediting.DeleteLink).Name("publication_delete_link")
 
 							// lay summaries
 							r.Get("/lay_summaries/add", publicationediting.AddLaySummary).Name("publication_add_lay_summary")
@@ -422,7 +427,9 @@ func Register(c Config) {
 							// datasets
 							r.Get("/datasets/add", publicationediting.AddDataset).Name("publication_add_dataset")
 							r.Get("/datasets/suggestions", publicationediting.SuggestDatasets).Name("publication_suggest_datasets")
+							r.Post("/datasets", publicationediting.CreateDataset).Name("publication_create_dataset")
 							r.Get("/{snapshot_id}/datasets/{dataset_id}/confirm-delete", publicationediting.ConfirmDeleteDataset).Name("publication_confirm_delete_dataset")
+							r.Delete("/datasets/{dataset_id}", publicationediting.DeleteDataset).Name("publication_delete_dataset")
 
 							// publish
 							r.Get("/publish/confirm", publicationediting.ConfirmPublish).Name("publication_confirm_publish")
@@ -515,6 +522,10 @@ func Register(c Config) {
 						r.Get("/{snapshot_id}/publications/{publication_id}/confirm-delete", datasetediting.ConfirmDeletePublication).Name("dataset_confirm_delete_publication")
 						r.Delete("/publications/{publication_id}", datasetediting.DeletePublication).Name("dataset_delete_publication")
 
+						// activity
+						r.Get("/message/edit", datasetediting.EditMessage).Name("dataset_edit_message")
+						r.Put("/message", datasetediting.UpdateMessage).Name("dataset_update_message")
+
 						// publish
 						r.Get("/publish/confirm", datasetediting.ConfirmPublish).Name("dataset_confirm_publish")
 						r.Post("/publish", datasetediting.Publish).Name("dataset_publish")
@@ -526,11 +537,22 @@ func Register(c Config) {
 						// re-publish
 						r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
 						r.Post("/republish", datasetediting.Republish).Name("dataset_republish")
+
+						// edit details
+						r.Get("/details/edit", datasetediting.EditDetails).Name("dataset_edit_details")
+						r.Put("/details/edit/refresh", datasetediting.RefreshEditDetails).Name("dataset_refresh_edit_details")
+						r.Put("/details", datasetediting.UpdateDetails).Name("dataset_update_details")
 					})
 
 					// curator actions
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.RequireCurator)
+
+						// activity
+						r.Get("/reviewer-tags/edit", datasetediting.EditReviewerTags).Name("dataset_edit_reviewer_tags")
+						r.Put("/reviewer-tags", datasetediting.UpdateReviewerTags).Name("dataset_update_reviewer_tags")
+						r.Get("/reviewer-note/edit", datasetediting.EditReviewerNote).Name("dataset_edit_reviewer_note")
+						r.Put("/reviewer-note", datasetediting.UpdateReviewerNote).Name("dataset_update_reviewer_note")
 
 						// (un)lock dataset
 						r.Post("/lock", datasetediting.Lock).Name("dataset_lock")
@@ -543,37 +565,6 @@ func Register(c Config) {
 			})
 		})
 		// END NEW STYLE HANDLERS
-
-		// edit dataset activity
-		r.Get("/dataset/{id}/message/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditMessage)).
-			Name("dataset_edit_message")
-		r.Put("/dataset/{id}/message",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateMessage)).
-			Name("dataset_update_message")
-		r.Get("/dataset/{id}/reviewer-tags/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditReviewerTags)).
-			Name("dataset_edit_reviewer_tags")
-		r.Put("/dataset/{id}/reviewer-tags",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateReviewerTags)).
-			Name("dataset_update_reviewer_tags")
-		r.Get("/dataset/{id}/reviewer-note/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditReviewerNote)).
-			Name("dataset_edit_reviewer_note")
-		r.Put("/dataset/{id}/reviewer-note",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateReviewerNote)).
-			Name("dataset_update_reviewer_note")
-
-		// edit dataset details
-		r.Get("/dataset/{id}/details/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditDetails)).
-			Name("dataset_edit_details")
-		r.Put("/dataset/{id}/details/edit/refresh-form",
-			datasetEditingHandler.Wrap(datasetEditingHandler.RefreshEditFileForm)).
-			Name("dataset_edit_file_refresh_form")
-		r.Put("/dataset/{id}/details",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateDetails)).
-			Name("dataset_update_details")
 
 		// edit dataset projects
 		r.Post("/dataset/{id}/projects",
@@ -683,23 +674,6 @@ func Register(c Config) {
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
 			Name("publication_delete_project")
 
-		// edit publication links
-		r.Get("/publication/{id}/links/add",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddLink)).
-			Name("publication_add_link")
-		r.Post("/publication/{id}/links",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateLink)).
-			Name("publication_create_link")
-		r.Get("/publication/{id}/links/{link_id}/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditLink)).
-			Name("publication_edit_link")
-		r.Put("/publication/{id}/links/{link_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLink)).
-			Name("publication_update_link")
-		r.Delete("/publication/{id}/links/{link_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLink)).
-			Name("publication_delete_link")
-
 			// edit publication departments
 		r.Post("/publication/{id}/departments",
 			publicationEditingHandler.Wrap(publicationEditingHandler.CreateDepartment)).
@@ -707,14 +681,6 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/departments/{department_id}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
 			Name("publication_delete_department")
-
-		// edit publication datasets
-		r.Post("/publication/{id}/datasets",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateDataset)).
-			Name("publication_create_dataset")
-		r.Delete("/publication/{id}/datasets/{dataset_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDataset)).
-			Name("publication_delete_dataset")
 
 		// edit publication contributors
 		r.Post("/publication/{id}/contributors/{role}/order",

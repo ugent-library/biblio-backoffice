@@ -13,10 +13,10 @@ import "bytes"
 import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/okay"
-	// "github.com/ugent-library/biblio-backoffice/localize"
+	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
-	// "github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/okay"
 )
 
 func EditLinkDialog(c *ctx.Ctx, p *models.Publication, link *models.PublicationLink, idx int, conflict bool, errors *okay.Errors, isNew bool) templ.Component {
@@ -56,6 +56,47 @@ func EditLinkDialog(c *ctx.Ctx, p *models.Publication, link *models.PublicationL
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+		}
+		templ_7745c5c3_Err = form.Text(form.TextArgs{
+			FieldArgs: form.FieldArgs{
+				Label:    c.Loc.Get("builder.link.url"),
+				Name:     "url",
+				Cols:     12,
+				Error:    localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/url", idx)),
+				Required: true,
+				Theme:    form.ThemeVertical,
+			},
+			Value: link.URL,
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = form.Select(form.SelectArgs{
+			FieldArgs: form.FieldArgs{
+				Label: c.Loc.Get("builder.link.relation"),
+				Name:  "relation",
+				Cols:  12,
+				Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/relation", idx)),
+				Theme: form.ThemeVertical,
+			},
+			Value:   link.Relation,
+			Options: localize.VocabularySelectOptions(c.Loc, "publication_link_relations"),
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = form.Text(form.TextArgs{
+			FieldArgs: form.FieldArgs{
+				Label: c.Loc.Get("builder.link.description"),
+				Name:  "description",
+				Cols:  12,
+				Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/description", idx)),
+				Theme: form.ThemeVertical,
+			},
+			Value: link.Description,
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"modal-footer\"><div class=\"bc-toolbar\">")
 		if templ_7745c5c3_Err != nil {

@@ -2,10 +2,10 @@ package views
 
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render/form"
+	"github.com/ugent-library/biblio-backoffice/views/form"
 )
 
-templ FormErrorsDialog(c *ctx.Ctx, title string, errors form.Errors) {
+templ FormErrorsDialog(c *ctx.Ctx, title string, errors []string) {
 	@ShowModalLayout(c) {
 		<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
 			<div class="modal-content">
@@ -13,7 +13,7 @@ templ FormErrorsDialog(c *ctx.Ctx, title string, errors form.Errors) {
 					<h2 class="modal-title">{ title }</h2>
 				</div>
 				<div class="modal-body">
-					@FormErrors(c, errors)
+					@form.Errors(errors)
 				</div>
 				<div class="modal-footer">
 					<div class="bc-toolbar">

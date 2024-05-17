@@ -2,17 +2,14 @@ package publicationediting
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
-	"github.com/leonelquinteros/gotext"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -30,116 +27,102 @@ type BindDeleteLink struct {
 	SnapshotID string `path:"snapshot_id"`
 }
 
-type YieldLinks struct {
-	Context
-}
-type YieldAddLink struct {
-	Context
-	Form     *form.Form
-	Conflict bool
-}
-type YieldEditLink struct {
-	Context
-	LinkID   string
-	Form     *form.Form
-	Conflict bool
+func AddLink(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
+	views.ShowModal(publicationviews.EditLinkDialog(c, p, &models.PublicationLink{}, -1, false, nil, true)).Render(r.Context(), w)
 }
 
-func (h *Handler) AddLink(w http.ResponseWriter, r *http.Request, ctx Context) {
-	form := linkForm(ctx.Loc, ctx.Publication, &models.PublicationLink{}, nil)
-	render.Layout(w, "show_modal", "publication/add_link", YieldAddLink{
-		Context: ctx,
-		Form:    form,
-	})
-}
+func CreateLink(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
 
-func (h *Handler) CreateLink(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindLink{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("add publication link: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("add publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	publicationLink := models.PublicationLink{
+	link := &models.PublicationLink{
 		URL:         b.URL,
 		Relation:    b.Relation,
 		Description: b.Description,
 	}
-	ctx.Publication.AddLink(&publicationLink)
+	p.AddLink(link)
 
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		render.Layout(w, "refresh_modal", "publication/add_link", YieldAddLink{
-			Context:  ctx,
-			Form:     linkForm(ctx.Loc, ctx.Publication, &publicationLink, validationErrs.(*okay.Errors)),
-			Conflict: false,
-		})
-		return
+	idx := -1
+	for i, a := range p.Link {
+		if a.ID == link.ID {
+			idx = i
+		}
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	if validationErrs := p.Validate(); validationErrs != nil {
+		views.ReplaceModal(publicationviews.EditLinkDialog(c, p, link, idx, false, validationErrs.(*okay.Errors), true)).Render(r.Context(), w)
+	}
+
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "publication/add_link", YieldAddLink{
-			Context:  ctx,
-			Form:     linkForm(ctx.Loc, ctx.Publication, &publicationLink, nil),
-			Conflict: true,
-		})
+		views.ReplaceModal(publicationviews.EditLinkDialog(c, p, link, idx, true, nil, true)).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("add publication link: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("add publication link: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_links", YieldLinks{
-		Context: ctx,
-	})
+	views.CloseModalAndReplace(publicationviews.LinksBodySelector, publicationviews.LinksBody(c, p)).Render(r.Context(), w)
 }
 
-func (h *Handler) EditLink(w http.ResponseWriter, r *http.Request, ctx Context) {
+func EditLink(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindLink{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("edit publication link: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("edit publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	// TODO catch non-existing item in UI
-	link := ctx.Publication.GetLink(b.LinkID)
+	link := p.GetLink(b.LinkID)
 	if link == nil {
-		h.Logger.Warnw("edit publication link: could not get link", "link", b.LinkID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.BadRequest(
-			w,
-			r,
-			fmt.Errorf("no link found for %s in publication %s", b.LinkID, ctx.Publication.ID),
-		)
+		c.Log.Warnw("edit publication link: could not get link", "link", b.LinkID, "publication", p.ID, "user", c.User.ID)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
-	render.Layout(w, "show_modal", "publication/edit_link", YieldEditLink{
-		Context:  ctx,
-		LinkID:   b.LinkID,
-		Form:     linkForm(ctx.Loc, ctx.Publication, link, nil),
-		Conflict: false,
-	})
+	idx := -1
+	for i, a := range p.Link {
+		if a.ID == link.ID {
+			idx = i
+		}
+	}
+
+	views.ShowModal(publicationviews.EditLinkDialog(c, p, link, idx, false, nil, false)).Render(r.Context(), w)
 }
 
-func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context) {
+func UpdateLink(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindLink{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("update publication link: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("update publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	link := ctx.Publication.GetLink(b.LinkID)
+	link := p.GetLink(b.LinkID)
 	if link == nil {
-		h.Logger.Warnw("update publication link: could not get link", "link", b.LinkID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		c.Log.Warnw("update publication link: could not get link", "link", b.LinkID, "publication", p.ID, "user", c.User.ID)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
@@ -147,45 +130,40 @@ func (h *Handler) UpdateLink(w http.ResponseWriter, r *http.Request, ctx Context
 	link.Description = b.Description
 	link.Relation = b.Relation
 
-	ctx.Publication.SetLink(link)
+	p.SetLink(link)
 
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		render.Layout(w, "refresh_modal", "publication/edit_link", YieldEditLink{
-			Context:  ctx,
-			LinkID:   b.LinkID,
-			Form:     linkForm(ctx.Loc, ctx.Publication, link, validationErrs.(*okay.Errors)),
-			Conflict: false,
-		})
+	idx := -1
+	for i, a := range p.Link {
+		if a.ID == link.ID {
+			idx = i
+		}
+	}
+
+	if validationErrs := p.Validate(); validationErrs != nil {
+		views.ReplaceModal(publicationviews.EditLinkDialog(c, p, link, idx, false, validationErrs.(*okay.Errors), false)).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "publication/edit_link", YieldEditLink{
-			Context:  ctx,
-			LinkID:   b.LinkID,
-			Form:     linkForm(ctx.Loc, ctx.Publication, link, nil),
-			Conflict: true,
-		})
+		views.ReplaceModal(publicationviews.EditLinkDialog(c, p, link, idx, true, nil, false)).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update publication link: Could not save the publication:", "errors", err, "identifier", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("update publication link: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_links", YieldLinks{
-		Context: ctx,
-	})
+	views.CloseModalAndReplace(publicationviews.LinksBodySelector, publicationviews.LinksBody(c, p)).Render(r.Context(), w)
 }
 
 func ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	publication := ctx.GetPublication(r)
+	p := ctx.GetPublication(r)
 
 	var b BindDeleteLink
 	if err := bind.Request(r, &b); err != nil {
@@ -195,7 +173,7 @@ func ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO catch non-existing item in UI
-	if b.SnapshotID != publication.SnapshotID {
+	if b.SnapshotID != p.SnapshotID {
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
@@ -203,86 +181,37 @@ func ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
 	views.ConfirmDelete(views.ConfirmDeleteArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this link?",
-		DeleteUrl:  c.PathTo("publication_delete_link", "id", publication.ID, "link_id", b.LinkID),
-		SnapshotID: publication.SnapshotID,
+		DeleteUrl:  c.PathTo("publication_delete_link", "id", p.ID, "link_id", b.LinkID),
+		SnapshotID: p.SnapshotID,
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) DeleteLink(w http.ResponseWriter, r *http.Request, ctx Context) {
+func DeleteLink(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	var b BindDeleteLink
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete publication link: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("delete publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	ctx.Publication.RemoveLink(b.LinkID)
+	p.RemoveLink(b.LinkID)
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete publication link: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
+		c.Log.Errorf("delete publication link: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	render.View(w, "publication/refresh_links", YieldLinks{
-		Context: ctx,
-	})
-}
-
-func linkForm(loc *gotext.Locale, publication *models.Publication, link *models.PublicationLink, errors *okay.Errors) *form.Form {
-	idx := -1
-	for i, l := range publication.Link {
-		if l.ID == link.ID {
-			idx = i
-			break
-		}
-	}
-	return form.New().
-		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(loc, errors)).
-		AddSection(
-			&form.Text{
-				Name:     "url",
-				Value:    link.URL,
-				Label:    loc.Get("builder.link.url"),
-				Required: true,
-				Cols:     12,
-				Error: localize.ValidationErrorAt(
-					loc,
-					errors,
-					fmt.Sprintf("/link/%d/url", idx),
-				),
-			},
-			&form.Select{
-				Name:    "relation",
-				Value:   link.Relation,
-				Label:   loc.Get("builder.link.relation"),
-				Options: localize.VocabularySelectOptions(loc, "publication_link_relations"),
-				Cols:    12,
-				Error: localize.ValidationErrorAt(
-					loc,
-					errors,
-					fmt.Sprintf("/link/%d/relation", idx),
-				),
-			},
-			&form.Text{
-				Name:  "description",
-				Value: link.Description,
-				Label: loc.Get("builder.link.description"),
-				Cols:  12,
-				Error: localize.ValidationErrorAt(
-					loc,
-					errors,
-					fmt.Sprintf("/link/%d/description", idx),
-				),
-			},
-		)
+	views.CloseModalAndReplace(publicationviews.LinksBodySelector, publicationviews.LinksBody(c, p)).Render(r.Context(), w)
 }

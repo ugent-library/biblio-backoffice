@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/ugent-library/okay"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	// "github.com/ugent-library/biblio-backoffice/localize"
+	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
-	// "github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/form"
 )
 
 templ EditLinkDialog(c *ctx.Ctx, p *models.Publication, link *models.PublicationLink, idx int, conflict bool, errors *okay.Errors, isNew bool) {
@@ -28,6 +28,38 @@ templ EditLinkDialog(c *ctx.Ctx, p *models.Publication, link *models.Publication
 						The publication you are editing has been changed by someone else. Please copy your edits, then close this form.
 					</div>
 				}
+				@form.Text(form.TextArgs{
+					FieldArgs: form.FieldArgs{
+						Label:    c.Loc.Get("builder.link.url"),
+						Name:     "url",
+						Cols:     12,
+						Error:    localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/url", idx)),
+						Required: true,
+						Theme:    form.ThemeVertical,
+					},
+					Value: link.URL,
+				})
+				@form.Select(form.SelectArgs{
+					FieldArgs: form.FieldArgs{
+						Label: c.Loc.Get("builder.link.relation"),
+						Name:  "relation",
+						Cols:  12,
+						Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/relation", idx)),
+						Theme: form.ThemeVertical,
+					},
+					Value:   link.Relation,
+					Options: localize.VocabularySelectOptions(c.Loc, "publication_link_relations"),
+				})
+				@form.Text(form.TextArgs{
+					FieldArgs: form.FieldArgs{
+						Label: c.Loc.Get("builder.link.description"),
+						Name:  "description",
+						Cols:  12,
+						Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/description", idx)),
+						Theme: form.ThemeVertical,
+					},
+					Value: link.Description,
+				})
 			</div>
 			<div class="modal-footer">
 				<div class="bc-toolbar">
