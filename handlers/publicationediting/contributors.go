@@ -654,7 +654,7 @@ func DeleteContributor(w http.ResponseWriter, r *http.Request, legacyContext Con
 	}
 
 	// TODO: convert to Templ
-	legacyContext.Publication = p
+	legacyContext.Publication = p // fix for interweaving old and new context (remove when fully converted to Templ)
 	render.View(w, "publication/refresh_contributors", YieldContributors{
 		Context: legacyContext,
 		Role:    b.Role,
