@@ -427,8 +427,8 @@ func Register(c Config) {
 							r.Delete("/datasets/{dataset_id}", publicationediting.DeleteDataset).Name("publication_delete_dataset")
 
 							// activity
-							r.Get("/message/edit", publicationEditingHandler.Wrap(publicationEditingHandler.EditMessage)).Name("publication_edit_message")
-							r.Put("/message", publicationEditingHandler.Wrap(publicationEditingHandler.UpdateMessage)).Name("publication_update_message")
+							r.Get("/message/edit", publicationediting.EditMessage).Name("publication_edit_message")
+							r.Put("/message", publicationediting.UpdateMessage).Name("publication_update_message")
 
 							// publish
 							r.Get("/publish/confirm", publicationediting.ConfirmPublish).Name("publication_confirm_publish")
