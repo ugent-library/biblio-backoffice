@@ -101,16 +101,39 @@ func detailsSection() templ.Component {
 	})
 }
 
-func getDatasetIdentifierAndType(dataset *models.Dataset) (string, string) {
-	var identifierType, identifier string
+func datasetIdentifierTypeAndValueDisplays(c *ctx.Ctx, dataset *models.Dataset) []templ.Component {
+	var identifier, identifierType string
 	for _, key := range vocabularies.Map["dataset_identifier_types"] {
 		if val := dataset.Identifiers.Get(key); val != "" {
 			identifierType = key
 			identifier = val
-			break
 		}
 	}
-	return identifierType, identifier
+
+	identifierTypeArgs := display.FieldArgs{
+		Label:    c.Loc.Get("builder.identifier_type"),
+		Required: true,
+	}
+	if identifierType != "" {
+		identifierTypeArgs.Value = c.Loc.Get("identifier." + identifierType)
+	}
+
+	identifierArgs := display.FieldArgs{
+		Label:    c.Loc.Get("builder.identifier"),
+		Required: true,
+	}
+	if identifierType == "" {
+		identifierArgs.Value = identifier
+	} else if identifier != "" {
+		identifierArgs.Content = display.Link(identifier, func(_ string) string {
+			return identifiers.Resolve(identifierType, identifier)
+		})
+	}
+
+	return []templ.Component{
+		display.Field(identifierTypeArgs),
+		display.Field(identifierArgs),
+	}
 }
 
 func DetailsBody(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
@@ -148,27 +171,8 @@ func DetailsBody(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if identifierType, identifier := getDatasetIdentifierAndType(dataset); true {
-				templ_7745c5c3_Err = display.Field(display.FieldArgs{
-					Label:    c.Loc.Get("builder.identifier_type"),
-					Value:    c.Loc.Get("identifier." + identifierType),
-					Required: true,
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = display.Field(display.FieldArgs{
-					Label: c.Loc.Get("builder.identifier"),
-					Value: identifier,
-					Content: display.Link(identifier, func(_ string) string {
-						return identifiers.Resolve(identifierType, identifier)
-					}),
-					Required: true,
-				}).Render(ctx, templ_7745c5c3_Buffer)
+			for _, comp := range datasetIdentifierTypeAndValueDisplays(c, dataset) {
+				templ_7745c5c3_Err = comp.Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
