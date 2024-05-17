@@ -1,0 +1,60 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/localize"
+	"github.com/ugent-library/okay"
+	"fmt"
+)
+
+func datasetLinkIdx(dataset *models.Dataset, link *models.DatasetLink) int {
+	for i, l := range dataset.Link {
+		if l.ID == link.ID {
+			return i
+		}
+	}
+	return -1
+}
+
+templ LinkForm(c *ctx.Ctx, dataset *models.Dataset, link * models.DatasetLink, errors *okay.Errors) {
+	@linkFormSections(c, dataset, link, datasetLinkIdx(dataset, link), errors)
+}
+
+templ linkFormSections(c *ctx.Ctx, dataset *models.Dataset, link *models.DatasetLink, linkIdx int, errors *okay.Errors) {
+	<li class="list-group-item">
+		@form.Text(form.TextArgs{
+			FieldArgs: form.FieldArgs{
+				Name:     "url",
+				Label:    c.Loc.Get("builder.link.url"),
+				Required: true,
+				Cols:     12,
+				Error:    localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/url", linkIdx)),
+				Theme: form.ThemeVertical,
+			},
+			Value: link.URL,
+		})
+		@form.Select(form.SelectArgs{
+			FieldArgs: form.FieldArgs{
+				Name:  "relation",
+				Label: c.Loc.Get("builder.link.relation"),
+				Cols:  12,
+				Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/relation", linkIdx)),
+				Theme: form.ThemeVertical,
+			},
+			Value:   link.Relation,
+			Options: localize.VocabularySelectOptions(c.Loc, "dataset_link_relations"),
+		})
+		@form.Text(form.TextArgs{
+			FieldArgs: form.FieldArgs{
+				Name:  "description",
+				Label: c.Loc.Get("builder.link.description"),
+				Cols:  12,
+				Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/description", linkIdx)),
+				Theme: form.ThemeVertical,
+			},
+			Value: link.Description,
+		})
+	</li>
+}

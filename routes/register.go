@@ -538,6 +538,13 @@ func Register(c Config) {
 						r.Get("/republish/confirm", datasetediting.ConfirmRepublish).Name("dataset_confirm_republish")
 						r.Post("/republish", datasetediting.Republish).Name("dataset_republish")
 
+						// edit links
+						r.Get("/links/add", datasetediting.AddLink).Name("dataset_add_link")
+						r.Post("/links", datasetediting.CreateLink).Name("dataset_create_link")
+						r.Get("/links/{link_id}/edit", datasetediting.EditLink).Name("dataset_edit_link")
+						r.Put("/links/{link_id}", datasetediting.UpdateLink).Name("dataset_update_link")
+						r.Delete("/links/{link_id}", datasetediting.DeleteLink).Name("dataset_delete_link")
+
 						// edit details
 						r.Get("/details/edit", datasetediting.EditDetails).Name("dataset_edit_details")
 						r.Put("/details/edit/refresh", datasetediting.RefreshEditDetails).Name("dataset_refresh_edit_details")
@@ -573,23 +580,6 @@ func Register(c Config) {
 		r.Delete("/dataset/{id}/projects/{project_id:.+}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
 			Name("dataset_delete_project")
-
-		// edit dataset links
-		r.Get("/dataset/{id}/links/add",
-			datasetEditingHandler.Wrap(datasetEditingHandler.AddLink)).
-			Name("dataset_add_link")
-		r.Post("/dataset/{id}/links",
-			datasetEditingHandler.Wrap(datasetEditingHandler.CreateLink)).
-			Name("dataset_create_link")
-		r.Get("/dataset/{id}/links/{link_id}/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditLink)).
-			Name("dataset_edit_link")
-		r.Put("/dataset/{id}/links/{link_id}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateLink)).
-			Name("dataset_update_link")
-		r.Delete("/dataset/{id}/links/{link_id}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteLink)).
-			Name("dataset_delete_link")
 
 		// edit dataset departments
 		r.Post("/dataset/{id}/departments",
