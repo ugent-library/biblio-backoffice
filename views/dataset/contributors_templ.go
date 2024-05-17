@@ -16,6 +16,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
+const DepartmentsBodySelector = "#departments-body"
+
 func Contributors(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -44,7 +46,7 @@ func Contributors(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.contributor.title.author"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 34, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 36, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -78,7 +80,7 @@ func Contributors(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.contributor.role.author"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 56, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 58, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -228,7 +230,7 @@ func ContributorsBody(c *ctx.Ctx, dataset *models.Dataset, role string) templ.Co
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.contributor.role." + role))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 126, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 128, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -299,7 +301,7 @@ func ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, positi
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(contributor.Name())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 147, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 149, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -317,7 +319,7 @@ func ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, positi
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(orcid)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 149, Col: 106}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 151, Col: 106}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -360,7 +362,7 @@ func ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, positi
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(cd.OrganizationID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 168, Col: 51}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 170, Col: 51}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -470,7 +472,7 @@ func DepartmentsBody(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("organization." + rel.OrganizationID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 219, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 221, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -483,7 +485,7 @@ func DepartmentsBody(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 				var templ_7745c5c3_Var13 string
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(rel.OrganizationID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 220, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/contributors.templ`, Line: 222, Col: 85}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
