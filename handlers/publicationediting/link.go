@@ -6,7 +6,6 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
@@ -209,7 +208,7 @@ func DeleteLink(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		c.Log.Errorf("delete publication link: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		render.InternalServerError(w, r, err)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
