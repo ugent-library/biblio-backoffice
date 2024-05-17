@@ -542,6 +542,9 @@ func Register(c Config) {
 						r.Get("/details/edit", datasetediting.EditDetails).Name("dataset_edit_details")
 						r.Put("/details/edit/refresh", datasetediting.RefreshEditDetails).Name("dataset_refresh_edit_details")
 						r.Put("/details", datasetediting.UpdateDetails).Name("dataset_update_details")
+
+						// edit contributors
+						r.Post("/contributors/{role}/order", datasetediting.OrderContributors).Name("dataset_order_contributors")
 					})
 
 					// curator actions
@@ -600,9 +603,6 @@ func Register(c Config) {
 			Name("dataset_delete_department")
 
 		// edit dataset contributors
-		r.Post("/dataset/{id}/contributors/{role}/order",
-			datasetEditingHandler.Wrap(datasetEditingHandler.OrderContributors)).
-			Name("dataset_order_contributors")
 		r.Get("/dataset/{id}/contributors/{role}/add",
 			datasetEditingHandler.Wrap(datasetEditingHandler.AddContributor)).
 			Name("dataset_add_contributor")

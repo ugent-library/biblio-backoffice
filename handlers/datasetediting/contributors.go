@@ -13,6 +13,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -649,45 +650,45 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 	})
 }
 
-func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
+func OrderContributors(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindOrderContributors{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("order dataset contributors: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("order dataset contributors: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	contributors := ctx.Dataset.Contributors(b.Role)
+	contributors := dataset.Contributors(b.Role)
 	if len(b.Positions) != len(contributors) {
 		err := fmt.Errorf("positions don't match number of contributors")
-		h.Logger.Warnw("order dataset contributors: could not order contributors", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("order dataset contributors: could not order contributors", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 	newContributors := make([]*models.Contributor, len(contributors))
 	for i, pos := range b.Positions {
 		newContributors[i] = contributors[pos]
 	}
-	ctx.Dataset.SetContributors(b.Role, newContributors)
+	dataset.SetContributors(b.Role, newContributors)
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), dataset, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("order dataset contributors: Could not save the dataset:", "errors", err, "identifier", ctx.Dataset.ID, "user", ctx.User.ID)
+		c.Log.Errorf("order dataset contributors: Could not save the dataset:", "errors", err, "identifier", dataset.ID, "user", c.User.ID)
 		render.InternalServerError(w, r, err)
 		return
 	}
 
-	render.View(w, "dataset/refresh_contributors", YieldContributors{
-		Context: ctx,
-		Role:    b.Role,
-	})
+	views.CloseModalAndReplace(fmt.Sprintf("#contributors-%s-body", b.Role), datasetviews.LinksBody(c, dataset)).Render(r.Context(), w)
 }
 
 func contributorForm(_ Context, c *models.Contributor, suggestURL string) *form.Form {
