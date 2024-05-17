@@ -95,11 +95,6 @@ func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Cont
 }
 
 func (h *Handler) EditReviewerTags(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
-		return
-	}
-
 	render.Layout(w, "show_modal", "publication/edit_reviewer_tags", YieldEditReviewerTags{
 		Context:  ctx,
 		Form:     reviewerTagsForm(ctx.User, ctx.Loc, ctx.Publication, nil),
@@ -108,11 +103,6 @@ func (h *Handler) EditReviewerTags(w http.ResponseWriter, r *http.Request, ctx C
 }
 
 func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
-		return
-	}
-
 	b := BindReviewerTags{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		h.Logger.Warnw("update publication reviewer tags: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
@@ -155,11 +145,6 @@ func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx
 }
 
 func (h *Handler) EditReviewerNote(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
-		return
-	}
-
 	render.Layout(w, "show_modal", "publication/edit_reviewer_note", YieldEditReviewerNote{
 		Context:  ctx,
 		Form:     reviewerNoteForm(ctx.User, ctx.Loc, ctx.Publication, nil),
@@ -168,10 +153,6 @@ func (h *Handler) EditReviewerNote(w http.ResponseWriter, r *http.Request, ctx C
 }
 
 func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
-		return
-	}
 
 	b := BindReviewerNote{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
