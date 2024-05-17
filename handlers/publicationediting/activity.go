@@ -30,12 +30,6 @@ type BindReviewerNote struct {
 	ReviewerNote string `form:"reviewer_note"`
 }
 
-type YieldEditReviewerTags struct {
-	Context
-	Form     *form.Form
-	Conflict bool
-}
-
 type YieldEditReviewerNote struct {
 	Context
 	Form     *form.Form
@@ -94,54 +88,56 @@ func UpdateMessage(w http.ResponseWriter, r *http.Request) {
 	views.CloseModalAndReplace(publicationviews.MessageBodySelector, publicationviews.MessageBody(c, p)).Render(r.Context(), w)
 }
 
-func (h *Handler) EditReviewerTags(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "show_modal", "publication/edit_reviewer_tags", YieldEditReviewerTags{
-		Context:  ctx,
-		Form:     reviewerTagsForm(ctx.User, ctx.Loc, ctx.Publication, nil),
-		Conflict: false,
-	})
+func EditReviewerTags(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
+	views.ShowModal(publicationviews.EditReviewerTagsDialog(c, publicationviews.EditReviewerTagsDialogArgs{
+		Publication: p,
+	})).Render(r.Context(), w)
 }
 
-func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx Context) {
+func UpdateReviewerTags(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	b := BindReviewerTags{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("update publication reviewer tags: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("update publication reviewer tags: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	p := ctx.Publication
+	p := ctx.GetPublication(r)
 	p.ReviewerTags = b.ReviewerTags
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		h.Logger.Warnw("update publication reviewer tags: could not validate reviewer tags:", "errors", validationErrs, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.Layout(w, "refresh_modal", "publication/edit_reviewer_tags", YieldEditReviewerTags{
-			Context:  ctx,
-			Form:     reviewerTagsForm(ctx.User, ctx.Loc, p, validationErrs.(*okay.Errors)),
-			Conflict: false,
-		})
+		c.Log.Warnw("update publication reviewer tags: could not validate reviewer tags:", "errors", validationErrs, "publication", p.ID, "user", c.User.ID)
+		views.ReplaceModal(publicationviews.EditReviewerTagsDialog(c, publicationviews.EditReviewerTagsDialogArgs{
+			Publication: p,
+			Errors:      validationErrs.(*okay.Errors),
+			Conflict:    false,
+		})).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "publication/edit_reviewer_tags", YieldEditReviewerTags{
-			Context:  ctx,
-			Form:     reviewerTagsForm(ctx.User, ctx.Loc, p, nil),
-			Conflict: true,
-		})
+		views.ReplaceModal(publicationviews.EditReviewerTagsDialog(c, publicationviews.EditReviewerTagsDialogArgs{
+			Publication: p,
+			Conflict:    true,
+		})).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update publication reviewer tags: could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("update publication reviewer tags: could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_reviewer_tags", ctx)
+	views.CloseModalAndReplace(publicationviews.ReviewerTagsBodySelector, publicationviews.ReviewerTagsBody(c, p)).Render(r.Context(), w)
 }
 
 func (h *Handler) EditReviewerNote(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -193,25 +189,6 @@ func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx
 	}
 
 	render.View(w, "publication/refresh_reviewer_note", ctx)
-}
-
-func reviewerTagsForm(_ *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {
-	return form.New().
-		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(loc, errors)).
-		AddSection(
-			&form.TextRepeat{
-				Name:   "reviewer_tags",
-				Values: p.ReviewerTags,
-				Label:  loc.Get("builder.reviewer_tags"),
-				Cols:   9,
-				Error: localize.ValidationErrorAt(
-					loc,
-					errors,
-					"/reviewer_tags",
-				),
-			},
-		)
 }
 
 func reviewerNoteForm(_ *models.Person, loc *gotext.Locale, p *models.Publication, errors *okay.Errors) *form.Form {

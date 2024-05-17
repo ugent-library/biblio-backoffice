@@ -448,8 +448,8 @@ func Register(c Config) {
 							r.Use(ctx.RequireCurator)
 
 							// activity
-							r.Get("/reviewer-tags/edit", publicationEditingHandler.Wrap(publicationEditingHandler.EditReviewerTags)).Name("publication_edit_reviewer_tags")
-							r.Put("/reviewer-tags", publicationEditingHandler.Wrap(publicationEditingHandler.UpdateReviewerTags)).Name("publication_update_reviewer_tags")
+							r.Get("/reviewer-tags/edit", publicationediting.EditReviewerTags).Name("publication_edit_reviewer_tags")
+							r.Put("/reviewer-tags", publicationediting.UpdateReviewerTags).Name("publication_update_reviewer_tags")
 							r.Get("/reviewer-note/edit", publicationEditingHandler.Wrap(publicationEditingHandler.EditReviewerNote)).Name("publication_edit_reviewer_note")
 							r.Put("/reviewer-note", publicationEditingHandler.Wrap(publicationEditingHandler.UpdateReviewerNote)).Name("publication_update_reviewer_note")
 

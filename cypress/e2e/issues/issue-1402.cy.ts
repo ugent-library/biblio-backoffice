@@ -1919,11 +1919,16 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.ensureModal(/^Edit Librarian tags/)
           .within(() => {
-            cy.setFieldByLabel("Librarian tags", "initial tag 1");
-            cy.contains("button", "Add").click();
-            cy.get("input").last().type("initial tag 2");
-            cy.contains("button", "Add").click();
-            cy.get("input").last().type("initial tag 3");
+            cy.getLabel("Librarian tags")
+              .next()
+              .find("tags span[contenteditable]")
+              .type(
+                "initial tag 1{enter}initial tag 2{enter}initial tag 3{enter}",
+                { delay: 10 },
+              );
+
+            // Give Tagify a bit of time to process this
+            cy.wait(50);
           })
           .closeModal(true);
         cy.ensureNoModal();
@@ -1940,16 +1945,18 @@ describe("Issue #1402: Gohtml conversion to Templ", () => {
 
         cy.ensureModal(/^Edit Librarian tags/)
           .within(() => {
-            cy.get("input").last().type("updated tag 4");
+            cy.getLabel("Librarian tags")
+              .next()
+              .find("tags span[contenteditable]")
+              .as("tags")
+              .type("updated tag 4{enter}");
 
-            cy.get("input")
-              .eq(1)
-              .should("have.value", "initial tag 2")
-              .next("button:contains(Delete)")
-              .click();
+            cy.contains("tags tag", "initial tag 2").find("x").click();
 
-            cy.contains("button", "Add").click();
-            cy.get("input").last().type("updated tag 5");
+            cy.get("@tags").type("updated tag 5{enter}");
+
+            // Give Tagify a bit of time to process this
+            cy.wait(50);
           })
           .closeModal(true);
         cy.ensureNoModal();
