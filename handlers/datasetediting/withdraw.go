@@ -7,7 +7,6 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
@@ -38,13 +37,7 @@ func Withdraw(w http.ResponseWriter, r *http.Request) {
 
 	if validationErrs := dataset.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
-		render.Layout(w, "refresh_modal", "form_errors_dialog", struct {
-			Title  string
-			Errors form.Errors
-		}{
-			Title:  "Unable to withdraw this dataset due to the following errors",
-			Errors: errors,
-		})
+		views.ReplaceModal(views.FormErrorsDialog(c, "Unable to withdraw this dataset due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 
