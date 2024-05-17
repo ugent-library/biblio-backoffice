@@ -496,8 +496,13 @@ func Register(c Config) {
 						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", datasetediting.ConfirmDeleteProject).Name("dataset_confirm_delete_project")
 
 						// abstracts
-						r.Get("/abstracts/{abstract_id}/edit", datasetEditingHandler.Wrap(datasetediting.EditAbstract)).Name("dataset_edit_abstract")
+
+						r.Get("/abstracts/add", datasetediting.AddAbstract).Name("dataset_add_abstract")
+						r.Post("/abstracts", datasetediting.CreateAbstract).Name("dataset_create_abstract")
+						r.Get("/abstracts/{abstract_id}/edit", datasetediting.EditAbstract).Name("dataset_edit_abstract")
+						r.Put("/abstracts/{abstract_id}", datasetediting.UpdateAbstract).Name("dataset_update_abstract")
 						r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", datasetediting.ConfirmDeleteAbstract).Name("dataset_confirm_delete_abstract")
+						r.Delete("/abstracts/{abstract_id}", datasetediting.DeleteAbstract).Name("dataset_delete_abstract")
 
 						// links
 						r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", datasetediting.ConfirmDeleteLink).Name("dataset_confirm_delete_link")
@@ -593,20 +598,6 @@ func Register(c Config) {
 		r.Delete("/dataset/{id}/departments/{department_id}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteDepartment)).
 			Name("dataset_delete_department")
-
-		// edit dataset abstracts
-		r.Get("/dataset/{id}/abstracts/add",
-			datasetEditingHandler.Wrap(datasetEditingHandler.AddAbstract)).
-			Name("dataset_add_abstract")
-		r.Post("/dataset/{id}/abstracts",
-			datasetEditingHandler.Wrap(datasetEditingHandler.CreateAbstract)).
-			Name("dataset_create_abstract")
-		r.Put("/dataset/{id}/abstracts/{abstract_id}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateAbstract)).
-			Name("dataset_update_abstract")
-		r.Delete("/dataset/{id}/abstracts/{abstract_id}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteAbstract)).
-			Name("dataset_delete_abstract")
 
 		// edit dataset contributors
 		r.Post("/dataset/{id}/contributors/{role}/order",
