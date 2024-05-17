@@ -51,13 +51,14 @@ func CreateAbstract(w http.ResponseWriter, r *http.Request) {
 		Text: b.Text,
 	}
 	d.AddAbstract(&abstract)
+	index := getAbstractIndex(d.Abstract, &abstract)
 
 	if validationErrs := d.Validate(); validationErrs != nil {
 		views.ReplaceModal(datasetviews.EditAbstractDialog(c, datasetviews.EditAbstractDialogArgs{
 			IsNew:    true,
 			Dataset:  d,
 			Abstract: abstract,
-			Index:    -1,
+			Index:    index,
 			Errors:   validationErrs.(*okay.Errors),
 		})).Render(r.Context(), w)
 		return
@@ -71,7 +72,7 @@ func CreateAbstract(w http.ResponseWriter, r *http.Request) {
 			IsNew:    true,
 			Dataset:  d,
 			Abstract: abstract,
-			Index:    -1,
+			Index:    index,
 			Conflict: true,
 		})).Render(r.Context(), w)
 		return
