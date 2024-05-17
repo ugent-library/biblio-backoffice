@@ -388,7 +388,12 @@ func Register(c Config) {
 							r.Delete("/abstracts/{abstract_id}", publicationediting.DeleteAbstract).Name("publication_delete_abstract")
 
 							// links
+							r.Get("/links/add", publicationediting.AddLink).Name("publication_add_link")
+							r.Post("/links", publicationediting.CreateLink).Name("publication_create_link")
+							r.Get("/links/{link_id}/edit", publicationediting.EditLink).Name("publication_edit_link")
+							r.Put("/links/{link_id}", publicationediting.UpdateLink).Name("publication_update_link")
 							r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", publicationediting.ConfirmDeleteLink).Name("publication_confirm_delete_link")
+							r.Delete("/links/{link_id}", publicationediting.DeleteLink).Name("publication_delete_link")
 
 							// lay summaries
 							r.Get("/lay_summaries/add", publicationediting.AddLaySummary).Name("publication_add_lay_summary")
@@ -639,23 +644,6 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/projects/{project_id:.+}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
 			Name("publication_delete_project")
-
-		// edit publication links
-		r.Get("/publication/{id}/links/add",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddLink)).
-			Name("publication_add_link")
-		r.Post("/publication/{id}/links",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateLink)).
-			Name("publication_create_link")
-		r.Get("/publication/{id}/links/{link_id}/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditLink)).
-			Name("publication_edit_link")
-		r.Put("/publication/{id}/links/{link_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateLink)).
-			Name("publication_update_link")
-		r.Delete("/publication/{id}/links/{link_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteLink)).
-			Name("publication_delete_link")
 
 			// edit publication departments
 		r.Post("/publication/{id}/departments",
