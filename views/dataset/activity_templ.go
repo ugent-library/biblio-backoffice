@@ -15,6 +15,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
+const ReviewerTagsSelector = "#reviewer-tags-body"
+const ReviewerNoteSelector = "#reviewer-note-body"
+const MessageBodySelector = "#message-body"
+
 func Activity(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)

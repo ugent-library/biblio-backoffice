@@ -57,7 +57,7 @@ func ShowPublications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	datasetviews.ShowPublications(c, dataset, relatedPublications).Render(r.Context(), w)
+	datasetviews.Publications(c, dataset, relatedPublications).Render(r.Context(), w)
 }
 
 func ShowActivity(w http.ResponseWriter, r *http.Request) {

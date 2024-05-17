@@ -16,6 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 	"net/url"
 )
 
@@ -55,7 +56,7 @@ func AddSingleConfirm(c *ctx.Ctx, args AddSingleConfirmArgs) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(args.Step))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_single_confirm.templ`, Line: 26, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_single_confirm.templ`, Line: 27, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -90,11 +91,11 @@ func AddSingleConfirm(c *ctx.Ctx, args AddSingleConfirmArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = publicationviews.Summary(c, publicationviews.SummaryArgs{
-				Publication:    args.Publication,
-				PublicationURL: args.PublicationURL,
-				Actions: publicationviews.DefaultSummary(publicationviews.DefaultSummaryArgs{
-					PublicationURL: args.PublicationURL,
+			templ_7745c5c3_Err = publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
+				Publication: args.Publication,
+				URL:         args.PublicationURL,
+				Actions: publicationsummaryviews.DefaultActions(publicationsummaryviews.DefaultActionsArgs{
+					URL: args.PublicationURL,
 				}),
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
@@ -125,7 +126,7 @@ func AddSingleConfirm(c *ctx.Ctx, args AddSingleConfirmArgs) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.subnav.contributors"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_single_confirm.templ`, Line: 97, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_single_confirm.templ`, Line: 98, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {

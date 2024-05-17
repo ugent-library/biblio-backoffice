@@ -690,7 +690,7 @@ func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx 
 	})
 }
 
-func contributorForm(ctx Context, c *models.Contributor, suggestURL string) *form.Form {
+func contributorForm(_ Context, c *models.Contributor, suggestURL string) *form.Form {
 	return form.New().
 		WithTheme("cols").
 		AddSection(
@@ -719,7 +719,7 @@ func contributorForm(ctx Context, c *models.Contributor, suggestURL string) *for
 		)
 }
 
-func confirmContributorForm(ctx Context, role string, c *models.Contributor, errors *okay.Errors) *form.Form {
+func confirmContributorForm(ctx Context, _ string, c *models.Contributor, errors *okay.Errors) *form.Form {
 	var fields []form.Field
 
 	if c.PersonID != "" {

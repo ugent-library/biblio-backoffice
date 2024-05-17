@@ -5,6 +5,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
+const ReviewerTagsSelector = "#reviewer-tags-body"
+const ReviewerNoteSelector = "#reviewer-note-body"
+const MessageBodySelector = "#message-body"
+
 templ Activity(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 	<div hx-swap-oob="innerHTML:#show-nav">
 		@SubNav(c, dataset, redirectURL)

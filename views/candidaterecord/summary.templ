@@ -4,7 +4,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
-	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+	"fmt"
 )
 
 type SummaryOpts struct {
@@ -30,9 +30,47 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 								if opts.Badge != nil {
 									@opts.Badge
 								}
-								@publicationviews.BadgeType(c, p)
-								if f := p.MainFile(); f != nil {
-									@publicationviews.SummaryAccessLevel(c, f)
+								<span class="c-subline ps-2 me-3 pe-3 border-end">
+									if p.Classification != "" {
+										{ fmt.Sprintf("%s: %s", c.Loc.Get("publication_types." + p.Type), p.Classification) }
+									} else {
+										{ c.Loc.Get("publication_types." + p.Type) }
+									}
+								</span>
+								if mainFile := p.MainFile(); mainFile != nil {
+									<span class={ "c-subline", "me-3", "pe-3", templ.KV("border-end", mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }>
+										if mainFile.AccessLevel == "info:eu-repo/semantics/openAccess" {
+											<i class="if if-download if--small if--success"></i>
+											<span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+										} else if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+											<i class="if if-time if--small if--muted"></i>
+											<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+										} else if mainFile.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
+											<i class="if if-ghent-university if--small if--primary"></i>
+											<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+										} else if mainFile.AccessLevel == "info:eu-repo/semantics/closedAccess" {
+											<i class="if if-eye-off if--small if--muted"></i>
+											<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+										}
+									</span>
+									if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+										<span class="c-subline me-3 pe-3 border-end">
+											if mainFile.AccessLevelDuringEmbargo == "info:eu-repo/semantics/closedAccess" {
+												<i class="if if-eye-off if--small if--muted"></i>
+											} else {
+												<i class="if if-ghent-university if--small if--primary"></i>
+											}
+											<span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels_during_embargo." + mainFile.AccessLevelDuringEmbargo) }</span>
+										</span>
+										<span class="c-subline me-3 pe-3">
+											if mainFile.AccessLevelAfterEmbargo == "info:eu-repo/semantics/openAccess" {
+												<i class="if if-download if--small if--success"></i>
+											} else {
+												<i class="if if-ghent-university if--small if--primary"></i>
+											}
+											{ c.Loc.Get("publication_file_access_levels_after_embargo." + mainFile.AccessLevelAfterEmbargo) } from { mainFile.EmbargoDate }
+										</span>
+									}
 								}
 							</div>
 							<h4 class="mb-0">
@@ -44,7 +82,11 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 									}
 								</span>
 							</h4>
-							@publicationviews.SummaryParts(c, p)
+							<ul class="c-meta-list c-meta-list-inline">
+								for _, summaryPart := range p.SummaryParts() {
+									<li class="c-meta-item">{ summaryPart }</li>
+								}
+							</ul>
 							@contributorviews.Summary(c, "author", p.Author, "")
 						</div>
 					</div>
