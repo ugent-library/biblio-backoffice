@@ -155,7 +155,7 @@ describe("Authorization", () => {
     testForbiddenDatasetRoute("/message", "PUT");
 
     testForbiddenDatasetRoute("/details/edit", "GET", "PUT");
-    testForbiddenDatasetRoute("/details/edit/refresh-form", "PUT");
+    testForbiddenDatasetRoute("/details/edit/refresh", "PUT");
 
     testForbiddenDatasetRoute("/projects/add");
     testForbiddenDatasetRoute("/projects/suggestions");

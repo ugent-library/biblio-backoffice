@@ -135,7 +135,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
           .click();
         cy.setFieldByLabel("Publisher", "UGent");
 
-        cy.intercept("PUT", "/dataset/*/details/edit/refresh-form").as(
+        cy.intercept("PUT", "/dataset/*/details/edit/refresh").as(
           "refreshForm",
         );
 
