@@ -148,7 +148,7 @@ func DetailsBody(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if identifierType, identifier := getDatasetIdentifierAndType(dataset); identifierType != "" {
+			if identifierType, identifier := getDatasetIdentifierAndType(dataset); true {
 				templ_7745c5c3_Err = display.Field(display.FieldArgs{
 					Label:    c.Loc.Get("builder.identifier_type"),
 					Value:    c.Loc.Get("identifier." + identifierType),

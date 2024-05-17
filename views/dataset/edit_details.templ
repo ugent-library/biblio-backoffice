@@ -64,7 +64,7 @@ templ EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, erro
 							},
 							Value: dataset.Title,
 						})
-						if identifier, identifierType := datasetIdentifierAndType(dataset); identifierType != "" {
+						if identifier, identifierType := datasetIdentifierAndType(dataset); true {
 							@form.Select(form.SelectArgs{
 								FieldArgs: form.FieldArgs{
 									Name:     "identifier_type",

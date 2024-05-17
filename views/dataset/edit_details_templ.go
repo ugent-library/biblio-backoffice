@@ -92,7 +92,7 @@ func EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, error
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if identifier, identifierType := datasetIdentifierAndType(dataset); identifierType != "" {
+		if identifier, identifierType := datasetIdentifierAndType(dataset); true {
 			templ_7745c5c3_Err = form.Select(form.SelectArgs{
 				FieldArgs: form.FieldArgs{
 					Name:     "identifier_type",
