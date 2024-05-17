@@ -293,7 +293,7 @@ func (d *Dataset) Validate() error {
 		errs.Add(okay.NewError("/access_level", "dataset.access_level.invalid"))
 	}
 
-	if len(d.Identifiers) == 0 {
+	if d.Status == "public" && len(d.Identifiers) == 0 {
 		errs.Add(okay.NewError("/identifier_type", "dataset.identifier_type.required"))
 		errs.Add(okay.NewError("/identifier", "dataset.identifier.required"))
 	}
