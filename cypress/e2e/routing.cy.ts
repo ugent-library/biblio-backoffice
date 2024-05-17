@@ -275,7 +275,7 @@ describe("Authorization", () => {
   ) {
     cy.then(function () {
       testRouteHttpStatus(
-        307, // TODO: will be 401 after refactoring
+        401,
         `/publication/${this.biblioId}${route}`,
         ...methods,
       );
