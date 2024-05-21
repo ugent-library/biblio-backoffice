@@ -83,6 +83,22 @@ func (d *Dataset) FirstIdentifier() (string, []string) { // TODO eliminate need 
 	return "", nil
 }
 
+// TODO: remove when we really support multiple identifiers
+func (d *Dataset) IdentifierType() string {
+	for key := range d.Identifiers {
+		return key
+	}
+	return ""
+}
+
+// TODO: remove when we really support multiple identifiers
+func (d *Dataset) IdentifierValue() string {
+	for _, vals := range d.Identifiers {
+		return vals[0]
+	}
+	return ""
+}
+
 func (d *Dataset) HasRelatedPublication(id string) bool {
 	for _, r := range d.RelatedPublication {
 		if r.ID == id {
