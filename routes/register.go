@@ -421,8 +421,10 @@ func Register(c Config) {
 
 							// departments
 							r.Get("/departments/add", publicationediting.AddDepartment).Name("publication_add_department")
+							r.Post("/departments", publicationediting.CreateDepartment).Name("publication_create_department")
 							r.Get("/departments/suggestions", publicationediting.SuggestDepartments).Name("publication_suggest_departments")
 							r.Get("/{snapshot_id}/departments/{department_id}/confirm-delete", publicationediting.ConfirmDeleteDepartment).Name("publication_confirm_delete_department")
+							r.Delete("/departments/{department_id}", publicationediting.DeleteDepartment).Name("publication_delete_department")
 
 							// datasets
 							r.Get("/datasets/add", publicationediting.AddDataset).Name("publication_add_dataset")
@@ -638,14 +640,6 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/projects/{project_id:.+}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
 			Name("publication_delete_project")
-
-			// edit publication departments
-		r.Post("/publication/{id}/departments",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateDepartment)).
-			Name("publication_create_department")
-		r.Delete("/publication/{id}/departments/{department_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
-			Name("publication_delete_department")
 
 		// edit publication contributors
 		r.Post("/publication/{id}/contributors/{role}/order",

@@ -16,6 +16,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
+const DepartmentsBodySelector = "#departments-body"
+
 var roles = []string{"author", "editor", "supervisor"}
 
 func Contributors(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component {
@@ -82,7 +84,7 @@ func Contributors(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.C
 				var templ_7745c5c3_Var2 string
 				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.contributor.title." + role))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 46, Col: 88}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 48, Col: 88}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
@@ -116,7 +118,7 @@ func Contributors(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.C
 					var templ_7745c5c3_Var3 string
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.contributor.role." + role))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 68, Col: 86}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 70, Col: 86}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
@@ -295,7 +297,7 @@ func ContributorsBody(c *ctx.Ctx, p *models.Publication, role string) templ.Comp
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.contributor.role." + role))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 144, Col: 104}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 146, Col: 104}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -313,7 +315,7 @@ func ContributorsBody(c *ctx.Ctx, p *models.Publication, role string) templ.Comp
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.contributor.role." + role))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 146, Col: 84}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 148, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -389,7 +391,7 @@ func ContributorColumns(c *ctx.Ctx, p *models.Publication, role string, position
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(contributor.Name())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 168, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 170, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -407,7 +409,7 @@ func ContributorColumns(c *ctx.Ctx, p *models.Publication, role string, position
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(contributor.ORCID())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 170, Col: 120}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 172, Col: 120}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -440,7 +442,7 @@ func ContributorColumns(c *ctx.Ctx, p *models.Publication, role string, position
 					var templ_7745c5c3_Var10 string
 					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("credit_roles." + cr))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 180, Col: 43}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 182, Col: 43}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
@@ -498,7 +500,7 @@ func ContributorColumns(c *ctx.Ctx, p *models.Publication, role string, position
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(aff.OrganizationID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 202, Col: 52}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 204, Col: 52}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -608,7 +610,7 @@ func DepartmentsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("organization." + rel.OrganizationID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 253, Col: 79}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 255, Col: 79}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -621,7 +623,7 @@ func DepartmentsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(rel.OrganizationID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 254, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/contributors.templ`, Line: 256, Col: 85}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
