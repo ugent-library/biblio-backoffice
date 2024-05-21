@@ -135,7 +135,6 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 		APublications:        aPublications,
 		UFaculties:           uFacultyCols,
 		AFaculties:           aFacultyCols,
-		PTypes:               locptypes,
 		UYear:                bindPublications.UYear,
 		AYear:                bindPublications.AYear,
 		AllUPublicationYears: allUPublicationYears,
@@ -208,7 +207,7 @@ func RefreshAPublications(w http.ResponseWriter, r *http.Request) {
 		).String(),
 	)
 
-	views.CuratorDashboardTblPublications(c, facultyCols, publications, locptypes).Render(r.Context(), w)
+	views.CuratorDashboardTblPublications(c, facultyCols, publications).Render(r.Context(), w)
 }
 
 func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
@@ -270,7 +269,7 @@ func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
 		c.URLTo("dashboard_publications", "type", typ, "uyear", bindPublications.UYear, "ayear", bindPublications.AYear).String(),
 	)
 
-	views.CuratorDashboardTblPublications(c, facultyCols, publications, locptypes).Render(r.Context(), w)
+	views.CuratorDashboardTblPublications(c, facultyCols, publications).Render(r.Context(), w)
 }
 
 func generatePublicationsDashboard(faculties []string, ptypes []string, searcher backends.PublicationIndex, baseSearchUrl *url.URL, fn func(fac string, args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {
