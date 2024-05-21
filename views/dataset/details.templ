@@ -5,8 +5,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/display"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
-	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/biblio-backoffice/localize"
+	"github.com/samber/lo"
 )
 
 templ Details(c *ctx.Ctx, dataset *models.Dataset) {
@@ -44,41 +44,6 @@ templ detailsSection() {
 	</li>
 }
 
-func datasetIdentifierTypeAndValueDisplays(c *ctx.Ctx, dataset *models.Dataset) []templ.Component {
-	var identifier, identifierType string
-	for _, key := range vocabularies.Map["dataset_identifier_types"] {
-		if val := dataset.Identifiers.Get(key); val != "" {
-			identifierType = key
-			identifier = val
-		}
-	}
-
-	identifierTypeArgs := display.FieldArgs{
-		Label:    c.Loc.Get("builder.identifier_type"),
-		Required: true,
-	}
-	if identifierType != "" {
-		identifierTypeArgs.Value = c.Loc.Get("identifier." + identifierType)
-	}
-
-	identifierArgs := display.FieldArgs{
-		Label:    c.Loc.Get("builder.identifier"),
-		Required: true,
-	}
-	if identifierType == "" {
-		identifierArgs.Value = identifier
-	} else if identifier != "" {
-		identifierArgs.Content = display.Link(identifier, func(_ string) string {
-			return identifiers.Resolve(identifierType, identifier)
-		})
-	}
-
-	return []templ.Component{
-		display.Field(identifierTypeArgs),
-		display.Field(identifierArgs),
-	}
-}
-
 templ DetailsBody(c *ctx.Ctx, dataset *models.Dataset) {
 	<div class="card-body p-0">
 		<ul class="list-group list-group-flush" data-panel-state="read">
@@ -88,9 +53,23 @@ templ DetailsBody(c *ctx.Ctx, dataset *models.Dataset) {
 					Value:    dataset.Title,
 					Required: true,
 				})
-				for _, comp := range datasetIdentifierTypeAndValueDisplays(c, dataset) {
-					@comp
-				}
+				@display.Field(display.FieldArgs{
+					Label:    c.Loc.Get("builder.identifier_type"),
+					Required: true,
+					Value:    lo.Ternary(dataset.IdentifierType() != "", c.Loc.Get("identifier."+dataset.IdentifierType()), ""),
+				})
+				@display.Field(display.FieldArgs{
+					Label:    c.Loc.Get("builder.identifier"),
+					Required: true,
+					Value:    dataset.IdentifierValue(),
+					Content: lo.Ternary(
+						dataset.IdentifierValue() != "" && dataset.IdentifierType() != "",
+						display.Link(dataset.IdentifierValue(), func(val string) string {
+							return identifiers.Resolve(dataset.IdentifierType(), val)
+						}),
+						nil,
+					),
+				})
 			}
 			@detailsSection() {
 				@display.Field(display.FieldArgs{

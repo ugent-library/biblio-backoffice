@@ -21,46 +21,6 @@ func datasetIdentifierOptions(loc *gotext.Locale) []form.Option {
 	return identifierTypeOptions
 }
 
-func datasetIdentifierTypeAndValueFields(c *ctx.Ctx, dataset *models.Dataset, errors *okay.Errors) []templ.Component {
-	var identifier, identifierType string
-	for key, vals := range dataset.Identifiers {
-		identifierType = key
-		for _, val := range vals {
-			identifier = val
-			break
-		}
-		break
-	}
-
-	return []templ.Component{
-		form.Select(form.SelectArgs{
-			FieldArgs: form.FieldArgs{
-				Name:     "identifier_type",
-				Label:    c.Loc.Get("builder.identifier_type"),
-				Cols:     3,
-				Help:     c.Loc.Get("builder.identifier_type.help"),
-				Error:    localize.ValidationErrorAt(c.Loc, errors, "/identifier_type"),
-				Required: true,
-			},
-			Value:       identifierType,
-			EmptyOption: true,
-			Options:     datasetIdentifierOptions(c.Loc),
-		}),
-		form.Text(form.TextArgs{
-			FieldArgs: form.FieldArgs{
-				Name:     "identifier",
-				Label:    c.Loc.Get("builder.identifier"),
-				Required: true,
-				Cols:     3,
-				Help:     c.Loc.Get("builder.identifier.help"),
-				Error:    localize.ValidationErrorAt(c.Loc, errors, "/identifier"),
-				Tooltip:  c.Loc.Get("tooltip.dataset.identifier"),
-			},
-			Value: identifier,
-		}),
-	}
-}
-
 func nextDay() time.Time {
 	now := time.Now()
 	return time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Add(24 * time.Hour)
@@ -92,9 +52,31 @@ templ EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, erro
 							},
 							Value: dataset.Title,
 						})
-						for _, comp := range datasetIdentifierTypeAndValueFields(c, dataset, errors) {
-							@comp
-						}
+						@form.Select(form.SelectArgs{
+							FieldArgs: form.FieldArgs{
+								Name:     "identifier_type",
+								Label:    c.Loc.Get("builder.identifier_type"),
+								Cols:     3,
+								Help:     c.Loc.Get("builder.identifier_type.help"),
+								Error:    localize.ValidationErrorAt(c.Loc, errors, "/identifier_type"),
+								Required: true,
+							},
+							Value:       dataset.IdentifierType(),
+							EmptyOption: true,
+							Options:     datasetIdentifierOptions(c.Loc),
+						})
+						@form.Text(form.TextArgs{
+							FieldArgs: form.FieldArgs{
+								Name:     "identifier",
+								Label:    c.Loc.Get("builder.identifier"),
+								Required: true,
+								Cols:     3,
+								Help:     c.Loc.Get("builder.identifier.help"),
+								Error:    localize.ValidationErrorAt(c.Loc, errors, "/identifier"),
+								Tooltip:  c.Loc.Get("tooltip.dataset.identifier"),
+							},
+							Value: dataset.IdentifierValue(),
+						})
 					</li>
 					<li class="list-group-item">
 						@form.SelectRepeat(form.SelectRepeatArgs{
