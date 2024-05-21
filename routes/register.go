@@ -376,8 +376,10 @@ func Register(c Config) {
 							// projects
 							r.Get("/projects/add", publicationediting.AddProject).Name("publication_add_project")
 							r.Get("/projects/suggestions", publicationediting.SuggestProjects).Name("publication_suggest_projects")
+							r.Post("/projects", publicationediting.CreateProject).Name("publication_create_project")
 							// project_id is last part of url because some id's contain slashes
 							r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", publicationediting.ConfirmDeleteProject).Name("publication_confirm_delete_project")
+							r.Delete("/projects/{project_id:.+}", publicationediting.DeleteProject).Name("publication_delete_project")
 
 							// abstracts
 							r.Get("/abstracts/add", publicationediting.AddAbstract).Name("publication_add_abstract")
@@ -510,10 +512,11 @@ func Register(c Config) {
 						// projects
 						r.Get("/projects/add", datasetediting.AddProject).Name("dataset_add_project")
 						r.Get("/projects/suggestions", datasetediting.SuggestProjects).Name("dataset_suggest_projects")
+						r.Post("/projects", datasetediting.CreateProject).Name("dataset_create_project")
 						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", datasetediting.ConfirmDeleteProject).Name("dataset_confirm_delete_project")
+						r.Delete("/projects/{project_id:.+}", datasetediting.DeleteProject).Name("dataset_delete_project")
 
 						// abstracts
-
 						r.Get("/abstracts/add", datasetediting.AddAbstract).Name("dataset_add_abstract")
 						r.Post("/abstracts", datasetediting.CreateAbstract).Name("dataset_create_abstract")
 						r.Get("/abstracts/{abstract_id}/edit", datasetediting.EditAbstract).Name("dataset_edit_abstract")
@@ -592,14 +595,6 @@ func Register(c Config) {
 		})
 		// END NEW STYLE HANDLERS
 
-		// edit dataset projects
-		r.Post("/dataset/{id}/projects",
-			datasetEditingHandler.Wrap(datasetEditingHandler.CreateProject)).
-			Name("dataset_create_project")
-		r.Delete("/dataset/{id}/projects/{project_id:.+}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
-			Name("dataset_delete_project")
-
 		// edit dataset contributors
 		r.Post("/dataset/{id}/contributors/{role}/order",
 			datasetEditingHandler.Wrap(datasetEditingHandler.OrderContributors)).
@@ -631,15 +626,6 @@ func Register(c Config) {
 		r.Delete("/dataset/{id}/contributors/{role}/{position}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteContributor)).
 			Name("dataset_delete_contributor")
-
-		// edit publication projects
-		r.Post("/publication/{id}/projects",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateProject)).
-			Name("publication_create_project")
-		// project_id is last part of url because some id's contain slashes
-		r.Delete("/publication/{id}/projects/{project_id:.+}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
-			Name("publication_delete_project")
 
 		// edit publication contributors
 		r.Post("/publication/{id}/contributors/{role}/order",
