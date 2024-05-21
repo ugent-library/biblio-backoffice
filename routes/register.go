@@ -422,8 +422,10 @@ func Register(c Config) {
 
 							// departments
 							r.Get("/departments/add", publicationediting.AddDepartment).Name("publication_add_department")
+							r.Post("/departments", publicationediting.CreateDepartment).Name("publication_create_department")
 							r.Get("/departments/suggestions", publicationediting.SuggestDepartments).Name("publication_suggest_departments")
 							r.Get("/{snapshot_id}/departments/{department_id}/confirm-delete", publicationediting.ConfirmDeleteDepartment).Name("publication_confirm_delete_department")
+							r.Delete("/departments/{department_id}", publicationediting.DeleteDepartment).Name("publication_delete_department")
 
 							// datasets
 							r.Get("/datasets/add", publicationediting.AddDataset).Name("publication_add_dataset")
@@ -529,7 +531,9 @@ func Register(c Config) {
 						// departments
 						r.Get("/departments/add", datasetediting.AddDepartment).Name("dataset_add_department")
 						r.Get("/departments/suggestions", datasetediting.SuggestDepartments).Name("dataset_suggest_departments")
+						r.Post("/departments", datasetediting.CreateDepartment).Name("dataset_create_department")
 						r.Get("/{snapshot_id}/departments/{department_id}/confirm-delete", datasetediting.ConfirmDeleteDepartment).Name("dataset_confirm_delete_department")
+						r.Delete("/departments/{department_id}", datasetediting.DeleteDepartment).Name("dataset_delete_department")
 
 						// publications
 						r.Get("/publications/add", datasetediting.AddPublication).Name("dataset_add_publication")
@@ -597,14 +601,6 @@ func Register(c Config) {
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteProject)).
 			Name("dataset_delete_project")
 
-		// edit dataset departments
-		r.Post("/dataset/{id}/departments",
-			datasetEditingHandler.Wrap(datasetEditingHandler.CreateDepartment)).
-			Name("dataset_create_department")
-		r.Delete("/dataset/{id}/departments/{department_id}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteDepartment)).
-			Name("dataset_delete_department")
-
 		// edit dataset contributors
 		r.Post("/dataset/{id}/contributors/{role}/order",
 			datasetEditingHandler.Wrap(datasetEditingHandler.OrderContributors)).
@@ -645,14 +641,6 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/projects/{project_id:.+}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
 			Name("publication_delete_project")
-
-			// edit publication departments
-		r.Post("/publication/{id}/departments",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateDepartment)).
-			Name("publication_create_department")
-		r.Delete("/publication/{id}/departments/{department_id}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteDepartment)).
-			Name("publication_delete_department")
 
 		// edit publication contributors
 		r.Post("/publication/{id}/contributors/{role}/order",
