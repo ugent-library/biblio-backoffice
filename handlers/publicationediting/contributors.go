@@ -616,51 +616,45 @@ func ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request) {
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func DeleteContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	b := BindDeleteContributor{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("delete publication contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	if err := ctx.Publication.RemoveContributor(b.Role, b.Position); err != nil {
-		h.Logger.Warnw("delete publication contributor: could not remove contributor", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+	p := ctx.GetPublication(r)
+
+	if err := p.RemoveContributor(b.Role, b.Position); err != nil {
+		c.Log.Warnw("delete publication contributor: could not remove contributor", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(*okay.Errors)))
-		render.Layout(w, "refresh_modal", "form_errors_dialog", struct {
-			Title  string
-			Errors form.Errors
-		}{
-			Title:  "Can't delete this contributor due to the following errors",
-			Errors: errors,
-		})
-
+	if validationErrs := p.Validate(); validationErrs != nil {
+		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
+		views.ReplaceModal(views.FormErrorsDialog(c, "Can't delete this contributor due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete publication contributor: Could not save the publication:", "error", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("delete publication contributor: Could not save the publication:", "error", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_contributors", YieldContributors{
-		Context: ctx,
-		Role:    b.Role,
-	})
+	views.CloseModalAndReplace(fmt.Sprintf("#contributors-%s-body", b.Role), publicationviews.ContributorsBody(c, p, b.Role)).Render(r.Context(), w)
 }
 
 func OrderContributors(w http.ResponseWriter, r *http.Request) {

@@ -429,7 +429,7 @@ func Register(c Config) {
 							r.Get("/contributors/{role}/{position}/confirm-update", publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateContributor)).Name("publication_confirm_update_contributor")
 							r.Put("/contributors/{role}/{position}", publicationEditingHandler.Wrap(publicationEditingHandler.UpdateContributor)).Name("publication_update_contributor")
 							r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
-							r.Delete("/contributors/{role}/{position}", publicationEditingHandler.Wrap(publicationEditingHandler.DeleteContributor)).Name("publication_delete_contributor")
+							r.Delete("/contributors/{role}/{position}", publicationediting.DeleteContributor).Name("publication_delete_contributor")
 
 							// departments
 							r.Get("/departments/add", publicationediting.AddDepartment).Name("publication_add_department")
@@ -636,6 +636,5 @@ func Register(c Config) {
 		r.Delete("/dataset/{id}/contributors/{role}/{position}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteContributor)).
 			Name("dataset_delete_contributor")
-
 	})
 }
