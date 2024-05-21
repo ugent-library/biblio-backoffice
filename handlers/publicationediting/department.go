@@ -6,7 +6,6 @@ import (
 	"net/url"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
@@ -64,51 +63,48 @@ func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
 	publicationviews.SuggestDepartments(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
 }
 
-func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
+func CreateDepartment(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindDepartment{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("create publication department: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("create publication department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	org, err := h.OrganizationService.GetOrganization(b.DepartmentID)
+	org, err := c.OrganizationService.GetOrganization(b.DepartmentID)
 	if err != nil {
-		h.Logger.Errorw("create publication department: could not find organization", "errors", err, "request", r, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("create publication department: could not find organization", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	/*
-		Note: AddDepartmentByOrg removes potential existing department
-		and then adds the new one at the end
-	*/
-	ctx.Publication.AddOrganization(org)
+	p.AddOrganization(org)
 
 	// TODO handle validation errors
 
-	err = h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err = c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("create publication department: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("create publication department: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_departments", YieldDepartments{
-		Context: ctx,
-	})
+	views.CloseModalAndReplace(publicationviews.DepartmentsBodySelector, publicationviews.DepartmentsBody(c, p)).Render(r.Context(), w)
 }
 
 func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	publication := ctx.GetPublication(r)
+	p := ctx.GetPublication(r)
 
 	b := BindDeleteDepartment{}
 	if err := bind.Request(r, &b); err != nil {
@@ -121,7 +117,7 @@ func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
 	depID, _ := url.QueryUnescape(b.DepartmentID)
 	b.DepartmentID = depID
 
-	if b.SnapshotID != publication.SnapshotID {
+	if b.SnapshotID != p.SnapshotID {
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
@@ -129,16 +125,19 @@ func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
 	views.ConfirmDelete(views.ConfirmDeleteArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this department from the publication?",
-		DeleteUrl:  c.PathTo("publication_delete_department", "id", publication.ID, "department_id", b.DepartmentID),
+		DeleteUrl:  c.PathTo("publication_delete_department", "id", p.ID, "department_id", b.DepartmentID),
 		SnapshotID: b.SnapshotID,
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
+func DeleteDepartment(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	var b BindDeleteDepartment
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete publication department: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("delete publication department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -146,25 +145,23 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 	depID, _ := url.QueryUnescape(b.DepartmentID)
 	b.DepartmentID = depID
 
-	ctx.Publication.RemoveOrganization(b.DepartmentID)
+	p.RemoveOrganization(b.DepartmentID)
 
 	// TODO handle validation errors
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete publication department: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("delete publication department: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_departments", YieldDepartments{
-		Context: ctx,
-	})
+	views.CloseModalAndReplace(publicationviews.DepartmentsBodySelector, publicationviews.DepartmentsBody(c, p)).Render(r.Context(), w)
 }

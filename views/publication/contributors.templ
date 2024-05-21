@@ -6,6 +6,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
+const DepartmentsBodySelector = "#departments-body"
+
 var roles = []string{"author", "editor", "supervisor"}
 
 templ Contributors(c *ctx.Ctx, p *models.Publication, redirectURL string) {
