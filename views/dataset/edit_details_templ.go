@@ -22,18 +22,6 @@ import (
 	"time"
 )
 
-func datasetIdentifierAndType(dataset *models.Dataset) (string, string) {
-	var identifierType, identifier string
-	for _, key := range vocabularies.Map["dataset_identifier_types"] {
-		if val := dataset.Identifiers.Get(key); val != "" {
-			identifierType = key
-			identifier = val
-			break
-		}
-	}
-	return identifier, identifierType
-}
-
 func datasetIdentifierOptions(loc *gotext.Locale) []form.Option {
 	identifierTypeOptions := make([]form.Option, len(vocabularies.Map["dataset_identifier_types"]))
 	for i, v := range vocabularies.Map["dataset_identifier_types"] {
@@ -92,42 +80,36 @@ func EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, error
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if identifier, identifierType := datasetIdentifierAndType(dataset); identifierType != "" {
-			templ_7745c5c3_Err = form.Select(form.SelectArgs{
-				FieldArgs: form.FieldArgs{
-					Name:     "identifier_type",
-					Label:    c.Loc.Get("builder.identifier_type"),
-					Cols:     3,
-					Help:     c.Loc.Get("builder.identifier_type.help"),
-					Error:    localize.ValidationErrorAt(c.Loc, errors, "/identifier"),
-					Required: true,
-				},
-				Value:       identifierType,
-				EmptyOption: true,
-				Options:     datasetIdentifierOptions(c.Loc),
-			}).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = form.Text(form.TextArgs{
-				FieldArgs: form.FieldArgs{
-					Name:     "identifier",
-					Label:    c.Loc.Get("builder.identifier"),
-					Required: true,
-					Cols:     3,
-					Help:     c.Loc.Get("builder.identifier.help"),
-					Error:    localize.ValidationErrorAt(c.Loc, errors, "/identifier"),
-					Tooltip:  c.Loc.Get("tooltip.dataset.identifier"),
-				},
-				Value: identifier,
-			}).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
+		templ_7745c5c3_Err = form.Select(form.SelectArgs{
+			FieldArgs: form.FieldArgs{
+				Name:     "identifier_type",
+				Label:    c.Loc.Get("builder.identifier_type"),
+				Cols:     3,
+				Help:     c.Loc.Get("builder.identifier_type.help"),
+				Error:    localize.ValidationErrorAt(c.Loc, errors, "/identifier_type"),
+				Required: true,
+			},
+			Value:       dataset.IdentifierType(),
+			EmptyOption: true,
+			Options:     datasetIdentifierOptions(c.Loc),
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = form.Text(form.TextArgs{
+			FieldArgs: form.FieldArgs{
+				Name:     "identifier",
+				Label:    c.Loc.Get("builder.identifier"),
+				Required: true,
+				Cols:     3,
+				Help:     c.Loc.Get("builder.identifier.help"),
+				Error:    localize.ValidationErrorAt(c.Loc, errors, "/identifier"),
+				Tooltip:  c.Loc.Get("tooltip.dataset.identifier"),
+			},
+			Value: dataset.IdentifierValue(),
+		}).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li><li class=\"list-group-item\">")
 		if templ_7745c5c3_Err != nil {
@@ -267,7 +249,7 @@ func EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, error
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/edit_details.templ`, Line: 171, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/edit_details.templ`, Line: 157, Col: 85}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -375,7 +357,7 @@ func EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, error
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/edit_details.templ`, Line: 208, Col: 89}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/edit_details.templ`, Line: 194, Col: 89}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {

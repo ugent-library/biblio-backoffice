@@ -2016,6 +2016,12 @@ msgstr "Identifier is required"
 msgid "validation.dataset.identifier.invalid"
 msgstr "Identifier is invalid"
 
+msgid "validation.dataset.identifier_type.required"
+msgstr "Identifier type is required"
+
+msgid "validation.dataset.identifier_type.invalid"
+msgstr "Identifier type is invalid"
+
 msgid "validation.dataset.access_level.required"
 msgstr "Access level is required"
 
