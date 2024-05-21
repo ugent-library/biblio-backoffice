@@ -6,7 +6,6 @@ import (
 	"net/url"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
@@ -23,10 +22,6 @@ type BindProject struct {
 type BindDeleteProject struct {
 	ProjectID  string `path:"project_id"`
 	SnapshotID string `path:"snapshot_id"`
-}
-
-type YieldProjects struct {
-	Context
 }
 
 func AddProject(w http.ResponseWriter, r *http.Request) {
@@ -63,47 +58,48 @@ func SuggestProjects(w http.ResponseWriter, r *http.Request) {
 	datasetviews.SuggestProjects(c, ctx.GetDataset(r), hits).Render(r.Context(), w)
 }
 
-func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Context) {
+func CreateProject(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	d := ctx.GetDataset(r)
+
 	b := BindProject{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("create dataset project: could not bind request arguments:", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("create dataset project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	project, err := h.ProjectService.GetProject(b.ProjectID)
+	project, err := c.ProjectService.GetProject(b.ProjectID)
 	if err != nil {
-		h.Logger.Errorw("create dataset project: could not get project:", "errors", err, "dataset", ctx.Dataset.ID, "project", b.ProjectID, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Errorw("create dataset project: could not get project:", "errors", err, "dataset", d.ID, "project", b.ProjectID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	ctx.Dataset.AddProject(project)
+	d.AddProject(project)
 
 	// TODO handle validation errors
 
-	err = h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err = c.Repo.UpdateDataset(r.Header.Get("If-Match"), d, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("create dataset project: Could not save the dataset:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("create dataset project: Could not save the dataset:", "errors", err, "dataset", d.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "dataset/refresh_projects", YieldProjects{
-		Context: ctx,
-	})
+	views.CloseModalAndReplace(datasetviews.ProjectsBodySelector, datasetviews.ProjectsBody(c, d)).Render(r.Context(), w)
 }
 
 func ConfirmDeleteProject(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	dataset := ctx.GetDataset(r)
+	d := ctx.GetDataset(r)
 
 	b := BindDeleteProject{}
 	if err := bind.Request(r, &b); err != nil {
@@ -112,7 +108,7 @@ func ConfirmDeleteProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if b.SnapshotID != dataset.SnapshotID {
+	if b.SnapshotID != d.SnapshotID {
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
@@ -122,40 +118,41 @@ func ConfirmDeleteProject(w http.ResponseWriter, r *http.Request) {
 	views.ConfirmDelete(views.ConfirmDeleteArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this project from the dataset?",
-		DeleteUrl:  c.PathTo("dataset_delete_project", "id", dataset.ID, "project_id", projectID),
-		SnapshotID: dataset.SnapshotID,
+		DeleteUrl:  c.PathTo("dataset_delete_project", "id", d.ID, "project_id", projectID),
+		SnapshotID: d.SnapshotID,
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Context) {
+func DeleteProject(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	d := ctx.GetDataset(r)
+
 	var b BindDeleteProject
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete dataset project: could not bind request arguments:", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("delete dataset project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
 	projectID, _ := url.PathUnescape(b.ProjectID)
 
-	ctx.Dataset.RemoveProject(projectID)
+	d.RemoveProject(projectID)
 
 	// TODO handle validation errors
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), d, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete dataset project: Could not save the dataset:", "error", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("delete dataset project: Could not save the dataset:", "error", err, "dataset", d.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "dataset/refresh_projects", YieldProjects{
-		Context: ctx,
-	})
+	views.CloseModalAndReplace(datasetviews.ProjectsBodySelector, datasetviews.ProjectsBody(c, d)).Render(r.Context(), w)
 }
