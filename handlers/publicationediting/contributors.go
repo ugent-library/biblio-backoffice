@@ -13,6 +13,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -662,45 +663,48 @@ func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx 
 	})
 }
 
-func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
+func OrderContributors(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindOrderContributors{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("order publication contributors: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("order publication contributors: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	contributors := ctx.Publication.Contributors(b.Role)
+	contributors := p.Contributors(b.Role)
 	if len(b.Positions) != len(contributors) {
 		err := fmt.Errorf("positions don't match number of contributors")
-		h.Logger.Warnw("order publication contributors: could not order contributors", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("order publication contributors: could not order contributors", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
+
 	newContributors := make([]*models.Contributor, len(contributors))
 	for i, pos := range b.Positions {
 		newContributors[i] = contributors[pos]
 	}
-	ctx.Publication.SetContributors(b.Role, newContributors)
+	p.SetContributors(b.Role, newContributors)
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		w.Header().Add("HX-Retarget", "#modals")
+		w.Header().Add("HX-Reswap", "innerHTML")
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("order publication contributors: Could not save the publication:", "errors", err, "identifier", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("order publication contributors: Could not save the publication:", "errors", err, "identifier", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_contributors", YieldContributors{
-		Context: ctx,
-		Role:    b.Role,
-	})
+	views.CloseModalAndReplace(fmt.Sprintf("#contributors-%s-body", b.Role), publicationviews.ContributorsBody(c, p, b.Role)).Render(r.Context(), w)
 }
 
 func contributorForm(_ Context, c *models.Contributor, suggestURL string) *form.Form {

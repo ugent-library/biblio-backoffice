@@ -417,7 +417,17 @@ func Register(c Config) {
 							r.Delete("/files/{file_id}", publicationediting.DeleteFile).Name("publication_delete_file")
 
 							// contributors
+							r.Post("/contributors/{role}/order", publicationediting.OrderContributors).Name("publication_order_contributors")
+							r.Get("/contributors/{role}/add", publicationEditingHandler.Wrap(publicationEditingHandler.AddContributor)).Name("publication_add_contributor")
+							r.Get("/contributors/{role}/suggestions", publicationEditingHandler.Wrap(publicationEditingHandler.AddContributorSuggest)).Name("publication_add_contributor_suggest")
+							r.Get("/contributors/{role}/confirm-create", publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmCreateContributor)).Name("publication_confirm_create_contributor")
+							r.Post("/contributors/{role}", publicationEditingHandler.Wrap(publicationEditingHandler.CreateContributor)).Name("publication_create_contributor")
+							r.Get("/contributors/{role}/{position}/edit", publicationEditingHandler.Wrap(publicationEditingHandler.EditContributor)).Name("publication_edit_contributor")
+							r.Get("/contributors/{role}/{position}/suggestions", publicationEditingHandler.Wrap(publicationEditingHandler.EditContributorSuggest)).Name("publication_edit_contributor_suggest")
+							r.Get("/contributors/{role}/{position}/confirm-update", publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateContributor)).Name("publication_confirm_update_contributor")
+							r.Put("/contributors/{role}/{position}", publicationEditingHandler.Wrap(publicationEditingHandler.UpdateContributor)).Name("publication_update_contributor")
 							r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
+							r.Delete("/contributors/{role}/{position}", publicationEditingHandler.Wrap(publicationEditingHandler.DeleteContributor)).Name("publication_delete_contributor")
 
 							// departments
 							r.Get("/departments/add", publicationediting.AddDepartment).Name("publication_add_department")
@@ -640,37 +650,5 @@ func Register(c Config) {
 		r.Delete("/publication/{id}/projects/{project_id:.+}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteProject)).
 			Name("publication_delete_project")
-
-		// edit publication contributors
-		r.Post("/publication/{id}/contributors/{role}/order",
-			publicationEditingHandler.Wrap(publicationEditingHandler.OrderContributors)).
-			Name("publication_order_contributors")
-		r.Get("/publication/{id}/contributors/{role}/add",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddContributor)).
-			Name("publication_add_contributor")
-		r.Get("/publication/{id}/contributors/{role}/suggestions",
-			publicationEditingHandler.Wrap(publicationEditingHandler.AddContributorSuggest)).
-			Name("publication_add_contributor_suggest")
-		r.Get("/publication/{id}/contributors/{role}/confirm-create",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmCreateContributor)).
-			Name("publication_confirm_create_contributor")
-		r.Post("/publication/{id}/contributors/{role}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.CreateContributor)).
-			Name("publication_create_contributor")
-		r.Get("/publication/{id}/contributors/{role}/{position}/edit",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditContributor)).
-			Name("publication_edit_contributor")
-		r.Get("/publication/{id}/contributors/{role}/{position}/suggestions",
-			publicationEditingHandler.Wrap(publicationEditingHandler.EditContributorSuggest)).
-			Name("publication_edit_contributor_suggest")
-		r.Get("/publication/{id}/contributors/{role}/{position}/confirm-update",
-			publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateContributor)).
-			Name("publication_confirm_update_contributor")
-		r.Put("/publication/{id}/contributors/{role}/{position}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateContributor)).
-			Name("publication_update_contributor")
-		r.Delete("/publication/{id}/contributors/{role}/{position}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteContributor)).
-			Name("publication_delete_contributor")
 	})
 }
