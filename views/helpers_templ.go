@@ -57,14 +57,6 @@ func CSRFTag(c *ctx.Ctx) templ.Component {
 	})
 }
 
-// TODO remove need for this
-func html(text string) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
-		_, err := io.WriteString(w, text)
-		return err
-	})
-}
-
 func Linkify(text string) string {
 	text = h.EscapeString(text)
 

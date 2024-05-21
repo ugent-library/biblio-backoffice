@@ -5,7 +5,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
-	"github.com/ugent-library/biblio-backoffice/views/shared"
 )
 
 templ AddBibTeX(c *ctx.Ctx, step int) {
@@ -40,7 +39,7 @@ templ AddBibTeX(c *ctx.Ctx, step int) {
 								method="POST"
 								enctype="multipart/form-data"
 							>
-								@shared.CSRFTag(c)
+								@views.CSRFTag(c)
 								<input type="hidden" name="source" value="bibtex"/>
 								<div class="c-file-upload">
 									<input type="file" name="file"/>
