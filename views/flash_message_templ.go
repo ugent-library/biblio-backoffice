@@ -100,7 +100,7 @@ func flashMessage(f flash.Flash) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = html(string(f.Body)).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = templ.Raw(string(f.Body)).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -192,7 +192,7 @@ func flashMessage(f flash.Flash) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = html(string(f.Body)).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = templ.Raw(string(f.Body)).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

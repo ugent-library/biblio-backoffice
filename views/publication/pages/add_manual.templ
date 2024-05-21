@@ -5,14 +5,13 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
-	"github.com/ugent-library/biblio-backoffice/views/shared"
 )
 
 templ AddManual(c *ctx.Ctx, step int) {
 	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
 		@publication.AddSingleSidebar(c, step)
 		<form class="w-100 u-scroll-wrapper" action={ templ.URL(c.PathTo("publication_add_single_import_confirm").String()) } method="POST">
-			@shared.CSRFTag(c)
+			@views.CSRFTag(c)
 			<div class="w-100 u-scroll-wrapper">
 				<div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
 					<div class="bc-toolbar">
