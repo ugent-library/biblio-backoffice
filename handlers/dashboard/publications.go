@@ -7,7 +7,6 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
@@ -43,9 +42,6 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 
 	ptypes := vocabularies.Map["publication_types"]
 	ptypes = append([]string{"all"}, ptypes...)
-
-	locptypes := localize.VocabularyTerms(c.Loc, "publication_types")
-	locptypes["all"] = "All"
 
 	allUPublicationYears, err := allUPublicationYears(c.PublicationSearchIndex)
 	if err != nil {
@@ -160,9 +156,6 @@ func RefreshAPublications(w http.ResponseWriter, r *http.Request) {
 	ptypes := vocabularies.Map["publication_types"]
 	ptypes = append([]string{"all"}, ptypes...)
 
-	locptypes := localize.VocabularyTerms(c.Loc, "publication_types")
-	locptypes["all"] = "All"
-
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
 		c.Log.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
@@ -225,9 +218,6 @@ func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
 	facultyCols := append([]string{"all"}, faculties...)
 	facultyCols = append(facultyCols, "UGent", "-")
 	ptypes := append([]string{"all"}, vocabularies.Map["publication_types"]...)
-
-	locptypes := localize.VocabularyTerms(c.Loc, "publication_types")
-	locptypes["all"] = "All"
 
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
