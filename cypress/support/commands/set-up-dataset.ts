@@ -60,7 +60,7 @@ export default function setUpDataset({
           new Date().getFullYear().toString(),
         );
 
-        cy.intercept("PUT", "/dataset/*/details/edit/refresh-form").as(
+        cy.intercept("PUT", "/dataset/*/details/edit/refresh").as(
           "refreshForm",
         );
 
