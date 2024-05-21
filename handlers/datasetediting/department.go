@@ -6,7 +6,6 @@ import (
 	"net/url"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
@@ -25,10 +24,6 @@ type BindDepartment struct {
 type BindDeleteDepartment struct {
 	DepartmentID string `path:"department_id"`
 	SnapshotID   string `path:"snapshot_id"`
-}
-
-type YieldDepartments struct {
-	Context
 }
 
 func AddDepartment(w http.ResponseWriter, r *http.Request) {
@@ -64,42 +59,43 @@ func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
 	datasetviews.SuggestDepartments(c, ctx.GetDataset(r), hits).Render(r.Context(), w)
 }
 
-func (h *Handler) CreateDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
+func CreateDepartment(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	d := ctx.GetDataset(r)
+
 	b := BindDepartment{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("create dataset department: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("create dataset department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	org, err := h.OrganizationService.GetOrganization(b.DepartmentID)
+	org, err := c.OrganizationService.GetOrganization(b.DepartmentID)
 	if err != nil {
-		h.Logger.Errorw("create dataset department: could not find organization", "errors", err, "dataset", ctx.Dataset.ID, "department", b.DepartmentID, r, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("create dataset department: could not find organization", "errors", err, "dataset", d.ID, "department", b.DepartmentID, r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	ctx.Dataset.AddOrganization(org)
+	d.AddOrganization(org)
 
 	// TODO handle validation errors
 
-	err = h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err = c.Repo.UpdateDataset(r.Header.Get("If-Match"), d, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("create dataset department: Could not save the dataset:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("create dataset department: Could not save the dataset:", "errors", err, "dataset", d.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "dataset/refresh_departments", YieldDepartments{
-		Context: ctx,
-	})
+	views.CloseModalAndReplace(datasetviews.DepartmentsBodySelector, datasetviews.DepartmentsBody(c, d)).Render(r.Context(), w)
 }
 
 func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
@@ -131,11 +127,14 @@ func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx Context) {
+func DeleteDepartment(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	d := ctx.GetDataset(r)
+
 	var b BindDeleteDepartment
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete dataset department: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("delete dataset department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -143,23 +142,21 @@ func (h *Handler) DeleteDepartment(w http.ResponseWriter, r *http.Request, ctx C
 	depID, _ := url.QueryUnescape(b.DepartmentID)
 	b.DepartmentID = depID
 
-	ctx.Dataset.RemoveOrganization(b.DepartmentID)
+	d.RemoveOrganization(b.DepartmentID)
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), d, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete dataset department: Could not save the dataset:", "error", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("delete dataset department: Could not save the dataset:", "error", err, "dataset", d.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "dataset/refresh_departments", YieldDepartments{
-		Context: ctx,
-	})
+	views.CloseModalAndReplace(datasetviews.DepartmentsBodySelector, datasetviews.DepartmentsBody(c, d)).Render(r.Context(), w)
 }
