@@ -6,7 +6,6 @@ import (
 
 	"github.com/caarlos0/env/v10"
 	_ "github.com/joho/godotenv/autoload"
-	slogzap "github.com/samber/slog-zap/v2"
 	"github.com/spf13/cobra"
 	_ "github.com/ugent-library/biblio-backoffice/snapstore"
 	"go.uber.org/zap"
@@ -47,12 +46,10 @@ func initLogger() {
 		l, err := zap.NewDevelopment()
 		cobra.CheckErr(err)
 		zapLogger = l.Sugar()
-		logger = slog.New(slogzap.Option{Level: slog.LevelDebug, Logger: l}.NewZapHandler())
 	} else {
 		l, err := zap.NewProduction()
 		cobra.CheckErr(err)
 		zapLogger = l.Sugar()
-		logger = slog.New(slogzap.Option{Level: slog.LevelInfo, Logger: l}.NewZapHandler())
 	}
 
 }

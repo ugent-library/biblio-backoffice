@@ -11,16 +11,13 @@ import (
 	"github.com/Masterminds/sprig/v3"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/sessions"
-	"github.com/jackc/pgx/v5"
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/ory/graceful"
-	"github.com/riverqueue/river"
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/api/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/helpers"
-	"github.com/ugent-library/biblio-backoffice/jobs"
 	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/routes"
 	"github.com/ugent-library/biblio-backoffice/urls"
@@ -79,22 +76,8 @@ var serverStartCmd = &cobra.Command{
 		// 	defer ffclient.Close()
 		// }
 
-		// start jobs
-		riverClient, err := jobs.Start(context.TODO(), jobs.JobsConfig{
-			PgxPool:       services.PgxPool,
-			Repo:          services.Repo,
-			PeopleRepo:    services.PeopleRepo,
-			PeopleIndex:   services.PeopleIndex,
-			ProjectsRepo:  services.ProjectsRepo,
-			ProjectsIndex: services.ProjectsIndex,
-			Logger:        logger.With("producer", "river"),
-		})
-		if err != nil {
-			return err
-		}
-
 		// setup router
-		router, err := buildRouter(services, riverClient)
+		router, err := buildRouter(services)
 		if err != nil {
 			return err
 		}
@@ -117,7 +100,7 @@ var serverStartCmd = &cobra.Command{
 	},
 }
 
-func buildRouter(services *backends.Services, riverClient *river.Client[pgx.Tx]) (*ich.Mux, error) {
+func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	b := config.BaseURL
 	if b == "" {
 		if config.Host == "" {
@@ -207,7 +190,7 @@ func buildRouter(services *backends.Services, riverClient *river.Client[pgx.Tx])
 	}
 
 	// api server
-	apiService := api.NewService(services.PeopleRepo, services.PeopleIndex, services.ProjectsRepo, services.ProjectsIndex, riverClient)
+	apiService := api.NewService(services)
 	apiServer, err := api.NewServer(apiService, &api.ApiSecurityHandler{APIKey: config.APIKey})
 	if err != nil {
 		return nil, err
