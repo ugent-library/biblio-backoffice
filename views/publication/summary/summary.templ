@@ -1,0 +1,218 @@
+package publicationsummaryviews
+
+import (
+	"fmt"
+	"net/url"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	relatedorganizationviews "github.com/ugent-library/biblio-backoffice/views/relatedorganization"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+)
+
+type SummaryArgs struct {
+	Publication *models.Publication
+	URL         *url.URL
+	Target      string
+	Actions     templ.Component
+	Footer      templ.Component
+	Links       templ.Component
+}
+
+templ Summary(c *ctx.Ctx, args SummaryArgs) {
+	<div class="w-100">
+		<div class="c-thumbnail-and-text align-items-start w-100">
+			if c.UserRole == "curator" {
+				<div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-md-small c-thumbnail-lg-large d-none d-lg-block">
+					<a
+						href={ templ.URL(args.URL.String()) }
+						if args.Target != "" {
+							target={ args.Target }
+						}
+					>
+						<div class="c-thumbnail-inner">
+							<i class="if if-article"></i>
+						</div>
+					</a>
+				</div>
+			}
+			<div class="c-thumbnail-text">
+				<div class="hstack-md-responsive align-items-start gap-3 w-100" data-collapsible-card>
+					<div class="vstack gap-5">
+						<div class="vstack gap-2">
+							<div class="d-inline-flex align-items-center flex-wrap">
+								@views.BadgeStatus(args.Publication.Status)
+								if args.Publication.Locked {
+									@views.BadgeLocked()
+								}
+								<span class="c-subline ps-2 me-3 pe-3 border-end">
+									if args.Publication.Classification != "" {
+										{ fmt.Sprintf("%s: %s", c.Loc.Get("publication_types." + args.Publication.Type), args.Publication.Classification) }
+									} else {
+										{ c.Loc.Get("publication_types." + args.Publication.Type) }
+									}
+								</span>
+								if mainFile := args.Publication.MainFile(); mainFile != nil {
+									<span class={ "c-subline", "me-3", "pe-3", templ.KV("border-end", mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }>
+										if mainFile.AccessLevel == "info:eu-repo/semantics/openAccess" {
+											<i class="if if-download if--small if--success"></i>
+											<span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+										} else if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+											<i class="if if-time if--small if--muted"></i>
+											<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+										} else if mainFile.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
+											<i class="if if-ghent-university if--small if--primary"></i>
+											<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+										} else if mainFile.AccessLevel == "info:eu-repo/semantics/closedAccess" {
+											<i class="if if-eye-off if--small if--muted"></i>
+											<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+										}
+									</span>
+									if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+										<span class="c-subline me-3 pe-3 border-end">
+											if mainFile.AccessLevelDuringEmbargo == "info:eu-repo/semantics/closedAccess" {
+												<i class="if if-eye-off if--small if--muted"></i>
+											} else {
+												<i class="if if-ghent-university if--small if--primary"></i>
+											}
+											<span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels_during_embargo." + mainFile.AccessLevelDuringEmbargo) }</span>
+										</span>
+										<span class="c-subline me-3 pe-3">
+											if mainFile.AccessLevelAfterEmbargo == "info:eu-repo/semantics/openAccess" {
+												<i class="if if-download if--small if--success"></i>
+											} else {
+												<i class="if if-ghent-university if--small if--primary"></i>
+											}
+											{ c.Loc.Get("publication_file_access_levels_after_embargo." + mainFile.AccessLevelAfterEmbargo) } from { mainFile.EmbargoDate }
+										</span>
+									}
+								} else if !args.Publication.Extern {
+									<span class="c-subline ps-2 me-3 pe-3">
+										<a
+											href={ views.URL(args.URL).SetQueryParam("show", "files").SafeURL() }
+											class="c-link-muted"
+											if args.Target != "" {
+												target={ args.Target }
+											}
+										>
+											<i class="if if-edit if--small"></i>
+											<em>Add document type: full text</em>
+										</a>
+									</span>
+								}
+							</div>
+							<h4 class="mb-0">
+								if c.UserRole == "curator" {
+									if args.Publication.Title != "" {
+										{ args.Publication.Title }
+									} else {
+										Untitled record
+									}
+								} else {
+									<a
+										href={ templ.URL(args.URL.String()) }
+										if args.Target != "" {
+											target={ args.Target }
+										}
+									>
+										<span class="list-group-item-title">
+											if args.Publication.Title != "" {
+												{ args.Publication.Title }
+											} else {
+												Untitled record
+											}
+										</span>
+									</a>
+								}
+							</h4>
+							<ul class="c-meta-list c-meta-list-inline">
+								for _, summaryPart := range args.Publication.SummaryParts() {
+									<li class="c-meta-item">{ summaryPart }</li>
+								}
+							</ul>
+							// TODO: pass on args.Target
+							@contributorviews.Summary(c, "author", args.Publication.Author, views.URL(args.URL).SetQueryParam("show", "contributors").String())
+						</div>
+						<div class="collapsible-card-content collapse" data-collapsible-card-content>
+							<div class="vstack gap-3">
+								<div class="d-flex align-items-center">
+									<i class="if if-building if--small if--muted me-2"></i>
+									if len(args.Publication.RelatedOrganizations) > 0 {
+										// TODO: pass on args.Target
+										@relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
+									} else {
+										<a
+											href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
+											class="c-link-muted"
+											if args.Target != "" {
+												target={ args.Target }
+											}
+										>
+											<i class="if if-edit if--small"></i>
+											<em>Add department</em>
+										</a>
+									}
+								</div>
+								<ul class="c-meta-list c-meta-list-inline">
+									if vabb := args.Publication.VABB(); vabb != "" {
+										if c.User.CanCurate() {
+											<li class="c-meta-item">
+												<i class="if if-bar-chart if--muted if--small"></i>
+												<span class="text-muted">VABB: { vabb }</span>
+											</li>
+										} else {
+											<li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ vabb }>
+												<i class="if if-bar-chart if--muted if--small"></i>
+												<span class="text-muted">VABB</span>
+											</li>
+										}
+									}
+									if args.Publication.Legacy {
+										<li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Legacy record">
+											<i class="if if-forbid if--muted if--small"></i>
+											<span class="text-muted">Legacy</span>
+										</li>
+									}
+									if len(args.Publication.RelatedDataset) > 0 {
+										<li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ fmt.Sprintf("%d related datasets", len(args.Publication.RelatedDataset)) }>
+											<i class="if if-database if--muted if--small"></i>
+											<span class="text-muted">{ fmt.Sprintf("%d", len(args.Publication.RelatedDataset)) }</span>
+										</li>
+									}
+								</ul>
+							</div>
+						</div>
+						if args.Footer != nil {
+							@args.Footer
+						}
+						<div class="d-lg-flex flex-row-reverse align-items-center justify-content-end vstack gap-3 flex-wrap">
+							<ul class="c-meta-list c-meta-list-inline c-body-small">
+								<li class="c-meta-item">
+									{ views.CreatedBy(c, args.Publication.DateCreated, args.Publication.Creator) }
+								</li>
+								<li class="c-meta-item">
+									{ views.UpdatedBy(c, args.Publication.DateUpdated, args.Publication.User, args.Publication.LastUser) }
+								</li>
+							</ul>
+							<div class="d-block pe-3">
+								<div class="input-group">
+									<button type="button" class="btn btn-outline-secondary btn-sm" data-clipboard={ args.Publication.ID }>
+										<i class="if if-copy text-muted "></i>
+										<span class="btn-text ms-0 me-1">Biblio ID</span>
+									</button>
+									<code class="c-code">{ args.Publication.ID }</code>
+								</div>
+							</div>
+						</div>
+						if args.Links != nil && c.UserRole == "curator" {
+							@args.Links
+						}
+					</div>
+					if args.Actions != nil {
+						@args.Actions
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+}

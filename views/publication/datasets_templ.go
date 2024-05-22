@@ -16,7 +16,9 @@ import (
 	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
 )
 
-func Datasets(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset, redirectURL string) templ.Component {
+const DatasetsBodySelector = "#datasets-body"
+
+func Datasets(c *ctx.Ctx, publication *models.Publication, datasets []*models.Dataset) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -33,7 +35,7 @@ func Datasets(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset, red
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = SubNav(c, p, redirectURL).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = SubNav(c, publication, c.CurrentURL.Query().Get("redirect-url")).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -49,12 +51,12 @@ func Datasets(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset, red
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditPublication(p) {
+		if c.User.CanEditPublication(publication) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-button-toolbar\" data-panel-state=\"read\"><button class=\"btn btn-outline-primary\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_add_dataset", "id", p.ID).String()))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_add_dataset", "id", publication.ID).String()))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -67,7 +69,7 @@ func Datasets(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset, red
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = DatasetsBody(c, p, datasets).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = DatasetsBody(c, publication, datasets).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -108,7 +110,7 @@ func DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset)
 				templ_7745c5c3_Err = datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
 					Dataset: d,
 					URL:     c.PathTo("dataset", "id", d.ID),
-					Actions: datasetActions(c, p, d),
+					Actions: datasetSummaryActions(c, p, d),
 				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -135,7 +137,7 @@ func DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset)
 	})
 }
 
-func datasetActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset) templ.Component {
+func datasetSummaryActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {

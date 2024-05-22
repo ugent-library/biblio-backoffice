@@ -17,7 +17,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
-	"github.com/ugent-library/biblio-backoffice/views/shared"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 	"net/url"
 )
 
@@ -77,7 +77,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = shared.CSRFTag(c).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.CSRFTag(c).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -208,13 +208,13 @@ func addIdentifierDuplicate(c *ctx.Ctx, args addIdentifierDuplicateArgs) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = publicationviews.Summary(c, publicationviews.SummaryArgs{
-			Publication:    args.Publication,
-			PublicationURL: args.PublicationURL,
-			Target:         "_blank",
-			Actions: publicationviews.DefaultSummary(publicationviews.DefaultSummaryArgs{
-				PublicationURL: args.PublicationURL,
-				Target:         "_blank",
+		templ_7745c5c3_Err = publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
+			Publication: args.Publication,
+			URL:         args.PublicationURL,
+			Target:      "_blank",
+			Actions: publicationsummaryviews.DefaultActions(publicationsummaryviews.DefaultActionsArgs{
+				URL:    args.PublicationURL,
+				Target: "_blank",
 			}),
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -233,7 +233,7 @@ func addIdentifierDuplicate(c *ctx.Ctx, args addIdentifierDuplicateArgs) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = shared.CSRFTag(c).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = views.CSRFTag(c).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -122,11 +122,8 @@ func UpdateAbstract(w http.ResponseWriter, r *http.Request) {
 	abstract := p.GetAbstract(b.AbstractID)
 
 	if abstract == nil {
-		abstract := &models.Text{
-			Text: b.Text,
-			Lang: b.Lang,
-		}
-		views.ReplaceModal(publicationviews.EditAbstractDialog(c, p, abstract, -1, true, nil, false)).Render(r.Context(), w)
+		c.Log.Warnw("update publication abstract: could not get abstract", "abstract", b.AbstractID, "publication", p.ID, "user", c.User.ID)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 

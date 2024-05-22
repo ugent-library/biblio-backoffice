@@ -92,7 +92,7 @@ describe("Issue #1241: As a researcher or librarian, I should not be able to sel
 
       cy.ensureModal("Edit dataset details")
         .within(() => {
-          cy.intercept("PUT", "/dataset/*/details/edit/refresh-form*").as(
+          cy.intercept("PUT", "/dataset/*/details/edit/refresh*").as(
             "refreshForm",
           );
 

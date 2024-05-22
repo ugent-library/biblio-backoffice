@@ -7,6 +7,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 )
 
 type AddSingleConfirmArgs struct {
@@ -75,11 +76,11 @@ templ AddSingleConfirm(c *ctx.Ctx, args AddSingleConfirmArgs) {
 								<div class="d-flex w-100">
 									<div class="w-100">
 										<div class="d-flex align-items-start">
-											@publicationviews.Summary(c, publicationviews.SummaryArgs{
-												Publication:    args.Publication,
-												PublicationURL: args.PublicationURL,
-												Actions: publicationviews.DefaultSummary(publicationviews.DefaultSummaryArgs{
-													PublicationURL: args.PublicationURL,
+											@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
+												Publication: args.Publication,
+												URL:         args.PublicationURL,
+												Actions: publicationsummaryviews.DefaultActions(publicationsummaryviews.DefaultActionsArgs{
+													URL: args.PublicationURL,
 												}),
 											})
 										</div>

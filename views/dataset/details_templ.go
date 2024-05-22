@@ -11,12 +11,12 @@ import "io"
 import "bytes"
 
 import (
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/display"
-	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
 func Details(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
@@ -101,18 +101,6 @@ func detailsSection() templ.Component {
 	})
 }
 
-func getDatasetIdentifierAndType(dataset *models.Dataset) (string, string) {
-	var identifierType, identifier string
-	for _, key := range vocabularies.Map["dataset_identifier_types"] {
-		if val := dataset.Identifiers.Get(key); val != "" {
-			identifierType = key
-			identifier = val
-			break
-		}
-	}
-	return identifierType, identifier
-}
-
 func DetailsBody(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -148,30 +136,32 @@ func DetailsBody(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if identifierType, identifier := getDatasetIdentifierAndType(dataset); identifierType != "" {
-				templ_7745c5c3_Err = display.Field(display.FieldArgs{
-					Label:    c.Loc.Get("builder.identifier_type"),
-					Value:    c.Loc.Get("identifier." + identifierType),
-					Required: true,
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = display.Field(display.FieldArgs{
-					Label: c.Loc.Get("builder.identifier"),
-					Value: identifier,
-					Content: display.Link(identifier, func(_ string) string {
-						return identifiers.Resolve(identifierType, identifier)
+			templ_7745c5c3_Err = display.Field(display.FieldArgs{
+				Label:    c.Loc.Get("builder.identifier_type"),
+				Required: true,
+				Value:    lo.Ternary(dataset.IdentifierType() != "", c.Loc.Get("identifier."+dataset.IdentifierType()), ""),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = display.Field(display.FieldArgs{
+				Label:    c.Loc.Get("builder.identifier"),
+				Required: true,
+				Value:    dataset.IdentifierValue(),
+				Content: lo.Ternary(
+					dataset.IdentifierValue() != "" && dataset.IdentifierType() != "",
+					display.Link(dataset.IdentifierValue(), func(val string) string {
+						return identifiers.Resolve(dataset.IdentifierType(), val)
 					}),
-					Required: true,
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
+					nil,
+				),
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
 			}
 			if !templ_7745c5c3_IsBuffer {
 				_, templ_7745c5c3_Err = io.Copy(templ_7745c5c3_W, templ_7745c5c3_Buffer)

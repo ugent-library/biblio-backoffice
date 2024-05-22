@@ -7,7 +7,6 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
@@ -43,9 +42,6 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 
 	ptypes := vocabularies.Map["publication_types"]
 	ptypes = append([]string{"all"}, ptypes...)
-
-	locptypes := localize.VocabularyTerms(c.Loc, "publication_types")
-	locptypes["all"] = "All"
 
 	allUPublicationYears, err := allUPublicationYears(c.PublicationSearchIndex)
 	if err != nil {
@@ -135,7 +131,6 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 		APublications:        aPublications,
 		UFaculties:           uFacultyCols,
 		AFaculties:           aFacultyCols,
-		PTypes:               locptypes,
 		UYear:                bindPublications.UYear,
 		AYear:                bindPublications.AYear,
 		AllUPublicationYears: allUPublicationYears,
@@ -160,9 +155,6 @@ func RefreshAPublications(w http.ResponseWriter, r *http.Request) {
 
 	ptypes := vocabularies.Map["publication_types"]
 	ptypes = append([]string{"all"}, ptypes...)
-
-	locptypes := localize.VocabularyTerms(c.Loc, "publication_types")
-	locptypes["all"] = "All"
 
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
@@ -208,7 +200,7 @@ func RefreshAPublications(w http.ResponseWriter, r *http.Request) {
 		).String(),
 	)
 
-	views.CuratorDashboardTblPublications(c, facultyCols, publications, locptypes).Render(r.Context(), w)
+	views.CuratorDashboardTblPublications(c, facultyCols, publications).Render(r.Context(), w)
 }
 
 func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
@@ -226,9 +218,6 @@ func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
 	facultyCols := append([]string{"all"}, faculties...)
 	facultyCols = append(facultyCols, "UGent", "-")
 	ptypes := append([]string{"all"}, vocabularies.Map["publication_types"]...)
-
-	locptypes := localize.VocabularyTerms(c.Loc, "publication_types")
-	locptypes["all"] = "All"
 
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
@@ -270,7 +259,7 @@ func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
 		c.URLTo("dashboard_publications", "type", typ, "uyear", bindPublications.UYear, "ayear", bindPublications.AYear).String(),
 	)
 
-	views.CuratorDashboardTblPublications(c, facultyCols, publications, locptypes).Render(r.Context(), w)
+	views.CuratorDashboardTblPublications(c, facultyCols, publications).Render(r.Context(), w)
 }
 
 func generatePublicationsDashboard(faculties []string, ptypes []string, searcher backends.PublicationIndex, baseSearchUrl *url.URL, fn func(fac string, args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {

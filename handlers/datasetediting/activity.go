@@ -4,13 +4,12 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/leonelquinteros/gotext"
-	"github.com/ugent-library/biblio-backoffice/localize"
-	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
-	"github.com/ugent-library/biblio-backoffice/render/form"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
+	"github.com/ugent-library/biblio-backoffice/views"
+	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
@@ -26,247 +25,158 @@ type BindReviewerNote struct {
 	ReviewerNote string `form:"reviewer_note"`
 }
 
-type YieldEditMessage struct {
-	Context
-	Form     *form.Form
-	Conflict bool
+func EditMessage(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	d := ctx.GetDataset(r)
+
+	views.ShowModal(datasetviews.EditMessageDialog(c, datasetviews.EditMessageDialogArgs{
+		Dataset: d,
+	})).Render(r.Context(), w)
 }
 
-type YieldEditReviewerTags struct {
-	Context
-	Form     *form.Form
-	Conflict bool
-}
+func UpdateMessage(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
 
-type YieldEditReviewerNote struct {
-	Context
-	Form     *form.Form
-	Conflict bool
-}
-
-func (h *Handler) EditMessage(w http.ResponseWriter, r *http.Request, ctx Context) {
-	render.Layout(w, "show_modal", "dataset/edit_message", YieldEditMessage{
-		Context: ctx,
-		Form:    messageForm(ctx.User, ctx.Loc, ctx.Dataset, nil),
-	})
-}
-
-func (h *Handler) UpdateMessage(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindMessage{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("update dataset reviewer note: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("update dataset reviewer note: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	p := ctx.Dataset
-	p.Message = b.Message
+	d := ctx.GetDataset(r)
+	d.Message = b.Message
 
-	if validationErrs := p.Validate(); validationErrs != nil {
-		h.Logger.Warnw("update dataset reviewer note: could not validate message:", "errors", validationErrs, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.Layout(w, "refresh_modal", "dataset/edit_message", YieldEditMessage{
-			Context:  ctx,
-			Form:     messageForm(ctx.User, ctx.Loc, p, validationErrs.(*okay.Errors)),
+	if validationErrs := d.Validate(); validationErrs != nil {
+		c.Log.Warnw("update dataset reviewer note: could not validate message:", "errors", validationErrs, "dataset", d.ID, "user", c.User.ID)
+		views.ReplaceModal(datasetviews.EditMessageDialog(c, datasetviews.EditMessageDialogArgs{
+			Dataset:  d,
+			Errors:   validationErrs.(*okay.Errors),
 			Conflict: false,
-		})
+		})).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), d, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "dataset/edit_message", YieldEditMessage{
-			Context:  ctx,
-			Form:     messageForm(ctx.User, ctx.Loc, p, nil),
+		views.ReplaceModal(datasetviews.EditMessageDialog(c, datasetviews.EditMessageDialogArgs{
+			Dataset:  d,
 			Conflict: true,
-		})
+		})).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update dataset message: could not save the dataset:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("update dataset message: could not save the dataset:", "errors", err, "dataset", d.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "dataset/refresh_message", ctx)
+	views.CloseModalAndReplace(datasetviews.MessageBodySelector, datasetviews.MessageBody(c, d)).Render(r.Context(), w)
 }
 
-func (h *Handler) EditReviewerTags(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
-		return
-	}
+func EditReviewerTags(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	d := ctx.GetDataset(r)
 
-	render.Layout(w, "show_modal", "dataset/edit_reviewer_tags", YieldEditReviewerTags{
-		Context: ctx,
-		Form:    reviewerTagsForm(ctx.User, ctx.Loc, ctx.Dataset, nil),
-	})
+	views.ShowModal(datasetviews.EditReviewerTagsDialog(c, datasetviews.EditReviewerTagsDialogArgs{
+		Dataset: d,
+	})).Render(r.Context(), w)
 }
 
-func (h *Handler) UpdateReviewerTags(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
-		return
-	}
+func UpdateReviewerTags(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
 
 	b := BindReviewerTags{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("update dataset reviewer tags: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("update dataset reviewer tags: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	p := ctx.Dataset
-	p.ReviewerTags = b.ReviewerTags
+	d := ctx.GetDataset(r)
+	d.ReviewerTags = b.ReviewerTags
 
-	if validationErrs := p.Validate(); validationErrs != nil {
-		h.Logger.Warnw("update dataset reviewer tags: could not validate reviewer tags:", "errors", validationErrs, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.Layout(w, "refresh_modal", "dataset/edit_reviewer_tags", YieldEditReviewerTags{
-			Context:  ctx,
-			Form:     reviewerTagsForm(ctx.User, ctx.Loc, p, validationErrs.(*okay.Errors)),
+	if validationErrs := d.Validate(); validationErrs != nil {
+		c.Log.Warnw("update dataset reviewer tags: could not validate reviewer tags:", "errors", validationErrs, "dataset", d.ID, "user", c.User.ID)
+		views.ReplaceModal(datasetviews.EditReviewerTagsDialog(c, datasetviews.EditReviewerTagsDialogArgs{
+			Dataset:  d,
+			Errors:   validationErrs.(*okay.Errors),
 			Conflict: false,
-		})
+		})).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), d, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "dataset/edit_reviewer_tags", YieldEditReviewerTags{
-			Context:  ctx,
-			Form:     reviewerTagsForm(ctx.User, ctx.Loc, p, nil),
+		views.ReplaceModal(datasetviews.EditReviewerTagsDialog(c, datasetviews.EditReviewerTagsDialogArgs{
+			Dataset:  d,
 			Conflict: true,
-		})
+		})).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update dataset reviewer tags: could not save the dataset:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("update dataset reviewer tags: could not save the dataset:", "errors", err, "dataset", d.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "dataset/refresh_reviewer_tags", ctx)
+	views.CloseModalAndReplace(datasetviews.ReviewerTagsSelector, datasetviews.ReviewerTagsBody(c, d)).Render(r.Context(), w)
 }
 
-func (h *Handler) EditReviewerNote(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
-		return
-	}
+func EditReviewerNote(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	d := ctx.GetDataset(r)
 
-	render.Layout(w, "show_modal", "dataset/edit_reviewer_note", YieldEditReviewerNote{
-		Context:  ctx,
-		Form:     reviewerNoteForm(ctx.User, ctx.Loc, ctx.Dataset, nil),
-		Conflict: false,
-	})
+	views.ShowModal(datasetviews.EditReviewerNoteDialog(c, datasetviews.EditReviewerNoteDialogArgs{
+		Dataset: d,
+	})).Render(r.Context(), w)
 }
 
-func (h *Handler) UpdateReviewerNote(w http.ResponseWriter, r *http.Request, ctx Context) {
-	if !ctx.User.CanCurate() {
-		render.Unauthorized(w, r)
-		return
-	}
+func UpdateReviewerNote(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
 
 	b := BindReviewerNote{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("update dataset reviewer note: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("update dataset reviewer note: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	p := ctx.Dataset
-	p.ReviewerNote = b.ReviewerNote
+	d := ctx.GetDataset(r)
+	d.ReviewerNote = b.ReviewerNote
 
-	if validationErrs := p.Validate(); validationErrs != nil {
-		h.Logger.Warnw("update dataset reviewer note: could not validate reviewer note:", "errors", validationErrs, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.Layout(w, "refresh_modal", "dataset/edit_reviewer_note", YieldEditReviewerNote{
-			Context:  ctx,
-			Form:     reviewerNoteForm(ctx.User, ctx.Loc, p, validationErrs.(*okay.Errors)),
+	if validationErrs := d.Validate(); validationErrs != nil {
+		c.Log.Warnw("update dataset reviewer note: could not validate reviewer note:", "errors", validationErrs, "dataset", d.ID, "user", c.User.ID)
+		views.ReplaceModal(datasetviews.EditReviewerNoteDialog(c, datasetviews.EditReviewerNoteDialogArgs{
+			Dataset:  d,
+			Errors:   validationErrs.(*okay.Errors),
 			Conflict: false,
-		})
+		}))
 		return
 	}
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), d, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		render.Layout(w, "refresh_modal", "dataset/edit_reviewer_note", YieldEditReviewerNote{
-			Context:  ctx,
-			Form:     reviewerNoteForm(ctx.User, ctx.Loc, p, nil),
+		views.ReplaceModal(datasetviews.EditReviewerNoteDialog(c, datasetviews.EditReviewerNoteDialogArgs{
+			Dataset:  d,
 			Conflict: true,
-		})
+		})).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update dataset reviewer note: could not save the dataset:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("update dataset reviewer note: could not save the dataset:", "errors", err, "dataset", d.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "dataset/refresh_reviewer_note", ctx)
-}
-
-func messageForm(user *models.Person, loc *gotext.Locale, p *models.Dataset, errors *okay.Errors) *form.Form {
-	return form.New().
-		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(loc, errors)).
-		AddSection(
-			&form.TextArea{
-				Name:  "message",
-				Value: p.Message,
-				Label: loc.Get("builder.message"),
-				Cols:  9,
-				Rows:  4,
-				Error: localize.ValidationErrorAt(
-					loc,
-					errors,
-					"/message",
-				),
-			},
-		)
-}
-
-func reviewerTagsForm(user *models.Person, loc *gotext.Locale, p *models.Dataset, errors *okay.Errors) *form.Form {
-	return form.New().
-		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(loc, errors)).
-		AddSection(
-			&form.TextRepeat{
-				Name:   "reviewer_tags",
-				Values: p.ReviewerTags,
-				Label:  loc.Get("builder.reviewer_tags"),
-				Cols:   9,
-				Error: localize.ValidationErrorAt(
-					loc,
-					errors,
-					"/reviewer_tags",
-				),
-			},
-		)
-}
-
-func reviewerNoteForm(user *models.Person, loc *gotext.Locale, p *models.Dataset, errors *okay.Errors) *form.Form {
-	return form.New().
-		WithTheme("cols").
-		WithErrors(localize.ValidationErrors(loc, errors)).
-		AddSection(
-			&form.TextArea{
-				Name:  "reviewer_note",
-				Value: p.ReviewerNote,
-				Label: loc.Get("builder.reviewer_note"),
-				Cols:  9,
-				Rows:  4,
-				Error: localize.ValidationErrorAt(
-					loc,
-					errors,
-					"/reviewer_note",
-				),
-			},
-		)
+	views.CloseModalAndReplace(datasetviews.ReviewerNoteSelector, datasetviews.ReviewerNoteBody(c, d)).Render(r.Context(), w)
 }

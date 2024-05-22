@@ -83,6 +83,22 @@ func (d *Dataset) FirstIdentifier() (string, []string) { // TODO eliminate need 
 	return "", nil
 }
 
+// TODO: remove when we really support multiple identifiers
+func (d *Dataset) IdentifierType() string {
+	for key := range d.Identifiers {
+		return key
+	}
+	return ""
+}
+
+// TODO: remove when we really support multiple identifiers
+func (d *Dataset) IdentifierValue() string {
+	for _, vals := range d.Identifiers {
+		return vals[0]
+	}
+	return ""
+}
+
 func (d *Dataset) HasRelatedPublication(id string) bool {
 	for _, r := range d.RelatedPublication {
 		if r.ID == id {
@@ -294,15 +310,17 @@ func (d *Dataset) Validate() error {
 	}
 
 	if d.Status == "public" && len(d.Identifiers) == 0 {
+		errs.Add(okay.NewError("/identifier_type", "dataset.identifier_type.required"))
 		errs.Add(okay.NewError("/identifier", "dataset.identifier.required"))
 	}
 	for key, vals := range d.Identifiers {
 		if key == "" {
-			errs.Add(okay.NewError("/identifier", "dataset.identifier.required"))
-			break
+			errs.Add(okay.NewError("/identifier_type", "dataset.identifier_type.required"))
 		} else if !slices.Contains(vocabularies.Map["dataset_identifier_types"], key) {
-			errs.Add(okay.NewError("/identifier", "dataset.identifier.invalid"))
-			break
+			errs.Add(okay.NewError("/identifier_type", "dataset.identifier_type.invalid"))
+		}
+		if len(vals) == 0 {
+			errs.Add(okay.NewError("/identifier", "dataset.identifier.required"))
 		}
 		for _, val := range vals {
 			if val == "" {

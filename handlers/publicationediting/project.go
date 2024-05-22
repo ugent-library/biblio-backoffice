@@ -6,7 +6,6 @@ import (
 	"net/url"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
@@ -23,10 +22,6 @@ type BindProject struct {
 type BindDeleteProject struct {
 	ProjectID  string `path:"project_id"`
 	SnapshotID string `path:"snapshot_id"`
-}
-
-type YieldProjects struct {
-	Context
 }
 
 func AddProject(w http.ResponseWriter, r *http.Request) {
@@ -62,46 +57,47 @@ func SuggestProjects(w http.ResponseWriter, r *http.Request) {
 	publicationviews.SuggestProjects(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
 }
 
-func (h *Handler) CreateProject(w http.ResponseWriter, r *http.Request, ctx Context) {
+func CreateProject(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindProject{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("create publication project: could not bind request arguments:", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("create publication project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	project, err := h.ProjectService.GetProject(b.ProjectID)
+	project, err := c.ProjectService.GetProject(b.ProjectID)
 	if err != nil {
-		h.Logger.Errorw("create publication project: could not get project:", "errors", err, "publication", ctx.Publication.ID, "project", b.ProjectID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("create publication project: could not get project:", "errors", err, "publication", p.ID, "project", b.ProjectID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
-	ctx.Publication.AddProject(project)
+	p.AddProject(project)
 
 	// TODO handle validation errors
 
-	err = h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err = c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("create publication project: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("create publication project: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_projects", YieldProjects{
-		Context: ctx,
-	})
+	views.CloseModalAndReplace(publicationviews.ProjectsBodySelector, publicationviews.ProjectsBody(c, p)).Render(r.Context(), w)
 }
 
 func ConfirmDeleteProject(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	publication := ctx.GetPublication(r)
+	p := ctx.GetPublication(r)
 
 	b := BindDeleteProject{}
 	if err := bind.Request(r, &b); err != nil {
@@ -110,7 +106,7 @@ func ConfirmDeleteProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if b.SnapshotID != publication.SnapshotID {
+	if b.SnapshotID != p.SnapshotID {
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
@@ -120,40 +116,41 @@ func ConfirmDeleteProject(w http.ResponseWriter, r *http.Request) {
 	views.ConfirmDelete(views.ConfirmDeleteArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this project from the publication?",
-		DeleteUrl:  c.PathTo("publication_delete_project", "id", publication.ID, "project_id", projectID),
-		SnapshotID: publication.SnapshotID,
+		DeleteUrl:  c.PathTo("publication_delete_project", "id", p.ID, "project_id", projectID),
+		SnapshotID: p.SnapshotID,
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) DeleteProject(w http.ResponseWriter, r *http.Request, ctx Context) {
+func DeleteProject(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	var b BindDeleteProject
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete publication project: could not bind request arguments:", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("delete publication project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
 	projectID, _ := url.PathUnescape(b.ProjectID)
 
-	ctx.Publication.RemoveProject(projectID)
+	p.RemoveProject(projectID)
 
 	// TODO handle validation errors
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete publication project: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("delete publication project: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "publication/refresh_projects", YieldProjects{
-		Context: ctx,
-	})
+	views.CloseModalAndReplace(publicationviews.ProjectsBodySelector, publicationviews.ProjectsBody(c, p)).Render(r.Context(), w)
 }

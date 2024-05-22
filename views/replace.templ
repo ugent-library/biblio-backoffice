@@ -22,3 +22,9 @@ templ CloseModalAndReplace(selector string, component templ.Component) {
 		@component
 	</div>
 }
+
+templ Replace(selector string, component templ.Component) {
+	<div hx-swap-oob={ fmt.Sprintf("innerHTML:%s", selector) }>
+		@component
+	</div>
+}

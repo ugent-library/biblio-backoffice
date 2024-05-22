@@ -1,0 +1,101 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/localize"
+	"github.com/ugent-library/okay"
+	"fmt"
+)
+
+templ EditLinkDialog(c *ctx.Ctx, dataset *models.Dataset, link * models.DatasetLink, idx int, conflict bool, errors *okay.Errors, isNew bool) {
+	<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">
+				if isNew {
+					Add link
+				} else {
+					Edit link
+				}
+				</h2>
+			</div>
+			<div class="modal-body">
+				if conflict {
+					<div class="alert alert-danger" role="alert">
+						<i class="if if--error if-error-circle-fill"></i>
+						The dataset you are editing has been changed by someone else. Please copy your edits, then close this form.
+					</div>
+				}
+				@form.Errors(localize.ValidationErrors(c.Loc, errors))
+				@form.Text(form.TextArgs{
+					FieldArgs: form.FieldArgs{
+						Name:     "url",
+						Label:    c.Loc.Get("builder.link.url"),
+						Required: true,
+						Cols:     12,
+						Error:    localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/url", idx)),
+						Theme: form.ThemeVertical,
+					},
+					Value: link.URL,
+				})
+				@form.Select(form.SelectArgs{
+					FieldArgs: form.FieldArgs{
+						Name:  "relation",
+						Label: c.Loc.Get("builder.link.relation"),
+						Cols:  12,
+						Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/relation", idx)),
+						Theme: form.ThemeVertical,
+					},
+					Value:   link.Relation,
+					Options: localize.VocabularySelectOptions(c.Loc, "dataset_link_relations"),
+				})
+				@form.Text(form.TextArgs{
+					FieldArgs: form.FieldArgs{
+						Name:  "description",
+						Label: c.Loc.Get("builder.link.description"),
+						Cols:  12,
+						Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/description", idx)),
+						Theme: form.ThemeVertical,
+					},
+					Value: link.Description,
+				})
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					if conflict {
+						<div class="bc-toolbar-left">
+							<button class="btn btn-primary modal-close">Close</button>
+						</div>
+					} else {
+						<div class="bc-toolbar-left">
+							<button class="btn btn-link modal-close">Cancel</button>
+						</div>
+						<div class="bc-toolbar-right">
+							<button
+								type="button"
+								name="create"
+								class="btn btn-primary"
+								if isNew {
+									hx-post={ c.PathTo("dataset_create_link", "id", dataset.ID).String() }
+								} else {
+									hx-put={ c.PathTo("dataset_update_link", "id", dataset.ID, "link_id", link.ID).String() }
+								}
+								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID) }
+								hx-include=".modal-body"
+								hx-swap="none"
+							>
+								if isNew {
+									Add link
+								} else {
+									Update link
+								}
+							</button>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+}

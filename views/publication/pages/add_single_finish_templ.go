@@ -15,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 	"net/url"
 )
 
@@ -78,11 +79,11 @@ func AddSingleFinish(c *ctx.Ctx, args AddSingleFinishArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = publicationviews.Summary(c, publicationviews.SummaryArgs{
-				Publication:    args.Publication,
-				PublicationURL: args.PublicationURL,
-				Actions: publicationviews.DefaultSummary(publicationviews.DefaultSummaryArgs{
-					PublicationURL: args.PublicationURL,
+			templ_7745c5c3_Err = publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
+				Publication: args.Publication,
+				URL:         args.PublicationURL,
+				Actions: publicationsummaryviews.DefaultActions(publicationsummaryviews.DefaultActionsArgs{
+					URL: args.PublicationURL,
 				}),
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {

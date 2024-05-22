@@ -24,19 +24,14 @@ export default function triggerHtmx<T = unknown>(
 
   logCommand("triggerHtmx", { method, url, "hx-headers": hxHeaders }, method);
 
-  return cy
-    .document(NO_LOG)
-    .find<HTMLMetaElement>("meta[name=csrf-token]", NO_LOG)
-    .then((csrfToken) => {
-      return cy.request<T>({
-        url,
-        method: METHODS[method],
-        headers: {
-          ...hxHeaders,
-          "X-CSRF-Token": csrfToken.prop("content"),
-        },
-      });
-    });
+  return cy.request<T>({
+    url,
+    method: METHODS[method],
+    headers: {
+      ...hxHeaders,
+      "X-CSRF-Token": this.CSRFToken,
+    },
+  });
 }
 
 declare global {

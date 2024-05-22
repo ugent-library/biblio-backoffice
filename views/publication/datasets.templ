@@ -6,9 +6,11 @@ import (
 	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
 )
 
-templ Datasets(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset, redirectURL string) {
+const DatasetsBodySelector = "#datasets-body"
+
+templ Datasets(c *ctx.Ctx, publication *models.Publication, datasets []*models.Dataset) {
 	<div hx-swap-oob="innerHTML:#show-nav">
-		@SubNav(c, p, redirectURL)
+		@SubNav(c, publication, c.CurrentURL.Query().Get("redirect-url"))
 	</div>
 	<div hx-swap-oob="innerHTML:#show-sidebar"></div>
 	<div class="card mb-6">
@@ -29,11 +31,11 @@ templ Datasets(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset, re
 					</a>
 				</div>
 				<div class="bc-toolbar-right">
-					if c.User.CanEditPublication(p) {
+					if c.User.CanEditPublication(publication) {
 						<div class="c-button-toolbar" data-panel-state="read">
 							<button
 								class="btn btn-outline-primary"
-								hx-get={ c.PathTo("publication_add_dataset", "id", p.ID).String() }
+								hx-get={ c.PathTo("publication_add_dataset", "id", publication.ID).String() }
 								hx-target="#modals"
 							>
 								<i class="if if-add"></i>
@@ -45,7 +47,7 @@ templ Datasets(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset, re
 			</div>
 		</div>
 		<div id="datasets-body">
-			@DatasetsBody(c, p, datasets)
+			@DatasetsBody(c, publication, datasets)
 		</div>
 	</div>
 }
@@ -61,7 +63,7 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 								@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
 									Dataset: d,
 									URL:     c.PathTo("dataset", "id", d.ID),
-									Actions: datasetActions(c, p, d),
+									Actions: datasetSummaryActions(c, p, d),
 								})
 							</div>
 						</div>
@@ -76,7 +78,7 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 	}
 }
 
-templ datasetActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset) {
+templ datasetSummaryActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset) {
 	<div class="bc-toolbar-item ms-auto ms-lg-0">
 		<div class="c-button-toolbar">
 			<div class="dropdown dropleft">

@@ -15,6 +15,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 	"github.com/ugent-library/biblio-backoffice/views/search"
 )
 
@@ -24,23 +25,6 @@ type AddMultipleFinishArgs struct {
 	Hits        *models.PublicationHits
 	SearchArgs  *models.SearchArgs
 	RedirectURL string
-}
-
-func generatePublicationSummaryArgs(c *ctx.Ctx, pub *models.Publication, redirectURL string) publication.SummaryArgs {
-	url := c.PathTo("publication", "id", pub.ID, "redirect-url", redirectURL)
-
-	args := publication.SummaryArgs{
-		Publication:    pub,
-		PublicationURL: url,
-		Actions:        publication.SummaryActions(c, pub, url),
-		Footer:         publication.SummaryFooter(c, pub),
-	}
-
-	if c.UserRole == "curator" {
-		args.Links = publication.SummaryLinks(c, pub, url)
-	}
-
-	return args
 }
 
 func AddMultipleFinish(c *ctx.Ctx, args AddMultipleFinishArgs) templ.Component {
@@ -110,9 +94,11 @@ func AddMultipleFinish(c *ctx.Ctx, args AddMultipleFinishArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = publication.Summary(c, generatePublicationSummaryArgs(c, hit, args.RedirectURL)).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
+				if publicationURL := views.URL(c.PathTo("publication", "id", hit.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).URL(); publicationURL != nil {
+					templ_7745c5c3_Err = publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{Publication: hit, URL: publicationURL, Actions: publication.SummaryActions(c, hit, publicationURL), Footer: publication.SummaryFooter(c, hit), Links: publication.SummaryLinks(c, hit, publicationURL)}).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li>")
 				if templ_7745c5c3_Err != nil {

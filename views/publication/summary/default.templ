@@ -1,0 +1,27 @@
+package publicationsummaryviews
+
+import (
+	"net/url"
+)
+
+type DefaultActionsArgs struct {
+	URL    *url.URL
+	Target string
+}
+
+templ DefaultActions(args DefaultActionsArgs) {
+	<div class="bc-toolbar-item ms-auto ms-lg-0">
+		<div class="c-button-toolbar">
+			<a
+				class="btn btn-tertiary"
+				href={ templ.URL(args.URL.String()) }
+				if args.Target != "" {
+					target={ args.Target }
+				}
+			>
+				<i class="if if-eye"></i>
+				<span class="btn-text">View publication</span>
+			</a>
+		</div>
+	</div>
+}

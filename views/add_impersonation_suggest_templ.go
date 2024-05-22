@@ -13,6 +13,7 @@ import "bytes"
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
 )
 
 func AddImpersonationSuggest(c *ctx.Ctx, firstName string, lastName string, hits []*models.Person) templ.Component {
@@ -38,7 +39,7 @@ func AddImpersonationSuggest(c *ctx.Ctx, firstName string, lastName string, hits
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = contributorShowSummary(models.ContributorFromPerson(hit)).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = contributorviews.SuggestSummary(c, models.ContributorFromPerson(hit), false).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

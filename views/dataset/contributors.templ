@@ -6,6 +6,8 @@ import (
 	"fmt"
 )
 
+const DepartmentsBodySelector = "#departments-body"
+
 templ Contributors(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 	<div hx-swap-oob="innerHTML:#show-nav">
 		@SubNav(c, dataset, redirectURL)
@@ -132,7 +134,7 @@ templ ContributorsBody(c *ctx.Ctx, dataset *models.Dataset, role string) {
 templ ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, position int, contributor *models.Contributor) {
 	<td>
 		if c.User.CanEditDataset(dataset) {
-			<input type="hidden" name="position" value={ fmt.Sprintf("%d", position) }/>
+			<input type="hidden" name="position" value={ fmt.Sprint(position) }/>
 		}
 		<div class="bc-avatar-and-text">
 			if contributor.Person != nil {
@@ -185,7 +187,7 @@ templ ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, posit
 				<button
 					type="button"
 					class="btn btn-default"
-					hx-get={ c.PathTo("dataset_edit_contributor", "id", dataset.ID, "role", role, "position", fmt.Sprintf("%d", position)).String() }
+					hx-get={ c.PathTo("dataset_edit_contributor", "id", dataset.ID, "role", role, "position", fmt.Sprint(position)).String() }
 					hx-target="#modals"
 				>
 					<i class="if if-edit"></i>
@@ -193,7 +195,7 @@ templ ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, posit
 				<button
 					type="button"
 					class="btn btn-default"
-					hx-get={ c.PathTo("dataset_confirm_delete_contributor", "id", dataset.ID, "role", role, "position", fmt.Sprintf("%d", position)).String() }
+					hx-get={ c.PathTo("dataset_confirm_delete_contributor", "id", dataset.ID, "role", role, "position", fmt.Sprint(position)).String() }
 					hx-target="#modals"
 				>
 					<i class="if if-delete"></i>
@@ -209,8 +211,8 @@ templ DepartmentsBody(c *ctx.Ctx, dataset *models.Dataset) {
 		<div class="card-body p-0">
 			<table class="table">
 				<tbody>
-					for k, rel := range dataset.RelatedOrganizations {
-						<tr class={ fmt.Sprintf("row-k", k) }>
+					for i, rel := range dataset.RelatedOrganizations {
+						<tr class={ fmt.Sprintf("row-%d", i) }>
 							<td class="ps-6">
 								<div class="d-flex w-100">
 									<div class="w-100">

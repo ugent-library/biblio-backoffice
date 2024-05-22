@@ -675,7 +675,7 @@ describe("Issue #1237: Accessibility and mark-up: make sure labels are clickable
         cy.visitDataset();
 
         cy.updateFields("Dataset details", () => {
-          cy.intercept("PUT", "/dataset/*/details/edit/refresh-form*").as(
+          cy.intercept("PUT", "/dataset/*/details/edit/refresh*").as(
             "refreshForm",
           );
           cy.setFieldByLabel("License", "The license is not listed here");
@@ -739,7 +739,7 @@ describe("Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
         cy.visitPublication();
 
-        testLibrarianTagsSection();
+        // Librarian tags field: tagify component doesn't support focussing by label
 
         testLibrarianNoteSection();
       });
@@ -751,7 +751,7 @@ describe("Issue #1237: Accessibility and mark-up: make sure labels are clickable
 
         cy.visitDataset();
 
-        testLibrarianTagsSection();
+        // Librarian tags field: tagify component doesn't support focussing by label
 
         testLibrarianNoteSection();
       });
@@ -870,12 +870,6 @@ describe("Issue #1237: Accessibility and mark-up: make sure labels are clickable
     cy.updateFields("Supervisors", () => {
       testFocusForLabel("First name", 'input[name="first_name"]', true);
       testFocusForLabel("Last name", 'input[name="last_name"]');
-    });
-  }
-
-  function testLibrarianTagsSection() {
-    cy.updateFields("Librarian tags", () => {
-      testFocusForLabel("Librarian tags", 'input[name="reviewer_tags"]');
     });
   }
 
