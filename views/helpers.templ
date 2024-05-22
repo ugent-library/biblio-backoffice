@@ -49,7 +49,7 @@ func Linkify(text string) string {
 	return b.String()
 }
 
-templ All(components ...templ.Component) {
+templ Cat(components ...templ.Component) {
 	for _, c := range components {
 		@c
 	}
