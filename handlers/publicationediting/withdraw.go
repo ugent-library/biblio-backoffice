@@ -37,7 +37,7 @@ func Withdraw(w http.ResponseWriter, r *http.Request) {
 
 	if validationErrs := publication.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
-		views.ReplaceModal(views.FormErrorsDialog(c, "Unable to withdraw this publication due to the following errors", errors)).Render(r.Context(), w)
+		views.ReplaceModal(views.FormErrorsDialog("Unable to withdraw this publication due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 

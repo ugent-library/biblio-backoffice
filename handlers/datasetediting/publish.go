@@ -37,7 +37,7 @@ func Publish(w http.ResponseWriter, r *http.Request) {
 
 	if validationErrs := dataset.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
-		views.ReplaceModal(views.FormErrorsDialog(c, "Unable to publish this dataset due to the following errors", errors)).Render(r.Context(), w)
+		views.ReplaceModal(views.FormErrorsDialog("Unable to publish this dataset due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 
