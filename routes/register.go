@@ -545,6 +545,16 @@ func Register(c Config) {
 
 						// edit contributors
 						r.Post("/contributors/{role}/order", datasetediting.OrderContributors).Name("dataset_order_contributors")
+						r.Get("/contributors/{role}/add", datasetediting.AddContributor).Name("dataset_add_contributor")
+						r.Get("/contributors/{role}/suggestions", datasetediting.AddContributorSuggest).Name("dataset_add_contributor_suggest")
+						r.Get("/contributors/{role}/confirm-create", datasetediting.ConfirmCreateContributor).Name("dataset_confirm_create_contributor")
+
+						r.Post("/contributors/{role}", datasetediting.CreateContributor).Name("dataset_create_contributor")
+						r.Get("/contributors/{role}/{position}/edit", datasetediting.EditContributor).Name("dataset_edit_contributor")
+						r.Get("/contributors/{role}/{position}/suggestions", datasetediting.EditContributorSuggest).Name("dataset_edit_contributor_suggest")
+						r.Get("/contributors/{role}/{position}/confirm-update", datasetediting.ConfirmUpdateContributor).Name("dataset_confirm_update_contributor")
+						r.Put("/contributors/{role}/{position}", datasetediting.UpdateContributor).Name("dataset_update_contributor")
+						r.Delete("/contributors/{role}/{position}", datasetediting.DeleteContributor).Name("dataset_delete_contributor")
 					})
 
 					// curator actions
@@ -601,35 +611,6 @@ func Register(c Config) {
 		r.Delete("/dataset/{id}/departments/{department_id}",
 			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteDepartment)).
 			Name("dataset_delete_department")
-
-		// edit dataset contributors
-		r.Get("/dataset/{id}/contributors/{role}/add",
-			datasetEditingHandler.Wrap(datasetEditingHandler.AddContributor)).
-			Name("dataset_add_contributor")
-		r.Get("/dataset/{id}/contributors/{role}/suggestions",
-			datasetEditingHandler.Wrap(datasetEditingHandler.AddContributorSuggest)).
-			Name("dataset_add_contributor_suggest")
-		r.Get("/dataset/{id}/contributors/{role}/confirm-create",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmCreateContributor)).
-			Name("dataset_confirm_create_contributor")
-		r.Post("/dataset/{id}/contributors/{role}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.CreateContributor)).
-			Name("dataset_create_contributor")
-		r.Get("/dataset/{id}/contributors/{role}/{position}/edit",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditContributor)).
-			Name("dataset_edit_contributor")
-		r.Get("/dataset/{id}/contributors/{role}/{position}/suggestions",
-			datasetEditingHandler.Wrap(datasetEditingHandler.EditContributorSuggest)).
-			Name("dataset_edit_contributor_suggest")
-		r.Get("/dataset/{id}/contributors/{role}/{position}/confirm-update",
-			datasetEditingHandler.Wrap(datasetEditingHandler.ConfirmUpdateContributor)).
-			Name("dataset_confirm_update_contributor")
-		r.Put("/dataset/{id}/contributors/{role}/{position}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.UpdateContributor)).
-			Name("dataset_update_contributor")
-		r.Delete("/dataset/{id}/contributors/{role}/{position}",
-			datasetEditingHandler.Wrap(datasetEditingHandler.DeleteContributor)).
-			Name("dataset_delete_contributor")
 
 		// edit publication activity
 		r.Get("/publication/{id}/message/edit",

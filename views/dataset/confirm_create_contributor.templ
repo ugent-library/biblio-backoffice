@@ -1,0 +1,93 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/okay"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/localize"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+	"fmt"
+)
+
+type ConfirmCreateContributorArgs struct {
+	Dataset     *models.Dataset
+	Contributor *models.Contributor
+	Role        string
+	Errors      *okay.Errors
+}
+
+templ ConfirmCreateContributor(c *ctx.Ctx, args ConfirmCreateContributorArgs) {
+	<div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Add { c.Loc.Get("dataset.contributor.role." + args.Role) }</h2>
+			</div>
+			<div class="modal-body">
+				@form.Errors(localize.ValidationErrors(c.Loc, args.Errors))
+				<h3>Review { c.Loc.Get("dataset.contributor.role."+args.Role) } information</h3>
+				<ul class="list-group mt-6">
+					<li class="list-group-item">
+						<div class="row">
+							<div class="col-md-6">
+								@contributorviews.SuggestSummary(c, args.Contributor, false)
+							</div>
+							<div class="col-md-6 person-attributes ps-5">
+								if args.Contributor.PersonID != "" {
+									<input type="hidden" name="id" id="id" value={ args.Contributor.PersonID }/>
+								} else {
+									<input type="hidden" name="first_name" id="first_name" value={ args.Contributor.FirstName() }/>
+									<input type="hidden" name="last_name" id="last_name" value={ args.Contributor.LastName() }/>
+								}
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="modal-footer h-auto py-4">
+				<div class="bc-toolbar h-auto">
+					<div class="bc-toolbar-left flex-wrap">
+						<div class="bc-toolbar-item">
+							<button class="btn btn-link modal-close">Cancel</button>
+						</div>
+						<div class="bc-toolbar-item">
+							<button
+								class="btn btn-outline-primary"
+								hx-get={ views.URL(c.PathTo("dataset_add_contributor", "id", args.Dataset.ID, "role", args.Role)).QuerySet("first_name", args.Contributor.FirstName()).QuerySet("last_name", args.Contributor.LastName()).String() }
+								hx-target="#modal"
+								hx-select="#modal"
+							>
+								<i class="if if-arrow-left"></i>
+								<span class="button-text">Back to search</span>
+							</button>
+						</div>
+					</div>
+					<div class="bc-toolbar-right flex-wrap">
+						<div class="bc-toolbar-item">
+							<button
+								class="btn btn-outline-primary"
+								hx-post={ c.PathTo("dataset_create_contributor", "id", args.Dataset.ID, "role", args.Role).String() }
+								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.Dataset.SnapshotID) }
+								hx-include=".modal-body .person-attributes"
+								hx-vals={ `{"add_next": true}` }
+								hx-swap="none"
+							>
+								<i class="if if-add"></i><span class="button-text">Save and add next</span>
+							</button>
+						</div>
+						<div class="bc-toolbar-item">
+							<button
+								class="btn btn-primary"
+								hx-post={ c.PathTo("dataset_create_contributor", "id", args.Dataset.ID, "role", args.Role).String() }
+								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.Dataset.SnapshotID) }
+								hx-include=".modal-body .person-attributes"
+								hx-swap="none"
+							>Save</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
