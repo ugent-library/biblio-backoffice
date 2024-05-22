@@ -44,8 +44,7 @@ func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
 
 	b := BindSuggestDepartments{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("suggest dataset departments could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -65,8 +64,7 @@ func CreateDepartment(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDepartment{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("create dataset department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -103,8 +101,7 @@ func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDeleteDepartment{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete dataset department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -123,7 +120,6 @@ func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
 		DeleteUrl:  c.PathTo("dataset_delete_department", "id", dataset.ID, "department_id", b.DepartmentID),
 		SnapshotID: dataset.SnapshotID,
 	}).Render(r.Context(), w)
-
 }
 
 func DeleteDepartment(w http.ResponseWriter, r *http.Request) {
@@ -132,8 +128,7 @@ func DeleteDepartment(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteDepartment
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete dataset department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
