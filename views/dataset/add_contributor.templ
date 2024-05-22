@@ -1,0 +1,53 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+type AddContributorArgs struct {
+	Dataset     *models.Dataset
+	Contributor *models.Contributor
+	Role        string
+	Hits        []*models.Contributor
+}
+
+templ AddContributor(c *ctx.Ctx, args AddContributorArgs) {
+	<div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Add { c.Loc.Get("dataset.contributor.role." + args.Role) }</h2>
+			</div>
+			<div class="p-6 border-bottom">
+				<h3>Search { c.Loc.Get("dataset.contributor.role." + args.Role) }</h3>
+				<div class="person-attributes">
+					<div class="row align-items-end">
+						@FormFieldContributorSuggest(
+							c, "first_name", "First name", args.Contributor.FirstName(),
+							c.PathTo("dataset_add_contributor_suggest", "id", args.Dataset.ID, "role", args.Role).String(),
+						)
+						@FormFieldContributorSuggest(
+							c, "last_name", "Last name", args.Contributor.LastName(),
+							c.PathTo("dataset_add_contributor_suggest", "id", args.Dataset.ID, "role", args.Role).String(),
+						)
+					</div>
+				</div>
+			</div>
+			<div class="modal-body" id="person-suggestions">
+				@AddContributorSuggest(c, AddContributorSuggestArgs{
+					Dataset:     args.Dataset,
+					Role:        args.Role,
+					Contributor: args.Contributor,
+					Hits:        args.Hits,
+				})
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<button class="btn btn-link modal-close" data-bs-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
