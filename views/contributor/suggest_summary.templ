@@ -1,0 +1,87 @@
+package contributorviews
+
+import (
+	"strings"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+templ SuggestSummary(c *ctx.Ctx, contributor *models.Contributor, isCurrent bool) {
+	<div class="bc-avatar-and-text align-items-start">
+		if contributor.Person != nil {
+			<div class="bc-avatar">
+				<i class="if if-ghent-university"></i>
+			</div>
+			<div class="bc-avatar-text">
+				<h3>
+					<span class="me-3">{ contributor.Person.FullName }</span>
+					if isCurrent {
+					<span class="badge rounded-pill badge-success-light me-3">
+						<i class="if if-check-circle"></i>
+						<span class="badge-text">Current selection</span>
+					</span>
+					}
+					if contributor.Person.Active {
+						<span class="badge rounded-pill badge-default">Active UGent member</span>
+					}
+				</h3>
+				if affiliations := contributor.Person.Affiliations; len(affiliations) > 0 {
+					<p class="text-muted">
+						Current department(s):
+						for i, v := range affiliations {
+							if i > 0 {
+								,
+							}
+							{ v.OrganizationID }
+						}
+					</p>
+				}
+				<ul class="c-meta-list c-meta-list-horizontal">
+					if len(contributor.Person.UGentID) > 0 {
+						<li class="c-meta-item">
+							for _, ugentID := range contributor.Person.UGentID {
+								<span class="me-2">
+									<i class="if if-ghent-university"></i>
+									{ ugentID }
+								</span>
+							}
+						</li>
+					}
+					if contributor.Person.ORCID != "" {
+						<li class="c-meta-item">
+							<i class="if if-orcid"></i>
+							{ contributor.Person.ORCID }
+						</li>
+					}
+					if contributor.Person.Active {
+						for _, ugentID := range contributor.Person.UGentID {
+							if strings.HasPrefix(ugentID, "80") {
+								<li class="c-meta-item">
+									<a href={ templ.URL("https://telefoonboek.ugent.be/en/people/" + ugentID) } target="_blank"><i class="if if-external-link"></i><span>View personal details</span></a>
+								</li>
+							}
+						}
+					}
+				</ul>
+			</div>
+		} else {
+			<div class="bc-avatar-and-text align-items-start">
+				<div class="bc-avatar bc-avatar--muted">
+					<i class="if if-external-link"></i>
+				</div>
+				<div class="bc-avatar-text">
+					<h3>
+						{ contributor.Name() }
+						if isCurrent {
+            			<span class="badge rounded-pill badge-success-light">
+							<i class="if if-check-circle"></i>
+							<span class="badge-text">Current selection</span>
+						</span>
+            			}
+					</h3>
+					<p class="text-muted">External, non-UGent</p>
+				</div>
+			</div>
+		}
+	</div>
+}

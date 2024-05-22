@@ -1,7 +1,0 @@
-package shared
-
-import "github.com/ugent-library/biblio-backoffice/ctx"
-
-templ CSRFTag(c *ctx.Ctx) {
-	<input type="hidden" name={ c.CSRFName } value={ c.CSRFToken }/>
-}

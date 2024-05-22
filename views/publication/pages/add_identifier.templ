@@ -9,7 +9,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
-	"github.com/ugent-library/biblio-backoffice/views/shared"
 )
 
 type AddIdentifierArgs struct {
@@ -36,7 +35,7 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
 		@publicationviews.AddSingleSidebar(c, args.Step)
 		<form class="w-100 u-scroll-wrapper" action={ templ.URL(c.PathTo("publication_add_single_import_confirm").String()) } method="POST">
-			@shared.CSRFTag(c)
+			@views.CSRFTag(c)
 			<div class="w-100 u-scroll-wrapper">
 				<div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
 					<div class="bc-toolbar">
@@ -150,7 +149,7 @@ templ addIdentifierDuplicate(c *ctx.Ctx, args addIdentifierDuplicateArgs) {
 					</div>
 					<div class="bc-toolbar-right">
 						<form action={ templ.URL(c.PathTo("publication_add_single_import").String()) } method="POST">
-							@shared.CSRFTag(c)
+							@views.CSRFTag(c)
 							<input type="hidden" name="source" value={ args.Source }/>
 							<input type="hidden" name="identifier" value={ args.Identifier }/>
 							<button type="submit" class="btn btn-danger">Import anyway</button>

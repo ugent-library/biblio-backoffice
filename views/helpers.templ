@@ -11,14 +11,6 @@ templ CSRFTag(c *ctx.Ctx) {
 	<input type="hidden" name={ c.CSRFName } value={ c.CSRFToken }/>
 }
 
-// TODO remove need for this
-func html(text string) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
-		_, err := io.WriteString(w, text)
-		return err
-	})
-}
-
 func Linkify(text string) string {
 	text = h.EscapeString(text)
 
@@ -47,4 +39,10 @@ func Linkify(text string) string {
 	}
 
 	return b.String()
+}
+
+templ Cat(components ...templ.Component) {
+	for _, c := range components {
+		@c
+	}
 }

@@ -5,7 +5,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
-	"github.com/ugent-library/biblio-backoffice/views/shared"
 )
 
 templ AddWebOfScience(c *ctx.Ctx, step int) {
@@ -35,7 +34,7 @@ templ AddWebOfScience(c *ctx.Ctx, step int) {
 					<div class="collapse show" id="importFromWOS">
 						<div class="card-body">
 							<form class="form-change-submit" action={ templ.URL(c.PathTo("publication_add_multiple_import").String()) } method="POST" enctype="multipart/form-data">
-								@shared.CSRFTag(c)
+								@views.CSRFTag(c)
 								<input type="hidden" name="source" value="wos"/>
 								<div class="c-file-upload">
 									<input type="file" name="file"/>

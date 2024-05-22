@@ -184,7 +184,6 @@ func newServices() *backends.Services {
 			"wos":    ris.NewDecoder,
 			"bibtex": bibtex.NewDecoder,
 		},
-		// Tasks: tasks.NewHub(),
 		PublicationListExporters: map[string]backends.PublicationListExporterFactory{
 			"xlsx": excel_publication.NewExporter,
 		},
