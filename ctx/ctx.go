@@ -154,8 +154,6 @@ func (c *Ctx) HandleError(w http.ResponseWriter, r *http.Request, err error) {
 	route := chi.RouteContext(r.Context())
 	httplog.LogEntrySetField(r.Context(), "error", slog.StringValue(err.Error()))
 	httplog.LogEntrySetField(r.Context(), "env", slog.StringValue(c.Env))
-	httplog.LogEntrySetField(r.Context(), "routeMethod", slog.StringValue(route.RouteMethod))
-	httplog.LogEntrySetField(r.Context(), "routePattern", slog.StringValue(route.RoutePattern()))
 	httplog.LogEntrySetField(r.Context(), "routeName", slog.StringValue(c.Router.RouteName(route.RouteMethod, route.RoutePattern())))
 	if c.User != nil {
 		httplog.LogEntrySetField(r.Context(), "userID", slog.StringValue(c.User.ID))
