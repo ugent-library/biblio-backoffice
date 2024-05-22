@@ -516,9 +516,6 @@ func Register(c Config) {
 						// links
 						r.Get("/{snapshot_id}/links/{link_id}/confirm-delete", datasetediting.ConfirmDeleteLink).Name("dataset_confirm_delete_link")
 
-						// contributors
-						r.Get("/contributors/{role}/{position}/confirm-delete", datasetediting.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
-
 						// departments
 						r.Get("/departments/add", datasetediting.AddDepartment).Name("dataset_add_department")
 						r.Get("/departments/suggestions", datasetediting.SuggestDepartments).Name("dataset_suggest_departments")
@@ -572,6 +569,7 @@ func Register(c Config) {
 						r.Get("/contributors/{role}/{position}/suggestions", datasetediting.EditContributorSuggest).Name("dataset_edit_contributor_suggest")
 						r.Get("/contributors/{role}/{position}/confirm-update", datasetediting.ConfirmUpdateContributor).Name("dataset_confirm_update_contributor")
 						r.Put("/contributors/{role}/{position}", datasetediting.UpdateContributor).Name("dataset_update_contributor")
+						r.Get("/contributors/{role}/{position}/confirm-delete", datasetediting.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
 						r.Delete("/contributors/{role}/{position}", datasetediting.DeleteContributor).Name("dataset_delete_contributor")
 					})
 
