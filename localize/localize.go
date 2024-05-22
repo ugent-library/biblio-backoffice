@@ -90,21 +90,6 @@ func LanguageSelectOptions() []form.SelectOption {
 	return opts
 }
 
-func VocabularyTerms(loc *gotext.Locale, key string) map[string]string {
-	vals, ok := vocabularies.Map[key]
-	if !ok {
-		return nil
-	}
-
-	translatedTerms := make(map[string]string, len(vals))
-
-	for _, v := range vals {
-		translatedTerms[v] = loc.Get(key + "." + v)
-	}
-
-	return translatedTerms
-}
-
 func VocabularySelectOptions(loc *gotext.Locale, key string) []form.SelectOption {
 	vals, ok := vocabularies.Map[key]
 	if !ok {

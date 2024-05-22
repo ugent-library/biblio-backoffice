@@ -1,0 +1,62 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"fmt"
+)
+
+type EditContributorArgs struct {
+	Dataset     *models.Dataset
+	Role        string
+	Position    int
+	Contributor *models.Contributor
+	FirstName   string
+	LastName    string
+	Hits        []*models.Contributor
+}
+
+templ EditContributor(c *ctx.Ctx, args EditContributorArgs) {
+	<div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Edit or change { c.Loc.Get("dataset.contributor.role." + args.Role) }</h2>
+			</div>
+			<div class="p-6 border-bottom">
+				<h3>Search { c.Loc.Get("dataset.contributor.role." + args.Role) }</h3>
+				<div class="person-attributes">
+					<div class="row align-items-end">
+						@FormFieldContributorSuggest(
+							c, "first_name", "First name", args.Contributor.FirstName(),
+							c.PathTo("dataset_edit_contributor_suggest", "id", args.Dataset.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String(),
+						)
+						@FormFieldContributorSuggest(
+							c, "last_name", "Last name", args.Contributor.LastName(),
+							c.PathTo("dataset_edit_contributor_suggest", "id", args.Dataset.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String(),
+						)
+					</div>
+				</div>
+			</div>
+			<div class="modal-body" id="person-suggestions">
+				@EditContributorSuggest(c, EditContributorSuggestArgs{
+					Dataset:     args.Dataset,
+					Role:        args.Role,
+					Position:    args.Position,
+					Contributor: args.Contributor,
+					FirstName:   args.FirstName,
+					LastName:    args.LastName,
+					Hits:        args.Hits,
+				})
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<div class="bc-toolbar-item">
+							<button class="btn btn-link modal-close">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}

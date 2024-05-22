@@ -1,0 +1,107 @@
+package dataset
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+	"fmt"
+)
+
+type EditContributorSuggestArgs struct {
+	Dataset     *models.Dataset
+	Role        string
+	Position    int
+	Contributor *models.Contributor
+	FirstName   string
+	LastName    string
+	Hits        []*models.Contributor
+}
+
+templ EditContributorSuggest(c *ctx.Ctx, args EditContributorSuggestArgs) {
+	<ul class="list-group mt-6">
+		if args.Contributor.PersonID != "" {
+			<li class="list-group-item">
+				<div class="list-group-item-inner">
+					<div class="list-group-item-main">
+						@contributorviews.SuggestSummary(c, args.Contributor, true)
+					</div>
+					<div class="c-button-toolbar">
+						<button
+							class="btn btn-primary"
+							hx-get={ c.PathTo("dataset_confirm_update_contributor", "id", args.Dataset.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String() }
+							hx-vals={ fmt.Sprintf(`{"id": "%s"}`, args.Contributor.PersonID) }
+							hx-swap="none"
+						>
+							<span class="btn-text">Confirm { c.Loc.Get("dataset.contributor.role." + args.Role) }</span>
+							<i class="if if-arrow-right"></i>
+						</button>
+					</div>
+				</div>
+			</li>
+		} else {
+			<li class="list-group-item">
+				<div class="list-group-item-inner">
+					<div class="list-group-item-main">
+						@contributorviews.SuggestSummary(c, models.ContributorFromFirstLastName(args.FirstName, args.LastName), true)
+					</div>
+					<div class="c-button-toolbar">
+						<button
+							class="btn btn-primary"
+							hx-get={ c.PathTo("dataset_confirm_update_contributor", "id", args.Dataset.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String() }
+							hx-vals={ fmt.Sprintf(`{"first_name": "%s", "last_name": "%s"}`, args.FirstName, args.LastName) }
+							hx-swap="none"
+						>
+							<span class="btn-text">Confirm { c.Loc.Get("dataset.contributor.role." + args.Role) }</span>
+							<i class="if if-arrow-right"></i>
+						</button>
+					</div>
+				</div>
+			</li>
+		}
+	</ul>
+	if len(args.Hits) > 0 || (args.Contributor.PersonID != "" && args.FirstName != "" && args.LastName != "") {
+		<h3 class="mt-6">Select other { c.Loc.Get("dataset.contributor.role." + args.Role) }</h3>
+		<ul class="list-group">
+			if args.Contributor.PersonID != "" && args.FirstName != "" && args.LastName != "" {
+				<li class="list-group-item">
+					<div class="list-group-item-inner">
+						<div class="list-group-item-main">
+							@contributorviews.SuggestSummary(c, models.ContributorFromFirstLastName(args.FirstName, args.LastName), false)
+						</div>
+						<div class="c-button-toolbar">
+							<button
+								class="btn btn-secondary"
+								hx-get={ c.PathTo("dataset_confirm_update_contributor", "id", args.Dataset.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String() }
+								hx-vals={ fmt.Sprintf(`{"first_name": "%s", "last_name": "%s"}`, args.FirstName, args.LastName) }
+								hx-swap="none"
+							>
+								<span class="btn-text">Switch to external { c.Loc.Get("dataset.contributor.role." + args.Role) }</span>
+								<i class="if if-arrow-right"></i>
+							</button>
+						</div>
+					</div>
+				</li>
+			}
+			for _, hit := range args.Hits {
+				<li class="list-group-item">
+					<div class="list-group-item-inner">
+						<div class="list-group-item-main">
+							@contributorviews.SuggestSummary(c, hit, false)
+						</div>
+						<div class="c-button-toolbar">
+							<button
+								class="btn btn-primary"
+								hx-get={ c.PathTo("dataset_confirm_update_contributor", "id", args.Dataset.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String() }
+								hx-vals={ fmt.Sprintf(`{"id": "%s"}`, hit.PersonID) }
+								hx-swap="none"
+							>
+								<span class="btn-text">Switch { c.Loc.Get("dataset.contributor.role." + args.Role) }</span>
+								<i class="if if-arrow-right"></i>
+							</button>
+						</div>
+					</div>
+				</li>
+			}
+		</ul>
+	}
+}

@@ -12,6 +12,7 @@ import "bytes"
 
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
 type CuratorDashboardPublicationsArgs struct {
@@ -21,7 +22,6 @@ type CuratorDashboardPublicationsArgs struct {
 	APublications        map[string]map[string][]string
 	UFaculties           []string
 	AFaculties           []string
-	PTypes               map[string]string
 	UYear                string
 	AYear                string
 	AllUPublicationYears []string
@@ -126,7 +126,7 @@ func CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublications
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = CuratorDashboardTblPublications(c, args.UFaculties, args.UPublications, args.PTypes).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = CuratorDashboardTblPublications(c, args.UFaculties, args.UPublications).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -201,7 +201,7 @@ func CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublications
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = CuratorDashboardTblPublications(c, args.AFaculties, args.APublications, args.PTypes).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = CuratorDashboardTblPublications(c, args.AFaculties, args.APublications).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -225,7 +225,7 @@ func CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublications
 	})
 }
 
-func CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publications map[string]map[string][]string, pTypes map[string]string) templ.Component {
+func CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publications map[string]map[string][]string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -265,15 +265,15 @@ func CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publication
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for pti, pt := range pTypes {
+		for _, pt := range vocabularies.Map["publication_types"] {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr><th class=\"table-col-sm-fixed table-col-sm-fixed-left\" scope=\"col\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(pt)
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_types." + pt))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 149, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 149, Col: 108}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -284,7 +284,7 @@ func CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publication
 				return templ_7745c5c3_Err
 			}
 			for _, f := range faculties {
-				if cell, ok := publications[f][pti]; ok {
+				if cell, ok := publications[f][pt]; ok {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<td>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -346,7 +346,69 @@ func CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publication
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tbody></table>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr><th class=\"table-col-sm-fixed table-col-sm-fixed-left\" scope=\"col\">All</th>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, f := range faculties {
+			if cell, ok := publications[f]["all"]; ok {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<td>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if cell[1] == "" {
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var13 string
+					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(cell[0])
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 169, Col: 23}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				} else {
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var14 templ.SafeURL = templ.URL(cell[1])
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var14)))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var15 string
+					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(cell[0])
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `curator_dashboard_publications.templ`, Line: 171, Col: 48}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tr></tbody></table>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
