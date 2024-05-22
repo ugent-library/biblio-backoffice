@@ -6,6 +6,8 @@ import (
 	"fmt"
 )
 
+const DepartmentsBodySelector = "#departments-body"
+
 templ Contributors(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 	<div hx-swap-oob="innerHTML:#show-nav">
 		@SubNav(c, dataset, redirectURL)

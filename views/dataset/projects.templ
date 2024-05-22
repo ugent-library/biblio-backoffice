@@ -7,6 +7,8 @@ import (
 	"net/url"
 )
 
+const ProjectsBodySelector = "#projects-body"
+
 templ Projects(c *ctx.Ctx, dataset *models.Dataset) {
 	<div id="projects" class="card mb-6">
 		<div class="card-header">

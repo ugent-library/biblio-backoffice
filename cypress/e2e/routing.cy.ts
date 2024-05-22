@@ -155,7 +155,7 @@ describe("Authorization", () => {
     testForbiddenDatasetRoute("/message", "PUT");
 
     testForbiddenDatasetRoute("/details/edit", "GET", "PUT");
-    testForbiddenDatasetRoute("/details/edit/refresh-form", "PUT");
+    testForbiddenDatasetRoute("/details/edit/refresh", "PUT");
 
     testForbiddenDatasetRoute("/projects/add");
     testForbiddenDatasetRoute("/projects/suggestions");
@@ -275,7 +275,7 @@ describe("Authorization", () => {
   ) {
     cy.then(function () {
       testRouteHttpStatus(
-        307, // TODO: will be 401 after refactoring
+        401,
         `/publication/${this.biblioId}${route}`,
         ...methods,
       );
