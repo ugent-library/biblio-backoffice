@@ -134,17 +134,6 @@ func Register(c Config) {
 			BlockByDefault: true,
 		}),
 	}
-	datasetEditingHandler := &datasetediting.Handler{
-		BaseHandler:               baseHandler,
-		Repo:                      c.Services.Repo,
-		ProjectService:            c.Services.ProjectService,
-		ProjectSearchService:      c.Services.ProjectSearchService,
-		OrganizationSearchService: c.Services.OrganizationSearchService,
-		OrganizationService:       c.Services.OrganizationService,
-		PersonSearchService:       c.Services.PersonSearchService,
-		PersonService:             c.Services.PersonService,
-		PublicationSearchIndex:    c.Services.PublicationSearchIndex,
-	}
 	publicationEditingHandler := &publicationediting.Handler{
 		BaseHandler:               baseHandler,
 		Repo:                      c.Services.Repo,
