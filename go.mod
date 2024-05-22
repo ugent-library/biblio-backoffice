@@ -13,7 +13,7 @@ require (
 	github.com/caarlos0/env/v10 v10.0.0
 	github.com/caltechlibrary/doitools v0.0.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
-	github.com/go-chi/chi/v5 v5.0.10
+	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
 	github.com/go-playground/form/v4 v4.2.1
@@ -81,6 +81,7 @@ require (
 	github.com/dlclark/regexp2 v1.11.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
+	github.com/go-chi/httplog/v2 v2.0.11 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.1 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
@@ -162,7 +163,7 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mschoch/smat v0.2.0 // indirect
-	github.com/nics/ich v0.0.0-20231128155525-f5704f956383
+	github.com/nics/ich v0.0.0-20240522120349-1d5aee282cb7
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/riverqueue/river v0.4.1
@@ -177,7 +178,7 @@ require (
 	github.com/ugent-library/bibtex v0.0.0-20231218123206-c910132512fe
 	github.com/ugent-library/bind v0.0.0-20231106145128-3b6630797063
 	github.com/ugent-library/friendly v0.0.0-20230811091914-e5eb37f47072
-	github.com/ugent-library/httperror v0.0.0-20230123152913-d3d289bcce20
+	github.com/ugent-library/httperror v0.0.0-20240522041727-58d71286fb15
 	github.com/ugent-library/httpx v0.0.0-20240403070226-3cd9bcf467c1
 	github.com/ugent-library/index v0.0.0-20240208101504-240e390f8d3d
 	github.com/ugent-library/mix v0.0.0-20230123152737-b51ce0c6439b

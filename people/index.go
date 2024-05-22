@@ -165,14 +165,14 @@ var sorts = map[string]string{
 }
 
 func (idx *Index) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
-	return getByIdentifier[Organization](ctx, idx, organizationsIndexName, Identifier{Kind: kind, Value: value})
+	return getByIdentifier[Organization](ctx, idx, organizationsIndexName, "organization", Identifier{Kind: kind, Value: value})
 }
 
 func (idx *Index) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
-	return getByIdentifier[Person](ctx, idx, peopleIndexName, Identifier{Kind: kind, Value: value})
+	return getByIdentifier[Person](ctx, idx, peopleIndexName, "person", Identifier{Kind: kind, Value: value})
 }
 
-func getByIdentifier[T any](ctx context.Context, idx *Index, indexName string, ident Identifier) (*T, error) {
+func getByIdentifier[T any](ctx context.Context, idx *Index, indexName, typeName string, ident Identifier) (*T, error) {
 	b := bytes.Buffer{}
 	err := identifierTmpl.Execute(&b, struct {
 		Limit      int
@@ -202,7 +202,7 @@ func getByIdentifier[T any](ctx context.Context, idx *Index, indexName string, i
 	}
 
 	if len(resBody.Hits.Hits) != 1 {
-		return nil, ErrNotFound
+		return nil, fmt.Errorf("index: get %s %q: %w", typeName, ident.String(), ErrNotFound)
 	}
 
 	return resBody.Hits.Hits[0].Source.Record, nil

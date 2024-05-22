@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
@@ -8,11 +9,13 @@ import (
 
 	"github.com/alexliesenfeld/health"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httplog/v2"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
 	"github.com/jpillora/ipfilter"
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
+	"github.com/samber/lo"
 	"github.com/swaggest/swgui/v5emb"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -76,13 +79,23 @@ type Config struct {
 }
 
 func Register(c Config) {
-	c.Router.Use(middleware.RequestID)
 	if c.Env != "local" {
 		c.Router.Use(middleware.RealIP)
 	}
+	c.Router.Use(httplog.RequestLogger(httplog.NewLogger("biblio-backoffice-http", httplog.Options{
+		JSON:             c.Env != "local",
+		LogLevel:         lo.Ternary(c.Env == "local", slog.LevelDebug, slog.LevelInfo),
+		Concise:          true,
+		RequestHeaders:   true,
+		MessageFieldName: "message",
+		QuietDownRoutes: []string{
+			"/dashboard-icon",
+			"/candidate-records-icon",
+		},
+		QuietDownPeriod: 1 * time.Minute,
+	})))
+	// TODO remove
 	c.Router.Use(zaphttp.SetLogger(c.Logger.Desugar(), zapchi.RequestID))
-	c.Router.Use(middleware.RequestLogger(zapchi.LogFormatter()))
-	c.Router.Use(middleware.Recoverer)
 	c.Router.Use(middleware.StripSlashes)
 
 	// static files

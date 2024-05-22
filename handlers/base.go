@@ -228,8 +228,8 @@ func (h BaseHandler) getUserRoleFromSession(session *sessions.Session) string {
 	return role.(string)
 }
 
-func (h BaseHandler) PathFor(name string, pairs ...string) *url.URL {
-	return h.Router.PathTo(name, pairs...)
+func (h BaseHandler) PathFor(name string, pairs ...any) *url.URL {
+	return h.Router.Path(name, pairs...)
 }
 
 func (h BaseHandler) ActionError(w http.ResponseWriter, r *http.Request, ctx BaseContext, msg string, err error, ID string) {

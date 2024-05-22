@@ -35,17 +35,17 @@ func FuncMap(r *ich.Mux, scheme, host string) template.FuncMap {
 	}
 }
 
-func urlFor(r *ich.Mux, scheme, host string) func(string, ...string) *url.URL {
-	return func(name string, pairs ...string) *url.URL {
-		u := r.PathTo(name, pairs...)
+func urlFor(r *ich.Mux, scheme, host string) func(string, ...any) *url.URL {
+	return func(name string, pairs ...any) *url.URL {
+		u := r.Path(name, pairs...)
 		u.Host = host
 		u.Scheme = scheme
 		return u
 	}
 }
 
-func pathFor(r *ich.Mux) func(string, ...string) *url.URL {
-	return r.PathTo
+func pathFor(r *ich.Mux) func(string, ...any) *url.URL {
+	return r.Path
 }
 
 func query(v any, u *url.URL) (*url.URL, error) {

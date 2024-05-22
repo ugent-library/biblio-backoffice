@@ -72,8 +72,7 @@ func CreateDepartment(w http.ResponseWriter, r *http.Request) {
 
 	org, err := c.OrganizationService.GetOrganization(b.DepartmentID)
 	if err != nil {
-		c.Log.Errorw("create dataset department: could not find organization", "errors", err, "dataset", d.ID, "department", b.DepartmentID, r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
