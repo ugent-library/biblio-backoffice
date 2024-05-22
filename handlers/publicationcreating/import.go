@@ -208,7 +208,7 @@ func AddSinglePublish(w http.ResponseWriter, r *http.Request) {
 
 	if validationErrs := publication.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
-		views.ShowModal(views.FormErrorsDialog(c, "Unable to publish this publication due to the following errors", errors)).Render(r.Context(), w)
+		views.ShowModal(views.FormErrorsDialog("Unable to publish this publication due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 
@@ -360,7 +360,7 @@ func AddMultiplePublish(w http.ResponseWriter, r *http.Request) {
 		c.Log.Warnw("add multiple publish publication: could not validate abstract:", "errors", validationErrs, "batch", batchID, "user", c.User.ID)
 
 		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs))
-		views.ShowModal(views.FormErrorsDialog(c, "Unable to publish a publication due to the following errors", errors)).Render(r.Context(), w)
+		views.ShowModal(views.FormErrorsDialog("Unable to publish a publication due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 
