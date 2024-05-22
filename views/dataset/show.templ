@@ -59,7 +59,7 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 								if c.User.CanCurate() && dataset.Locked {
 									<button
 										class="btn btn-outline-secondary"
-										hx-post={ views.URL(c.PathTo("dataset_unlock", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String() }
+										hx-post={ views.URL(c.PathTo("dataset_unlock", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.String()).String() }
 										hx-swap="none"
 									>
 										<i class="if if-lock-unlock"></i>
@@ -68,7 +68,7 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 								} else if c.User.CanCurate() {
 									<button
 										class="btn btn-outline-secondary"
-										hx-post={ views.URL(c.PathTo("dataset_lock", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String() }
+										hx-post={ views.URL(c.PathTo("dataset_lock", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.String()).String() }
 										hx-swap="none"
 									>
 										<i class="if if-lock"></i>
