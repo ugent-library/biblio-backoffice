@@ -3,6 +3,7 @@ package views
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
 )
 
 templ AddImpersonationSuggest(c *ctx.Ctx, firstName string, lastName string, hits []*models.Person) {
@@ -13,7 +14,7 @@ templ AddImpersonationSuggest(c *ctx.Ctx, firstName string, lastName string, hit
 				<li class="list-group-item">
 					<div class="list-group-item-inner">
 						<div class="list-group-item-main">
-							@contributorShowSummary(models.ContributorFromPerson(hit))
+							@contributorviews.SuggestSummary(c, models.ContributorFromPerson(hit), false)
 						</div>
 						<div class="c-button-toolbar">
 							<form action={ templ.URL(c.PathTo("create_impersonation").String()) } method="POST">
