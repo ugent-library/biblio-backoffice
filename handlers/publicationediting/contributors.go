@@ -306,37 +306,35 @@ func CreateContributor(w http.ResponseWriter, r *http.Request) {
 	views.CloseModalAndReplace(fmt.Sprintf("#contributors-%s-body", b.Role), publicationviews.ContributorsBody(c, p, b.Role)).Render(r.Context(), w)
 }
 
-func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func EditContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindEditContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("edit publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("edit publication contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	c, err := ctx.Publication.GetContributor(b.Role, b.Position)
+	contributor, err := p.GetContributor(b.Role, b.Position)
 	if err != nil {
-		h.Logger.Errorw("edit publication contributor: could not get the contributor", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("edit publication contributor: could not get the contributor", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
-	}
-
-	active := false
-	if c.Person != nil {
-		active = c.Person.Active
 	}
 
 	firstName := b.FirstName
 	lastName := b.LastName
 	if firstName == "" && lastName == "" {
-		firstName = c.FirstName()
-		lastName = c.LastName()
+		firstName = contributor.FirstName()
+		lastName = contributor.LastName()
 	}
 
-	people, err := h.PersonSearchService.SuggestPeople(firstName + " " + lastName)
+	people, err := c.PersonSearchService.SuggestPeople(firstName + " " + lastName)
 	if err != nil {
-		h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
@@ -346,9 +344,9 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	// exclude the current contributor
-	if c.PersonID != "" {
+	if contributor.PersonID != "" {
 		for i, hit := range hits {
-			if hit.PersonID == c.PersonID {
+			if hit.PersonID == contributor.PersonID {
 				if i == 0 {
 					hits = hits[1:]
 				} else {
@@ -359,19 +357,15 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 		}
 	}
 
-	suggestURL := h.PathFor("publication_edit_contributor_suggest", "id", ctx.Publication.ID, "role", b.Role, "position", fmt.Sprintf("%d", b.Position)).String()
-
-	render.Layout(w, "show_modal", "publication/edit_contributor", YieldEditContributor{
-		Context:     ctx,
+	views.ShowModal(publicationviews.EditContributor(c, publicationviews.EditContributorArgs{
+		Publication: p,
 		Role:        b.Role,
 		Position:    b.Position,
-		Contributor: c,
+		Contributor: contributor,
 		FirstName:   firstName,
 		LastName:    lastName,
-		Active:      active,
 		Hits:        hits,
-		Form:        contributorForm(ctx, c, suggestURL),
-	})
+	})).Render(r.Context(), w)
 }
 
 func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request, ctx Context) {

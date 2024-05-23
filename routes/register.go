@@ -412,7 +412,7 @@ func Register(c Config) {
 							r.Get("/contributors/{role}/suggestions", publicationediting.AddContributorSuggest).Name("publication_add_contributor_suggest")
 							r.Get("/contributors/{role}/confirm-create", publicationediting.ConfirmCreateContributor).Name("publication_confirm_create_contributor")
 							r.Post("/contributors/{role}", publicationediting.CreateContributor).Name("publication_create_contributor")
-							r.Get("/contributors/{role}/{position}/edit", publicationEditingHandler.Wrap(publicationEditingHandler.EditContributor)).Name("publication_edit_contributor")
+							r.Get("/contributors/{role}/{position}/edit", publicationediting.EditContributor).Name("publication_edit_contributor")
 							r.Get("/contributors/{role}/{position}/suggestions", publicationEditingHandler.Wrap(publicationEditingHandler.EditContributorSuggest)).Name("publication_edit_contributor_suggest")
 							r.Get("/contributors/{role}/{position}/confirm-update", publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateContributor)).Name("publication_confirm_update_contributor")
 							r.Put("/contributors/{role}/{position}", publicationEditingHandler.Wrap(publicationEditingHandler.UpdateContributor)).Name("publication_update_contributor")
