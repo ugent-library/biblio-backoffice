@@ -108,16 +108,6 @@ type YieldEditContributor struct {
 	Form        *form.Form
 }
 
-type YieldEditContributorSuggest struct {
-	Context
-	Role        string
-	Position    int
-	Contributor *models.Contributor
-	FirstName   string
-	LastName    string
-	Hits        []*models.Contributor
-}
-
 type YieldConfirmUpdateContributor struct {
 	Context
 	Role        string
