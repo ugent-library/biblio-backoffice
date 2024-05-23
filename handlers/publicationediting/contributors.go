@@ -412,46 +412,45 @@ func EditContributorSuggest(w http.ResponseWriter, r *http.Request) {
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) ConfirmUpdateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func ConfirmUpdateContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindConfirmUpdateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("confirm update publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("confirm update publication contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	oldC, err := ctx.Publication.GetContributor(b.Role, b.Position)
+	oldC, err := p.GetContributor(b.Role, b.Position)
 	if err != nil {
-		h.Logger.Errorw("edit publication contributor: could not get the contributor", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("edit publication contributor: could not get the contributor", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	var c *models.Contributor
-	active := false
+	var contributor *models.Contributor
 	if b.ID != "" {
-		newC, newP, err := h.generateContributorFromPersonId(b.ID)
+		newC, _, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
-			h.ActionError(w, r, ctx.BaseContext, "edit publication contributor: could not generate contributor from person", err, ctx.Publication.ID)
+			c.HandleError(w, r, err)
 			return
 		}
-		c = newC
-		active = newP.Active
+		contributor = newC
 	} else {
-		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
+		contributor = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
-	c.CreditRole = oldC.CreditRole
+	contributor.CreditRole = oldC.CreditRole
 
-	render.Layout(w, "refresh_modal", "publication/confirm_update_contributor", YieldConfirmUpdateContributor{
-		Context:     ctx,
+	views.ReplaceModal(publicationviews.ConfirmUpdateContributor(c, publicationviews.ConfirmUpdateContributorArgs{
+		Publication: p,
 		Role:        b.Role,
 		Position:    b.Position,
-		Contributor: c,
-		Active:      active,
-		Form:        confirmContributorForm(ctx, b.Role, c, nil),
-		EditNext:    b.Position+1 < len(ctx.Publication.Contributors(b.Role)),
-	})
+		Contributor: contributor,
+		EditNext:    b.Position+1 < len(p.Contributors(b.Role)),
+	})).Render(r.Context(), w)
 }
 
 func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {

@@ -414,7 +414,7 @@ func Register(c Config) {
 							r.Post("/contributors/{role}", publicationediting.CreateContributor).Name("publication_create_contributor")
 							r.Get("/contributors/{role}/{position}/edit", publicationediting.EditContributor).Name("publication_edit_contributor")
 							r.Get("/contributors/{role}/{position}/suggestions", publicationediting.EditContributorSuggest).Name("publication_edit_contributor_suggest")
-							r.Get("/contributors/{role}/{position}/confirm-update", publicationEditingHandler.Wrap(publicationEditingHandler.ConfirmUpdateContributor)).Name("publication_confirm_update_contributor")
+							r.Get("/contributors/{role}/{position}/confirm-update", publicationediting.ConfirmUpdateContributor).Name("publication_confirm_update_contributor")
 							r.Put("/contributors/{role}/{position}", publicationEditingHandler.Wrap(publicationEditingHandler.UpdateContributor)).Name("publication_update_contributor")
 							r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
 							r.Delete("/contributors/{role}/{position}", publicationediting.DeleteContributor).Name("publication_delete_contributor")
