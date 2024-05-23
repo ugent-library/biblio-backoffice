@@ -218,35 +218,34 @@ func AddContributorSuggest(w http.ResponseWriter, r *http.Request) {
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func ConfirmCreateContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindConfirmCreateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("confirm create publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("confirm create publication contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	var c *models.Contributor
-	active := false
+	var contributor *models.Contributor
 	if b.ID != "" {
-		newC, newP, err := h.generateContributorFromPersonId(b.ID)
+		newC, _, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
-			h.ActionError(w, r, ctx.BaseContext, "confirm create publication contributor: could not generate contributor from person", err, ctx.Publication.ID)
+			c.HandleError(w, r, err)
 			return
 		}
-		c = newC
-		active = newP.Active
+		contributor = newC
 	} else {
-		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
+		contributor = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
-	render.Layout(w, "refresh_modal", "publication/confirm_create_contributor", YieldConfirmCreateContributor{
-		Context:     ctx,
+	views.ReplaceModal(publicationviews.ConfirmCreateContributor(c, publicationviews.ConfirmCreateContributorArgs{
+		Publication: p,
+		Contributor: contributor,
 		Role:        b.Role,
-		Contributor: c,
-		Active:      active,
-		Form:        confirmContributorForm(ctx, b.Role, c, nil),
-	})
+	})).Render(r.Context(), w)
 }
 
 func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
@@ -770,4 +769,14 @@ func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributo
 	}
 	c := models.ContributorFromPerson(p)
 	return c, p, nil
+}
+
+func generateContributorFromPersonId(c *ctx.Ctx, id string) (*models.Contributor, *models.Person, error) {
+	person, err := c.PersonService.GetPerson(id)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	contributor := models.ContributorFromPerson(person)
+	return contributor, person, nil
 }
