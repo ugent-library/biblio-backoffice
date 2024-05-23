@@ -183,7 +183,7 @@ func getByIdentifier[T any](ctx context.Context, idx *Index, indexName, method s
 		Identifier: ident,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("index.%s %s: %w", method, ident.String(), err)
 	}
 
 	res, err := idx.client.Search(
@@ -193,12 +193,12 @@ func getByIdentifier[T any](ctx context.Context, idx *Index, indexName, method s
 		idx.client.Search.WithBody(strings.NewReader(b.String())),
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("index.%s %s: %w", method, ident.String(), err)
 	}
 
 	resBody := searchResponseBody[*T]{}
 	if err := decodeResponseBody(res, &resBody); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("index.%s %s: %w", method, ident.String(), err)
 	}
 
 	if len(resBody.Hits.Hits) != 1 {
@@ -209,14 +209,14 @@ func getByIdentifier[T any](ctx context.Context, idx *Index, indexName, method s
 }
 
 func (idx *Index) SearchOrganizations(ctx context.Context, params SearchParams) (*SearchResults[*Organization], error) {
-	return search[Organization](ctx, idx, organizationsIndexName, searchTmpl, params)
+	return search[Organization](ctx, idx, organizationsIndexName, "SearchOrganizations", searchTmpl, params)
 }
 
 func (idx *Index) SearchPeople(ctx context.Context, params SearchParams) (*SearchResults[*Person], error) {
-	return search[Person](ctx, idx, peopleIndexName, searchTmpl, params)
+	return search[Person](ctx, idx, peopleIndexName, "SearchPeople", searchTmpl, params)
 }
 
-func search[T any](ctx context.Context, idx *Index, indexName string, tmpl *template.Template, params SearchParams) (*SearchResults[*T], error) {
+func search[T any](ctx context.Context, idx *Index, indexName, method string, tmpl *template.Template, params SearchParams) (*SearchResults[*T], error) {
 	if params.Sort == "" {
 		params.Sort = defaultSort
 	}
@@ -224,12 +224,12 @@ func search[T any](ctx context.Context, idx *Index, indexName string, tmpl *temp
 	b := bytes.Buffer{}
 	err := tmpl.Execute(&b, params)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("index.%s: %w", method, err)
 	}
 
 	sort, ok := sorts[params.Sort]
 	if !ok {
-		return nil, &InvalidSortError{Sort: params.Sort}
+		return nil, fmt.Errorf("index.%s: invalid sort order %s", method, params.Sort)
 	}
 
 	res, err := idx.client.Search(
@@ -240,12 +240,12 @@ func search[T any](ctx context.Context, idx *Index, indexName string, tmpl *temp
 		idx.client.Search.WithSort(sort),
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("index.%s: %w", method, err)
 	}
 
 	resBody := searchResponseBody[*T]{}
 	if err := decodeResponseBody(res, &resBody); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("index.%s: %w", method, err)
 	}
 
 	results := SearchResults[*T]{
@@ -263,22 +263,22 @@ func search[T any](ctx context.Context, idx *Index, indexName string, tmpl *temp
 }
 
 func (idx *Index) ReindexOrganizations(ctx context.Context, iter Iter[*Organization]) error {
-	return reindex(ctx, idx, organizationsIndexName, iter, toOrganizationDoc)
+	return reindex(ctx, idx, organizationsIndexName, "ReindexOrganizations", iter, toOrganizationDoc)
 }
 
 func (idx *Index) ReindexPeople(ctx context.Context, iter Iter[*Person]) error {
-	return reindex(ctx, idx, peopleIndexName, iter, toPersonDoc)
+	return reindex(ctx, idx, peopleIndexName, "ReindexPeople", iter, toPersonDoc)
 }
 
-func reindex[T any](ctx context.Context, idx *Index, indexName string, iter Iter[T], docFn func(T) (string, []byte, error)) error {
+func reindex[T any](ctx context.Context, idx *Index, indexName, method string, iter Iter[T], docFn func(T) (string, []byte, error)) error {
 	b, err := indexSettingsFS.ReadFile(indexName + "_index_settings.json")
 	if err != nil {
-		return err
+		return fmt.Errorf("index.%s: %w", method, err)
 	}
 
 	switcher, err := index.NewSwitcher(idx.client, idx.prefix+indexName, string(b))
 	if err != nil {
-		return err
+		return fmt.Errorf("index.%s: %w", method, err)
 	}
 
 	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
@@ -290,7 +290,7 @@ func reindex[T any](ctx context.Context, idx *Index, indexName string, iter Iter
 		},
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("index.%s: %w", method, err)
 	}
 	defer bi.Close(ctx)
 
@@ -310,7 +310,7 @@ func reindex[T any](ctx context.Context, idx *Index, indexName string, iter Iter
 				Body:         bytes.NewReader(doc),
 				OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
 					if err != nil {
-						err = fmt.Errorf("index error: %v", err)
+						err = fmt.Errorf("index error: %w", err)
 					} else {
 						err = fmt.Errorf("index error: %s: %s", res.Error.Type, res.Error.Reason)
 					}
