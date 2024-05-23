@@ -28,7 +28,7 @@ templ EditContributorSuggest(c *ctx.Ctx, args EditContributorSuggestArgs) {
 					<div class="c-button-toolbar">
 						<button
 							class="btn btn-primary"
-							hx-get={ c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String() }
+							hx-get={ c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String() }
 							hx-vals={ fmt.Sprintf(`{"id": "%s"}`, args.Contributor.PersonID) }
 							hx-swap="none"
 						>
@@ -51,7 +51,7 @@ templ EditContributorSuggest(c *ctx.Ctx, args EditContributorSuggestArgs) {
 					<div class="c-button-toolbar">
 						<button
 							class="btn btn-primary"
-							hx-get={ c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String() }
+							hx-get={ c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String() }
 							hx-vals={ fmt.Sprintf(`{"first_name": "%s", "last_name": "%s"}`, args.FirstName, args.LastName) }
 							hx-swap="none"
 						>
@@ -79,7 +79,7 @@ templ EditContributorSuggest(c *ctx.Ctx, args EditContributorSuggestArgs) {
 						<div class="c-button-toolbar">
 							<button
 								class="btn btn-secondary"
-								hx-get={ c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String() }
+								hx-get={ c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String() }
 								hx-vals={ fmt.Sprintf(`{"first_name": "%s", "last_name": "%s"}`, args.FirstName, args.LastName) }
 								hx-swap="none"
 							>
@@ -99,7 +99,7 @@ templ EditContributorSuggest(c *ctx.Ctx, args EditContributorSuggestArgs) {
 						<div class="c-button-toolbar">
 							<button
 								class="btn btn-primary"
-								hx-get={ c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String() }
+								hx-get={ c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String() }
 								hx-vals={ fmt.Sprintf(`{"id": "%s"}`, hit.PersonID) }
 								hx-swap="none"
 							>

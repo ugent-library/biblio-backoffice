@@ -57,7 +57,7 @@ func EditContributorSuggest(c *ctx.Ctx, args EditContributorSuggestArgs) templ.C
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String()))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String()))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -114,7 +114,7 @@ func EditContributorSuggest(c *ctx.Ctx, args EditContributorSuggestArgs) templ.C
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String()))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String()))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -194,7 +194,7 @@ func EditContributorSuggest(c *ctx.Ctx, args EditContributorSuggestArgs) templ.C
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String()))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String()))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -237,7 +237,7 @@ func EditContributorSuggest(c *ctx.Ctx, args EditContributorSuggestArgs) templ.C
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String()))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("publication_confirm_update_contributor", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String()))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

@@ -72,14 +72,14 @@ func EditContributor(c *ctx.Ctx, args EditContributorArgs) templ.Component {
 		}
 		templ_7745c5c3_Err = contributorviews.FormFieldContributorSuggest(
 			c, "first_name", "First name", args.Contributor.FirstName(),
-			c.PathTo("publication_edit_contributor_suggest", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String(),
+			c.PathTo("publication_edit_contributor_suggest", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String(),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = contributorviews.FormFieldContributorSuggest(
 			c, "last_name", "Last name", args.Contributor.LastName(),
-			c.PathTo("publication_edit_contributor_suggest", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String(),
+			c.PathTo("publication_edit_contributor_suggest", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String(),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

@@ -29,11 +29,11 @@ templ EditContributor(c *ctx.Ctx, args EditContributorArgs) {
 					<div class="row align-items-end">
 						@contributorviews.FormFieldContributorSuggest(
 							c, "first_name", "First name", args.Contributor.FirstName(),
-							c.PathTo("publication_edit_contributor_suggest", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String(),
+							c.PathTo("publication_edit_contributor_suggest", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String(),
 						)
 						@contributorviews.FormFieldContributorSuggest(
 							c, "last_name", "Last name", args.Contributor.LastName(),
-							c.PathTo("publication_edit_contributor_suggest", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String(),
+							c.PathTo("publication_edit_contributor_suggest", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String(),
 						)
 					</div>
 				</div>
