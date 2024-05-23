@@ -1,6 +1,7 @@
 package mutate
 
 import (
+	"errors"
 	"slices"
 
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -25,6 +26,9 @@ func AddProject(projectGetter ProjectGetter) func(*models.Publication, []string)
 			return &ArgumentError{"project id is missing"}
 		}
 		project, err := projectGetter(args[0])
+		if errors.Is(err, models.ErrNotFound) {
+			return &ArgumentError{"project '" + args[0] + "' not found"}
+		}
 		if err != nil {
 			return err
 		}

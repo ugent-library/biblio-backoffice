@@ -295,14 +295,13 @@ func (s *Repo) MutatePublication(id string, u *models.Person, muts ...Mutation) 
 	for _, mut := range muts {
 		mutator, ok := s.config.PublicationMutators[mut.Name]
 		if !ok {
-			return fmt.Errorf("repo.MutatePublication %s: unknown mutation %s", p.ID, mut.Name)
+			return fmt.Errorf("repo.MutatePublication %s: %w", p.ID, &mutate.ArgumentError{Msg: fmt.Sprintf("unknown mutation %s at line %d", mut.Name, mut.Line)})
 		}
 		if err := mutator(p, mut.Args); err != nil {
 			var argErr *mutate.ArgumentError
 			// TODO this is a messy way of adding the line number
 			if mut.Line != 0 && errors.As(err, &argErr) {
 				argErr.Msg = fmt.Sprintf("%s at line %d", argErr.Msg, mut.Line)
-				return fmt.Errorf("repo.MutatePublication %s: mutation %s: %w", id, mut.Name, argErr)
 			}
 			return fmt.Errorf("repo.MutatePublication %s: mutation %s: %w", p.ID, mut.Name, err)
 		}
@@ -788,14 +787,13 @@ func (s *Repo) MutateDataset(id string, u *models.Person, muts ...Mutation) erro
 	for _, mut := range muts {
 		mutator, ok := s.config.DatasetMutators[mut.Name]
 		if !ok {
-			return fmt.Errorf("repo.MutateDataset %s: unknown mutation %s", id, mut.Name)
+			return fmt.Errorf("repo.MutateDataset %s: %w", d.ID, &mutate.ArgumentError{Msg: fmt.Sprintf("unknown mutation %s at line %d", mut.Name, mut.Line)})
 		}
 		if err := mutator(d, mut.Args); err != nil {
 			var argErr *mutate.ArgumentError
 			// TODO this is a messy way of adding the line number
 			if mut.Line != 0 && errors.As(err, &argErr) {
 				argErr.Msg = fmt.Sprintf("%s at line %d", argErr.Msg, mut.Line)
-				return fmt.Errorf("repo.MutateDataset %s: mutation %s: %w", id, mut.Name, argErr)
 			}
 			return fmt.Errorf("repo.MutateDataset %s: mutation %s: %w", id, mut.Name, err)
 		}
