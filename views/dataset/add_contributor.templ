@@ -3,6 +3,7 @@ package dataset
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/contributor"
 )
 
 type AddContributorArgs struct {
@@ -22,11 +23,11 @@ templ AddContributor(c *ctx.Ctx, args AddContributorArgs) {
 				<h3>Search { c.Loc.Get("dataset.contributor.role." + args.Role) }</h3>
 				<div class="person-attributes">
 					<div class="row align-items-end">
-						@FormFieldContributorSuggest(
+						@contributorviews.FormFieldContributorSuggest(
 							c, "first_name", "First name", args.Contributor.FirstName(),
 							c.PathTo("dataset_add_contributor_suggest", "id", args.Dataset.ID, "role", args.Role).String(),
 						)
-						@FormFieldContributorSuggest(
+						@contributorviews.FormFieldContributorSuggest(
 							c, "last_name", "Last name", args.Contributor.LastName(),
 							c.PathTo("dataset_add_contributor_suggest", "id", args.Dataset.ID, "role", args.Role).String(),
 						)

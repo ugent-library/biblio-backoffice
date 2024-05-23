@@ -15,8 +15,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
-	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
-	relatedorganizationviews "github.com/ugent-library/biblio-backoffice/views/relatedorganization"
+	"github.com/ugent-library/biblio-backoffice/views/contributor"
+	"github.com/ugent-library/biblio-backoffice/views/relatedorganization"
 	"net/url"
 )
 

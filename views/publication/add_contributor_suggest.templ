@@ -1,14 +1,14 @@
-package dataset
+package publication
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/contributor"
-	"fmt"
 )
 
 type AddContributorSuggestArgs struct {
-	Dataset     *models.Dataset
+	Publication *models.Publication
 	Contributor *models.Contributor
 	Role        string
 	Hits        []*models.Contributor
@@ -27,11 +27,11 @@ templ AddContributorSuggest(c *ctx.Ctx, args AddContributorSuggestArgs) {
 						<div class="c-button-toolbar">
 							<button
 								class="btn btn-secondary"
-								hx-get={ c.PathTo("dataset_confirm_create_contributor", "id", args.Dataset.ID, "role", args.Role).String() }
+								hx-get={ c.PathTo("publication_confirm_create_contributor", "id", args.Publication.ID, "role", args.Role).String() }
 								hx-vals={ fmt.Sprintf(`{"first_name": "%s", "last_name": "%s"}`, args.Contributor.FirstName(), args.Contributor.LastName()) }
 								hx-swap="none"
 							>
-								<span class="btn-text">Add external { c.Loc.Get("dataset.contributor.role."+args.Role) }</span>
+								<span class="btn-text">Add external { c.Loc.Get("publication.contributor.role." + args.Role) }</span>
 								<i class="if if-arrow-right"></i>
 							</button>
 						</div>
@@ -48,12 +48,11 @@ templ AddContributorSuggest(c *ctx.Ctx, args AddContributorSuggestArgs) {
 							<div class="c-button-toolbar">
 								<button
 									class="btn btn-primary"
-									hx-get={ c.PathTo("dataset_confirm_create_contributor", "id", args.Dataset.ID, "role", args.Role).String() }
+									hx-get={ c.PathTo("publication_confirm_create_contributor", "id", args.Publication.ID, "role", args.Role).String() }
 									hx-vals={ fmt.Sprintf(`{"id": "%s"}`, hit.PersonID) }
 									hx-swap="none"
 								>
-									<span class="btn-text">Add { c.Loc.Get("dataset.contributor.role." + args.Role) }</span>
-									<i class="if if-arrow-right"></i>
+									<span class="btn-text">Add { c.Loc.Get("publication.contributor.role." + args.Role) }</span><i class="if if-arrow-right"></i>
 								</button>
 							</div>
 						</div>
@@ -80,7 +79,7 @@ templ AddContributorSuggest(c *ctx.Ctx, args AddContributorSuggestArgs) {
 			<div class="bc-avatar bc-avatar--small">
 				<i class="if if-info-circle"></i>
 			</div>
-			<p>Type a first and last name above to add an { c.Loc.Get("dataset.contributor.role."+ args.Role) }.</p>
+			<p>Type a first and last name above to add an { c.Loc.Get("publication.contributor.role." + args.Role) }.</p>
 		</div>
 	}
 }

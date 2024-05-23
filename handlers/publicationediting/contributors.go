@@ -104,13 +104,6 @@ type YieldAddContributor struct {
 	Hits        []*models.Contributor
 }
 
-type YieldAddContributorSuggest struct {
-	Context
-	Role        string
-	Contributor *models.Contributor
-	Hits        []*models.Contributor
-}
-
 type YieldConfirmCreateContributor struct {
 	Context
 	Role        string
@@ -151,21 +144,23 @@ type YieldConfirmUpdateContributor struct {
 	EditNext    bool
 }
 
-func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func AddContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	b := BindAddContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("add publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("add publication contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
 	var hits []*models.Contributor
 
 	if b.FirstName != "" || b.LastName != "" {
-		people, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
+		people, err := c.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
-			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			c.Log.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
 		hits = make([]*models.Contributor, len(people))
@@ -174,34 +169,37 @@ func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Con
 		}
 	}
 
-	c := models.ContributorFromFirstLastName(b.FirstName, b.LastName)
+	contributor := models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 
-	suggestURL := h.PathFor("publication_add_contributor_suggest", "id", ctx.Publication.ID, "role", b.Role).String()
+	// suggestURL := c.PathFor("publication_add_contributor_suggest", "id", ctx.Publication.ID, "role", b.Role).String()
 
-	render.Layout(w, "show_modal", "publication/add_contributor", YieldAddContributor{
-		Context:     ctx,
-		Role:        b.Role,
-		Contributor: c,
-		Form:        contributorForm(ctx, c, suggestURL),
-		Hits:        hits,
-	})
+	views.ShowModal(
+		publicationviews.AddContributor(c, publicationviews.AddContributorArgs{
+			Publication: ctx.GetPublication(r),
+			Role:        b.Role,
+			Contributor: contributor,
+			Hits:        hits,
+		}),
+	).Render(r.Context(), w)
 }
 
-func (h *Handler) AddContributorSuggest(w http.ResponseWriter, r *http.Request, ctx Context) {
+func AddContributorSuggest(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
 	b := BindAddContributorSuggest{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("suggest publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("suggest publication contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
 	var hits []*models.Contributor
 
 	if b.FirstName != "" || b.LastName != "" {
-		people, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
+		people, err := c.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
-			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			c.Log.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
 		hits = make([]*models.Contributor, len(people))
@@ -210,14 +208,14 @@ func (h *Handler) AddContributorSuggest(w http.ResponseWriter, r *http.Request, 
 		}
 	}
 
-	c := models.ContributorFromFirstLastName(b.FirstName, b.LastName)
+	contributor := models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 
-	render.Partial(w, "publication/add_contributor_suggest", YieldAddContributorSuggest{
-		Context:     ctx,
+	publicationviews.AddContributorSuggest(c, publicationviews.AddContributorSuggestArgs{
+		Publication: ctx.GetPublication(r),
 		Role:        b.Role,
-		Contributor: c,
+		Contributor: contributor,
 		Hits:        hits,
-	})
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
