@@ -4,6 +4,7 @@ package repositories
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"time"
@@ -93,15 +94,15 @@ func (s *Repo) tx(ctx context.Context, fn func(*Repo) error) error {
 
 func (s *Repo) GetPublication(id string) (*models.Publication, error) {
 	snap, err := s.publicationStore.GetCurrentSnapshot(id, s.opts)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, fmt.Errorf("repo.GetPublication %s: %w", id, models.ErrNotFound)
+	}
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, models.ErrNotFound
-		}
-		return nil, err
+		return nil, fmt.Errorf("repo.GetPublication %s: %w", id, err)
 	}
 	p, err := s.snapshotToPublication(snap)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repo.GetPublication %s: %w", id, err)
 	}
 	return p, nil
 }
@@ -109,53 +110,53 @@ func (s *Repo) GetPublication(id string) (*models.Publication, error) {
 func (s *Repo) GetPublications(ids []string) ([]*models.Publication, error) {
 	c, err := s.publicationStore.GetByID(ids, s.opts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repo.GetPublications: %w", err)
 	}
 	defer c.Close()
 	var publications []*models.Publication
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("repo.GetPublications: %w", err)
 		}
 		p, err := s.snapshotToPublication(snap)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("repo.GetPublications: %w", err)
 		}
 		publications = append(publications, p)
 	}
 	if c.Err() != nil {
-		return nil, c.Err()
+		return nil, fmt.Errorf("repo.GetPublications: %w", c.Err())
 	}
 	return publications, nil
 }
 
 func (s *Repo) ImportPublication(p *models.Publication) error {
 	if p.DateCreated == nil {
-		return fmt.Errorf("unable to import old publication %s: date_created is not set", p.ID)
+		return fmt.Errorf("repo.ImportPublication %s: DateCreated not set", p.ID)
 	}
 	if p.DateUpdated == nil {
-		return fmt.Errorf("unable to import old publication %s: date_updated is not set", p.ID)
+		return fmt.Errorf("repo.ImportPublication %s: DateUpdated not set", p.ID)
 	}
 	if p.DateFrom == nil {
-		return fmt.Errorf("unable to import old publication %s: date_from is not set", p.ID)
+		return fmt.Errorf("repo.ImportPublication %s: DateFrom not set", p.ID)
 	}
 	if p.DateUntil != nil {
-		return fmt.Errorf("unable to import old publication %s: date_until should be nil", p.ID)
+		return fmt.Errorf("repo.ImportPublication %s: DateUntil not nil", p.ID)
 	}
 
 	snap, err := s.publicationToSnapshot(p)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.ImportPublication %s: %w", p.ID, err)
 	}
 
 	if err := s.publicationStore.ImportSnapshot(snap, s.opts); err != nil {
-		return err
+		return fmt.Errorf("repo.ImportPublication %s: %w", p.ID, err)
 	}
 
 	for _, fn := range s.config.PublicationLoaders {
 		if err := fn(p); err != nil {
-			return err
+			return fmt.Errorf("repo.ImportPublication %s: %w", p.ID, err)
 		}
 	}
 
@@ -166,8 +167,8 @@ func (s *Repo) ImportPublication(p *models.Publication) error {
 
 func (s *Repo) SavePublication(p *models.Publication, u *models.Person) error {
 	oldPublication, err := s.GetPublication(p.ID)
-	if err != nil && err != models.ErrNotFound {
-		return err
+	if err != nil && !errors.Is(err, models.ErrNotFound) {
+		return fmt.Errorf("repo.SavePublication %s: %w", p.ID, err)
 	}
 	if reflect.DeepEqual(oldPublication, p) {
 		return nil
@@ -191,7 +192,7 @@ func (s *Repo) SavePublication(p *models.Publication, u *models.Person) error {
 	}
 
 	if err := p.Validate(); err != nil {
-		return err
+		return fmt.Errorf("repo.SavePublication %s: %w", p.ID, err)
 	}
 
 	if p.Status == "public" && !p.HasBeenPublic {
@@ -199,12 +200,12 @@ func (s *Repo) SavePublication(p *models.Publication, u *models.Person) error {
 	}
 
 	if err := s.publicationStore.Add(p.ID, p, s.opts); err != nil {
-		return err
+		return fmt.Errorf("repo.SavePublication %s: %w", p.ID, err)
 	}
 
 	for _, fn := range s.config.PublicationLoaders {
 		if err := fn(p); err != nil {
-			return err
+			return fmt.Errorf("repo.SavePublication %s: %w", p.ID, err)
 		}
 	}
 
@@ -215,7 +216,7 @@ func (s *Repo) SavePublication(p *models.Publication, u *models.Person) error {
 
 func (s *Repo) UpdatePublication(snapshotID string, p *models.Publication, u *models.Person) error {
 	if oldPublication, err := s.GetPublication(p.ID); err != nil {
-		return err
+		return fmt.Errorf("repo.UpdatePublication %s@%s: %w", p.ID, snapshotID, err)
 	} else if reflect.DeepEqual(oldPublication, p) {
 		return nil
 	}
@@ -241,13 +242,13 @@ func (s *Repo) UpdatePublication(snapshotID string, p *models.Publication, u *mo
 	snapshotID, err := s.publicationStore.AddAfter(snapshotID, p.ID, p, s.opts)
 	if err != nil {
 		p.DateUpdated = oldDateUpdated
-		return err
+		return fmt.Errorf("repo.UpdatePublication %s@%s: %w", p.ID, snapshotID, err)
 	}
 	p.SnapshotID = snapshotID
 
 	for _, fn := range s.config.PublicationLoaders {
 		if err := fn(p); err != nil {
-			return err
+			return fmt.Errorf("repo.UpdatePublication %s@%s: %w", p.ID, snapshotID, err)
 		}
 	}
 
@@ -259,17 +260,17 @@ func (s *Repo) UpdatePublication(snapshotID string, p *models.Publication, u *mo
 func (s *Repo) UpdatePublicationInPlace(p *models.Publication) error {
 	snap, err := s.publicationStore.Update(p.SnapshotID, p.ID, p, s.opts)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.UpdatePublicationInPlace %s: %w", p.ID, err)
 	}
 
 	np := &models.Publication{}
 	if err := snap.Scan(np); err != nil {
-		return err
+		return fmt.Errorf("repo.UpdatePublicationInPlace %s: %w", p.ID, err)
 	}
 
 	for _, fn := range s.config.PublicationLoaders {
 		if err := fn(p); err != nil {
-			return err
+			return fmt.Errorf("repo.UpdatePublicationInPlace %s: %w", p.ID, err)
 		}
 	}
 
@@ -285,24 +286,28 @@ func (s *Repo) MutatePublication(id string, u *models.Person, muts ...Mutation) 
 
 	p, err := s.GetPublication(id)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.MutatePublication %s: %w", p.ID, err)
 	}
 
 	for _, mut := range muts {
 		mutator, ok := s.config.PublicationMutators[mut.Op]
 		if !ok {
-			return fmt.Errorf("unknown mutation '%s'", mut.Op)
+			return fmt.Errorf("repo.MutatePublication %s: unknown mutation %s", p.ID, mut.Op)
 		}
 		if err := mutator(p, mut.Args); err != nil {
-			return err
+			return fmt.Errorf("repo.MutatePublication %s: mutation %s: %w", p.ID, mut.Op, err)
 		}
 	}
 
 	if err = p.Validate(); err != nil {
-		return err
+		return fmt.Errorf("repo.MutatePublication %s: %w", p.ID, err)
 	}
 
-	return s.UpdatePublication(p.SnapshotID, p, u)
+	if err := s.UpdatePublication(p.SnapshotID, p, u); err != nil {
+		return fmt.Errorf("repo.MutatePublication %s: %w", p.ID, err)
+	}
+
+	return nil
 }
 
 func (s *Repo) PublicationsAfter(t time.Time, limit, offset int) (int, []*models.Publication, error) {
@@ -312,7 +317,7 @@ func (s *Repo) PublicationsAfter(t time.Time, limit, offset int) (int, []*models
 		s.opts,
 	)
 	if err != nil {
-		return 0, nil, err
+		return 0, nil, fmt.Errorf("repo.PublicationsAfter: %w", err)
 	}
 
 	c, err := s.publicationStore.Select(
@@ -321,7 +326,7 @@ func (s *Repo) PublicationsAfter(t time.Time, limit, offset int) (int, []*models
 		s.opts,
 	)
 	if err != nil {
-		return 0, nil, err
+		return 0, nil, fmt.Errorf("repo.PublicationsAfter: %w", err)
 	}
 
 	publications := make([]*models.Publication, 0, limit)
@@ -330,18 +335,18 @@ func (s *Repo) PublicationsAfter(t time.Time, limit, offset int) (int, []*models
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return 0, nil, err
+			return 0, nil, fmt.Errorf("repo.PublicationsAfter: %w", err)
 		}
 		p, err := s.snapshotToPublication(snap)
 		if err != nil {
-			return 0, nil, err
+			return 0, nil, fmt.Errorf("repo.PublicationsAfter: %w", err)
 		}
 
 		publications = append(publications, p)
 	}
 
 	if c.Err() != nil {
-		return 0, nil, err
+		return 0, nil, fmt.Errorf("repo: publications after: %w", c.Err())
 	}
 
 	return n, publications, nil
@@ -354,67 +359,82 @@ func (s *Repo) PublicationsBetween(t1, t2 time.Time, fn func(*models.Publication
 		s.opts,
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.PublicationsBetween: %w", err)
 	}
 	defer c.Close()
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.PublicationsBetween: %w", err)
 		}
 		p, err := s.snapshotToPublication(snap)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.PublicationsBetween: %w", err)
 		}
 		if ok := fn(p); !ok {
 			break
 		}
 	}
-	return c.Err()
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.PublicationsBetween: %w", c.Err())
+	}
+
+	return nil
 }
 
 func (s *Repo) EachPublication(fn func(*models.Publication) bool) error {
 	c, err := s.publicationStore.GetAll(s.opts)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.EachPublication: %w", err)
 	}
 	defer c.Close()
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachPublication: %w", err)
 		}
 		p, err := s.snapshotToPublication(snap)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachPublication: %w", err)
 		}
 		if ok := fn(p); !ok {
 			break
 		}
 	}
-	return c.Err()
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.EachPublication: %w", c.Err())
+	}
+
+	return nil
 }
 
 func (s *Repo) EachPublicationSnapshot(fn func(*models.Publication) bool) error {
 	c, err := s.publicationStore.GetAllSnapshots(s.opts)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.EachPublicationSnapshot: %w", err)
 	}
 	defer c.Close()
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachPublicationSnapshot: %w", err)
 		}
 		p, err := s.snapshotToPublication(snap)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachPublicationSnapshot: %w", err)
 		}
 		if ok := fn(p); !ok {
 			break
 		}
 	}
-	return c.Err()
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.EachPublicationSnapshot: %w", c.Err())
+	}
+
+	return nil
 }
 
 func (s *Repo) EachPublicationWithStatus(status string, fn func(*models.Publication) bool) error {
@@ -422,24 +442,29 @@ func (s *Repo) EachPublicationWithStatus(status string, fn func(*models.Publicat
 
 	c, err := s.publicationStore.Select(sql, []any{status}, s.opts)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.EachPublicationWithStatus: %w", err)
 	}
 	defer c.Close()
 
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachPublicationWithStatus: %w", err)
 		}
 		p, err := s.snapshotToPublication(snap)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachPublicationWithStatus: %w", err)
 		}
 		if ok := fn(p); !ok {
 			break
 		}
 	}
-	return c.Err()
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.EachPublicationWithStatus: %w", c.Err())
+	}
+
+	return nil
 }
 
 // TODO add handle with a listener, then this method isn't needed anymore
@@ -451,36 +476,41 @@ func (s *Repo) EachPublicationWithoutHandle(fn func(*models.Publication) bool) e
 		`
 	c, err := s.publicationStore.Select(sql, nil, s.opts)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.EachPublicationWithoutHandle: %w", err)
 	}
 	defer c.Close()
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachPublicationWithoutHandle: %w", err)
 		}
 		p, err := s.snapshotToPublication(snap)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachPublicationWithoutHandle: %w", err)
 		}
 		if ok := fn(p); !ok {
 			break
 		}
 	}
-	return c.Err()
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.EachPublicationWithoutHandle: %w", c.Err())
+	}
+
+	return nil
 }
 
 func (s *Repo) GetPublicationSnapshotBefore(id string, dateFrom time.Time) (*models.Publication, error) {
 	snap, err := s.publicationStore.GetSnapshotBefore(id, dateFrom, s.opts)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, fmt.Errorf("repo.GetPublicationSnapshotBefore %s: %w", id, models.ErrNotFound)
+	}
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, models.ErrNotFound
-		}
-		return nil, err
+		return nil, fmt.Errorf("repo.GetPublicationSnapshotBefore %s: %w", id, err)
 	}
 	p, err := s.snapshotToPublication(snap)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repo.GetPublicationSnapshotBefore %s: %w", id, err)
 	}
 	return p, nil
 }
@@ -488,23 +518,28 @@ func (s *Repo) GetPublicationSnapshotBefore(id string, dateFrom time.Time) (*mod
 func (s *Repo) PublicationHistory(id string, fn func(*models.Publication) bool) error {
 	c, err := s.publicationStore.GetHistory(id, s.opts)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.PublicationHistory %s: %w", id, err)
 	}
 	defer c.Close()
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.PublicationHistory %s: %w", id, err)
 		}
 		p, err := s.snapshotToPublication(snap)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.PublicationHistory %s: %w", id, err)
 		}
 		if ok := fn(p); !ok {
 			break
 		}
 	}
-	return c.Err()
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.PublicationHistory %s: %w", id, c.Err())
+	}
+
+	return nil
 }
 
 func (s *Repo) UpdatePublicationEmbargoes() (int, error) {
@@ -522,17 +557,17 @@ func (s *Repo) UpdatePublicationEmbargoes() (int, error) {
 		`
 	c, err := s.publicationStore.Select(sql, []any{embargoAccessLevel, now}, s.opts)
 	if err != nil {
-		return n, err
+		return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
 	}
 	defer c.Close()
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return n, err
+			return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
 		}
 		p, err := s.snapshotToPublication(snap)
 		if err != nil {
-			return n, err
+			return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
 		}
 
 		// clear expired embargoes
@@ -551,26 +586,30 @@ func (s *Repo) UpdatePublicationEmbargoes() (int, error) {
 		}
 
 		if err = s.UpdatePublication(p.SnapshotID, p, nil); err != nil {
-			return n, err
+			return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
 		}
 
 		n++
 	}
 
-	return n, c.Err()
+	if c.Err() != nil {
+		return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", c.Err())
+	}
+
+	return n, nil
 }
 
 func (s *Repo) GetDataset(id string) (*models.Dataset, error) {
 	snap, err := s.datasetStore.GetCurrentSnapshot(id, s.opts)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, fmt.Errorf("repo.GetDataset %s: %w", id, models.ErrNotFound)
+	}
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, models.ErrNotFound
-		}
 		return nil, err
 	}
 	d, err := s.snapshotToDataset(snap)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repo.GetDataset %s: %w", id, err)
 	}
 	return d, nil
 }
@@ -578,53 +617,55 @@ func (s *Repo) GetDataset(id string) (*models.Dataset, error) {
 func (s *Repo) GetDatasets(ids []string) ([]*models.Dataset, error) {
 	c, err := s.datasetStore.GetByID(ids, s.opts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repo.GetDatasets: %w", err)
 	}
 	defer c.Close()
 	var datasets []*models.Dataset
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("repo.GetDatasets: %w", err)
 		}
 		d, err := s.snapshotToDataset(snap)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("repo.GetDatasets: %w", err)
 		}
 		datasets = append(datasets, d)
 	}
+
 	if c.Err() != nil {
-		return nil, c.Err()
+		return nil, fmt.Errorf("repo.GetDatasets: %w", c.Err())
 	}
+
 	return datasets, nil
 }
 
 func (s *Repo) ImportDataset(d *models.Dataset) error {
 	if d.DateCreated == nil {
-		return fmt.Errorf("unable to import dataset %s: date_created is not set", d.ID)
+		return fmt.Errorf("repo.ImportDataset %s: DateCreated not set", d.ID)
 	}
 	if d.DateUpdated == nil {
-		return fmt.Errorf("unable to import dataset %s: date_updated is not set", d.ID)
+		return fmt.Errorf("repo.ImportDataset %s: DateUpdated not set", d.ID)
 	}
 	if d.DateFrom == nil {
-		return fmt.Errorf("unable to import dataset %s: date_from is not set", d.ID)
+		return fmt.Errorf("repo.ImportDataset %s: DateFrom not set", d.ID)
 	}
 	if d.DateUntil != nil {
-		return fmt.Errorf("unable to import dataset %s: date_until should be nil", d.ID)
+		return fmt.Errorf("repo.ImportDataset %s: DateUntil not nil", d.ID)
 	}
 
 	snap, err := s.datasetToSnapshot(d)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.ImportDataset %s: %w", d.ID, err)
 	}
 
 	if err := s.datasetStore.ImportSnapshot(snap, s.opts); err != nil {
-		return err
+		return fmt.Errorf("repo.ImportDataset %s: %w", d.ID, err)
 	}
 
 	for _, fn := range s.config.DatasetLoaders {
 		if err := fn(d); err != nil {
-			return err
+			return fmt.Errorf("repo.ImportDataset %s: %w", d.ID, err)
 		}
 	}
 
@@ -635,8 +676,8 @@ func (s *Repo) ImportDataset(d *models.Dataset) error {
 
 func (s *Repo) SaveDataset(d *models.Dataset, u *models.Person) error {
 	oldDataset, err := s.GetDataset(d.ID)
-	if err != nil && err != models.ErrNotFound {
-		return err
+	if err != nil && !errors.Is(err, models.ErrNotFound) {
+		return fmt.Errorf("repo.SaveDataset %s: %w", d.ID, err)
 	}
 	if reflect.DeepEqual(oldDataset, d) {
 		return nil
@@ -660,7 +701,7 @@ func (s *Repo) SaveDataset(d *models.Dataset, u *models.Person) error {
 	}
 
 	if err := d.Validate(); err != nil {
-		return err
+		return fmt.Errorf("repo.SaveDataset %s: %w", d.ID, err)
 	}
 
 	if d.Status == "public" && !d.HasBeenPublic {
@@ -668,12 +709,12 @@ func (s *Repo) SaveDataset(d *models.Dataset, u *models.Person) error {
 	}
 
 	if err := s.datasetStore.Add(d.ID, d, s.opts); err != nil {
-		return err
+		return fmt.Errorf("repo.SaveDataset %s: %w", d.ID, err)
 	}
 
 	for _, fn := range s.config.DatasetLoaders {
 		if err := fn(d); err != nil {
-			return err
+			return fmt.Errorf("repo.SaveDataset %s: %w", d.ID, err)
 		}
 	}
 
@@ -684,7 +725,7 @@ func (s *Repo) SaveDataset(d *models.Dataset, u *models.Person) error {
 
 func (s *Repo) UpdateDataset(snapshotID string, d *models.Dataset, u *models.Person) error {
 	if oldDataset, err := s.GetDataset(d.ID); err != nil {
-		return err
+		return fmt.Errorf("repo.UpdateDataset %s@%s: %w", d.ID, snapshotID, err)
 	} else if reflect.DeepEqual(oldDataset, d) {
 		return nil
 	}
@@ -710,13 +751,13 @@ func (s *Repo) UpdateDataset(snapshotID string, d *models.Dataset, u *models.Per
 	snapshotID, err := s.datasetStore.AddAfter(snapshotID, d.ID, d, s.opts)
 	if err != nil {
 		d.DateUpdated = oldDateUpdated
-		return err
+		return fmt.Errorf("repo.UpdateDataset %s@%s: %w", d.ID, snapshotID, err)
 	}
 	d.SnapshotID = snapshotID
 
 	for _, fn := range s.config.DatasetLoaders {
 		if err := fn(d); err != nil {
-			return err
+			return fmt.Errorf("repo.UpdateDataset %s@%s: %w", d.ID, snapshotID, err)
 		}
 	}
 
@@ -738,18 +779,22 @@ func (s *Repo) MutateDataset(id string, u *models.Person, muts ...Mutation) erro
 	for _, mut := range muts {
 		mutator, ok := s.config.DatasetMutators[mut.Op]
 		if !ok {
-			return fmt.Errorf("unknown mutation '%s'", mut.Op)
+			return fmt.Errorf("repo.MutateDataset %s: unknown mutation %s", id, mut.Op)
 		}
 		if err := mutator(d, mut.Args); err != nil {
-			return err
+			return fmt.Errorf("repo.MutateDataset %s: mutation %s: %w", id, mut.Op, err)
 		}
 	}
 
 	if err = d.Validate(); err != nil {
-		return err
+		return fmt.Errorf("repo.MutateDataset %s: %w", id, err)
 	}
 
-	return s.UpdateDataset(d.SnapshotID, d, u)
+	if err := s.UpdateDataset(d.SnapshotID, d, u); err != nil {
+		return fmt.Errorf("repo.MutateDataset %s: %w", id, err)
+	}
+
+	return nil
 }
 
 func (s *Repo) DatasetsAfter(t time.Time, limit, offset int) (int, []*models.Dataset, error) {
@@ -759,7 +804,7 @@ func (s *Repo) DatasetsAfter(t time.Time, limit, offset int) (int, []*models.Dat
 		s.opts,
 	)
 	if err != nil {
-		return 0, nil, err
+		return 0, nil, fmt.Errorf("repo.DatasetsAfter: %w", err)
 	}
 
 	c, err := s.datasetStore.Select(
@@ -768,7 +813,7 @@ func (s *Repo) DatasetsAfter(t time.Time, limit, offset int) (int, []*models.Dat
 		s.opts,
 	)
 	if err != nil {
-		return 0, nil, err
+		return 0, nil, fmt.Errorf("repo.DatasetsAfter: %w", err)
 	}
 
 	datasets := make([]*models.Dataset, 0, limit)
@@ -777,18 +822,18 @@ func (s *Repo) DatasetsAfter(t time.Time, limit, offset int) (int, []*models.Dat
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return 0, nil, err
+			return 0, nil, fmt.Errorf("repo.DatasetsAfter: %w", err)
 		}
 		p, err := s.snapshotToDataset(snap)
 		if err != nil {
-			return 0, nil, err
+			return 0, nil, fmt.Errorf("repo.DatasetsAfter: %w", err)
 		}
 
 		datasets = append(datasets, p)
 	}
 
 	if c.Err() != nil {
-		return 0, nil, err
+		return 0, nil, fmt.Errorf("repo.DatasetsAfter: %w", c.Err())
 	}
 
 	return n, datasets, nil
@@ -801,67 +846,82 @@ func (s *Repo) DatasetsBetween(t1, t2 time.Time, fn func(*models.Dataset) bool) 
 		s.opts,
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.DatasetsBetween: %w", err)
 	}
 	defer c.Close()
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.DatasetsBetween: %w", err)
 		}
 		p, err := s.snapshotToDataset(snap)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.DatasetsBetween: %w", err)
 		}
 		if ok := fn(p); !ok {
 			break
 		}
 	}
-	return c.Err()
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.DatasetsBetween: %w", c.Err())
+	}
+
+	return nil
 }
 
 func (s *Repo) EachDataset(fn func(*models.Dataset) bool) error {
 	c, err := s.datasetStore.GetAll(s.opts)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.EachDataset: %w", err)
 	}
 	defer c.Close()
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachDataset: %w", err)
 		}
 		d, err := s.snapshotToDataset(snap)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachDataset: %w", err)
 		}
 		if ok := fn(d); !ok {
 			break
 		}
 	}
-	return c.Err()
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.EachDataset: %w", c.Err())
+	}
+
+	return nil
 }
 
 func (s *Repo) EachDatasetSnapshot(fn func(*models.Dataset) bool) error {
 	c, err := s.datasetStore.GetAllSnapshots(s.opts)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.EachDatasetSnapshot: %w", err)
 	}
 	defer c.Close()
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachDatasetSnapshot: %w", err)
 		}
 		d, err := s.snapshotToDataset(snap)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachDatasetSnapshot: %w", err)
 		}
 		if ok := fn(d); !ok {
 			break
 		}
 	}
-	return c.Err()
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.EachDatasetSnapshot: %w", c.Err())
+	}
+
+	return nil
 }
 
 func (s *Repo) EachDatasetWithoutHandle(fn func(*models.Dataset) bool) error {
@@ -872,60 +932,70 @@ func (s *Repo) EachDatasetWithoutHandle(fn func(*models.Dataset) bool) error {
 		`
 	c, err := s.datasetStore.Select(sql, nil, s.opts)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.EachDatasetWithoutHandle: %w", err)
 	}
 	defer c.Close()
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachDatasetWithoutHandle: %w", err)
 		}
 		d, err := s.snapshotToDataset(snap)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachDatasetWithoutHandle: %w", err)
 		}
 		if ok := fn(d); !ok {
 			break
 		}
 	}
-	return c.Err()
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.EachDatasetWithoutHandle: %w", c.Err())
+	}
+
+	return nil
 }
 
 func (s *Repo) GetDatasetSnapshotBefore(id string, dateFrom time.Time) (*models.Dataset, error) {
 	snap, err := s.datasetStore.GetSnapshotBefore(id, dateFrom, s.opts)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, fmt.Errorf("repo.GetDatasetSnapshotBefore %s: %w", id, models.ErrNotFound)
+	}
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, models.ErrNotFound
-		}
-		return nil, err
+		return nil, fmt.Errorf("repo.GetDatasetSnapshotBefore %s: %w", id, err)
 	}
 	d, err := s.snapshotToDataset(snap)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repo.GetDatasetSnapshotBefore %s: %w", id, err)
 	}
 	return d, nil
 }
 
 func (s *Repo) DatasetHistory(id string, fn func(*models.Dataset) bool) error {
-	c, err := s.publicationStore.GetHistory(id, s.opts)
+	c, err := s.datasetStore.GetHistory(id, s.opts)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.GetDatasetHistory %s: %w", id, err)
 	}
 	defer c.Close()
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.GetDatasetHistory %s: %w", id, err)
 		}
 		d, err := s.snapshotToDataset(snap)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.GetDatasetHistory %s: %w", id, err)
 		}
 		if ok := fn(d); !ok {
 			break
 		}
 	}
-	return c.Err()
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.GetDatasetHistory %s: %w", id, c.Err())
+	}
+
+	return nil
 }
 
 func (s *Repo) UpdateDatasetEmbargoes() (int, error) {
@@ -941,17 +1011,17 @@ func (s *Repo) UpdateDatasetEmbargoes() (int, error) {
 		`
 	c, err := s.datasetStore.Select(sql, []any{embargoAccessLevel, now}, s.opts)
 	if err != nil {
-		return n, err
+		return n, fmt.Errorf("repo.UpdateDatasetEmbargoes: %w", err)
 	}
 	defer c.Close()
 	for c.HasNext() {
 		snap, err := c.Next()
 		if err != nil {
-			return n, err
+			return n, fmt.Errorf("repo.UpdateDatasetEmbargoes: %w", err)
 		}
 		d, err := s.snapshotToDataset(snap)
 		if err != nil {
-			return n, err
+			return n, fmt.Errorf("repo.UpdateDatasetEmbargoes: %w", err)
 		}
 
 		// clear expired embargo
@@ -965,13 +1035,17 @@ func (s *Repo) UpdateDatasetEmbargoes() (int, error) {
 		d.ClearEmbargo()
 
 		if err = s.UpdateDataset(d.SnapshotID, d, nil); err != nil {
-			return n, err
+			return n, fmt.Errorf("repo.UpdateDatasetEmbargoes: %w", err)
 		}
 
 		n++
 	}
 
-	return n, c.Err()
+	if c.Err() != nil {
+		return n, fmt.Errorf("repo.UpdateDatasetEmbargoes: %w", c.Err())
+	}
+
+	return n, nil
 }
 
 func (s *Repo) GetPublicationDatasets(p *models.Publication) ([]*models.Dataset, error) {
@@ -979,7 +1053,13 @@ func (s *Repo) GetPublicationDatasets(p *models.Publication) ([]*models.Dataset,
 	for _, rd := range p.RelatedDataset {
 		datasetIds = append(datasetIds, rd.ID)
 	}
-	return s.GetDatasets(datasetIds)
+
+	datasets, err := s.GetDatasets(datasetIds)
+	if err != nil {
+		return nil, fmt.Errorf("repo.GetPublicationDatasets %s: %w", p.ID, err)
+	}
+
+	return datasets, nil
 }
 
 func (s *Repo) GetVisiblePublicationDatasets(u *models.Person, p *models.Publication) ([]*models.Dataset, error) {
@@ -1001,7 +1081,13 @@ func (s *Repo) GetDatasetPublications(d *models.Dataset) ([]*models.Publication,
 	for _, rp := range d.RelatedPublication {
 		publicationIds = append(publicationIds, rp.ID)
 	}
-	return s.GetPublications(publicationIds)
+
+	publications, err := s.GetPublications(publicationIds)
+	if err != nil {
+		return nil, fmt.Errorf("repo.GetDatasetPublications %s: %w", d.ID, err)
+	}
+
+	return publications, nil
 }
 
 func (s *Repo) GetVisibleDatasetPublications(u *models.Person, d *models.Dataset) ([]*models.Publication, error) {
@@ -1023,13 +1109,13 @@ func (s *Repo) AddPublicationDataset(p *models.Publication, d *models.Dataset, u
 		if !p.HasRelatedDataset(d.ID) {
 			p.RelatedDataset = append(p.RelatedDataset, models.RelatedDataset{ID: d.ID})
 			if err := s.SavePublication(p, u); err != nil {
-				return err
+				return fmt.Errorf("repo.AddPublicationDataset %s %s: %w", p.ID, d.ID, err)
 			}
 		}
 		if !d.HasRelatedPublication(p.ID) {
 			d.RelatedPublication = append(d.RelatedPublication, models.RelatedPublication{ID: p.ID})
 			if err := s.SaveDataset(d, u); err != nil {
-				return err
+				return fmt.Errorf("repo.AddPublicationDataset %s %s: %w", p.ID, d.ID, err)
 			}
 		}
 
@@ -1042,13 +1128,13 @@ func (s *Repo) RemovePublicationDataset(p *models.Publication, d *models.Dataset
 		if p.HasRelatedDataset(d.ID) {
 			p.RemoveRelatedDataset(d.ID)
 			if err := s.SavePublication(p, u); err != nil {
-				return err
+				return fmt.Errorf("repo.RemovePublicationDataset %s %s: %w", p.ID, d.ID, err)
 			}
 		}
 		if d.HasRelatedPublication(p.ID) {
 			d.RemoveRelatedPublication(p.ID)
 			if err := s.SaveDataset(d, u); err != nil {
-				return err
+				return fmt.Errorf("repo.RemovePublicationDataset %s %s: %w", p.ID, d.ID, err)
 			}
 		}
 
