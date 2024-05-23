@@ -23,7 +23,9 @@ func Lock(w http.ResponseWriter, r *http.Request) {
 
 	if validationErrs := dataset.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
-		views.FormErrorsDialog(c, "Unable to lock this dataset due to the following errors", errors).Render(r.Context(), w)
+		w.Header().Add("HX-Retarget", "#modals")
+		w.Header().Add("HX-Reswap", "innerHTML")
+		views.ShowModal(views.FormErrorsDialog("Unable to lock this dataset due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 
@@ -58,7 +60,9 @@ func Unlock(w http.ResponseWriter, r *http.Request) {
 
 	if validationErrs := dataset.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
-		views.FormErrorsDialog(c, "Unable to unlock this dataset due to the following errors", errors).Render(r.Context(), w)
+		w.Header().Add("HX-Retarget", "#modals")
+		w.Header().Add("HX-Reswap", "innerHTML")
+		views.ShowModal(views.FormErrorsDialog("Unable to unlock this dataset due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 

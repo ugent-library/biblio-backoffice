@@ -2,6 +2,7 @@ package views
 
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
 type CuratorDashboardPublicationsArgs struct {
@@ -11,7 +12,6 @@ type CuratorDashboardPublicationsArgs struct {
 	APublications        map[string]map[string][]string
 	UFaculties           []string
 	AFaculties           []string
-	PTypes               map[string]string
 	UYear                string
 	AYear                string
 	AllUPublicationYears []string
@@ -85,7 +85,7 @@ templ CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublication
 					</div>
 					<div class="card-body w-100 p-0 position-relative">
 						<div class="table-responsive" id="tbl-upublications">
-							@CuratorDashboardTblPublications(c, args.UFaculties, args.UPublications, args.PTypes)
+							@CuratorDashboardTblPublications(c, args.UFaculties, args.UPublications)
 						</div>
 					</div>
 				</div>
@@ -120,7 +120,7 @@ templ CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublication
 					</div>
 					<div class="card-body w-100 p-0 position-relative">
 						<div class="table-responsive" id="tbl-apublications">
-							@CuratorDashboardTblPublications(c, args.AFaculties, args.APublications, args.PTypes)
+							@CuratorDashboardTblPublications(c, args.AFaculties, args.APublications)
 						</div>
 					</div>
 				</div>
@@ -129,7 +129,7 @@ templ CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublication
 	}
 }
 
-templ CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publications map[string]map[string][]string, pTypes map[string]string) {
+templ CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publications map[string]map[string][]string) {
 	<div class="spinner-card-backdrop">
 		<div class="spinner-border text-primary" role="status">
 			<span class="visually-hidden">Loading...</span>
@@ -145,11 +145,11 @@ templ CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publicatio
 			</tr>
 		</thead>
 		<tbody>
-			for pti, pt := range pTypes {
+			for _, pt := range vocabularies.Map["publication_types"] {
 				<tr>
-					<th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col">{ pt }</th>
+					<th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col">{ c.Loc.Get("publication_types."+pt) }</th>
 					for _, f := range faculties {
-						if cell, ok := publications[f][pti]; ok {
+						if cell, ok := publications[f][pt]; ok {
 							<td>
 								if cell[1] == "" {
 									<span>{ cell[0] }</span>
@@ -161,6 +161,20 @@ templ CuratorDashboardTblPublications(c *ctx.Ctx, faculties []string, publicatio
 					}
 				</tr>
 			}
+			<tr>
+				<th class="table-col-sm-fixed table-col-sm-fixed-left" scope="col">All</th>
+				for _, f := range faculties {
+					if cell, ok := publications[f]["all"]; ok {
+						<td>
+							if cell[1] == "" {
+								<span>{ cell[0] }</span>
+							} else {
+								<a href={ templ.URL(cell[1]) }>{ cell[0] }</a>
+							}
+						</td>
+					}
+				}
+			</tr>
 		</tbody>
 	</table>
 }

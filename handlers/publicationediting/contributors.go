@@ -636,7 +636,7 @@ func DeleteContributor(w http.ResponseWriter, r *http.Request) {
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
-		views.ReplaceModal(views.FormErrorsDialog(c, "Can't delete this contributor due to the following errors", errors)).Render(r.Context(), w)
+		views.ReplaceModal(views.FormErrorsDialog("Can't delete this contributor due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 

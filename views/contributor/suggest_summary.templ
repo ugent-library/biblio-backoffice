@@ -1,11 +1,12 @@
-package views
+package contributorviews
 
 import (
 	"strings"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-templ contributorShowSummary(contributor *models.Contributor) {
+templ SuggestSummary(c *ctx.Ctx, contributor *models.Contributor, isCurrent bool) {
 	<div class="bc-avatar-and-text align-items-start">
 		if contributor.Person != nil {
 			<div class="bc-avatar">
@@ -14,6 +15,12 @@ templ contributorShowSummary(contributor *models.Contributor) {
 			<div class="bc-avatar-text">
 				<h3>
 					<span class="me-3">{ contributor.Person.FullName }</span>
+					if isCurrent {
+					<span class="badge rounded-pill badge-success-light me-3">
+						<i class="if if-check-circle"></i>
+						<span class="badge-text">Current selection</span>
+					</span>
+					}
 					if contributor.Person.Active {
 						<span class="badge rounded-pill badge-default">Active UGent member</span>
 					}
@@ -65,6 +72,12 @@ templ contributorShowSummary(contributor *models.Contributor) {
 				<div class="bc-avatar-text">
 					<h3>
 						{ contributor.Name() }
+						if isCurrent {
+            			<span class="badge rounded-pill badge-success-light">
+							<i class="if if-check-circle"></i>
+							<span class="badge-text">Current selection</span>
+						</span>
+            			}
 					</h3>
 					<p class="text-muted">External, non-UGent</p>
 				</div>
