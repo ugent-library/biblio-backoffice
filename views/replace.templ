@@ -4,14 +4,20 @@ import (
 	"fmt"
 )
 
-templ CloseModalAndReplace(selector string, component templ.Component) {
-	<div hx-swap-oob="innerHTML:#modals"></div>
+templ Replace(selector string, component templ.Component) {
 	<div hx-swap-oob={ fmt.Sprintf("innerHTML:%s", selector) }>
 		@component
 	</div>
 }
 
-templ Replace(selector string, component templ.Component) {
+templ ReplaceModal(component templ.Component) {
+	<div hx-swap-oob="innerHTML:#modal">
+		@component
+	</div>
+}
+
+templ CloseModalAndReplace(selector string, component templ.Component) {
+	<div hx-swap-oob="innerHTML:#modals"></div>
 	<div hx-swap-oob={ fmt.Sprintf("innerHTML:%s", selector) }>
 		@component
 	</div>
