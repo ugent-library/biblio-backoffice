@@ -1,6 +1,7 @@
 package frontoffice
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -43,7 +44,7 @@ func (h *Handler) GetPublication(w http.ResponseWriter, r *http.Request) {
 	id := bind.PathValue(r, "id")
 	p, err := h.Repo.GetPublication(id)
 	if err != nil {
-		if err == models.ErrNotFound {
+		if errors.Is(err, models.ErrNotFound) {
 			http.NotFound(w, r)
 		} else {
 			h.Log.Errorw("unable to fetch publication %s: %w", id, err)
@@ -59,7 +60,7 @@ func (h *Handler) GetDataset(w http.ResponseWriter, r *http.Request) {
 	id := bind.PathValue(r, "id")
 	p, err := h.Repo.GetDataset(id)
 	if err != nil {
-		if err == models.ErrNotFound {
+		if errors.Is(err, models.ErrNotFound) {
 			http.NotFound(w, r)
 		} else {
 			h.Log.Errorw("unable to fetch dataset %s: %w", id, err)
@@ -117,7 +118,7 @@ func (h *Handler) GetOrganization(w http.ResponseWriter, r *http.Request) {
 	}
 
 	o, err := h.PeopleIndex.GetOrganizationByIdentifier(r.Context(), ident.Kind, ident.Value)
-	if err == people.ErrNotFound {
+	if errors.Is(err, people.ErrNotFound) {
 		http.NotFound(w, r)
 		return
 	}
@@ -139,7 +140,7 @@ func (h *Handler) GetPerson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p, err := h.PeopleIndex.GetPersonByIdentifier(r.Context(), ident.Kind, ident.Value)
-	if err == people.ErrNotFound {
+	if errors.Is(err, people.ErrNotFound) {
 		http.NotFound(w, r)
 		return
 	}
@@ -165,7 +166,7 @@ func (h *Handler) GetPeople(w http.ResponseWriter, r *http.Request) {
 		}
 
 		p, err := h.PeopleIndex.GetPersonByIdentifier(r.Context(), ident.Kind, ident.Value)
-		if err == people.ErrNotFound {
+		if errors.Is(err, people.ErrNotFound) {
 			h.Log.Warnf("unable to find person with identifier %s", ident.String())
 			continue
 		}
@@ -191,7 +192,7 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 	p, err := h.PeopleRepo.GetActivePersonByIdentifier(r.Context(), ident.Kind, ident.Value)
 
-	if err == people.ErrNotFound {
+	if errors.Is(err, people.ErrNotFound) {
 		http.NotFound(w, r)
 		return
 	}
@@ -206,7 +207,7 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 	p, err := h.PeopleRepo.GetActivePersonByUsername(r.Context(), bind.PathValue(r, "username"))
-	if err == people.ErrNotFound {
+	if errors.Is(err, people.ErrNotFound) {
 		http.NotFound(w, r)
 		return
 	}
@@ -306,7 +307,7 @@ func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p, err := h.ProjectsIndex.GetProjectByIdentifier(r.Context(), ident.Kind, ident.Value)
-	if err == projects.ErrNotFound {
+	if errors.Is(err, projects.ErrNotFound) {
 		http.NotFound(w, r)
 		return
 	}
@@ -442,7 +443,7 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	id := bind.PathValue(r, "id")
 	p, err := h.Repo.GetPublication(id)
 	if err != nil {
-		if err == models.ErrNotFound {
+		if errors.Is(err, models.ErrNotFound) {
 			http.NotFound(w, r)
 		} else {
 			h.Log.Errorw("unable to get publication %s: %w", id, err)

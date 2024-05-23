@@ -146,8 +146,7 @@ func DeleteDepartment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("delete dataset department: Could not save the dataset:", "error", err, "dataset", d.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

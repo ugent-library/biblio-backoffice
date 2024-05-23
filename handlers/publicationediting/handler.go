@@ -1,6 +1,7 @@
 package publicationediting
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/backends"
@@ -40,7 +41,7 @@ func (h *Handler) Wrap(fn func(http.ResponseWriter, *http.Request, Context)) htt
 		id := bind.PathValue(r, "id")
 		pub, err := h.Repo.GetPublication(id)
 		if err != nil {
-			if err == models.ErrNotFound {
+			if errors.Is(err, models.ErrNotFound) {
 				h.Logger.Warn("edit publication: could not find publication with id:", "errors", err, "id", id, "user", ctx.User.ID)
 				render.NotFound(w, r, err)
 			} else {

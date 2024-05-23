@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"sort"
 
@@ -140,7 +141,7 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, p := range pHits.Hits {
 		prevP, err := c.Repo.GetPublicationSnapshotBefore(p.ID, *p.DateFrom)
-		if err != nil && err != models.ErrNotFound {
+		if err != nil && !errors.Is(err, models.ErrNotFound) {
 			c.HandleError(w, r, err)
 			return
 		}
@@ -189,7 +190,7 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, d := range dHits.Hits {
 		prevD, err := c.Repo.GetDatasetSnapshotBefore(d.ID, *d.DateFrom)
-		if err != nil && err != models.ErrNotFound {
+		if err != nil && !errors.Is(err, models.ErrNotFound) {
 			c.HandleError(w, r, err)
 			return
 		}
