@@ -14,12 +14,15 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/db"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/mutate"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 )
 
 type Mutation struct {
-	Op   string
+	Name string
 	Args []string
+	// Line is not always set
+	Line int
 }
 
 type Repo struct {
@@ -290,12 +293,18 @@ func (s *Repo) MutatePublication(id string, u *models.Person, muts ...Mutation) 
 	}
 
 	for _, mut := range muts {
-		mutator, ok := s.config.PublicationMutators[mut.Op]
+		mutator, ok := s.config.PublicationMutators[mut.Name]
 		if !ok {
-			return fmt.Errorf("repo.MutatePublication %s: unknown mutation %s", p.ID, mut.Op)
+			return fmt.Errorf("repo.MutatePublication %s: unknown mutation %s", p.ID, mut.Name)
 		}
 		if err := mutator(p, mut.Args); err != nil {
-			return fmt.Errorf("repo.MutatePublication %s: mutation %s: %w", p.ID, mut.Op, err)
+			var argErr *mutate.ArgumentError
+			// TODO this is a messy way of adding the line number
+			if mut.Line != 0 && errors.As(err, &argErr) {
+				argErr.Msg = fmt.Sprintf("%s at line %d", argErr.Msg, mut.Line)
+				return fmt.Errorf("repo.MutatePublication %s: mutation %s: %w", id, mut.Name, argErr)
+			}
+			return fmt.Errorf("repo.MutatePublication %s: mutation %s: %w", p.ID, mut.Name, err)
 		}
 	}
 
@@ -777,12 +786,18 @@ func (s *Repo) MutateDataset(id string, u *models.Person, muts ...Mutation) erro
 	}
 
 	for _, mut := range muts {
-		mutator, ok := s.config.DatasetMutators[mut.Op]
+		mutator, ok := s.config.DatasetMutators[mut.Name]
 		if !ok {
-			return fmt.Errorf("repo.MutateDataset %s: unknown mutation %s", id, mut.Op)
+			return fmt.Errorf("repo.MutateDataset %s: unknown mutation %s", id, mut.Name)
 		}
 		if err := mutator(d, mut.Args); err != nil {
-			return fmt.Errorf("repo.MutateDataset %s: mutation %s: %w", id, mut.Op, err)
+			var argErr *mutate.ArgumentError
+			// TODO this is a messy way of adding the line number
+			if mut.Line != 0 && errors.As(err, &argErr) {
+				argErr.Msg = fmt.Sprintf("%s at line %d", argErr.Msg, mut.Line)
+				return fmt.Errorf("repo.MutateDataset %s: mutation %s: %w", id, mut.Name, argErr)
+			}
+			return fmt.Errorf("repo.MutateDataset %s: mutation %s: %w", id, mut.Name, err)
 		}
 	}
 

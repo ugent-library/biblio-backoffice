@@ -422,6 +422,7 @@ func Register(c Config) {
 
 							// contributors
 							r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
+							r.Delete("/contributors/{role}/{position}", publicationEditingHandler.Wrap(publicationediting.DeleteContributor)).Name("publication_delete_contributor")
 
 							// departments
 							r.Get("/departments/add", publicationediting.AddDepartment).Name("publication_add_department")
@@ -636,8 +637,5 @@ func Register(c Config) {
 		r.Put("/publication/{id}/contributors/{role}/{position}",
 			publicationEditingHandler.Wrap(publicationEditingHandler.UpdateContributor)).
 			Name("publication_update_contributor")
-		r.Delete("/publication/{id}/contributors/{role}/{position}",
-			publicationEditingHandler.Wrap(publicationEditingHandler.DeleteContributor)).
-			Name("publication_delete_contributor")
 	})
 }

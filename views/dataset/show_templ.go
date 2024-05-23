@@ -99,7 +99,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(views.URL(c.PathTo("dataset_unlock", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String()))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(views.URL(c.PathTo("dataset_unlock", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.String()).String()))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -112,7 +112,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(views.URL(c.PathTo("dataset_lock", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String()))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(views.URL(c.PathTo("dataset_lock", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.String()).String()))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

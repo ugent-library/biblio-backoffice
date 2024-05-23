@@ -98,7 +98,7 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 			@addDuplicate(c, args)
 		}
 		if len(args.Errors) > 0 {
-			@views.FormErrorsDialog(c, "Unable to import this dataset due to the following errors", args.Errors)
+			@views.ShowModal(views.FormErrorsDialog("Unable to import this dataset due to the following errors", args.Errors))
 		}
 	}
 }

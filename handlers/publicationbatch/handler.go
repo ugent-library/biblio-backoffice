@@ -2,52 +2,55 @@ package publicationbatch
 
 import (
 	"encoding/csv"
+	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strings"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render/flash"
+	"github.com/ugent-library/biblio-backoffice/mutate"
 	"github.com/ugent-library/biblio-backoffice/repositories"
-	"github.com/ugent-library/biblio-backoffice/views"
+	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
 func Show(w http.ResponseWriter, r *http.Request) {
-	views.PublicationbatchShow(ctx.Get(r)).Render(r.Context(), w)
+	publicationviews.Batch(ctx.Get(r)).Render(r.Context(), w)
 }
 
 func Process(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	lines := strings.Split(strings.ReplaceAll(r.FormValue("ops"), "\r\n", "\n"), "\n")
+	formValue := r.FormValue("mutations")
+	lines := strings.Split(strings.ReplaceAll(formValue, "\r\n", "\n"), "\n")
 
 	if len(lines) > 500 {
-		c.PersistFlash(w, *flash.SimpleFlash().
-			WithLevel("error").
-			WithBody("No more than 500 operations can be processed at one time.").
-			DismissedAfter(0))
-		http.Redirect(w, r, c.PathTo("publication_batch").String(), http.StatusFound)
+		publicationviews.BatchBody(c, formValue, 0, []string{"no more than 500 operations can be processed at a time"})
 		return
 	}
 
-	done := 0
-	var errorMsgs []string
+	var (
+		done      int
+		errorMsgs []string
+		currentID string
+		mutations []repositories.Mutation
+	)
 
 	for i, line := range lines {
-		if len(line) == 0 {
+		line = strings.TrimSpace(line)
+
+		if len(line) == 0 || strings.HasPrefix(line, "#") {
 			continue
 		}
 
-		rdr := csv.NewReader(strings.NewReader(strings.TrimSpace(line)))
-		rec, err := rdr.Read()
+		reader := csv.NewReader(strings.NewReader(line))
+		rec, err := reader.Read()
 
 		if err != nil {
-			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>error parsing line %d</p>", i))
+			errorMsgs = append(errorMsgs, fmt.Sprintf("error parsing line %d", i+1))
 			continue
 		}
 
 		if len(rec) < 2 {
-			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>error parsing line %d</p>", i))
+			errorMsgs = append(errorMsgs, fmt.Sprintf("error parsing line %d", i+1))
 			continue
 		}
 
@@ -58,30 +61,51 @@ func Process(w http.ResponseWriter, r *http.Request) {
 			args[i] = strings.TrimSpace(arg)
 		}
 
-		err = c.Repo.MutatePublication(id, c.User, repositories.Mutation{
-			Op:   op,
-			Args: args,
-		})
-
-		if err != nil {
-			errorMsgs = append(errorMsgs, fmt.Sprintf("<p>could not process publication %s at line %d</p>", id, i))
+		if id == "" {
+			errorMsgs = append(errorMsgs, fmt.Sprintf("empty id at line %d", i+1))
 			continue
 		}
 
-		done++
+		if currentID != "" && id != currentID {
+			var argErr *mutate.ArgumentError
+			err := c.Repo.MutatePublication(currentID, c.User, mutations...)
+			if err == nil {
+				done++
+			} else if errors.As(err, &argErr) {
+				errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s: %s", currentID, argErr.Error()))
+			} else if len(mutations) == 1 {
+				errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s at line %d", currentID, mutations[0].Line))
+			} else {
+				errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s at lines %d-%d", currentID, mutations[0].Line, mutations[len(mutations)-1].Line))
+			}
+			mutations = nil
+		}
+
+		currentID = id
+		mutations = append(mutations, repositories.Mutation{
+			Name: op,
+			Args: args,
+			Line: i + 1,
+		})
 	}
 
-	if done > 0 {
-		c.PersistFlash(w, *flash.SimpleFlash().
-			WithLevel("success").
-			WithBody(template.HTML(fmt.Sprintf("<p>Successfully processed %d publications.</p>", done))))
-	}
-	if len(errorMsgs) > 0 {
-		c.PersistFlash(w, *flash.SimpleFlash().
-			WithLevel("error").
-			WithBody(template.HTML(strings.Join(errorMsgs, ""))).
-			DismissedAfter(0))
+	if len(mutations) > 0 {
+		var argErr *mutate.ArgumentError
+		err := c.Repo.MutatePublication(currentID, c.User, mutations...)
+		if err == nil {
+			done++
+		} else if errors.As(err, &argErr) {
+			errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s: %s", currentID, argErr.Error()))
+		} else if len(mutations) == 1 {
+			errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s at line %d", currentID, mutations[0].Line))
+		} else {
+			errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s at lines %d-%d", currentID, mutations[0].Line, mutations[len(mutations)-1].Line))
+		}
 	}
 
-	http.Redirect(w, r, c.PathTo("publication_batch").String(), http.StatusFound)
+	if len(errorMsgs) == 0 {
+		formValue = ""
+	}
+
+	publicationviews.BatchBody(c, formValue, done, errorMsgs).Render(r.Context(), w)
 }

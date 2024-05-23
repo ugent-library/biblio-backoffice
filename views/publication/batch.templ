@@ -1,0 +1,78 @@
+package publication
+
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+)
+
+templ Batch(c *ctx.Ctx) {
+	@views.PageLayout(c, "Batch", nil) {
+		<div class="w-100 u-scroll-wrapper">
+			<div class="bg-white">
+				<div class="bc-navbar bc-navbar--xlarge bc-navbar--white bc-navbar--bordered-bottom">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<div class="bc-toolbar-item">
+								<h4 class="bc-toolbar-title">Batch</h4>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="u-scroll-wrapper__body p-6">
+				<div class="card w-100 mb-6">
+					<div class="card-header">
+						<div class="bc-toolbar">
+							<div class="bc-toolbar-left">
+								<div class="bc-toolbar-item">Batch update publications</div>
+							</div>
+						</div>
+					</div>
+					<div id="batch-body" class="card-body">
+						@BatchBody(c, "", 0, nil)
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}
+
+templ BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) {
+	<div class="mb-6">
+		<div class="row mb-6">
+			<label class="col-lg-3 col-xl-2 col-form-label">Operations</label>
+			<div class="col-lg-7 col-xl-7">
+				if done > 0 {
+					<div class="alert alert-success mb-6">
+						<i class="if if-check-circle"></i>
+						<div>
+							Successfully processed { fmt.Sprint(done) } publications.
+						</div>
+					</div>
+				}
+				@form.Errors(errors)
+				<textarea class="form-control" name="mutations" rows="8" spellcheck="false">{ formValue }</textarea>
+				<p class="small form-text text-muted mb-2">
+					One operation per line, e.g. <code>1234,add_keyword,dna,"double helix"</code> or <code>1234,remove_keyword,dna</code>.
+				</p>
+				<p class="small form-text text-muted">
+					Find <a class="link-dark" href="https://booktower.gitbook.io/product-docs/producten-en-diensten/biblio-academische-bibliografie-en-repository/handleidingen/batch-operaties#voorbeelden-batch-operaties" target="_blank">more batch operations</a>, or <a href="https://booktower.gitbook.io/product-docs/producten-en-diensten/biblio-academische-bibliografie-en-repository/handleidingen/batch-operaties#maak-het-jezelf-gemakkelijk" target="_blank">download the excel sheet</a> to make it easy.
+				</p>
+			</div>
+		</div>
+		<div class="row mb-6">
+			<div class="offset-lg-3 offset-xl-2 col-lg-5 col-xl-4">
+				<button
+					type="button"
+					name="process"
+					class="btn btn-primary"
+					hx-post={ c.PathTo("publication_process_batch").String() }
+					hx-include="[name='mutations']"
+					hx-target="#batch-body"
+				>Process</button>
+			</div>
+		</div>
+	</div>
+}
