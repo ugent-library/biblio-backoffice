@@ -121,6 +121,22 @@ func ConfirmCreateContributor(c *ctx.Ctx, args ConfirmCreateContributorArgs) tem
 				return templ_7745c5c3_Err
 			}
 		}
+		if args.Role == "author" {
+			templ_7745c5c3_Err = form.SelectRepeat(form.SelectRepeatArgs{
+				FieldArgs: form.FieldArgs{
+					Name:  "credit_role",
+					Label: "Roles",
+					Cols:  9,
+					Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/credit_role"),
+				},
+				Options:     localize.VocabularySelectOptions(c.Loc, "credit_roles"),
+				Values:      args.Contributor.CreditRole,
+				EmptyOption: true,
+			}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></li></ul></div><div class=\"modal-footer h-auto py-4\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left flex-wrap\"><div class=\"bc-toolbar-item\"><button class=\"btn btn-link modal-close\">Cancel</button></div><div class=\"bc-toolbar-item\"><button class=\"btn btn-outline-primary\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

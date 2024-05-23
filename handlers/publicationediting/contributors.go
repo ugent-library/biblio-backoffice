@@ -265,7 +265,6 @@ func CreateContributor(w http.ResponseWriter, r *http.Request) {
 	p.AddContributor(b.Role, contributor)
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-
 		views.ReplaceModal(publicationviews.ConfirmCreateContributor(c, publicationviews.ConfirmCreateContributorArgs{
 			Publication: p,
 			Contributor: contributor,

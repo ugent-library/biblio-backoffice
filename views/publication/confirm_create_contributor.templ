@@ -39,6 +39,19 @@ templ ConfirmCreateContributor(c *ctx.Ctx, args ConfirmCreateContributorArgs) {
 									<input type="hidden" name="first_name" id="first_name" value={ args.Contributor.FirstName() }/>
 									<input type="hidden" name="last_name" id="last_name" value={ args.Contributor.LastName() }/>
 								}
+								if args.Role == "author" {
+									@form.SelectRepeat(form.SelectRepeatArgs{
+										FieldArgs: form.FieldArgs{
+											Name:  "credit_role",
+											Label: "Roles",
+											Cols:  9,
+											Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/credit_role"),
+										},
+										Options:     localize.VocabularySelectOptions(c.Loc, "credit_roles"),
+										Values:      args.Contributor.CreditRole,
+										EmptyOption: true,
+									})
+								}
 							</div>
 						</div>
 					</li>
