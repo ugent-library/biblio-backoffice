@@ -134,19 +134,6 @@ func Register(c Config) {
 			BlockByDefault: true,
 		}),
 	}
-	publicationEditingHandler := &publicationediting.Handler{
-		BaseHandler:               baseHandler,
-		Repo:                      c.Services.Repo,
-		ProjectService:            c.Services.ProjectService,
-		ProjectSearchService:      c.Services.ProjectSearchService,
-		OrganizationSearchService: c.Services.OrganizationSearchService,
-		OrganizationService:       c.Services.OrganizationService,
-		PersonSearchService:       c.Services.PersonSearchService,
-		PersonService:             c.Services.PersonService,
-		DatasetSearchIndex:        c.Services.DatasetSearchIndex,
-		FileStore:                 c.Services.FileStore,
-		MaxFileSize:               c.MaxFileSize,
-	}
 
 	// frontoffice data exchange api
 	c.Router.Group(func(r *ich.Mux) {
@@ -415,7 +402,7 @@ func Register(c Config) {
 							r.Get("/contributors/{role}/{position}/edit", publicationediting.EditContributor).Name("publication_edit_contributor")
 							r.Get("/contributors/{role}/{position}/suggestions", publicationediting.EditContributorSuggest).Name("publication_edit_contributor_suggest")
 							r.Get("/contributors/{role}/{position}/confirm-update", publicationediting.ConfirmUpdateContributor).Name("publication_confirm_update_contributor")
-							r.Put("/contributors/{role}/{position}", publicationEditingHandler.Wrap(publicationEditingHandler.UpdateContributor)).Name("publication_update_contributor")
+							r.Put("/contributors/{role}/{position}", publicationediting.UpdateContributor).Name("publication_update_contributor")
 							r.Get("/contributors/{role}/{position}/confirm-delete", publicationediting.ConfirmDeleteContributor).Name("publication_confirm_delete_contributor")
 							r.Delete("/contributors/{role}/{position}", publicationediting.DeleteContributor).Name("publication_delete_contributor")
 

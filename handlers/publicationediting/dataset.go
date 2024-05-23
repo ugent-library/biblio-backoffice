@@ -22,15 +22,6 @@ type BindDeleteDataset struct {
 	SnapshotID string `path:"snapshot_id"`
 }
 
-type YieldAddDataset struct {
-	Context
-	Hits *models.DatasetHits
-}
-type YieldDatasets struct {
-	Context
-	RelatedDatasets []*models.Dataset
-}
-
 func AddDataset(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 

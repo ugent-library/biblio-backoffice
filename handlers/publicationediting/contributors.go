@@ -9,7 +9,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -91,33 +90,6 @@ type BindOrderContributors struct {
 	Positions []int  `form:"position"`
 }
 
-type YieldContributors struct {
-	Context
-	Role string
-}
-
-type YieldEditContributor struct {
-	Context
-	Role        string
-	Position    int
-	Contributor *models.Contributor
-	FirstName   string
-	LastName    string
-	Active      bool
-	Hits        []*models.Contributor
-	Form        *form.Form
-}
-
-type YieldConfirmUpdateContributor struct {
-	Context
-	Role        string
-	Position    int
-	Contributor *models.Contributor
-	Active      bool
-	Form        *form.Form
-	EditNext    bool
-}
-
 func AddContributor(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
@@ -144,8 +116,6 @@ func AddContributor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	contributor := models.ContributorFromFirstLastName(b.FirstName, b.LastName)
-
-	// suggestURL := c.PathFor("publication_add_contributor_suggest", "id", ctx.Publication.ID, "role", b.Role).String()
 
 	views.ShowModal(
 		publicationviews.AddContributor(c, publicationviews.AddContributorArgs{
@@ -205,12 +175,12 @@ func ConfirmCreateContributor(w http.ResponseWriter, r *http.Request) {
 
 	var contributor *models.Contributor
 	if b.ID != "" {
-		newC, _, err := generateContributorFromPersonId(c, b.ID)
+		newContributor, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
 			c.HandleError(w, r, err)
 			return
 		}
-		contributor = newC
+		contributor = newContributor
 	} else {
 		contributor = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
@@ -235,12 +205,12 @@ func CreateContributor(w http.ResponseWriter, r *http.Request) {
 
 	var contributor *models.Contributor
 	if b.ID != "" {
-		newC, _, err := generateContributorFromPersonId(c, b.ID)
+		newContributor, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
 			c.HandleError(w, r, err)
 			return
 		}
-		contributor = newC
+		contributor = newContributor
 	} else {
 		if b.FirstName == "" {
 			b.FirstName = "[missing]"
@@ -432,12 +402,12 @@ func ConfirmUpdateContributor(w http.ResponseWriter, r *http.Request) {
 
 	var contributor *models.Contributor
 	if b.ID != "" {
-		newC, _, err := generateContributorFromPersonId(c, b.ID)
+		newContributor, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
 			c.HandleError(w, r, err)
 			return
 		}
-		contributor = newC
+		contributor = newContributor
 	} else {
 		contributor = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
@@ -453,25 +423,26 @@ func ConfirmUpdateContributor(w http.ResponseWriter, r *http.Request) {
 	})).Render(r.Context(), w)
 }
 
-func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func UpdateContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindUpdateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("update publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("update publication contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	var c *models.Contributor
-	active := false
+	var contributor *models.Contributor
 	if b.ID != "" {
-		newC, newP, err := h.generateContributorFromPersonId(b.ID)
+		newContributor, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
-			h.Logger.Errorw("update publication contributor: could not fetch person", "errors", err, "personid", b.ID, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			c.Log.Errorw("update publication contributor: could not fetch person", "errors", err, "personid", b.ID, "publication", p.ID, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
-		c = newC
-		active = newP.Active
+		contributor = newContributor
 	} else {
 		if b.FirstName == "" {
 			b.FirstName = "[missing]"
@@ -479,51 +450,49 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		if b.LastName == "" {
 			b.LastName = "[missing]"
 		}
-		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
+		contributor = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
-	c.CreditRole = b.CreditRole
+	contributor.CreditRole = b.CreditRole
 
-	if err := ctx.Publication.SetContributor(b.Role, b.Position, c); err != nil {
-		h.Logger.Errorw("update publication contributor: could not set the contributor", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+	if err := p.SetContributor(b.Role, b.Position, contributor); err != nil {
+		c.Log.Errorw("update publication contributor: could not set the contributor", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		render.Layout(w, "refresh_modal", "publication/confirm_update_contributor", YieldConfirmUpdateContributor{
-			Context:     ctx,
+	if validationErrs := p.Validate(); validationErrs != nil {
+		views.ReplaceModal(publicationviews.ConfirmUpdateContributor(c, publicationviews.ConfirmUpdateContributorArgs{
+			Publication: p,
 			Role:        b.Role,
 			Position:    b.Position,
-			Contributor: c,
-			Active:      active,
-			Form:        confirmContributorForm(ctx, b.Role, c, validationErrs.(*okay.Errors)),
-			EditNext:    b.Position+1 < len(ctx.Publication.Contributors(b.Role)),
-		})
-
+			Contributor: contributor,
+			Errors:      validationErrs.(*okay.Errors),
+			EditNext:    b.Position+1 < len(p.Contributors(b.Role)),
+		})).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update publication contributor: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("update publication contributor: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	if b.EditNext && b.Position+1 < len(ctx.Publication.Contributors(b.Role)) {
-		nextPos := b.Position + 1
-		nextC := ctx.Publication.Contributors(b.Role)[nextPos]
-		people, err := h.PersonSearchService.SuggestPeople(nextC.Name())
+	if b.EditNext && b.Position+1 < len(p.Contributors(b.Role)) {
+		nextPosition := b.Position + 1
+		nextContributor := p.Contributors(b.Role)[nextPosition]
+		people, err := c.PersonSearchService.SuggestPeople(nextContributor.Name())
 		if err != nil {
-			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			c.Log.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
 		hits := make([]*models.Contributor, len(people))
@@ -531,32 +500,24 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 			hits[i] = models.ContributorFromPerson(person)
 		}
 
-		suggestURL := h.PathFor("publication_edit_contributor_suggest", "id", ctx.Publication.ID, "role", b.Role, "position", fmt.Sprintf("%d", nextPos)).String()
-
-		nextActive := false
-		if nextC.Person != nil {
-			nextActive = nextC.Person.Active
-		}
-
-		render.Partial(w, "publication/edit_next_contributor", YieldEditContributor{
-			Context:     ctx,
-			Role:        b.Role,
-			Position:    nextPos,
-			Contributor: nextC,
-			FirstName:   nextC.FirstName(),
-			LastName:    nextC.LastName(),
-			Active:      nextActive,
-			Hits:        hits,
-			Form:        contributorForm(ctx, nextC, suggestURL),
-		})
-
+		views.Cat(
+			views.Replace(fmt.Sprintf("#contributors-%s-body", b.Role), publicationviews.ContributorsBody(c, p, b.Role)),
+			views.ReplaceModal(publicationviews.EditContributor(c, publicationviews.EditContributorArgs{
+				Publication: p,
+				Role:        b.Role,
+				Position:    nextPosition,
+				Contributor: nextContributor,
+				FirstName:   nextContributor.FirstName(),
+				LastName:    nextContributor.LastName(),
+				Hits:        hits,
+			})),
+		).Render(r.Context(), w)
 		return
 	}
 
-	render.View(w, "publication/refresh_contributors", YieldContributors{
-		Context: ctx,
-		Role:    b.Role,
-	})
+	views.CloseModalAndReplace(fmt.Sprintf("#contributors-%s-body", b.Role),
+		publicationviews.ContributorsBody(c, p, b.Role),
+	).Render(r.Context(), w)
 }
 
 func ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request) {
@@ -663,85 +624,12 @@ func OrderContributors(w http.ResponseWriter, r *http.Request) {
 	views.CloseModalAndReplace(fmt.Sprintf("#contributors-%s-body", b.Role), publicationviews.ContributorsBody(c, p, b.Role)).Render(r.Context(), w)
 }
 
-func contributorForm(_ Context, c *models.Contributor, suggestURL string) *form.Form {
-	return form.New().
-		WithTheme("cols").
-		AddSection(
-			&form.Text{
-				Template: "contributor_name",
-				Name:     "first_name",
-				Value:    c.FirstName(),
-				Label:    "First name",
-				Vars: struct {
-					SuggestURL string
-				}{
-					SuggestURL: suggestURL,
-				},
-			},
-			&form.Text{
-				Template: "contributor_name",
-				Name:     "last_name",
-				Value:    c.LastName(),
-				Label:    "Last name",
-				Vars: struct {
-					SuggestURL string
-				}{
-					SuggestURL: suggestURL,
-				},
-			},
-		)
-}
-
-func confirmContributorForm(ctx Context, role string, c *models.Contributor, errors *okay.Errors) *form.Form {
-	var fields []form.Field
-
-	if c.PersonID != "" {
-		fields = append(fields, &form.Hidden{
-			Name:  "id",
-			Value: c.PersonID,
-		})
-	} else {
-		fields = append(fields,
-			&form.Hidden{
-				Name:  "first_name",
-				Value: c.FirstName(),
-			}, &form.Hidden{
-				Name:  "last_name",
-				Value: c.LastName(),
-			})
-	}
-
-	if role == "author" {
-		fields = append(fields, &form.SelectRepeat{
-			Name:        "credit_role",
-			Label:       "Roles",
-			Options:     localize.VocabularySelectOptions(ctx.Loc, "credit_roles"),
-			Values:      c.CreditRole,
-			EmptyOption: true,
-		})
-	}
-
-	return form.New().
-		WithErrors(localize.ValidationErrors(ctx.Loc, errors)).
-		WithTheme("cols").
-		AddSection(fields...)
-}
-
-func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributor, *models.Person, error) {
-	p, err := h.PersonService.GetPerson(id)
-	if err != nil {
-		return nil, nil, err
-	}
-	c := models.ContributorFromPerson(p)
-	return c, p, nil
-}
-
-func generateContributorFromPersonId(c *ctx.Ctx, id string) (*models.Contributor, *models.Person, error) {
+func generateContributorFromPersonId(c *ctx.Ctx, id string) (*models.Contributor, error) {
 	person, err := c.PersonService.GetPerson(id)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	contributor := models.ContributorFromPerson(person)
-	return contributor, person, nil
+	return contributor, nil
 }

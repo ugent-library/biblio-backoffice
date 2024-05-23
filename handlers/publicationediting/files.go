@@ -37,7 +37,6 @@ type BindFile struct {
 }
 
 type BindDeleteFile struct {
-	Context
 	FileID     string `path:"file_id"`
 	SnapshotID string `path:"snapshot_id"`
 	Name       string `form:"name"`
