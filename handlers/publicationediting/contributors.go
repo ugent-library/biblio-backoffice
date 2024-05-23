@@ -96,22 +96,6 @@ type YieldContributors struct {
 	Role string
 }
 
-type YieldAddContributor struct {
-	Context
-	Role        string
-	Contributor *models.Contributor
-	Form        *form.Form
-	Hits        []*models.Contributor
-}
-
-type YieldConfirmCreateContributor struct {
-	Context
-	Role        string
-	Contributor *models.Contributor
-	Active      bool
-	Form        *form.Form
-}
-
 type YieldEditContributor struct {
 	Context
 	Role        string
@@ -248,24 +232,25 @@ func ConfirmCreateContributor(w http.ResponseWriter, r *http.Request) {
 	})).Render(r.Context(), w)
 }
 
-func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func CreateContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindCreateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("create publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("create publication contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	var c *models.Contributor
-	active := false
+	var contributor *models.Contributor
 	if b.ID != "" {
-		newC, newP, err := h.generateContributorFromPersonId(b.ID)
+		newC, _, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
-			h.ActionError(w, r, ctx.BaseContext, "create publication contributor: could not generate contributor from person", err, ctx.Publication.ID)
+			c.HandleError(w, r, err)
 			return
 		}
-		c = newC
-		active = newP.Active
+		contributor = newC
 	} else {
 		if b.FirstName == "" {
 			b.FirstName = "[missing]"
@@ -273,57 +258,52 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		if b.LastName == "" {
 			b.LastName = "[missing]"
 		}
-		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
+		contributor = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
-	c.CreditRole = b.CreditRole
+	contributor.CreditRole = b.CreditRole
 
-	ctx.Publication.AddContributor(b.Role, c)
+	p.AddContributor(b.Role, contributor)
 
-	if validationErrs := ctx.Publication.Validate(); validationErrs != nil {
-		render.Layout(w, "refresh_modal", "publication/confirm_create_contributor", YieldConfirmCreateContributor{
-			Context:     ctx,
+	if validationErrs := p.Validate(); validationErrs != nil {
+
+		views.ReplaceModal(publicationviews.ConfirmCreateContributor(c, publicationviews.ConfirmCreateContributorArgs{
+			Publication: p,
+			Contributor: contributor,
 			Role:        b.Role,
-			Contributor: c,
-			Active:      active,
-			Form:        confirmContributorForm(ctx, b.Role, c, validationErrs.(*okay.Errors)),
-		})
-
+			Errors:      validationErrs.(*okay.Errors),
+		})).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdatePublication(r.Header.Get("If-Match"), ctx.Publication, ctx.User)
+	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("create publication contributor: Could not save the publication:", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("create publication contributor: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
 	if b.AddNext {
-		c := &models.Contributor{}
-
-		suggestURL := h.PathFor("publication_add_contributor_suggest", "id", ctx.Publication.ID, "role", b.Role).String()
-
-		render.Partial(w, "publication/add_next_contributor", YieldAddContributor{
-			Context:     ctx,
-			Role:        b.Role,
-			Contributor: c,
-			Form:        contributorForm(ctx, c, suggestURL),
-		})
-
+		views.Cat(
+			views.Replace(fmt.Sprintf("#contributors-%s-body", b.Role), publicationviews.ContributorsBody(
+				c, p, b.Role,
+			)),
+			views.ReplaceModal(publicationviews.AddContributor(c, publicationviews.AddContributorArgs{
+				Publication: p,
+				Role:        b.Role,
+				Contributor: &models.Contributor{},
+			})),
+		).Render(r.Context(), w)
 		return
 	}
 
-	render.View(w, "publication/refresh_contributors", YieldContributors{
-		Context: ctx,
-		Role:    b.Role,
-	})
+	views.CloseModalAndReplace(fmt.Sprintf("#contributors-%s-body", b.Role), publicationviews.ContributorsBody(c, p, b.Role)).Render(r.Context(), w)
 }
 
 func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
