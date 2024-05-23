@@ -368,28 +368,31 @@ func EditContributor(w http.ResponseWriter, r *http.Request) {
 	})).Render(r.Context(), w)
 }
 
-func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request, ctx Context) {
+func EditContributorSuggest(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
 	b := BindEditContributorSuggest{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("suggest publication contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("suggest publication contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	c, err := ctx.Publication.GetContributor(b.Role, b.Position)
+	contributor, err := p.GetContributor(b.Role, b.Position)
 	if err != nil {
-		h.Logger.Errorw("edit publication contributor: could not get the contributor", "errors", err, "publication", ctx.Publication.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("edit publication contributor: could not get the contributor", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
 	var hits []*models.Contributor
 
 	if b.FirstName != "" || b.LastName != "" {
-		people, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
+		people, err := c.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
-			h.Logger.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			c.Log.Errorw("suggest publication contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
 
@@ -399,9 +402,9 @@ func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request,
 		}
 
 		// exclude the current contributor
-		if c.PersonID != "" {
+		if contributor.PersonID != "" {
 			for i, hit := range hits {
-				if hit.PersonID == c.PersonID {
+				if hit.PersonID == contributor.PersonID {
 					hits = append(hits[:i], hits[i+1:]...)
 					break
 				}
@@ -409,15 +412,15 @@ func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request,
 		}
 	}
 
-	render.Partial(w, "publication/edit_contributor_suggest", YieldEditContributorSuggest{
-		Context:     ctx,
+	publicationviews.EditContributorSuggest(c, publicationviews.EditContributorSuggestArgs{
+		Publication: p,
 		Role:        b.Role,
 		Position:    b.Position,
-		Contributor: c,
+		Contributor: contributor,
 		FirstName:   b.FirstName,
 		LastName:    b.LastName,
 		Hits:        hits,
-	})
+	}).Render(r.Context(), w)
 }
 
 func (h *Handler) ConfirmUpdateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
