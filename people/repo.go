@@ -2,6 +2,7 @@ package people
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"slices"
 	"time"
@@ -37,7 +38,7 @@ func NewRepo(c RepoConfig) (*Repo, error) {
 func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganizationParams]) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.ImportOrganizations: %w", err)
 	}
 	defer tx.Rollback(ctx)
 
@@ -65,10 +66,10 @@ func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganiza
 		return iterErr == nil
 	})
 	if iterErr != nil {
-		return iterErr
+		return fmt.Errorf("repo.ImportOrganizations: %w", iterErr)
 	}
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.ImportOrganizations: %w", err)
 	}
 
 	return tx.Commit(ctx)
@@ -77,20 +78,20 @@ func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganiza
 func (r *Repo) ImportPerson(ctx context.Context, p ImportPersonParams) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.ImportPerson: %w", err)
 	}
 	defer tx.Rollback(ctx)
 
 	// return error if identifier is already known
 	for _, ident := range p.Identifiers {
 		_, err := getPersonByIdentifier(ctx, tx, ident.Kind, ident.Value)
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			continue
 		}
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.ImportPerson: %w", err)
 		}
-		return &DuplicateError{ident.String()}
+		return fmt.Errorf("repo.ImportPerson: %w", &DuplicateError{ident.String()})
 	}
 
 	if !p.Identifiers.Has(idKind) {
@@ -100,13 +101,13 @@ func (r *Repo) ImportPerson(ctx context.Context, p ImportPersonParams) error {
 	for i, t := range p.Tokens {
 		v, err := crypt.Encrypt(r.tokenSecret, t.Value)
 		if err != nil {
-			return fmt.Errorf("can't encrypt %s token: %w", t.Kind, err)
+			return fmt.Errorf("repo.ImportPerson: can't encrypt %s token: %w", t.Kind, err)
 		}
 		p.Tokens[i] = Token{Kind: t.Kind, Value: v}
 	}
 
 	if err := insertPerson(ctx, tx, p); err != nil {
-		return err
+		return fmt.Errorf("repo.ImportPerson: %w", err)
 	}
 
 	return tx.Commit(ctx)
@@ -116,14 +117,16 @@ func (r *Repo) CountOrganizations(ctx context.Context) (int64, error) {
 	var count int64
 	err := r.conn.QueryRow(ctx, "SELECT COUNT(*) FROM organizations").Scan(&count)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("repo.CountOrganizations: %w", err)
 	}
 	return count, nil
 }
 
 func (r *Repo) DeleteAllOrganizations(ctx context.Context) error {
-	_, err := r.conn.Exec(ctx, "TRUNCATE organizations CASCADE")
-	return err
+	if _, err := r.conn.Exec(ctx, "TRUNCATE organizations CASCADE"); err != nil {
+		return fmt.Errorf("repo.DeleteAllOrganizations: %w", err)
+	}
+	return nil
 }
 
 func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {

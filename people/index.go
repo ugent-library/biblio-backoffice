@@ -321,10 +321,10 @@ func reindex[T any](ctx context.Context, idx *Index, indexName, method string, i
 		return indexErr == nil
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("index.%s: %w", method, err)
 	}
 	if indexErr != nil {
-		return indexErr
+		return fmt.Errorf("index.%s: %w", method, indexErr)
 	}
 
 	return switcher.Switch(ctx, idx.retention)
