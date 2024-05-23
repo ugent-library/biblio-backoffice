@@ -4,6 +4,7 @@ package repositories
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"time"
@@ -13,12 +14,15 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/db"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/mutate"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 )
 
 type Mutation struct {
-	Op   string
+	Name string
 	Args []string
+	// Line is not always set
+	Line int
 }
 
 type Repo struct {
@@ -289,11 +293,20 @@ func (s *Repo) MutatePublication(id string, u *models.Person, muts ...Mutation) 
 	}
 
 	for _, mut := range muts {
-		mutator, ok := s.config.PublicationMutators[mut.Op]
+		mutator, ok := s.config.PublicationMutators[mut.Name]
 		if !ok {
-			return fmt.Errorf("unknown mutation '%s'", mut.Op)
+			msg := fmt.Sprintf("unknown mutation '%s'", mut.Name)
+			if mut.Line != 0 {
+				msg = fmt.Sprintf("%s at line %d", msg, mut.Line)
+			}
+			return &mutate.ArgumentError{Msg: msg}
 		}
 		if err := mutator(p, mut.Args); err != nil {
+			var argErr *mutate.ArgumentError
+			if mut.Line != 0 && errors.As(err, &argErr) {
+				argErr.Msg = fmt.Sprintf("%s at line %d", argErr.Msg, mut.Line)
+				return argErr
+			}
 			return err
 		}
 	}
@@ -736,11 +749,20 @@ func (s *Repo) MutateDataset(id string, u *models.Person, muts ...Mutation) erro
 	}
 
 	for _, mut := range muts {
-		mutator, ok := s.config.DatasetMutators[mut.Op]
+		mutator, ok := s.config.DatasetMutators[mut.Name]
 		if !ok {
-			return fmt.Errorf("unknown mutation '%s'", mut.Op)
+			msg := fmt.Sprintf("unknown mutation '%s'", mut.Name)
+			if mut.Line != 0 {
+				msg = fmt.Sprintf("%s at line %d", msg, mut.Line)
+			}
+			return &mutate.ArgumentError{Msg: msg}
 		}
 		if err := mutator(d, mut.Args); err != nil {
+			var argErr *mutate.ArgumentError
+			if mut.Line != 0 && errors.As(err, &argErr) {
+				argErr.Msg = fmt.Sprintf("%s at line %d", argErr.Msg, mut.Line)
+				return argErr
+			}
 			return err
 		}
 	}
