@@ -15,7 +15,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/publication/pages"
@@ -138,7 +137,7 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
+		errors := localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors))
 
 		pages.AddIdentifier(c, pages.AddIdentifierArgs{
 			Step:       1,
@@ -207,7 +206,7 @@ func AddSinglePublish(w http.ResponseWriter, r *http.Request) {
 	publication.Status = "public"
 
 	if validationErrs := publication.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
+		errors := localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors))
 		views.ShowModal(views.FormErrorsDialog("Unable to publish this publication due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
@@ -359,7 +358,7 @@ func AddMultiplePublish(w http.ResponseWriter, r *http.Request) {
 	if errors.As(err, &validationErrs) {
 		c.Log.Warnw("add multiple publish publication: could not validate abstract:", "errors", validationErrs, "batch", batchID, "user", c.User.ID)
 
-		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs))
+		errors := localize.ValidationErrors(c.Loc, validationErrs)
 		views.ShowModal(views.FormErrorsDialog("Unable to publish a publication due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}

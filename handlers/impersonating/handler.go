@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/handlers"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
@@ -100,10 +99,10 @@ func CreateImpersonation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.Values[handlers.OriginalUserIDKey] = c.User.ID
-	session.Values[handlers.OriginalUserRoleKey] = c.UserRole
-	session.Values[handlers.UserIDKey] = user.ID
-	session.Values[handlers.UserRoleKey] = "user"
+	session.Values[ctx.OriginalUserIDKey] = c.User.ID
+	session.Values[ctx.OriginalUserRoleKey] = c.UserRole
+	session.Values[ctx.UserIDKey] = user.ID
+	session.Values[ctx.UserRoleKey] = "user"
 
 	if err = session.Save(r, w); err != nil {
 		c.Log.Errorw("create impersonation: session could not be saved:", "errors", err, "user", c.User.ID)
@@ -129,10 +128,10 @@ func DeleteImpersonation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.Values[handlers.UserIDKey] = session.Values[handlers.OriginalUserIDKey]
-	session.Values[handlers.UserRoleKey] = session.Values[handlers.OriginalUserRoleKey]
-	delete(session.Values, handlers.OriginalUserIDKey)
-	delete(session.Values, handlers.OriginalUserRoleKey)
+	session.Values[ctx.UserIDKey] = session.Values[ctx.OriginalUserIDKey]
+	session.Values[ctx.UserRoleKey] = session.Values[ctx.OriginalUserRoleKey]
+	delete(session.Values, ctx.OriginalUserIDKey)
+	delete(session.Values, ctx.OriginalUserRoleKey)
 
 	if err = session.Save(r, w); err != nil {
 		c.Log.Errorw("delete impersonation: session could not be saved:", "errors", err, "user", c.User.ID)

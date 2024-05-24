@@ -12,9 +12,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	datasetpages "github.com/ugent-library/biblio-backoffice/views/dataset/pages"
@@ -96,7 +94,7 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 	b := BindImport{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		c.Log.Warnw("add import dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		render.BadRequest(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -141,7 +139,7 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 		datasetpages.AddIdentifier(c, datasetpages.AddIdentifierArgs{
 			Source:     b.Source,
 			Identifier: b.Identifier,
-			Errors:     form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors))),
+			Errors:     localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)),
 		}).Render(r.Context(), w)
 		return
 	}
@@ -198,7 +196,7 @@ func AddPublish(w http.ResponseWriter, r *http.Request) {
 	dataset.Status = "public"
 
 	if err := dataset.Validate(); err != nil {
-		errors := form.Errors(localize.ValidationErrors(c.Loc, err.(*okay.Errors)))
+		errors := localize.ValidationErrors(c.Loc, err.(*okay.Errors))
 		views.ShowModal(views.FormErrorsDialog("Unable to publish this dataset due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}

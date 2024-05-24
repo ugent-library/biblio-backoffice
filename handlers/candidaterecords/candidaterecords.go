@@ -7,7 +7,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/pagination"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/views"
 	candidaterecordviews "github.com/ugent-library/biblio-backoffice/views/candidaterecord"
@@ -25,7 +24,7 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Request(r, searchArgs); err != nil {
 		c.Log.Warnw("could not bind search arguments", "errors", err, "request", r, "user", c.User.ID)
-		render.BadRequest(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -61,7 +60,7 @@ func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
 		c.Log.Warnw("preview candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		render.BadRequest(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -96,7 +95,7 @@ func ConfirmRejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
 		c.Log.Warnw("confirm reject candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		render.BadRequest(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -120,7 +119,7 @@ func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
 		c.Log.Warnw("reject candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		render.BadRequest(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -150,7 +149,7 @@ func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
 		c.Log.Warnw("import candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		render.BadRequest(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 

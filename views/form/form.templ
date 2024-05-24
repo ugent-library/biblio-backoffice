@@ -3,7 +3,6 @@ package form
 import (
 	"fmt"
 	"encoding/json"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 )
 
 type Theme int
@@ -363,7 +362,10 @@ templ TextRepeatWithAutocomplete(args TextRepeatWithAutocompleteArgs) {
 	}
 }
 
-type Option = form.SelectOption
+type Option = struct {
+	Label string
+	Value string
+}
 
 type SelectRepeatArgs struct {
 	FieldArgs

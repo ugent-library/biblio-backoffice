@@ -13,7 +13,6 @@ import "bytes"
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/views"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
@@ -24,7 +23,7 @@ type AddIdentifierArgs struct {
 	Source           string
 	Identifier       string
 	DuplicateDataset bool
-	Errors           form.Errors
+	Errors           []string
 }
 
 func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {

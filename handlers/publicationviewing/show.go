@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
+	"github.com/ugent-library/httperror"
 )
 
 func Show(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +69,7 @@ func ShowDatasets(w http.ResponseWriter, r *http.Request) {
 	datasets, err := c.Repo.GetVisiblePublicationDatasets(c.User, p)
 	if err != nil {
 		c.Log.Warn("show publication datasets: could not get publication datasets:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		render.InternalServerError(w, r, err)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 

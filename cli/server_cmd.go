@@ -3,12 +3,10 @@ package cli
 import (
 	"context"
 	"fmt"
-	"html/template"
 	"net/http"
 	"net/url"
 	"time"
 
-	"github.com/Masterminds/sprig/v3"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/sessions"
 	"github.com/leonelquinteros/gotext"
@@ -17,11 +15,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/api/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
-	"github.com/ugent-library/biblio-backoffice/helpers"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/routes"
-	"github.com/ugent-library/biblio-backoffice/urls"
-	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
@@ -134,30 +128,6 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// renderer
-	funcMaps := []template.FuncMap{
-		sprig.FuncMap(),
-		urls.FuncMap(router, baseURL.Scheme, baseURL.Host),
-		helpers.FuncMap(timezone),
-		{
-			"assetPath": assets.AssetPath,
-			"appMode": func() string { // TODO eliminate need for this
-				return config.Env
-			},
-			"vocabulary": func(k string) []string { // TODO eliminate need for this?
-				return vocabularies.Map[k]
-			},
-		},
-	}
-
-	// init render
-	render.AuthURL = "/login"
-
-	for _, funcs := range funcMaps {
-		render.Funcs(funcs)
-	}
-	render.MustParse()
 
 	// init bind
 	bind.PathValueFunc = chi.URLParam

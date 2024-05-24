@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
@@ -16,7 +15,7 @@ type AddIdentifierArgs struct {
 	Source               string
 	Identifier           string
 	DuplicatePublication *models.Publication
-	Errors               form.Errors
+	Errors               []string
 }
 
 var sourceValues = []string{

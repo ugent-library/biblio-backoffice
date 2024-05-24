@@ -8,7 +8,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/render/flash"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
@@ -36,7 +35,7 @@ func Withdraw(w http.ResponseWriter, r *http.Request) {
 	publication.Status = "returned"
 
 	if validationErrs := publication.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
+		errors := localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors))
 		views.ReplaceModal(views.FormErrorsDialog("Unable to withdraw this publication due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
