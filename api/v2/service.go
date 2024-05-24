@@ -4,64 +4,36 @@ import (
 	"context"
 
 	"github.com/go-faster/errors"
-	"github.com/jackc/pgx/v5"
-	"github.com/riverqueue/river"
 	"github.com/samber/lo"
-	"github.com/ugent-library/biblio-backoffice/jobs"
+	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
 )
 
 type Service struct {
-	peopleRepo    *people.Repo
-	peopleIndex   *people.Index
-	projectsRepo  *projects.Repo
-	projectsIndex *projects.Index
-	riverClient   *river.Client[pgx.Tx]
+	services *backends.Services
 }
 
-func NewService(
-	peopleRepo *people.Repo,
-	peopleIndex *people.Index,
-	projectsRepo *projects.Repo,
-	projectsIndex *projects.Index,
-	riverClient *river.Client[pgx.Tx],
-) *Service {
+func NewService(services *backends.Services) *Service {
 	return &Service{
-		peopleRepo:    peopleRepo,
-		peopleIndex:   peopleIndex,
-		projectsRepo:  projectsRepo,
-		projectsIndex: projectsIndex,
-		riverClient:   riverClient,
+		services: services,
 	}
 }
 
 func (s *Service) IndexOrganizations(ctx context.Context) error {
-	_, err := s.riverClient.Insert(ctx, jobs.ReindexOrganizationsArgs{}, nil)
-	if err != nil {
-		return err
-	}
-	return nil
+	return s.services.PeopleIndex.ReindexOrganizations(ctx, s.services.PeopleRepo.EachOrganization)
 }
 
 func (s *Service) IndexPeople(ctx context.Context) error {
-	_, err := s.riverClient.Insert(ctx, jobs.ReindexPeopleArgs{}, nil)
-	if err != nil {
-		return err
-	}
-	return nil
+	return s.services.PeopleIndex.ReindexPeople(ctx, s.services.PeopleRepo.EachPerson)
 }
 
 func (s *Service) IndexProjects(ctx context.Context) error {
-	_, err := s.riverClient.Insert(ctx, jobs.ReindexProjectsArgs{}, nil)
-	if err != nil {
-		return err
-	}
-	return nil
+	return s.services.ProjectsIndex.ReindexProjects(ctx, s.services.ProjectsRepo.EachProject)
 }
 
 func (s *Service) GetOrganization(ctx context.Context, req *GetOrganizationRequest) (GetOrganizationRes, error) {
-	o, err := s.peopleIndex.GetOrganizationByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
+	o, err := s.services.PeopleIndex.GetOrganizationByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
 	if errors.Is(err, people.ErrNotFound) {
 		return nil, &ErrorStatusCode{
 			StatusCode: 404,
@@ -80,7 +52,7 @@ func (s *Service) GetOrganization(ctx context.Context, req *GetOrganizationReque
 
 // TODO use index
 func (s *Service) GetPerson(ctx context.Context, req *GetPersonRequest) (GetPersonRes, error) {
-	p, err := s.peopleIndex.GetPersonByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
+	p, err := s.services.PeopleIndex.GetPersonByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
 	if errors.Is(err, people.ErrNotFound) {
 		return nil, &ErrorStatusCode{
 			StatusCode: 404,
@@ -98,7 +70,7 @@ func (s *Service) GetPerson(ctx context.Context, req *GetPersonRequest) (GetPers
 }
 
 func (s *Service) GetProject(ctx context.Context, req *GetProjectRequest) (GetProjectRes, error) {
-	p, err := s.projectsIndex.GetProjectByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
+	p, err := s.services.ProjectsIndex.GetProjectByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
 	if errors.Is(err, projects.ErrNotFound) {
 		return nil, &ErrorStatusCode{
 			StatusCode: 404,
@@ -116,7 +88,7 @@ func (s *Service) GetProject(ctx context.Context, req *GetProjectRequest) (GetPr
 }
 
 func (s *Service) SearchOrganizations(ctx context.Context, req *SearchOrganizationsRequest) (*SearchOrganizations, error) {
-	results, err := s.peopleIndex.SearchOrganizations(ctx, people.SearchParams{Limit: 20, Query: req.Query.Value})
+	results, err := s.services.PeopleIndex.SearchOrganizations(ctx, people.SearchParams{Limit: 20, Query: req.Query.Value})
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +99,7 @@ func (s *Service) SearchOrganizations(ctx context.Context, req *SearchOrganizati
 }
 
 func (s *Service) SearchPeople(ctx context.Context, req *SearchPeopleRequest) (*SearchPeople, error) {
-	results, err := s.peopleIndex.SearchPeople(ctx, people.SearchParams{Limit: 20, Query: req.Query.Value})
+	results, err := s.services.PeopleIndex.SearchPeople(ctx, people.SearchParams{Limit: 20, Query: req.Query.Value})
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +119,7 @@ func (s *Service) ImportOrganizations(ctx context.Context, req *ImportOrganizati
 		return nil
 	}
 
-	err := s.peopleRepo.ImportOrganizations(ctx, iter)
+	err := s.services.PeopleRepo.ImportOrganizations(ctx, iter)
 
 	var dupErr *people.DuplicateError
 	if errors.As(err, &dupErr) {
@@ -168,7 +140,7 @@ func (s *Service) ImportOrganizations(ctx context.Context, req *ImportOrganizati
 }
 
 func (s *Service) ImportPerson(ctx context.Context, req *ImportPersonRequest) (ImportPersonRes, error) {
-	err := s.peopleRepo.ImportPerson(ctx, convertImportPersonParams(req.Person))
+	err := s.services.PeopleRepo.ImportPerson(ctx, convertImportPersonParams(req.Person))
 
 	var dupErr *people.DuplicateError
 	if errors.As(err, &dupErr) {
@@ -201,7 +173,7 @@ func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
 		attributes[i] = people.Attribute(attr)
 	}
 
-	return s.peopleRepo.AddPerson(ctx, people.AddPersonParams{
+	return s.services.PeopleRepo.AddPerson(ctx, people.AddPersonParams{
 		Identifiers:         identifiers,
 		Name:                p.Name,
 		PreferredName:       p.PreferredName.Value,
@@ -221,7 +193,7 @@ func (s *Service) AddPerson(ctx context.Context, req *AddPersonRequest) error {
 }
 
 func (s *Service) ImportProject(ctx context.Context, req *ImportProjectRequest) (ImportProjectRes, error) {
-	err := s.projectsRepo.ImportProject(ctx, convertImportProjectParams(req.Project))
+	err := s.services.ProjectsRepo.ImportProject(ctx, convertImportProjectParams(req.Project))
 
 	var dupErr *projects.DuplicateError
 	if errors.As(err, &dupErr) {
@@ -274,7 +246,7 @@ func (s *Service) AddProject(ctx context.Context, req *AddProjectRequest) error 
 		endDate = v
 	}
 
-	return s.projectsRepo.AddProject(ctx, projects.AddProjectParams{
+	return s.services.ProjectsRepo.AddProject(ctx, projects.AddProjectParams{
 		Identifiers:  identifiers,
 		Names:        names,
 		Descriptions: descriptions,
@@ -286,7 +258,7 @@ func (s *Service) AddProject(ctx context.Context, req *AddProjectRequest) error 
 }
 
 func (s *Service) SearchProjects(ctx context.Context, req *SearchProjectsRequest) (*SearchProjects, error) {
-	results, err := s.projectsIndex.SearchProjects(ctx, projects.SearchParams{Limit: 20, Query: req.Query.Value})
+	results, err := s.services.ProjectsIndex.SearchProjects(ctx, projects.SearchParams{Limit: 20, Query: req.Query.Value})
 	if err != nil {
 		return nil, err
 	}

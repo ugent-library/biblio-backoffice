@@ -7,8 +7,6 @@ import (
 	"path"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/riverqueue/river/riverdriver/riverpgxv5"
-	"github.com/riverqueue/river/rivermigrate"
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/backends/arxiv"
@@ -43,23 +41,6 @@ func newServices() *backends.Services {
 	pool, err := pgxpool.New(ctx, config.PgConn)
 	if err != nil {
 		panic(err)
-	}
-
-	// TODO move to migrations after switch to goose
-	tx, err := pool.Begin(ctx)
-	if err != nil {
-		panic(err)
-	}
-	defer tx.Rollback(ctx)
-	migrator := rivermigrate.New(riverpgxv5.New(pool), nil)
-	// TODO ignore already migrated errors
-	_, err = migrator.MigrateTx(ctx, tx, rivermigrate.DirectionUp, &rivermigrate.MigrateOpts{
-		TargetVersion: 3,
-	})
-	if err == nil {
-		if err := tx.Commit(ctx); err != nil {
-			panic(err)
-		}
 	}
 
 	peopleRepo, err := people.NewRepo(people.RepoConfig{
@@ -191,8 +172,6 @@ func newServices() *backends.Services {
 			"xlsx": excel_dataset.NewExporter,
 		},
 		HandleService: handleService,
-		// TODO references temporarily put here
-		PgxPool:       pool,
 		PeopleRepo:    peopleRepo,
 		PeopleIndex:   peopleIndex,
 		ProjectsRepo:  projectsRepo,
