@@ -172,8 +172,6 @@ func newServices() *backends.Services {
 			"xlsx": excel_dataset.NewExporter,
 		},
 		HandleService: handleService,
-		// TODO references temporarily put here
-		PgxPool:       pool,
 		PeopleRepo:    peopleRepo,
 		PeopleIndex:   peopleIndex,
 		ProjectsRepo:  projectsRepo,
