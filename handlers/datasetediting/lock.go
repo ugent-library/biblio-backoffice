@@ -2,15 +2,13 @@ package datasetediting
 
 import (
 	"errors"
-	"html/template"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
-	"github.com/ugent-library/biblio-backoffice/render/flash"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/flash"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
@@ -22,7 +20,7 @@ func Lock(w http.ResponseWriter, r *http.Request) {
 	dataset.Locked = true
 
 	if validationErrs := dataset.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
+		errors := localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors))
 		w.Header().Add("HX-Retarget", "#modals")
 		w.Header().Add("HX-Reswap", "innerHTML")
 		views.ShowModal(views.FormErrorsDialog("Unable to lock this dataset due to the following errors", errors)).Render(r.Context(), w)
@@ -45,7 +43,7 @@ func Lock(w http.ResponseWriter, r *http.Request) {
 
 	f := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Dataset was successfully locked.</p>"))
+		WithBody("<p>Dataset was successfully locked.</p>")
 
 	c.PersistFlash(w, *f)
 
@@ -59,7 +57,7 @@ func Unlock(w http.ResponseWriter, r *http.Request) {
 	dataset.Locked = false
 
 	if validationErrs := dataset.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
+		errors := localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors))
 		w.Header().Add("HX-Retarget", "#modals")
 		w.Header().Add("HX-Reswap", "innerHTML")
 		views.ShowModal(views.FormErrorsDialog("Unable to unlock this dataset due to the following errors", errors)).Render(r.Context(), w)
@@ -85,7 +83,7 @@ func Unlock(w http.ResponseWriter, r *http.Request) {
 
 	f := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Dataset was successfully unlocked.</p>"))
+		WithBody("<p>Dataset was successfully unlocked.</p>")
 
 	c.PersistFlash(w, *f)
 

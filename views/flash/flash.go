@@ -1,15 +1,11 @@
 package flash
 
-import (
-	"html/template"
-)
-
 type Flash struct {
 	Type         string
 	Application  string
 	Level        string
 	Title        string
-	Body         template.HTML
+	Body         string
 	Dismissable  bool
 	DismissAfter uint
 }
@@ -44,7 +40,7 @@ func (f *Flash) WithTitle(title string) *Flash {
 	return f
 }
 
-func (f *Flash) WithBody(body template.HTML) *Flash {
+func (f *Flash) WithBody(body string) *Flash {
 	f.Body = body
 	return f
 }

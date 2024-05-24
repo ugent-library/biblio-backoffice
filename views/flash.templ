@@ -2,7 +2,7 @@ package views
 
 import (
 	"fmt"
-	"github.com/ugent-library/biblio-backoffice/render/flash"
+	"github.com/ugent-library/biblio-backoffice/views/flash"
 )
 
 templ flashMessage(f flash.Flash) {
@@ -29,7 +29,7 @@ templ flashMessage(f flash.Flash) {
 						if f.Title != "" {
 							<h3 class="alert-title">{ f.Title }</h3>
 						}
-						@templ.Raw(string(f.Body))
+						@templ.Raw(f.Body)
 					</div>
 					if f.Dismissable {
 						<button class="btn-close" type="button" data-bs-dismiss="toast" aria-label="Close">

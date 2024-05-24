@@ -4,7 +4,6 @@ package publicationcreating
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"io"
 	"net/http"
 	"strings"
@@ -14,10 +13,9 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render/flash"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/flash"
 	"github.com/ugent-library/biblio-backoffice/views/publication/pages"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
@@ -110,7 +108,7 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request) {
 
 			flash := flash.SimpleFlash().
 				WithLevel("error").
-				WithBody(template.HTML(c.Loc.Get("publication.single_import.import_by_id.import_failed")))
+				WithBody(c.Loc.Get("publication.single_import.import_by_id.import_failed"))
 			c.Flash = append(c.Flash, *flash)
 
 			pages.AddIdentifier(c, pages.AddIdentifierArgs{
@@ -138,7 +136,7 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
+		errors := localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors))
 
 		pages.AddIdentifier(c, pages.AddIdentifierArgs{
 			Step:       1,
@@ -207,7 +205,7 @@ func AddSinglePublish(w http.ResponseWriter, r *http.Request) {
 	publication.Status = "public"
 
 	if validationErrs := publication.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
+		errors := localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors))
 		views.ShowModal(views.FormErrorsDialog("Unable to publish this publication due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
@@ -266,7 +264,7 @@ func AddMultipleImport(w http.ResponseWriter, r *http.Request) {
 
 		flash := flash.SimpleFlash().
 			WithLevel("error").
-			WithBody(template.HTML("<p>Sorry, something went wrong. Could not import the publication(s).</p>"))
+			WithBody("<p>Sorry, something went wrong. Could not import the publication(s).</p>")
 		c.Flash = append(c.Flash, *flash)
 
 		switch source {
@@ -290,7 +288,7 @@ func AddMultipleSave(w http.ResponseWriter, r *http.Request) {
 
 	flash := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Publications successfully saved as draft.</p>"))
+		WithBody("<p>Publications successfully saved as draft.</p>")
 
 	c.PersistFlash(w, *flash)
 
@@ -359,7 +357,7 @@ func AddMultiplePublish(w http.ResponseWriter, r *http.Request) {
 	if errors.As(err, &validationErrs) {
 		c.Log.Warnw("add multiple publish publication: could not validate abstract:", "errors", validationErrs, "batch", batchID, "user", c.User.ID)
 
-		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs))
+		errors := localize.ValidationErrors(c.Loc, validationErrs)
 		views.ShowModal(views.FormErrorsDialog("Unable to publish a publication due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}

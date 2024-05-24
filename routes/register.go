@@ -105,22 +105,7 @@ func Register(c Config) {
 		"/api/v2/docs",
 	))
 
-	// handlers
-	baseHandler := handlers.BaseHandler{
-		Logger:          c.Logger,
-		Router:          c.Router,
-		SessionStore:    c.SessionStore,
-		SessionName:     c.SessionName,
-		Timezone:        c.Timezone,
-		Loc:             c.Loc,
-		UserService:     c.Services.UserService,
-		BaseURL:         c.BaseURL,
-		FrontendBaseUrl: c.FrontendURL,
-	}
-	baseHandler.ErrorHandlers = map[error]func(http.ResponseWriter, *http.Request, handlers.BaseContext){
-		models.ErrNotFound:     baseHandler.NotFound,
-		models.ErrUserNotFound: baseHandler.UserNotFound,
-	}
+	// frontoffice data exchange api
 	frontofficeHandler := &frontoffice.Handler{
 		Log:           c.Logger,
 		Repo:          c.Services.Repo,
@@ -135,7 +120,6 @@ func Register(c Config) {
 		}),
 	}
 
-	// frontoffice data exchange api
 	c.Router.Group(func(r *ich.Mux) {
 		r.Use(httpx.BasicAuth(c.FrontendUsername, c.FrontendPassword))
 		r.Get("/frontoffice/publication/{id}", frontofficeHandler.GetPublication)
