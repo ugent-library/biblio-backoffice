@@ -1,18 +1,17 @@
-package dataset
+package publication
 
 import (
-	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/okay"
-	"github.com/ugent-library/biblio-backoffice/views/form"
-	"github.com/ugent-library/biblio-backoffice/views"
-	"github.com/ugent-library/biblio-backoffice/localize"
-	"github.com/ugent-library/biblio-backoffice/views/contributor"
 	"fmt"
+	"github.com/ugent-library/okay"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/localize"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/contributor"
 )
 
 type ConfirmCreateContributorArgs struct {
-	Dataset     *models.Dataset
+	Publication *models.Publication
 	Contributor *models.Contributor
 	Role        string
 	Errors      *okay.Errors
@@ -22,23 +21,36 @@ templ ConfirmCreateContributor(c *ctx.Ctx, args ConfirmCreateContributorArgs) {
 	<div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h2 class="modal-title">Add { c.Loc.Get("dataset.contributor.role." + args.Role) }</h2>
+				<h2 class="modal-title">Add { c.Loc.Get("publication.contributor.role." + args.Role) }</h2>
 			</div>
 			<div class="modal-body">
 				@form.Errors(localize.ValidationErrors(c.Loc, args.Errors))
-				<h3>Review { c.Loc.Get("dataset.contributor.role."+args.Role) } information</h3>
+				<h3>Review { c.Loc.Get("publication.contributor.role." + args.Role) } information</h3>
 				<ul class="list-group mt-6">
 					<li class="list-group-item">
 						<div class="row">
 							<div class="col-md-6">
 								@contributorviews.SuggestSummary(c, args.Contributor, false)
 							</div>
-							<div class="col-md-6 person-attributes ps-5">
+							<div class="col-md-6 person-attributes">
 								if args.Contributor.PersonID != "" {
 									<input type="hidden" name="id" id="id" value={ args.Contributor.PersonID }/>
 								} else {
 									<input type="hidden" name="first_name" id="first_name" value={ args.Contributor.FirstName() }/>
 									<input type="hidden" name="last_name" id="last_name" value={ args.Contributor.LastName() }/>
+								}
+								if args.Role == "author" {
+									@form.SelectRepeat(form.SelectRepeatArgs{
+										FieldArgs: form.FieldArgs{
+											Name:  "credit_role",
+											Label: "Roles",
+											Cols:  9,
+											Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/credit_role"),
+										},
+										Options:     localize.VocabularySelectOptions(c.Loc, "credit_roles"),
+										Values:      args.Contributor.CreditRole,
+										EmptyOption: true,
+									})
 								}
 							</div>
 						</div>
@@ -54,7 +66,7 @@ templ ConfirmCreateContributor(c *ctx.Ctx, args ConfirmCreateContributorArgs) {
 						<div class="bc-toolbar-item">
 							<button
 								class="btn btn-outline-primary"
-								hx-get={ views.URL(c.PathTo("dataset_add_contributor", "id", args.Dataset.ID, "role", args.Role)).QuerySet("first_name", args.Contributor.FirstName()).QuerySet("last_name", args.Contributor.LastName()).String() }
+								hx-get={ c.PathTo("publication_add_contributor", "id", args.Publication.ID, "role", args.Role, "first_name", args.Contributor.FirstName(), "last_name", args.Contributor.LastName()).String() }
 								hx-target="#modal"
 								hx-select="#modal"
 							>
@@ -67,10 +79,10 @@ templ ConfirmCreateContributor(c *ctx.Ctx, args ConfirmCreateContributorArgs) {
 						<div class="bc-toolbar-item">
 							<button
 								class="btn btn-outline-primary"
-								hx-post={ c.PathTo("dataset_create_contributor", "id", args.Dataset.ID, "role", args.Role).String() }
-								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.Dataset.SnapshotID) }
+								hx-post={ c.PathTo("publication_create_contributor", "id", args.Publication.ID, "role", args.Role).String() }
+								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.Publication.SnapshotID) }
 								hx-include=".modal-body .person-attributes"
-								hx-vals={ `{"add_next": true}` }
+								hx-vals='{"add_next": true}'
 								hx-swap="none"
 							>
 								<i class="if if-add"></i><span class="button-text">Save and add next</span>
@@ -79,8 +91,8 @@ templ ConfirmCreateContributor(c *ctx.Ctx, args ConfirmCreateContributorArgs) {
 						<div class="bc-toolbar-item">
 							<button
 								class="btn btn-primary"
-								hx-post={ c.PathTo("dataset_create_contributor", "id", args.Dataset.ID, "role", args.Role).String() }
-								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.Dataset.SnapshotID) }
+								hx-post={ c.PathTo("publication_create_contributor", "id", args.Publication.ID, "role", args.Role).String() }
+								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.Publication.SnapshotID) }
 								hx-include=".modal-body .person-attributes"
 								hx-swap="none"
 							>Save</button>

@@ -17,11 +17,6 @@ type BindType struct {
 	Type string `form:"type"`
 }
 
-type YieldUpdateType struct {
-	Context
-	Type string
-}
-
 func ConfirmUpdateType(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 

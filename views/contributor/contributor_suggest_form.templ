@@ -1,0 +1,33 @@
+package contributorviews
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+)
+
+type FormFieldContributorSuggestArgs struct {
+	Name       string
+	Label      string
+	Value      string
+	SuggestURL string
+}
+
+templ FormFieldContributorSuggest(c *ctx.Ctx, args FormFieldContributorSuggestArgs) {
+	@form.Field(form.FieldArgs{
+		Name:  args.Name,
+		Label: args.Label,
+		Theme: form.ThemeVertical,
+	}, args.Name) {
+		<input
+			id={ args.Name }
+			name={ args.Name }
+			type="text"
+			value={ args.Value }
+			class="form-control form-control-auto-focus"
+			hx-get={ args.SuggestURL }
+			hx-include='.person-attributes input[name="first_name"], .person-attributes input[name="last_name"]'
+			hx-trigger="keyup changed delay:350ms, search"
+			hx-target="#person-suggestions"
+		/>
+	}
+}

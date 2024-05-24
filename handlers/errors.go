@@ -64,13 +64,6 @@ func (h *BaseHandler) NotFound(w http.ResponseWriter, r *http.Request, ctx BaseC
 	})
 }
 
-func (h *BaseHandler) ErrorModal(w http.ResponseWriter, r *http.Request, errID string, ctx BaseContext) {
-	render.Layout(w, "show_modal", "modals/error", YieldModalError{
-		BaseContext: ctx,
-		ID:          errID,
-	})
-}
-
 func (h *BaseHandler) UserNotFound(w http.ResponseWriter, r *http.Request, ctx BaseContext) {
 	// clear session to make sure that baseHandler doesn't keep blocking other handlers
 	session, err := h.SessionStore.Get(r, h.SessionName)

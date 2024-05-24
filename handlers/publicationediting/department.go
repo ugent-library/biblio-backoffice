@@ -26,10 +26,6 @@ type BindDeleteDepartment struct {
 	SnapshotID   string `path:"snapshot_id"`
 }
 
-type YieldDepartments struct {
-	Context
-}
-
 func AddDepartment(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
