@@ -2,10 +2,10 @@ package views
 
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render/form"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
 )
 
-templ AddImpersonation(c *ctx.Ctx, frm *form.Form) {
+templ AddImpersonation(c *ctx.Ctx) {
 	@ShowModalLayout(c) {
 		<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
 			<div class="modal-content">
@@ -13,13 +13,18 @@ templ AddImpersonation(c *ctx.Ctx, frm *form.Form) {
 					<h2 class="modal-title">View as other user</h2>
 				</div>
 				<div class="p-6 border-bottom person-attributes">
-					for _, section := range frm.Sections {
-						if tmpl, err := section.Render(); err == nil {
-							<div class="row align-items-end">
-								@templ.Raw(tmpl)
-							</div>
-						}
-					}
+						<div class="row align-items-end">
+							@contributorviews.FormFieldContributorSuggest(c, contributorviews.FormFieldContributorSuggestArgs{
+								Name: "first_name",
+								Label: "First name",
+								SuggestURL: c.PathTo("suggest_impersonations").String(),
+							})
+							@contributorviews.FormFieldContributorSuggest(c, contributorviews.FormFieldContributorSuggestArgs{
+								Name: "last_name",
+								Label: "Last name",
+								SuggestURL: c.PathTo("suggest_impersonations").String(),
+							})
+						</div>
 				</div>
 				<div class="modal-body" id="person-suggestions">
 					<div class="c-blank-slate c-blank-slate-muted c-blank-slate-large">

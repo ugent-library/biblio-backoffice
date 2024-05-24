@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
@@ -28,7 +27,7 @@ func AddImpersonation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.AddImpersonation(c, addImpersonationForm(c)).Render(r.Context(), w)
+	views.AddImpersonation(c).Render(r.Context(), w)
 }
 
 func AddImpersonationSuggest(w http.ResponseWriter, r *http.Request) {
@@ -140,33 +139,4 @@ func DeleteImpersonation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, c.PathTo("home").String(), http.StatusFound)
-}
-
-func addImpersonationForm(c *ctx.Ctx) *form.Form {
-	suggestURL := c.PathTo("suggest_impersonations").String()
-
-	return form.New().
-		WithTheme("cols").
-		AddSection(
-			&form.Text{
-				Template: "contributor_name",
-				Name:     "first_name",
-				Label:    "First name",
-				Vars: struct {
-					SuggestURL string
-				}{
-					SuggestURL: suggestURL,
-				},
-			},
-			&form.Text{
-				Template: "contributor_name",
-				Name:     "last_name",
-				Label:    "Last name",
-				Vars: struct {
-					SuggestURL string
-				}{
-					SuggestURL: suggestURL,
-				},
-			},
-		)
 }
