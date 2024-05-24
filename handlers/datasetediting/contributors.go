@@ -9,10 +9,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -86,81 +86,24 @@ type BindOrderContributors struct {
 	Positions []int  `form:"position"`
 }
 
-type YieldContributors struct {
-	Context
-	Role string
-}
+func AddContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
 
-type YieldAddContributor struct {
-	Context
-	Role        string
-	Contributor *models.Contributor
-	Form        *form.Form
-	Hits        []*models.Contributor
-}
-
-type YieldAddContributorSuggest struct {
-	Context
-	Role        string
-	Contributor *models.Contributor
-	Hits        []*models.Contributor
-}
-
-type YieldConfirmCreateContributor struct {
-	Context
-	Role        string
-	Contributor *models.Contributor
-	Active      bool
-	Form        *form.Form
-}
-
-type YieldEditContributor struct {
-	Context
-	Role        string
-	Position    int
-	Contributor *models.Contributor
-	FirstName   string
-	LastName    string
-	Active      bool
-	Hits        []*models.Contributor
-	Form        *form.Form
-}
-
-type YieldEditContributorSuggest struct {
-	Context
-	Role        string
-	Position    int
-	Contributor *models.Contributor
-	FirstName   string
-	LastName    string
-	Hits        []*models.Contributor
-}
-
-type YieldConfirmUpdateContributor struct {
-	Context
-	Role        string
-	Position    int
-	Contributor *models.Contributor
-	Active      bool
-	Form        *form.Form
-	EditNext    bool
-}
-
-func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
 	b := BindAddContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("add dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("add dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
 	var hits []*models.Contributor
 
 	if b.FirstName != "" || b.LastName != "" {
-		people, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
+		people, err := c.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
-			h.Logger.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			c.Log.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
 
@@ -170,34 +113,32 @@ func (h *Handler) AddContributor(w http.ResponseWriter, r *http.Request, ctx Con
 		}
 	}
 
-	c := models.ContributorFromFirstLastName(b.FirstName, b.LastName)
-
-	suggestURL := h.PathFor("dataset_add_contributor_suggest", "id", ctx.Dataset.ID, "role", b.Role).String()
-
-	render.Layout(w, "show_modal", "dataset/add_contributor", YieldAddContributor{
-		Context:     ctx,
+	views.ShowModal(datasetviews.AddContributor(c, datasetviews.AddContributorArgs{
+		Dataset:     dataset,
+		Contributor: models.ContributorFromFirstLastName(b.FirstName, b.LastName),
 		Role:        b.Role,
-		Contributor: c,
-		Form:        contributorForm(ctx, c, suggestURL),
 		Hits:        hits,
-	})
+	})).Render(r.Context(), w)
 }
 
-func (h *Handler) AddContributorSuggest(w http.ResponseWriter, r *http.Request, ctx Context) {
+func AddContributorSuggest(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindAddContributorSuggest{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("suggest dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("suggest dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
 	var hits []*models.Contributor
 
 	if b.FirstName != "" || b.LastName != "" {
-		people, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
+		people, err := c.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
-			h.Logger.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			c.Log.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
 
@@ -207,65 +148,67 @@ func (h *Handler) AddContributorSuggest(w http.ResponseWriter, r *http.Request, 
 		}
 	}
 
-	c := models.ContributorFromFirstLastName(b.FirstName, b.LastName)
-
-	render.Partial(w, "dataset/add_contributor_suggest", YieldAddContributorSuggest{
-		Context:     ctx,
-		Role:        b.Role,
-		Contributor: c,
-		Hits:        hits,
-	})
+	datasetviews.AddContributorSuggest(
+		c, datasetviews.AddContributorSuggestArgs{
+			Dataset:     dataset,
+			Contributor: models.ContributorFromFirstLastName(b.FirstName, b.LastName),
+			Role:        b.Role,
+			Hits:        hits,
+		},
+	).Render(r.Context(), w)
 }
 
-func (h *Handler) ConfirmCreateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func ConfirmCreateContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindConfirmCreateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("confirm create dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("confirm create dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	var c *models.Contributor
-	active := false
+	var cn *models.Contributor
 	if b.ID != "" {
-		newC, newP, err := h.generateContributorFromPersonId(b.ID)
+		newC, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
-			h.ActionError(w, r, ctx.BaseContext, "confirm create dataset contributor: could not generate contributor from person", err, ctx.Dataset.ID)
+			c.HandleError(w, r, err)
 			return
 		}
-		c = newC
-		active = newP.Active
+		cn = newC
 	} else {
-		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
+		cn = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
-	render.Layout(w, "refresh_modal", "dataset/confirm_create_contributor", YieldConfirmCreateContributor{
-		Context:     ctx,
-		Role:        b.Role,
-		Contributor: c,
-		Active:      active,
-		Form:        confirmContributorForm(ctx, b.Role, c, nil),
-	})
+	views.ReplaceModal(datasetviews.ConfirmCreateContributor(
+		c, datasetviews.ConfirmCreateContributorArgs{
+			Dataset:     dataset,
+			Contributor: cn,
+			Role:        b.Role,
+		},
+	)).Render(r.Context(), w)
 }
 
-func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func CreateContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindCreateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("create dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("create dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	var c *models.Contributor
-	active := false
+	var cn *models.Contributor
 	if b.ID != "" {
-		newC, newP, err := h.generateContributorFromPersonId(b.ID)
+		newC, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
-			h.ActionError(w, r, ctx.BaseContext, "create dataset contributor: could not generate contributor from person", err, ctx.Dataset.ID)
+			c.HandleError(w, r, err)
 			return
 		}
-		c = newC
-		active = newP.Active
+		cn = newC
 	} else {
 		if b.FirstName == "" {
 			b.FirstName = "[missing]"
@@ -273,89 +216,86 @@ func (h *Handler) CreateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		if b.LastName == "" {
 			b.LastName = "[missing]"
 		}
-		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
+		cn = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
-	ctx.Dataset.AddContributor(b.Role, c)
+	dataset.AddContributor(b.Role, cn)
 
-	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		render.Layout(w, "refresh_modal", "dataset/confirm_create_contributor", YieldConfirmCreateContributor{
-			Context:     ctx,
-			Role:        b.Role,
-			Contributor: c,
-			Active:      active,
-			Form:        confirmContributorForm(ctx, b.Role, c, validationErrs.(*okay.Errors)),
-		})
-
+	if validationErrs := dataset.Validate(); validationErrs != nil {
+		views.ReplaceModal(datasetviews.ConfirmCreateContributor(
+			c, datasetviews.ConfirmCreateContributorArgs{
+				Dataset:     dataset,
+				Contributor: cn,
+				Role:        b.Role,
+				Errors:      validationErrs.(*okay.Errors),
+			},
+		)).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), dataset, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("create dataset contributor: Could not save the dataset:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("create dataset contributor: Could not save the dataset:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
 	if b.AddNext {
-		c := &models.Contributor{}
-
-		suggestURL := h.PathFor("dataset_add_contributor_suggest", "id", ctx.Dataset.ID, "role", b.Role).String()
-
-		render.Partial(w, "dataset/add_next_contributor", YieldAddContributor{
-			Context:     ctx,
-			Role:        b.Role,
-			Contributor: c,
-			Form:        contributorForm(ctx, c, suggestURL),
-		})
-
+		views.Cat(
+			views.Replace(fmt.Sprintf("#contributors-%s-body", b.Role), datasetviews.ContributorsBody(
+				c, dataset, b.Role,
+			)),
+			views.ReplaceModal(datasetviews.AddContributor(c, datasetviews.AddContributorArgs{
+				Dataset:     dataset,
+				Role:        b.Role,
+				Contributor: &models.Contributor{},
+			})),
+		).Render(r.Context(), w)
 		return
 	}
 
-	render.View(w, "dataset/refresh_contributors", YieldContributors{
-		Context: ctx,
-		Role:    b.Role,
-	})
+	views.CloseModalAndReplace(
+		fmt.Sprintf("#contributors-%s-body", b.Role),
+		datasetviews.ContributorsBody(c, dataset, b.Role),
+	).Render(r.Context(), w)
 }
 
-func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func EditContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindEditContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("edit dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("edit dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	c, err := ctx.Dataset.GetContributor(b.Role, b.Position)
+	cn, err := dataset.GetContributor(b.Role, b.Position)
 	if err != nil {
-		h.Logger.Errorw("edit dataset contributor: could not get the contributor", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("edit dataset contributor: could not get the contributor", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
-	}
-
-	active := false
-	if c.Person != nil {
-		active = c.Person.Active
 	}
 
 	firstName := b.FirstName
 	lastName := b.LastName
 	if firstName == "" && lastName == "" {
-		firstName = c.FirstName()
-		lastName = c.LastName()
+		firstName = cn.FirstName()
+		lastName = cn.LastName()
 	}
 
-	people, err := h.PersonSearchService.SuggestPeople(firstName + " " + lastName)
+	people, err := c.PersonSearchService.SuggestPeople(firstName + " " + lastName)
 	if err != nil {
-		h.Logger.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
@@ -365,9 +305,9 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 	}
 
 	// exclude the current contributor
-	if c.PersonID != "" {
+	if cn.PersonID != "" {
 		for i, hit := range hits {
-			if hit.PersonID == c.PersonID {
+			if hit.PersonID == cn.PersonID {
 				if i == 0 {
 					hits = hits[1:]
 				} else {
@@ -378,43 +318,42 @@ func (h *Handler) EditContributor(w http.ResponseWriter, r *http.Request, ctx Co
 		}
 	}
 
-	suggestURL := h.PathFor("dataset_edit_contributor_suggest", "id", ctx.Dataset.ID, "role", b.Role, "position", fmt.Sprintf("%d", b.Position)).String()
-
-	render.Layout(w, "show_modal", "dataset/edit_contributor", YieldEditContributor{
-		Context:     ctx,
+	views.ShowModal(datasetviews.EditContributor(c, datasetviews.EditContributorArgs{
+		Dataset:     dataset,
 		Role:        b.Role,
 		Position:    b.Position,
-		Contributor: c,
+		Contributor: cn,
 		FirstName:   firstName,
 		LastName:    lastName,
-		Active:      active,
 		Hits:        hits,
-		Form:        contributorForm(ctx, c, suggestURL),
-	})
+	})).Render(r.Context(), w)
 }
 
-func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request, ctx Context) {
+func EditContributorSuggest(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindEditContributorSuggest{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("suggest dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("suggest dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	c, err := ctx.Dataset.GetContributor(b.Role, b.Position)
+	cn, err := dataset.GetContributor(b.Role, b.Position)
 	if err != nil {
-		h.Logger.Errorw("edit dataset contributor: could not get the contributor", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorw("edit dataset contributor: could not get the contributor", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
 	var hits []*models.Contributor
 
 	if b.FirstName != "" || b.LastName != "" {
-		people, err := h.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
+		people, err := c.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
-			h.Logger.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			c.Log.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
 
@@ -424,9 +363,9 @@ func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request,
 		}
 
 		// exclude the current contributor
-		if c.PersonID != "" {
+		if cn.PersonID != "" {
 			for i, hit := range hits {
-				if hit.PersonID == c.PersonID {
+				if hit.PersonID == cn.PersonID {
 					hits = append(hits[:i], hits[i+1:]...)
 					break
 				}
@@ -434,69 +373,69 @@ func (h *Handler) EditContributorSuggest(w http.ResponseWriter, r *http.Request,
 		}
 	}
 
-	render.Partial(w, "dataset/edit_contributor_suggest", YieldEditContributorSuggest{
-		Context:     ctx,
+	datasetviews.EditContributorSuggest(c, datasetviews.EditContributorSuggestArgs{
+		Dataset:     dataset,
 		Role:        b.Role,
 		Position:    b.Position,
-		Contributor: c,
+		Contributor: cn,
 		FirstName:   b.FirstName,
 		LastName:    b.LastName,
 		Hits:        hits,
-	})
+	}).Render(r.Context(), w)
 }
 
-func (h *Handler) ConfirmUpdateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func ConfirmUpdateContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindConfirmUpdateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("confirm update dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("confirm update dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	var c *models.Contributor
-	active := false
+	var cn *models.Contributor
 	if b.ID != "" {
-		newC, newP, err := h.generateContributorFromPersonId(b.ID)
+		newC, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
-			h.ActionError(w, r, ctx.BaseContext, "confirm update dataset contributor: could not generate contributor from person", err, ctx.Dataset.ID)
+			c.HandleError(w, r, err)
 			return
 		}
-		c = newC
-		active = newP.Active
+		cn = newC
 	} else {
-		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
+		cn = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
-	render.Layout(w, "refresh_modal", "dataset/confirm_update_contributor", YieldConfirmUpdateContributor{
-		Context:     ctx,
+	views.ReplaceModal(datasetviews.ConfirmUpdateContributor(c, datasetviews.ConfirmUpdateContributorArgs{
+		Dataset:     dataset,
 		Role:        b.Role,
 		Position:    b.Position,
-		Contributor: c,
-		Active:      active,
-		Form:        confirmContributorForm(ctx, b.Role, c, nil),
-		EditNext:    b.Position+1 < len(ctx.Dataset.Contributors(b.Role)),
-	})
+		Contributor: cn,
+		EditNext:    b.Position+1 < len(dataset.Contributors(b.Role)),
+	})).Render(r.Context(), w)
 }
 
-func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func UpdateContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindUpdateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		h.Logger.Warnw("update dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("update dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	var c *models.Contributor
-	active := false
+	var cn *models.Contributor
 	if b.ID != "" {
-		newC, newP, err := h.generateContributorFromPersonId(b.ID)
+		newC, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
-			h.Logger.Errorw("update dataset contributor: could not fetch person", "errors", err, "personid", b.ID, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			c.Log.Errorw("update dataset contributor: could not fetch person", "errors", err, "personid", b.ID, "dataset", dataset.ID, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
-		c = newC
-		active = newP.Active
+		cn = newC
 	} else {
 		if b.FirstName == "" {
 			b.FirstName = "[missing]"
@@ -504,50 +443,48 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 		if b.LastName == "" {
 			b.LastName = "[missing]"
 		}
-		c = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
+		cn = models.ContributorFromFirstLastName(b.FirstName, b.LastName)
 	}
 
-	if err := ctx.Dataset.SetContributor(b.Role, b.Position, c); err != nil {
-		h.Logger.Errorw("update dataset contributor: could not set the contributor", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+	if err := dataset.SetContributor(b.Role, b.Position, cn); err != nil {
+		c.Log.Errorw("update dataset contributor: could not set the contributor", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		render.Layout(w, "refresh_modal", "dataset/confirm_update_contributor", YieldConfirmUpdateContributor{
-			Context:     ctx,
+	if validationErrs := dataset.Validate(); validationErrs != nil {
+		views.ReplaceModal(datasetviews.ConfirmUpdateContributor(c, datasetviews.ConfirmUpdateContributorArgs{
+			Dataset:     dataset,
 			Role:        b.Role,
 			Position:    b.Position,
-			Contributor: c,
-			Active:      active,
-			Form:        confirmContributorForm(ctx, b.Role, c, validationErrs.(*okay.Errors)),
-			EditNext:    b.Position+1 < len(ctx.Dataset.Contributors(b.Role)),
-		})
-
+			Contributor: cn,
+			Errors:      validationErrs.(*okay.Errors),
+			EditNext:    b.Position+1 < len(dataset.Contributors(b.Role)),
+		})).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), dataset, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("update dataset contributor: Could not save the dataset:", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("update dataset contributor: Could not save the dataset:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	if b.EditNext && b.Position+1 < len(ctx.Dataset.Contributors(b.Role)) {
+	if b.EditNext && b.Position+1 < len(dataset.Contributors(b.Role)) {
 		nextPos := b.Position + 1
-		nextC := ctx.Dataset.Contributors(b.Role)[nextPos]
-		people, err := h.PersonSearchService.SuggestPeople(nextC.Name())
+		nextC := dataset.Contributors(b.Role)[nextPos]
+		people, err := c.PersonSearchService.SuggestPeople(nextC.Name())
 		if err != nil {
-			h.Logger.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", ctx.User.ID)
-			render.InternalServerError(w, r, err)
+			c.Log.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
+			c.HandleError(w, r, httperror.InternalServerError)
 			return
 		}
 		hits := make([]*models.Contributor, len(people))
@@ -555,32 +492,24 @@ func (h *Handler) UpdateContributor(w http.ResponseWriter, r *http.Request, ctx 
 			hits[i] = models.ContributorFromPerson(person)
 		}
 
-		suggestURL := h.PathFor("dataset_edit_contributor_suggest", "id", ctx.Dataset.ID, "role", b.Role, "position", fmt.Sprintf("%d", nextPos)).String()
-
-		nextActive := false
-		if nextC.Person != nil {
-			nextActive = nextC.Person.Active
-		}
-
-		render.Partial(w, "dataset/edit_next_contributor", YieldEditContributor{
-			Context:     ctx,
-			Role:        b.Role,
-			Position:    nextPos,
-			Contributor: nextC,
-			FirstName:   nextC.FirstName(),
-			LastName:    nextC.LastName(),
-			Active:      nextActive,
-			Hits:        hits,
-			Form:        contributorForm(ctx, nextC, suggestURL),
-		})
-
+		views.Cat(
+			views.Replace(fmt.Sprintf("#contributors-%s-body", b.Role), datasetviews.ContributorsBody(c, dataset, b.Role)),
+			views.ReplaceModal(datasetviews.EditContributor(c, datasetviews.EditContributorArgs{
+				Dataset:     dataset,
+				Role:        b.Role,
+				Position:    nextPos,
+				Contributor: nextC,
+				FirstName:   nextC.FirstName(),
+				LastName:    nextC.LastName(),
+				Hits:        hits,
+			})),
+		).Render(r.Context(), w)
 		return
 	}
 
-	render.View(w, "dataset/refresh_contributors", YieldContributors{
-		Context: ctx,
-		Role:    b.Role,
-	})
+	views.CloseModalAndReplace(fmt.Sprintf("#contributors-%s-body", b.Role), datasetviews.ContributorsBody(
+		c, dataset, b.Role,
+	)).Render(r.Context(), w)
 }
 
 func ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request) {
@@ -602,153 +531,95 @@ func ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request) {
 	}).Render(r.Context(), w)
 }
 
-func (h *Handler) DeleteContributor(w http.ResponseWriter, r *http.Request, ctx Context) {
+func DeleteContributor(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindDeleteContributor{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("delete dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("delete dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	if err := ctx.Dataset.RemoveContributor(b.Role, b.Position); err != nil {
-		h.Logger.Warnw("delete dataset contributor: could not remove contributor", "errors", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+	if err := dataset.RemoveContributor(b.Role, b.Position); err != nil {
+		c.Log.Warnw("delete dataset contributor: could not remove contributor", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	if validationErrs := ctx.Dataset.Validate(); validationErrs != nil {
-		errors := form.Errors(localize.ValidationErrors(ctx.Loc, validationErrs.(*okay.Errors)))
-		render.Layout(w, "refresh_modal", "form_errors_dialog", struct {
-			Title  string
-			Errors form.Errors
-		}{
-			Title:  "Can't delete this contributor due to the following errors",
-			Errors: errors,
-		})
-
+	if validationErrs := dataset.Validate(); validationErrs != nil {
+		errors := form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)))
+		views.ReplaceModal(views.FormErrorsDialog("Can't delete this contributor due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), dataset, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
+		views.ReplaceModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("delete dataset contributor: Could not save the dataset:", "error", err, "dataset", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("delete dataset contributor: Could not save the dataset:", "error", err, "dataset", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "dataset/refresh_contributors", YieldContributors{
-		Context: ctx,
-		Role:    b.Role,
-	})
+	views.CloseModalAndReplace(
+		fmt.Sprintf("#contributors-%s-body", b.Role),
+		datasetviews.ContributorsBody(c, dataset, b.Role),
+	).Render(r.Context(), w)
 }
 
-func (h *Handler) OrderContributors(w http.ResponseWriter, r *http.Request, ctx Context) {
+func OrderContributors(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	dataset := ctx.GetDataset(r)
+
 	b := BindOrderContributors{}
 	if err := bind.Request(r, &b); err != nil {
-		h.Logger.Warnw("order dataset contributors: could not bind request arguments", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("order dataset contributors: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
-	contributors := ctx.Dataset.Contributors(b.Role)
+	contributors := dataset.Contributors(b.Role)
 	if len(b.Positions) != len(contributors) {
 		err := fmt.Errorf("positions don't match number of contributors")
-		h.Logger.Warnw("order dataset contributors: could not order contributors", "errors", err, "request", r, "user", ctx.User.ID)
-		render.BadRequest(w, r, err)
+		c.Log.Warnw("order dataset contributors: could not order contributors", "errors", err, "request", r, "user", c.User.ID)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 	newContributors := make([]*models.Contributor, len(contributors))
 	for i, pos := range b.Positions {
 		newContributors[i] = contributors[pos]
 	}
-	ctx.Dataset.SetContributors(b.Role, newContributors)
+	dataset.SetContributors(b.Role, newContributors)
 
-	err := h.Repo.UpdateDataset(r.Header.Get("If-Match"), ctx.Dataset, ctx.User)
+	err := c.Repo.UpdateDataset(r.Header.Get("If-Match"), dataset, c.User)
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ShowModal(views.ErrorDialog(ctx.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
+		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		h.Logger.Errorf("order dataset contributors: Could not save the dataset:", "errors", err, "identifier", ctx.Dataset.ID, "user", ctx.User.ID)
-		render.InternalServerError(w, r, err)
+		c.Log.Errorf("order dataset contributors: Could not save the dataset:", "errors", err, "identifier", dataset.ID, "user", c.User.ID)
+		c.HandleError(w, r, httperror.InternalServerError)
 		return
 	}
 
-	render.View(w, "dataset/refresh_contributors", YieldContributors{
-		Context: ctx,
-		Role:    b.Role,
-	})
+	views.CloseModalAndReplace(fmt.Sprintf("#contributors-%s-body", b.Role), datasetviews.ContributorsBody(c, dataset, b.Role)).Render(r.Context(), w)
 }
 
-func contributorForm(_ Context, c *models.Contributor, suggestURL string) *form.Form {
-	return form.New().
-		WithTheme("cols").
-		AddSection(
-			&form.Text{
-				Template: "contributor_name",
-				Name:     "first_name",
-				Value:    c.FirstName(),
-				Label:    "First name",
-				Vars: struct {
-					SuggestURL string
-				}{
-					SuggestURL: suggestURL,
-				},
-			},
-			&form.Text{
-				Template: "contributor_name",
-				Name:     "last_name",
-				Value:    c.LastName(),
-				Label:    "Last name",
-				Vars: struct {
-					SuggestURL string
-				}{
-					SuggestURL: suggestURL,
-				},
-			},
-		)
-}
-
-func confirmContributorForm(ctx Context, _ string, c *models.Contributor, errors *okay.Errors) *form.Form {
-	var fields []form.Field
-
-	if c.PersonID != "" {
-		fields = append(fields, &form.Hidden{
-			Name:  "id",
-			Value: c.PersonID,
-		})
-	} else {
-		fields = append(fields,
-			&form.Hidden{
-				Name:  "first_name",
-				Value: c.FirstName(),
-			}, &form.Hidden{
-				Name:  "last_name",
-				Value: c.LastName(),
-			})
-	}
-
-	return form.New().
-		WithErrors(localize.ValidationErrors(ctx.Loc, errors)).
-		WithTheme("cols").
-		AddSection(fields...)
-}
-
-func (h *Handler) generateContributorFromPersonId(id string) (*models.Contributor, *models.Person, error) {
-	p, err := h.PersonService.GetPerson(id)
+func generateContributorFromPersonId(c *ctx.Ctx, id string) (*models.Contributor, error) {
+	p, err := c.PersonService.GetPerson(id)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	c := models.ContributorFromPerson(p)
-	return c, p, nil
+	cn := models.ContributorFromPerson(p)
+	return cn, nil
 }

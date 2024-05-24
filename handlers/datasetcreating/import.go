@@ -199,8 +199,7 @@ func AddPublish(w http.ResponseWriter, r *http.Request) {
 
 	if err := dataset.Validate(); err != nil {
 		errors := form.Errors(localize.ValidationErrors(c.Loc, err.(*okay.Errors)))
-		//TODO: make FormErrorsDialog without the ShowModalLayout and use views.ShowModal
-		views.FormErrorsDialog(c, "Unable to publish this dataset due to the following errors", errors).Render(r.Context(), w)
+		views.ShowModal(views.FormErrorsDialog("Unable to publish this dataset due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 

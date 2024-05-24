@@ -102,7 +102,7 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 			}))
 		}
 		if len(args.Errors) > 0 {
-			@views.FormErrorsDialog(c, "Unable to import this publication due to the following errors", args.Errors)
+			@views.ShowModal(views.FormErrorsDialog("Unable to import this publication due to the following errors", args.Errors))
 		}
 	}
 }

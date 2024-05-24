@@ -90,7 +90,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(args.Errors) > 0 {
-				templ_7745c5c3_Err = views.FormErrorsDialog(c, "Unable to import this dataset due to the following errors", args.Errors).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = views.ShowModal(views.FormErrorsDialog("Unable to import this dataset due to the following errors", args.Errors)).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

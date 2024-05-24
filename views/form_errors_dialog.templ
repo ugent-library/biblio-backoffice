@@ -1,28 +1,25 @@
 package views
 
 import (
-	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views/form"
 )
 
-templ FormErrorsDialog(c *ctx.Ctx, title string, errors []string) {
-	@ShowModalLayout(c) {
-		<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h2 class="modal-title">{ title }</h2>
-				</div>
-				<div class="modal-body">
-					@form.Errors(errors)
-				</div>
-				<div class="modal-footer">
-					<div class="bc-toolbar">
-						<div class="bc-toolbar-left">
-							<button class="btn btn-link modal-close">Close</button>
-						</div>
+templ FormErrorsDialog(title string, errors []string) {
+	<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">{ title }</h2>
+			</div>
+			<div class="modal-body">
+				@form.Errors(errors)
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<button class="btn btn-link modal-close">Close</button>
 					</div>
 				</div>
 			</div>
 		</div>
-	}
+	</div>
 }

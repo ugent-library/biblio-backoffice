@@ -323,7 +323,7 @@ func (s *server) MutateDatasets(stream api.Biblio_MutateDatasetsServer) error {
 		}
 
 		mut := repositories.Mutation{
-			Op:   req.Op,
+			Name: req.Op,
 			Args: req.Args,
 		}
 
