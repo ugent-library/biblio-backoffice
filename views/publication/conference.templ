@@ -3,7 +3,6 @@ package publication
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/helpers"
 	"github.com/ugent-library/biblio-backoffice/views/display"
 )
 
@@ -56,7 +55,7 @@ templ ConferenceBody(c *ctx.Ctx, p *models.Publication) {
 				})
 				@display.Field(display.FieldArgs{
 					Label: c.Loc.Get("builder.conference.date"),
-					Value: helpers.FormatRange(p.ConferenceStartDate, p.ConferenceEndDate),
+					Value: display.Range(p.ConferenceStartDate, p.ConferenceEndDate),
 				})
 			</li>
 		</ul>

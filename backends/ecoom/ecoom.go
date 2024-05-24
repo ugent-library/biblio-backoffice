@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ugent-library/biblio-backoffice/helpers"
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -73,7 +73,7 @@ func NewPublicationFixer(c *mongo.Client) func(context.Context, *models.Publicat
 				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "css"), parseString(v))
 			}
 			if v, ok := fundRecords[0]["internationale_samenwerking"]; ok {
-				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "international-collaboration"), helpers.FormatBool(parseBoolean(v), "true", "false"))
+				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "international-collaboration"), lo.Ternary(parseBoolean(v), "true", "false"))
 			}
 			if v, ok := fundRecords[0]["hoger_onderwijs"]; ok && parseBoolean(v) {
 				newFields.Add(fmt.Sprintf("ecoom-%s-%s", fund, "sector"), "higher-education")

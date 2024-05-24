@@ -12,7 +12,6 @@ import "bytes"
 
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/helpers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/display"
 )
@@ -109,7 +108,7 @@ func ConferenceBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 		}
 		templ_7745c5c3_Err = display.Field(display.FieldArgs{
 			Label: c.Loc.Get("builder.conference.date"),
-			Value: helpers.FormatRange(p.ConferenceStartDate, p.ConferenceEndDate),
+			Value: display.Range(p.ConferenceStartDate, p.ConferenceEndDate),
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
