@@ -18,26 +18,24 @@ templ AddContributorSuggest(c *ctx.Ctx, args AddContributorSuggestArgs) {
 	if args.Contributor.FirstName() != "" || args.Contributor.LastName() != "" {
 		<h3 class="mt-6">Search results</h3>
 		<ul class="list-group">
-			if args.Contributor.FirstName() != "" && args.Contributor.LastName() != "" {
-				<li class="list-group-item">
-					<div class="list-group-item-inner">
-						<div class="list-group-item-main">
-							@contributorviews.SuggestSummary(c, args.Contributor, false)
-						</div>
-						<div class="c-button-toolbar">
-							<button
-								class="btn btn-secondary"
-								hx-get={ c.PathTo("dataset_confirm_create_contributor", "id", args.Dataset.ID, "role", args.Role).String() }
-								hx-vals={ fmt.Sprintf(`{"first_name": "%s", "last_name": "%s"}`, args.Contributor.FirstName(), args.Contributor.LastName()) }
-								hx-swap="none"
-							>
-								<span class="btn-text">Add external { c.Loc.Get("dataset.contributor.role."+args.Role) }</span>
-								<i class="if if-arrow-right"></i>
-							</button>
-						</div>
+			<li class="list-group-item">
+				<div class="list-group-item-inner">
+					<div class="list-group-item-main">
+						@contributorviews.SuggestSummary(c, args.Contributor, false)
 					</div>
-				</li>
-			}
+					<div class="c-button-toolbar">
+						<button
+							class="btn btn-secondary"
+							hx-get={ c.PathTo("dataset_confirm_create_contributor", "id", args.Dataset.ID, "role", args.Role).String() }
+							hx-vals={ fmt.Sprintf(`{"first_name": "%s", "last_name": "%s"}`, args.Contributor.FirstName(), args.Contributor.LastName()) }
+							hx-swap="none"
+						>
+							<span class="btn-text">Add external { c.Loc.Get("dataset.contributor.role."+args.Role) }</span>
+							<i class="if if-arrow-right"></i>
+						</button>
+					</div>
+				</div>
+			</li>
 			if len(args.Hits) > 0 {
 				for _, hit := range args.Hits {
 					<li class="list-group-item">
