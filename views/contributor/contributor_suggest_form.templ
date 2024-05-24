@@ -5,15 +5,26 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views/form"
 )
 
-templ FormFieldContributorSuggest(c *ctx.Ctx, name string, label string, value string, suggestURL string) {
-	@form.Field(form.FieldArgs{Name: name, Label: label, Theme: form.ThemeVertical}, name) {
+type FormFieldContributorSuggestArgs struct {
+	Name       string
+	Label      string
+	Value      string
+	SuggestURL string
+}
+
+templ FormFieldContributorSuggest(c *ctx.Ctx, args FormFieldContributorSuggestArgs) {
+	@form.Field(form.FieldArgs{
+		Name:  args.Name,
+		Label: args.Label,
+		Theme: form.ThemeVertical,
+	}, args.Name) {
 		<input
-			id={ name }
-			name={ name }
+			id={ args.Name }
+			name={ args.Name }
 			type="text"
-			value={ value }
+			value={ args.Value }
 			class="form-control form-control-auto-focus"
-			hx-get={ suggestURL }
+			hx-get={ args.SuggestURL }
 			hx-include='.person-attributes input[name="first_name"], .person-attributes input[name="last_name"]'
 			hx-trigger="keyup changed delay:350ms, search"
 			hx-target="#person-suggestions"
