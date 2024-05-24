@@ -221,7 +221,7 @@ func Link(val string, buildLink func(string) string) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(val)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `display/field.templ`, Line: 71, Col: 8}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `display/field.templ`, Line: 70, Col: 8}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -276,7 +276,7 @@ func List(vals []string, template func(string) templ.Component) templ.Component 
 					var templ_7745c5c3_Var11 string
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(val)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `display/field.templ`, Line: 87, Col: 11}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `display/field.templ`, Line: 86, Col: 11}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
@@ -337,7 +337,7 @@ func InlineList(vals []string, template func(string) templ.Component) templ.Comp
 					var templ_7745c5c3_Var13 string
 					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(val)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `display/field.templ`, Line: 105, Col: 11}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `display/field.templ`, Line: 104, Col: 11}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {

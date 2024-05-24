@@ -4,7 +4,6 @@ package publicationcreating
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"io"
 	"net/http"
 	"strings"
@@ -14,9 +13,9 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/flash"
 	"github.com/ugent-library/biblio-backoffice/views/publication/pages"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
@@ -109,7 +108,7 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request) {
 
 			flash := flash.SimpleFlash().
 				WithLevel("error").
-				WithBody(template.HTML(c.Loc.Get("publication.single_import.import_by_id.import_failed")))
+				WithBody(c.Loc.Get("publication.single_import.import_by_id.import_failed"))
 			c.Flash = append(c.Flash, *flash)
 
 			pages.AddIdentifier(c, pages.AddIdentifierArgs{
@@ -265,7 +264,7 @@ func AddMultipleImport(w http.ResponseWriter, r *http.Request) {
 
 		flash := flash.SimpleFlash().
 			WithLevel("error").
-			WithBody(template.HTML("<p>Sorry, something went wrong. Could not import the publication(s).</p>"))
+			WithBody("<p>Sorry, something went wrong. Could not import the publication(s).</p>")
 		c.Flash = append(c.Flash, *flash)
 
 		switch source {
@@ -289,7 +288,7 @@ func AddMultipleSave(w http.ResponseWriter, r *http.Request) {
 
 	flash := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Publications successfully saved as draft.</p>"))
+		WithBody("<p>Publications successfully saved as draft.</p>")
 
 	c.PersistFlash(w, *flash)
 

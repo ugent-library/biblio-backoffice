@@ -13,18 +13,18 @@ templ AddImpersonation(c *ctx.Ctx) {
 					<h2 class="modal-title">View as other user</h2>
 				</div>
 				<div class="p-6 border-bottom person-attributes">
-						<div class="row align-items-end">
-							@contributorviews.FormFieldContributorSuggest(c, contributorviews.FormFieldContributorSuggestArgs{
-								Name: "first_name",
-								Label: "First name",
-								SuggestURL: c.PathTo("suggest_impersonations").String(),
-							})
-							@contributorviews.FormFieldContributorSuggest(c, contributorviews.FormFieldContributorSuggestArgs{
-								Name: "last_name",
-								Label: "Last name",
-								SuggestURL: c.PathTo("suggest_impersonations").String(),
-							})
-						</div>
+					<div class="row align-items-end">
+						@contributorviews.FormFieldContributorSuggest(c, contributorviews.FormFieldContributorSuggestArgs{
+							Name:       "first_name",
+							Label:      "First name",
+							SuggestURL: c.PathTo("suggest_impersonations").String(),
+						})
+						@contributorviews.FormFieldContributorSuggest(c, contributorviews.FormFieldContributorSuggestArgs{
+							Name:       "last_name",
+							Label:      "Last name",
+							SuggestURL: c.PathTo("suggest_impersonations").String(),
+						})
+					</div>
 				</div>
 				<div class="modal-body" id="person-suggestions">
 					<div class="c-blank-slate c-blank-slate-muted c-blank-slate-large">

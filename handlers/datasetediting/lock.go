@@ -2,14 +2,13 @@ package datasetediting
 
 import (
 	"errors"
-	"html/template"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
-	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/flash"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
@@ -44,7 +43,7 @@ func Lock(w http.ResponseWriter, r *http.Request) {
 
 	f := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Dataset was successfully locked.</p>"))
+		WithBody("<p>Dataset was successfully locked.</p>")
 
 	c.PersistFlash(w, *f)
 
@@ -84,7 +83,7 @@ func Unlock(w http.ResponseWriter, r *http.Request) {
 
 	f := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Dataset was successfully unlocked.</p>"))
+		WithBody("<p>Dataset was successfully unlocked.</p>")
 
 	c.PersistFlash(w, *f)
 

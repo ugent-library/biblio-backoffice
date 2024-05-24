@@ -1,15 +1,14 @@
 package candidaterecords
 
 import (
-	"html/template"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/pagination"
-	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/views"
 	candidaterecordviews "github.com/ugent-library/biblio-backoffice/views/candidaterecord"
+	"github.com/ugent-library/biblio-backoffice/views/flash"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 )
@@ -131,7 +130,7 @@ func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 
 	f := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Candidate record was successfully deleted.</p>"))
+		WithBody("<p>Candidate record was successfully deleted.</p>")
 
 	c.PersistFlash(w, *f)
 
@@ -161,7 +160,7 @@ func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 
 	f := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Suggestion was successfully imported!</p>"))
+		WithBody("<p>Suggestion was successfully imported!</p>")
 	c.PersistFlash(w, *f)
 
 	w.Header().Set("HX-Redirect", c.URLTo("publication", "id", pubID).String())

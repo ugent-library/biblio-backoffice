@@ -3,7 +3,6 @@ package datasetcreating
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strings"
 
@@ -12,10 +11,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	datasetpages "github.com/ugent-library/biblio-backoffice/views/dataset/pages"
+	"github.com/ugent-library/biblio-backoffice/views/flash"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -109,7 +108,7 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 			flash := flash.SimpleFlash().
 				WithLevel("error").
 				WithTitle("Failed to save draft").
-				WithBody(template.HTML(c.Loc.Get("dataset.single_import.import_by_id.import_failed")))
+				WithBody(c.Loc.Get("dataset.single_import.import_by_id.import_failed"))
 
 			c.Flash = append(c.Flash, *flash)
 
@@ -177,7 +176,7 @@ func AddSaveDraft(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	flash := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Dataset successfully saved as a draft.</p>"))
+		WithBody("<p>Dataset successfully saved as a draft.</p>")
 
 	c.PersistFlash(w, *flash)
 
