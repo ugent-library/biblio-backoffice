@@ -38,3 +38,4 @@ cypress/cypress-record.sh
 
 # Docker
 tmp
+docker-compose.yml

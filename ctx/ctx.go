@@ -20,7 +20,7 @@ import (
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render/flash"
+	"github.com/ugent-library/biblio-backoffice/views/flash"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/zaphttp"

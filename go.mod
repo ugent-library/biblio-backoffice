@@ -6,7 +6,6 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/a-h/templ v0.2.543
 	github.com/alexliesenfeld/health v0.7.0
-	github.com/alitto/pond v1.8.3
 	github.com/aws/aws-sdk-go-v2 v1.21.2
 	github.com/blevesearch/bleve/v2 v2.3.10
 	github.com/bluele/gcache v0.0.2
@@ -29,7 +28,6 @@ require (
 	github.com/ogen-go/ogen v1.0.0
 	github.com/ory/graceful v0.1.3
 	github.com/pkg/errors v0.9.1
-	github.com/riverqueue/river/riverdriver/riverpgxv5 v0.4.0
 	github.com/rvflash/elapsed v0.3.0
 	github.com/samber/lo v1.39.0
 	github.com/spf13/cobra v1.8.0
@@ -109,9 +107,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
-	github.com/riverqueue/river/riverdriver v0.4.1 // indirect
-	github.com/riverqueue/river/rivertype v0.4.1 // indirect
-	github.com/samber/slog-common v0.14.0 // indirect
+	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
@@ -166,8 +162,6 @@ require (
 	github.com/nics/ich v0.0.0-20240522120349-1d5aee282cb7
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
-	github.com/riverqueue/river v0.4.1
-	github.com/samber/slog-zap/v2 v2.3.0
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect

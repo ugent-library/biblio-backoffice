@@ -2,7 +2,6 @@ package publication
 
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/helpers"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -181,7 +180,7 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 				if p.UsesPage() {
 					@display.Field(display.FieldArgs{
 						Label: c.Loc.Get("builder.pages"),
-						Value: helpers.FormatRange(p.PageFirst, p.PageLast)})
+						Value: display.Range(p.PageFirst, p.PageLast)})
 				}
 				if p.UsesPageCount() {
 					@display.Field(display.FieldArgs{

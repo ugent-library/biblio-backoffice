@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
@@ -38,12 +37,10 @@ type Services struct {
 	PublicationListExporters  map[string]PublicationListExporterFactory
 	DatasetListExporters      map[string]DatasetListExporterFactory
 	HandleService             HandleService
-	// TODO references temporarily put here
-	PgxPool       *pgxpool.Pool
-	PeopleRepo    *people.Repo
-	PeopleIndex   *people.Index
-	ProjectsRepo  *projects.Repo
-	ProjectsIndex *projects.Index
+	PeopleRepo                *people.Repo
+	PeopleIndex               *people.Index
+	ProjectsRepo              *projects.Repo
+	ProjectsIndex             *projects.Index
 }
 
 type PublicationEncoder func(*models.Publication) ([]byte, error)

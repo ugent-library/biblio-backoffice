@@ -1,5 +1,9 @@
 package display
 
+import (
+	"fmt"
+)
+
 type FieldArgs struct {
 	Label    string
 	Tooltip  string
@@ -44,6 +48,21 @@ templ Boolean(val bool) {
 
 templ Badge(val string) {
 	<span class="badge rounded-pill badge-default me-3">{ val }</span>
+}
+
+func Range(start, end string) string {
+	var v string
+	if len(start) > 0 && len(end) > 0 && start == end {
+		v = start
+	} else if len(start) > 0 && len(end) > 0 {
+		v = fmt.Sprintf("%s - %s", start, end)
+	} else if len(start) > 0 {
+		v = fmt.Sprintf("%s -", start)
+	} else if len(end) > 0 {
+		v = fmt.Sprintf("- %s", end)
+	}
+
+	return v
 }
 
 templ Link(val string, buildLink func(string) string) {

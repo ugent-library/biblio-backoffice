@@ -2,14 +2,13 @@ package datasetediting
 
 import (
 	"errors"
-	"html/template"
 	"net/http"
 	"time"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render/flash"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/flash"
 	"github.com/ugent-library/httperror"
 )
 
@@ -53,7 +52,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 
 	flash := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Dataset was successfully deleted.</p>"))
+		WithBody("<p>Dataset was successfully deleted.</p>")
 
 	c.PersistFlash(w, *flash)
 

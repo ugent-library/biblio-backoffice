@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/contributor"
 )
 
 type EditContributorArgs struct {
@@ -46,7 +47,7 @@ func EditContributor(c *ctx.Ctx, args EditContributorArgs) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.contributor.role." + args.Role))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/edit_contributor.templ`, Line: 22, Col: 95}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/edit_contributor.templ`, Line: 23, Col: 95}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -59,7 +60,7 @@ func EditContributor(c *ctx.Ctx, args EditContributorArgs) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.contributor.role." + args.Role))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/edit_contributor.templ`, Line: 25, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/edit_contributor.templ`, Line: 26, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -69,17 +70,21 @@ func EditContributor(c *ctx.Ctx, args EditContributorArgs) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = FormFieldContributorSuggest(
-			c, "first_name", "First name", args.Contributor.FirstName(),
-			c.PathTo("dataset_edit_contributor_suggest", "id", args.Dataset.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String(),
-		).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = contributorviews.FormFieldContributorSuggest(c, contributorviews.FormFieldContributorSuggestArgs{
+			Name:       "first_name",
+			Label:      "First name",
+			Value:      args.Contributor.FirstName(),
+			SuggestURL: c.PathTo("dataset_edit_contributor_suggest", "id", args.Dataset.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String(),
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = FormFieldContributorSuggest(
-			c, "last_name", "Last name", args.Contributor.LastName(),
-			c.PathTo("dataset_edit_contributor_suggest", "id", args.Dataset.ID, "role", args.Role, "position", fmt.Sprintf("%d", args.Position)).String(),
-		).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = contributorviews.FormFieldContributorSuggest(c, contributorviews.FormFieldContributorSuggestArgs{
+			Name:       "last_name",
+			Label:      "Last name",
+			Value:      args.Contributor.LastName(),
+			SuggestURL: c.PathTo("dataset_edit_contributor_suggest", "id", args.Dataset.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String(),
+		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

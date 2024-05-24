@@ -13,7 +13,6 @@ import "bytes"
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 )
 
 type Theme int
@@ -49,7 +48,7 @@ func Errors(errors []string) templ.Component {
 				var templ_7745c5c3_Var2 string
 				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(err)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 20, Col: 14}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 19, Col: 14}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
@@ -165,7 +164,7 @@ func fieldError(args FieldArgs) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(args.Error)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 56, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 55, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -664,7 +663,7 @@ func TextArea(args TextAreaArgs) templ.Component {
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(args.Value)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 149, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 148, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -781,7 +780,7 @@ func Select(args SelectArgs) templ.Component {
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 171, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 170, Col: 75}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 				if templ_7745c5c3_Err != nil {
@@ -927,7 +926,7 @@ func Checkbox(args CheckboxArgs) templ.Component {
 		var templ_7745c5c3_Var32 string
 		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(args.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 195, Col: 66}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 194, Col: 66}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 		if templ_7745c5c3_Err != nil {
@@ -945,7 +944,7 @@ func Checkbox(args CheckboxArgs) templ.Component {
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(args.Error)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 197, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 196, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
@@ -1028,7 +1027,7 @@ func RadioGroup(args RadioGroupArgs) templ.Component {
 		var templ_7745c5c3_Var36 string
 		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(args.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 219, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 218, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 		if templ_7745c5c3_Err != nil {
@@ -1117,7 +1116,7 @@ func RadioGroup(args RadioGroupArgs) templ.Component {
 			var templ_7745c5c3_Var38 string
 			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 243, Col: 33}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 242, Col: 33}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 			if templ_7745c5c3_Err != nil {
@@ -1136,7 +1135,7 @@ func RadioGroup(args RadioGroupArgs) templ.Component {
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(args.Error)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 247, Col: 48}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 246, Col: 48}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {
@@ -1589,7 +1588,10 @@ func TextRepeatWithAutocomplete(args TextRepeatWithAutocompleteArgs) templ.Compo
 	})
 }
 
-type Option = form.SelectOption
+type Option = struct {
+	Label string
+	Value string
+}
 
 type SelectRepeatArgs struct {
 	FieldArgs
@@ -1699,7 +1701,7 @@ func SelectRepeat(args SelectRepeatArgs) templ.Component {
 					var templ_7745c5c3_Var51 string
 					templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 389, Col: 69}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 391, Col: 69}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 					if templ_7745c5c3_Err != nil {
@@ -1782,7 +1784,7 @@ func SelectRepeat(args SelectRepeatArgs) templ.Component {
 				var templ_7745c5c3_Var53 string
 				templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 409, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 411, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 				if templ_7745c5c3_Err != nil {
@@ -1976,7 +1978,7 @@ func Tags(args TagsArgs) templ.Component {
 			var templ_7745c5c3_Var59 string
 			templ_7745c5c3_Var59, templ_7745c5c3_Err = templ.JoinStringErrs(args.jsonValue())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 464, Col: 115}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 466, Col: 115}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var59))
 			if templ_7745c5c3_Err != nil {

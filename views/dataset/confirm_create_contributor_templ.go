@@ -16,7 +16,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
-	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+	"github.com/ugent-library/biblio-backoffice/views/contributor"
 	"github.com/ugent-library/biblio-backoffice/views/form"
 	"github.com/ugent-library/okay"
 )

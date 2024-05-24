@@ -8,7 +8,6 @@ import (
 	"net/url"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 )
@@ -24,7 +23,7 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
 		c.Log.Warnw("preview candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		render.BadRequest(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 

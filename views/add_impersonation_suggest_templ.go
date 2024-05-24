@@ -13,7 +13,7 @@ import "bytes"
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+	"github.com/ugent-library/biblio-backoffice/views/contributor"
 )
 
 func AddImpersonationSuggest(c *ctx.Ctx, firstName string, lastName string, hits []*models.Person) templ.Component {

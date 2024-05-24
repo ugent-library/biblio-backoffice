@@ -3,7 +3,6 @@ package datasetcreating
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strings"
 
@@ -12,12 +11,10 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/render"
-	"github.com/ugent-library/biblio-backoffice/render/flash"
-	"github.com/ugent-library/biblio-backoffice/render/form"
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	datasetpages "github.com/ugent-library/biblio-backoffice/views/dataset/pages"
+	"github.com/ugent-library/biblio-backoffice/views/flash"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
@@ -96,7 +93,7 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 	b := BindImport{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
 		c.Log.Warnw("add import dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		render.BadRequest(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest)
 		return
 	}
 
@@ -111,7 +108,7 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 			flash := flash.SimpleFlash().
 				WithLevel("error").
 				WithTitle("Failed to save draft").
-				WithBody(template.HTML(c.Loc.Get("dataset.single_import.import_by_id.import_failed")))
+				WithBody(c.Loc.Get("dataset.single_import.import_by_id.import_failed"))
 
 			c.Flash = append(c.Flash, *flash)
 
@@ -141,7 +138,7 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 		datasetpages.AddIdentifier(c, datasetpages.AddIdentifierArgs{
 			Source:     b.Source,
 			Identifier: b.Identifier,
-			Errors:     form.Errors(localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors))),
+			Errors:     localize.ValidationErrors(c.Loc, validationErrs.(*okay.Errors)),
 		}).Render(r.Context(), w)
 		return
 	}
@@ -179,7 +176,7 @@ func AddSaveDraft(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	flash := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody(template.HTML("<p>Dataset successfully saved as a draft.</p>"))
+		WithBody("<p>Dataset successfully saved as a draft.</p>")
 
 	c.PersistFlash(w, *flash)
 
@@ -198,7 +195,7 @@ func AddPublish(w http.ResponseWriter, r *http.Request) {
 	dataset.Status = "public"
 
 	if err := dataset.Validate(); err != nil {
-		errors := form.Errors(localize.ValidationErrors(c.Loc, err.(*okay.Errors)))
+		errors := localize.ValidationErrors(c.Loc, err.(*okay.Errors))
 		views.ShowModal(views.FormErrorsDialog("Unable to publish this dataset due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}

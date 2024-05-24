@@ -13,7 +13,6 @@ import "bytes"
 import (
 	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/helpers"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -431,7 +430,7 @@ func DetailsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 			if p.UsesPage() {
 				templ_7745c5c3_Err = display.Field(display.FieldArgs{
 					Label: c.Loc.Get("builder.pages"),
-					Value: helpers.FormatRange(p.PageFirst, p.PageLast)}).Render(ctx, templ_7745c5c3_Buffer)
+					Value: display.Range(p.PageFirst, p.PageLast)}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+	"github.com/ugent-library/biblio-backoffice/views/contributor"
 )
 
 type AddContributorSuggestArgs struct {
@@ -38,52 +38,46 @@ func AddContributorSuggest(c *ctx.Ctx, args AddContributorSuggestArgs) templ.Com
 		}
 		ctx = templ.ClearChildren(ctx)
 		if args.Contributor.FirstName() != "" || args.Contributor.LastName() != "" {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h3 class=\"mt-6\">Search results</h3><ul class=\"list-group\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h3 class=\"mt-6\">Search results</h3><ul class=\"list-group\"><li class=\"list-group-item\"><div class=\"list-group-item-inner\"><div class=\"list-group-item-main\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if args.Contributor.FirstName() != "" && args.Contributor.LastName() != "" {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item\"><div class=\"list-group-item-inner\"><div class=\"list-group-item-main\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = contributorviews.SuggestSummary(c, args.Contributor, false).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"c-button-toolbar\"><button class=\"btn btn-secondary\" hx-get=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("dataset_confirm_create_contributor", "id", args.Dataset.ID, "role", args.Role).String()))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-vals=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf(`{"first_name": "%s", "last_name": "%s"}`, args.Contributor.FirstName(), args.Contributor.LastName())))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\"><span class=\"btn-text\">Add external ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var2 string
-				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.contributor.role." + args.Role))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/add_contributor_suggest.templ`, Line: 33, Col: 94}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <i class=\"if if-arrow-right\"></i></button></div></div></li>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
+			templ_7745c5c3_Err = contributorviews.SuggestSummary(c, args.Contributor, false).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"c-button-toolbar\"><button class=\"btn btn-secondary\" hx-get=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.PathTo("dataset_confirm_create_contributor", "id", args.Dataset.ID, "role", args.Role).String()))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-vals=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf(`{"first_name": "%s", "last_name": "%s"}`, args.Contributor.FirstName(), args.Contributor.LastName())))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\"><span class=\"btn-text\">Add external ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var2 string
+			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.contributor.role." + args.Role))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/add_contributor_suggest.templ`, Line: 32, Col: 93}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <i class=\"if if-arrow-right\"></i></button></div></div></li>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
 			}
 			if len(args.Hits) > 0 {
 				for _, hit := range args.Hits {
@@ -118,7 +112,7 @@ func AddContributorSuggest(c *ctx.Ctx, args AddContributorSuggestArgs) templ.Com
 					var templ_7745c5c3_Var3 string
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.contributor.role." + args.Role))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/add_contributor_suggest.templ`, Line: 54, Col: 88}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/add_contributor_suggest.templ`, Line: 52, Col: 88}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
@@ -147,7 +141,7 @@ func AddContributorSuggest(c *ctx.Ctx, args AddContributorSuggestArgs) templ.Com
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.contributor.role." + args.Role))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/add_contributor_suggest.templ`, Line: 82, Col: 100}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/add_contributor_suggest.templ`, Line: 80, Col: 100}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {

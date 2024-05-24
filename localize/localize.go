@@ -2,7 +2,7 @@ package localize
 
 import (
 	"github.com/leonelquinteros/gotext"
-	"github.com/ugent-library/biblio-backoffice/render/form"
+	"github.com/ugent-library/biblio-backoffice/views/form"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/okay"
 	"golang.org/x/text/language"
@@ -52,10 +52,10 @@ func LanguageNames(codes []string) []string {
 	return names
 }
 
-func ClassificationSelectOptions(loc *gotext.Locale, vals []string) []form.SelectOption {
-	opts := make([]form.SelectOption, len(vals))
+func ClassificationSelectOptions(loc *gotext.Locale, vals []string) []form.Option {
+	opts := make([]form.Option, len(vals))
 	for i, v := range vals {
-		opts[i] = form.SelectOption{
+		opts[i] = form.Option{
 			Value: v,
 			Label: loc.Get("publication_classifications." + v),
 		}
@@ -63,8 +63,8 @@ func ClassificationSelectOptions(loc *gotext.Locale, vals []string) []form.Selec
 	return opts
 }
 
-func ResearchFieldOptions(loc *gotext.Locale) []form.SelectOption {
-	opts := make([]form.SelectOption, len(vocabularies.Map["research_fields"]))
+func ResearchFieldOptions(loc *gotext.Locale) []form.Option {
+	opts := make([]form.Option, len(vocabularies.Map["research_fields"]))
 	for i, v := range vocabularies.Map["research_fields"] {
 		opts[i].Label = v
 		opts[i].Value = v
@@ -72,16 +72,16 @@ func ResearchFieldOptions(loc *gotext.Locale) []form.SelectOption {
 	return opts
 }
 
-func LanguageSelectOptions() []form.SelectOption {
+func LanguageSelectOptions() []form.Option {
 	vals, ok := vocabularies.Map["language_codes"]
 	if !ok {
 		return nil
 	}
 
-	opts := make([]form.SelectOption, len(vals))
+	opts := make([]form.Option, len(vals))
 
 	for i, v := range vals {
-		opts[i] = form.SelectOption{
+		opts[i] = form.Option{
 			Value: v,
 			Label: LanguageName(v),
 		}
@@ -90,16 +90,16 @@ func LanguageSelectOptions() []form.SelectOption {
 	return opts
 }
 
-func VocabularySelectOptions(loc *gotext.Locale, key string) []form.SelectOption {
+func VocabularySelectOptions(loc *gotext.Locale, key string) []form.Option {
 	vals, ok := vocabularies.Map[key]
 	if !ok {
 		return nil
 	}
 
-	opts := make([]form.SelectOption, len(vals))
+	opts := make([]form.Option, len(vals))
 
 	for i, v := range vals {
-		opts[i] = form.SelectOption{
+		opts[i] = form.Option{
 			Value: v,
 			Label: loc.Get(key + "." + v),
 		}

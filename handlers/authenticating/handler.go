@@ -7,10 +7,9 @@ import (
 	"slices"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
-	"github.com/ugent-library/biblio-backoffice/handlers"
-	"github.com/ugent-library/biblio-backoffice/render"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/oidc"
 )
 
@@ -51,9 +50,9 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.Values[handlers.UserIDKey] = user.ID
-	if _, ok := session.Values[handlers.UserRoleKey]; !ok {
-		session.Values[handlers.UserRoleKey] = "user"
+	session.Values[ctx.UserIDKey] = user.ID
+	if _, ok := session.Values[ctx.UserRoleKey]; !ok {
+		session.Values[ctx.UserRoleKey] = "user"
 	}
 
 	if err := session.Save(r, w); err != nil {
@@ -84,9 +83,9 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// only remember user role
-	delete(session.Values, handlers.UserIDKey)
-	delete(session.Values, handlers.OriginalUserIDKey)
-	delete(session.Values, handlers.OriginalUserRoleKey)
+	delete(session.Values, ctx.UserIDKey)
+	delete(session.Values, ctx.OriginalUserIDKey)
+	delete(session.Values, ctx.OriginalUserRoleKey)
 	if err := session.Save(r, w); err != nil {
 		c.Log.Errorw("authentication: session could not be saved:", "errors", err)
 		c.HandleError(w, r, err)
@@ -102,7 +101,7 @@ func UpdateRole(w http.ResponseWriter, r *http.Request) {
 	role := bind.PathValue(r, "role")
 
 	if !slices.Contains(vocabularies.Map["user_roles"], role) {
-		render.BadRequest(w, r, fmt.Errorf("%s is not a valid role", role))
+		c.HandleError(w, r, fmt.Errorf("%w: %s is not a valid role", httperror.BadRequest, role))
 		return
 	}
 
@@ -113,7 +112,7 @@ func UpdateRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session.Values[handlers.UserRoleKey] = role
+	session.Values[ctx.UserRoleKey] = role
 
 	if err := session.Save(r, w); err != nil {
 		c.Log.Errorw("authentication: session could not be saved:", "errors", err)
