@@ -117,7 +117,7 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.SearchHits, err
 		if len(preIncludeFields) > 0 {
 			facetValues, err := di.getScopedFacetValues(preIncludeFields...)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("datasetindex.Search: %w", err)
 			}
 			for field, values := range facetValues {
 				if len(values) == 0 {
@@ -156,7 +156,7 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.SearchHits, err
 	// SEND QUERY TO ES
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("datasetindex.Search: %w", err)
 	}
 
 	opts := []func(*esapi.SearchRequest){
