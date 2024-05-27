@@ -162,10 +162,6 @@ var (
 )
 
 func (idx *Index) GetProjectByIdentifier(ctx context.Context, kind, value string) (*Project, error) {
-	return getByIdentifier(ctx, idx, Identifier{Kind: kind, Value: value})
-}
-
-func getByIdentifier(ctx context.Context, idx *Index, ident Identifier) (*Project, error) {
 	b := bytes.Buffer{}
 	err := identifierTmpl.Execute(&b, struct {
 		Limit      int
@@ -173,10 +169,10 @@ func getByIdentifier(ctx context.Context, idx *Index, ident Identifier) (*Projec
 		Identifier Identifier
 	}{
 		Limit:      1,
-		Identifier: ident,
+		Identifier: Identifier{Kind: kind, Value: value},
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("index.GetProjectByIdentifier: %w", err)
 	}
 
 	res, err := idx.client.Search(
@@ -186,28 +182,35 @@ func getByIdentifier(ctx context.Context, idx *Index, ident Identifier) (*Projec
 		idx.client.Search.WithBody(strings.NewReader(b.String())),
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("index.GetProjectByIdentifier: %w", err)
 	}
 
 	resBody := searchResponseBody[*Project]{}
 	if err := decodeResponseBody(res, &resBody); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("index.GetProjectByIdentifier: %w", err)
 	}
 
 	if len(resBody.Hits.Hits) != 1 {
-		return nil, models.ErrNotFound
+		return nil, fmt.Errorf("index.GetProjectByIdentifier: %w", models.ErrNotFound)
 	}
 
 	return resBody.Hits.Hits[0].Source.Record, nil
-
 }
 
 func (idx *Index) SearchProjects(ctx context.Context, params SearchParams) (*SearchResults[*Project], error) {
-	return search(ctx, idx, queryStringTmpl, params, "_score:desc")
+	results, err := search(ctx, idx, queryStringTmpl, params, "_score:desc")
+	if err != nil {
+		return nil, fmt.Errorf("index.SearchProjects: %w", err)
+	}
+	return results, nil
 }
 
 func (idx *Index) BrowseProjects(ctx context.Context, params SearchParams) (*SearchResults[*Project], error) {
-	return search(ctx, idx, browseNameTmpl, params, "sortName:asc")
+	results, err := search(ctx, idx, browseNameTmpl, params, "sortName:asc")
+	if err != nil {
+		return nil, fmt.Errorf("index.BrowseProjects: %w", err)
+	}
+	return results, nil
 }
 
 func search(ctx context.Context, idx *Index, tmpl *template.Template, params SearchParams, sort string) (*SearchResults[*Project], error) {
@@ -248,18 +251,14 @@ func search(ctx context.Context, idx *Index, tmpl *template.Template, params Sea
 }
 
 func (idx *Index) ReindexProjects(ctx context.Context, iter ProjectIter) error {
-	return reindex(ctx, idx, projectsIndexName, iter, toProjectDoc)
-}
-
-func reindex(ctx context.Context, idx *Index, indexName string, iter ProjectIter, docFn func(*Project) (string, []byte, error)) error {
-	b, err := indexSettingsFS.ReadFile(indexName + "_index_settings.json")
+	b, err := indexSettingsFS.ReadFile(projectsIndexName + "_index_settings.json")
 	if err != nil {
-		return err
+		return fmt.Errorf("index.ReindexProjects: %w", err)
 	}
 
 	switcher, err := index.NewSwitcher(idx.client, idx.prefix+projectsIndexName, string(b))
 	if err != nil {
-		return err
+		return fmt.Errorf("index.ReindexProjects: %w", err)
 	}
 
 	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
@@ -271,13 +270,13 @@ func reindex(ctx context.Context, idx *Index, indexName string, iter ProjectIter
 		},
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("index.ReindexProjects: %w", err)
 	}
 	defer bi.Close(ctx)
 
 	var indexErr error
 	err = iter(ctx, func(p *Project) bool {
-		docID, doc, err := docFn(p)
+		docID, doc, err := toProjectDoc(p)
 		if err != nil {
 			indexErr = err
 			return false
@@ -302,13 +301,17 @@ func reindex(ctx context.Context, idx *Index, indexName string, iter ProjectIter
 		return indexErr == nil
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("index.ReindexProjects: %w", err)
 	}
 	if indexErr != nil {
-		return indexErr
+		return fmt.Errorf("index.ReindexProjects: %w", indexErr)
 	}
 
-	return switcher.Switch(ctx, idx.retention)
+	if err := switcher.Switch(ctx, idx.retention); err != nil {
+		return fmt.Errorf("index.ReindexProjects: %w", err)
+	}
+
+	return nil
 }
 
 type projectDoc struct {

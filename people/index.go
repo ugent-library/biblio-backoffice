@@ -264,22 +264,28 @@ func search[T any](ctx context.Context, idx *Index, indexName, method string, tm
 }
 
 func (idx *Index) ReindexOrganizations(ctx context.Context, iter Iter[*Organization]) error {
-	return reindex(ctx, idx, organizationsIndexName, "ReindexOrganizations", iter, toOrganizationDoc)
+	if err := reindex(ctx, idx, organizationsIndexName, iter, toOrganizationDoc); err != nil {
+		return fmt.Errorf("index.ReindexOrganizations: %w", err)
+	}
+	return nil
 }
 
 func (idx *Index) ReindexPeople(ctx context.Context, iter Iter[*Person]) error {
-	return reindex(ctx, idx, peopleIndexName, "ReindexPeople", iter, toPersonDoc)
+	if err := reindex(ctx, idx, peopleIndexName, iter, toPersonDoc); err != nil {
+		return fmt.Errorf("index.ReindexPeople: %w", err)
+	}
+	return nil
 }
 
-func reindex[T any](ctx context.Context, idx *Index, indexName, method string, iter Iter[T], docFn func(T) (string, []byte, error)) error {
+func reindex[T any](ctx context.Context, idx *Index, indexName string, iter Iter[T], docFn func(T) (string, []byte, error)) error {
 	b, err := indexSettingsFS.ReadFile(indexName + "_index_settings.json")
 	if err != nil {
-		return fmt.Errorf("index.%s: %w", method, err)
+		return err
 	}
 
 	switcher, err := index.NewSwitcher(idx.client, idx.prefix+indexName, string(b))
 	if err != nil {
-		return fmt.Errorf("index.%s: %w", method, err)
+		return err
 	}
 
 	bi, err := esutil.NewBulkIndexer(esutil.BulkIndexerConfig{
@@ -291,7 +297,7 @@ func reindex[T any](ctx context.Context, idx *Index, indexName, method string, i
 		},
 	})
 	if err != nil {
-		return fmt.Errorf("index.%s: %w", method, err)
+		return err
 	}
 	defer bi.Close(ctx)
 
@@ -322,10 +328,10 @@ func reindex[T any](ctx context.Context, idx *Index, indexName, method string, i
 		return indexErr == nil
 	})
 	if err != nil {
-		return fmt.Errorf("index.%s: %w", method, err)
+		return err
 	}
 	if indexErr != nil {
-		return fmt.Errorf("index.%s: %w", method, indexErr)
+		return indexErr
 	}
 
 	return switcher.Switch(ctx, idx.retention)
