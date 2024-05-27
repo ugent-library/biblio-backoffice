@@ -2,6 +2,7 @@ package projects
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"slices"
 
@@ -28,8 +29,8 @@ func NewRepo(c RepoConfig) (*Repo, error) {
 
 func (r *Repo) GetProjectByIdentifier(ctx context.Context, kind, value string) (*Project, error) {
 	row, err := getProjectByIdentifier(ctx, r.conn, kind, value)
-	if err == pgx.ErrNoRows {
-		return nil, fmt.Errorf("index.GetProjectByIdentifier: %w", models.ErrNotFound)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, fmt.Errorf("repo.GetProjectByIdentifier: %w", models.ErrNotFound)
 	}
 	if err != nil {
 		return nil, err
@@ -40,7 +41,7 @@ func (r *Repo) GetProjectByIdentifier(ctx context.Context, kind, value string) (
 func (r *Repo) EachProject(ctx context.Context, fn func(*Project) bool) error {
 	rows, err := r.conn.Query(ctx, getAllProjectsQuery)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.EachProject: %w", err)
 	}
 	defer rows.Close()
 
@@ -59,11 +60,15 @@ func (r *Repo) EachProject(ctx context.Context, fn func(*Project) bool) error {
 			&r.CreatedAt,
 			&r.UpdatedAt,
 		); err != nil {
-			return nil
+			return fmt.Errorf("repo.EachProject: %w", err)
 		}
 		if ok := fn(r.toProject()); !ok {
 			break
 		}
+	}
+
+	if err := rows.Err(); err != nil {
+		return fmt.Errorf("repo.EachProject: %w", err)
 	}
 
 	return rows.Err()
@@ -73,7 +78,7 @@ func (r *Repo) CountProjects(ctx context.Context) (int64, error) {
 	var count int64
 	err := r.conn.QueryRow(ctx, "SELECT COUNT(*) FROM projects").Scan(&count)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("repo.CountProjects: %w", err)
 	}
 	return count, nil
 }
@@ -81,17 +86,17 @@ func (r *Repo) CountProjects(ctx context.Context) (int64, error) {
 func (r *Repo) ImportProject(ctx context.Context, p ImportProjectParams) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.ImportProject: %w", err)
 	}
 	defer tx.Rollback(ctx)
 
 	for _, ident := range p.Identifiers {
 		_, err := getProjectByIdentifier(ctx, tx, ident.Kind, ident.Value)
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			continue
 		}
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.ImportProject: %w", err)
 		}
 
 		return &DuplicateError{ident.String()}
@@ -103,16 +108,20 @@ func (r *Repo) ImportProject(ctx context.Context, p ImportProjectParams) error {
 
 	err = insertProject(ctx, tx, p)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.ImportProject: %w", err)
 	}
 
-	return tx.Commit(ctx)
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("repo.ImportProject: %w", err)
+	}
+
+	return nil
 }
 
 func (r *Repo) AddProject(ctx context.Context, p AddProjectParams) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.AddProject: %w", err)
 	}
 	defer tx.Rollback(ctx)
 
@@ -120,12 +129,11 @@ func (r *Repo) AddProject(ctx context.Context, p AddProjectParams) error {
 
 	for _, ident := range p.Identifiers {
 		row, err := getProjectByIdentifier(ctx, tx, ident.Kind, ident.Value)
-		if err != nil && err != pgx.ErrNoRows {
-			return err
-		}
-
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			continue
+		}
+		if err != nil {
+			return fmt.Errorf("repo.AddProject: %w", err)
 		}
 
 		if !rows.Has(row.ID) {
@@ -146,32 +154,38 @@ func (r *Repo) AddProject(ctx context.Context, p AddProjectParams) error {
 			p.Identifiers = append(p.Identifiers, newID())
 		}
 		if _, err := createProject(ctx, tx, p); err != nil {
-			return err
+			return fmt.Errorf("repo.AddProject: %w", err)
 		}
 	case 1:
 		p = transferValues(rows, p)
 		if err := updateProject(ctx, tx, rows[0].ID, p); err != nil {
-			return err
+			return fmt.Errorf("repo.AddProject: %w", err)
 		}
 	default:
 		p = transferValues(rows, p)
 		id, err := createProject(ctx, tx, p)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.AddProject: %w", err)
 		}
 		for _, row := range rows {
 			if err := setProjectReplacedBy(ctx, tx, row.ID, id); err != nil {
-				return err
+				return fmt.Errorf("repo.AddProject: %w", err)
 			}
 		}
 	}
 
-	return tx.Commit(ctx)
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("repo.AddProject: %w", err)
+	}
+
+	return nil
 }
 
 func (r *Repo) SetProjectPublicationCount(ctx context.Context, idKind, idValue string, n int) error {
-	_, err := r.conn.Exec(ctx, setProjectPublicationCountQuery, idKind, idValue, n)
-	return err
+	if _, err := r.conn.Exec(ctx, setProjectPublicationCountQuery, idKind, idValue, n); err != nil {
+		return fmt.Errorf("repo.SetProjectPublicationCount: %w", err)
+	}
+	return nil
 }
 
 func newID() Identifier {

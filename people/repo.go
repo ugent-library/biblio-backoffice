@@ -391,11 +391,11 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 
 	for _, id := range params.Identifiers {
 		row, err := getPersonByIdentifier(ctx, tx, id.Kind, id.Value)
-		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
-			return fmt.Errorf("repo.AddPerson: %w", err)
-		}
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			continue
+		}
+		if err != nil {
+			return fmt.Errorf("repo.AddPerson: %w", err)
 		}
 
 		if !slices.ContainsFunc(rows, func(r *personRow) bool { return r.ID == row.ID }) {
