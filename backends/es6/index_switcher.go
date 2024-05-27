@@ -31,17 +31,17 @@ func newIndexSwitcher[T any](client *elasticsearch.Client, alias, settings strin
 	body := strings.NewReader(settings)
 	res, err := client.Indices.Create(index, client.Indices.Create.WithBody(body))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("es6.newIndexSwitcher: failed to create es6 index %s: %w", index, err)
 	}
 	if res.IsError() {
 		// TODO read res body
-		return nil, fmt.Errorf("%+v", res)
+		return nil, fmt.Errorf("es6.newIndexSwitcher: failed to create es6 index %s: %+v", index, res)
 	}
 
 	// TODO the default settings of the bulk indexer are not very efficient for this use case
 	bi, err := newBulkIndexer(client, index, docFn, config)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("es6.newIndexSwitcher: failed to create new bulk indexer %s: %w", index, err)
 	}
 
 	return &indexSwitcher[T]{
@@ -59,7 +59,7 @@ func (is *indexSwitcher[T]) Index(ctx context.Context, t T) error {
 
 func (is *indexSwitcher[T]) Switch(ctx context.Context) error {
 	if err := is.bi.Close(ctx); err != nil {
-		return err
+		return fmt.Errorf("indexswitcher.Switch: failed to close bulk indexer for index %s: %w", is.index, err)
 	}
 
 	actions := []map[string]any{
@@ -73,7 +73,7 @@ func (is *indexSwitcher[T]) Switch(ctx context.Context) error {
 
 	oldIndexes, err := is.oldIndexes(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("indexswitcher.Switch: %w", err)
 	}
 
 	for i, idx := range oldIndexes {
@@ -95,16 +95,16 @@ func (is *indexSwitcher[T]) Switch(ctx context.Context) error {
 
 	body, err := json.Marshal(map[string]any{"actions": actions})
 	if err != nil {
-		return err
+		return fmt.Errorf("indexswitcher.Switch: %w", err)
 	}
 	req := esapi.IndicesUpdateAliasesRequest{Body: bytes.NewReader(body)}
 	res, err := req.Do(ctx, is.client)
 	if err != nil {
-		return err
+		return fmt.Errorf("indexswitcher.Switch: es6 http error: %w", err)
 	}
 	if res.IsError() {
 		// TODO read res body
-		return fmt.Errorf("%+v", res)
+		return fmt.Errorf("indexswitcher.Switch: es6 error: %+v", res)
 	}
 
 	return nil
@@ -116,18 +116,18 @@ func (is *indexSwitcher[T]) oldIndexes(ctx context.Context) ([]string, error) {
 	}
 	res, err := req.Do(ctx, is.client)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("indexswitcher.oldIndexes: es6 http error: %w", err)
 	}
 	defer res.Body.Close()
 
 	if res.IsError() {
 		// TODO read res body
-		return nil, fmt.Errorf("%+v", res)
+		return nil, fmt.Errorf("indexswitcher.oldIndexes: es6 error: %+v", res)
 	}
 
 	indexes := []struct{ Index string }{}
 	if err := json.NewDecoder(res.Body).Decode(&indexes); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("indexswitcher.oldIndexes: %w", err)
 	}
 
 	r := regexp.MustCompile(`^` + is.alias + `_[0-9]+$`)

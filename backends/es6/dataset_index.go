@@ -171,20 +171,20 @@ func (di *DatasetIndex) Search(args *models.SearchArgs) (*models.SearchHits, err
 
 	err := di.searchWithOpts(opts, func(r io.ReadCloser) error {
 		if err := json.NewDecoder(r).Decode(&res); err != nil {
-			return fmt.Errorf("error parsing the response body")
+			return fmt.Errorf("datasetindex.Search: failed to parse es6 response body: %w", err)
 		}
 
 		return nil
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("datasetindex.Search: %w", err)
 	}
 
 	// READ RESPONSE FROM ES
 	hits, err := decodeDatasetRes(&res, args.Facets)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("datasetindex.Search: failed to parse es6 response body: %w", err)
 	}
 
 	hits.Limit = args.Limit()
@@ -216,7 +216,7 @@ func (di *DatasetIndex) getScopedFacetValues(fields ...string) (map[string][]str
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(req); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("datasetindex.getScopedFacetValues: %w", err)
 	}
 
 	opts := []func(*esapi.SearchRequest){
@@ -229,12 +229,12 @@ func (di *DatasetIndex) getScopedFacetValues(fields ...string) (map[string][]str
 	var res map[string]any
 	err := di.searchWithOpts(opts, func(r io.ReadCloser) error {
 		if err := json.NewDecoder(r).Decode(&res); err != nil {
-			return fmt.Errorf("error parsing the response body")
+			return fmt.Errorf("datasetindex.getScopedFacetValues: failed to parse es6 response body: %w", err)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("datasetindex.getScopedFacetValues: %w", err)
 	}
 
 	m := map[string][]string{}
@@ -296,7 +296,7 @@ func (di *DatasetIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func
 
 		var buf bytes.Buffer
 		if err := json.NewEncoder(&buf).Encode(query); err != nil {
-			return err
+			return fmt.Errorf("datasetindex.Each: failed to encode json body: %w", err)
 		}
 
 		opts := []func(*esapi.SearchRequest){
@@ -311,19 +311,19 @@ func (di *DatasetIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb func
 
 		err := di.searchWithOpts(opts, func(r io.ReadCloser) error {
 			if err := json.NewDecoder(r).Decode(&res); err != nil {
-				return fmt.Errorf("error parsing the response body")
+				return fmt.Errorf("datasetindex.Each: failed to parse es6 response body: %w", err)
 			}
 
 			return nil
 		})
 
 		if err != nil {
-			return err
+			return fmt.Errorf("datasetindex.Each: %w", err)
 		}
 
 		hits, err := decodeDatasetRes(&res, []string{})
 		if err != nil {
-			return err
+			return fmt.Errorf("datasetindex.Each: failed to decode es6 response body: %w", err)
 		}
 
 		if len(hits.Hits) == 0 {
@@ -355,16 +355,16 @@ func (di *DatasetIndex) Delete(id string) error {
 		DocumentID: id,
 	}.Do(ctx, di.client)
 	if err != nil {
-		return err
+		return fmt.Errorf("datasetindex.Delete: es6 http error: %w", err)
 	}
 	defer res.Body.Close()
 
 	if res.IsError() {
 		buf := &bytes.Buffer{}
 		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
+			return fmt.Errorf("datasetindex.Delete: io error while reading es6 error response body: %w", err)
 		}
-		return errors.New("Es6 error response: " + buf.String())
+		return errors.New("datasetindex.Delete: es6 error response: " + buf.String())
 	}
 
 	return nil
@@ -382,16 +382,16 @@ func (di *DatasetIndex) DeleteAll() error {
 	}
 	res, err := req.Do(ctx, di.client)
 	if err != nil {
-		return err
+		return fmt.Errorf("datasetindex.DeleteAll: es6 http error: %w", err)
 	}
 	defer res.Body.Close()
 
 	if res.IsError() {
 		buf := &bytes.Buffer{}
 		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
+			return fmt.Errorf("datasetindex.DeleteAll: io error while reading es6 error response body: %w", err)
 		}
-		return errors.New("Es6 error response: " + buf.String())
+		return errors.New("datasetindex.DeleteAll: es6 error response: " + buf.String())
 	}
 
 	return nil
@@ -417,7 +417,7 @@ func (di *DatasetIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn fun
 	res, err := di.client.Search(opts...)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("datasetindex.searchWithOpts: es6 http error: %w", err)
 	}
 
 	defer res.Body.Close()
@@ -425,9 +425,9 @@ func (di *DatasetIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn fun
 	if res.IsError() {
 		buf := &bytes.Buffer{}
 		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
+			return fmt.Errorf("datasetindex.searchWithOpts: io error while reading es6 error response body: %w", err)
 		}
-		return errors.New("Es6 error response: " + buf.String())
+		return errors.New("datasetindex.searchWithOpts: es6 error response: " + buf.String())
 	}
 
 	return fn(res.Body)

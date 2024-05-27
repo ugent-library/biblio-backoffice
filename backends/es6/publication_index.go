@@ -153,7 +153,7 @@ func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.SearchHits,
 	// SEND QUERY TO ES
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("publicationindex.Search: %w", err)
 	}
 
 	opts := []func(*esapi.SearchRequest){
@@ -168,20 +168,20 @@ func (pi *PublicationIndex) Search(args *models.SearchArgs) (*models.SearchHits,
 
 	err := pi.searchWithOpts(opts, func(r io.ReadCloser) error {
 		if err := json.NewDecoder(r).Decode(&res); err != nil {
-			return fmt.Errorf("error parsing the response body")
+			return fmt.Errorf("publicationindex.Search: failed to parse es6 response body: %w", err)
 		}
 
 		return nil
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("publicationindex.Search: %w", err)
 	}
 
 	// READ RESPONSE FROM ES
 	hits, err := decodePublicationRes(&res, args.Facets)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("publicationindex.Search: %w", err)
 	}
 
 	hits.Limit = args.Limit()
@@ -224,7 +224,7 @@ func (pi *PublicationIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb 
 
 		var buf bytes.Buffer
 		if err := json.NewEncoder(&buf).Encode(query); err != nil {
-			return err
+			return fmt.Errorf("publicationindex.Each: %w", err)
 		}
 
 		opts := []func(*esapi.SearchRequest){
@@ -239,19 +239,19 @@ func (pi *PublicationIndex) Each(searchArgs *models.SearchArgs, maxSize int, cb 
 
 		err := pi.searchWithOpts(opts, func(r io.ReadCloser) error {
 			if err := json.NewDecoder(r).Decode(&res); err != nil {
-				return fmt.Errorf("error parsing the response body")
+				return fmt.Errorf("publicationindex.Each: failed to parse es6 response body: %w", err)
 			}
 
 			return nil
 		})
 
 		if err != nil {
-			return err
+			return fmt.Errorf("publicationindex.Each: %w", err)
 		}
 
 		hits, err := decodePublicationRes(&res, []string{})
 		if err != nil {
-			return err
+			return fmt.Errorf("publicationindex.Each: %w", err)
 		}
 
 		if len(hits.Hits) == 0 {
@@ -283,16 +283,16 @@ func (pi *PublicationIndex) Delete(id string) error {
 		DocumentID: id,
 	}.Do(ctx, pi.client)
 	if err != nil {
-		return err
+		return fmt.Errorf("publicationindex.Delete: es6 http error: %w", err)
 	}
 	defer res.Body.Close()
 
 	if res.IsError() {
 		buf := &bytes.Buffer{}
 		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
+			return fmt.Errorf("publicationindex.Delete: io error while reading es6 error response body: %w", err)
 		}
-		return errors.New("Es6 error response: " + buf.String())
+		return errors.New("publicationindex.Delete: es6 error response: " + buf.String())
 	}
 
 	return nil
@@ -310,16 +310,16 @@ func (pi *PublicationIndex) DeleteAll() error {
 	}
 	res, err := req.Do(ctx, pi.client)
 	if err != nil {
-		return err
+		return fmt.Errorf("publicationindex.DeleteAll: es6 http error: %w", err)
 	}
 	defer res.Body.Close()
 
 	if res.IsError() {
 		buf := &bytes.Buffer{}
 		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
+			return fmt.Errorf("publicationindex.DeleteAll: io error while reading es6 error response body: %w", err)
 		}
-		return errors.New("Es6 error response: " + buf.String())
+		return errors.New("publicationindex.DeleteAll: es6 error response: " + buf.String())
 	}
 
 	return nil
@@ -345,7 +345,7 @@ func (pi *PublicationIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn
 	res, err := pi.client.Search(opts...)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("publicationindex.searchWithOpts: %w", err)
 	}
 
 	defer res.Body.Close()
@@ -353,9 +353,9 @@ func (pi *PublicationIndex) searchWithOpts(opts []func(*esapi.SearchRequest), fn
 	if res.IsError() {
 		buf := &bytes.Buffer{}
 		if _, err := io.Copy(buf, res.Body); err != nil {
-			return err
+			return fmt.Errorf("publicationindex.searchWithOpts: io error while reading es6 error response body: %w", err)
 		}
-		return errors.New("Es6 error response: " + buf.String())
+		return errors.New("publicationindex.searchWithOpts: es6 error response: " + buf.String())
 	}
 
 	return fn(res.Body)
@@ -384,7 +384,7 @@ func (pi *PublicationIndex) getScopedFacetValues(fields ...string) (map[string][
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(req); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("publicationindex.getScopedFacetValues: %w", err)
 	}
 
 	opts := []func(*esapi.SearchRequest){
@@ -397,12 +397,12 @@ func (pi *PublicationIndex) getScopedFacetValues(fields ...string) (map[string][
 	var res map[string]any
 	err := pi.searchWithOpts(opts, func(r io.ReadCloser) error {
 		if err := json.NewDecoder(r).Decode(&res); err != nil {
-			return fmt.Errorf("error parsing the response body")
+			return fmt.Errorf("publicationindex.getScopedFacetValues: failed to parse es6 response body: %w", err)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("publicationindex.getScopedFacetValues: %w", err)
 	}
 
 	m := map[string][]string{}
