@@ -118,7 +118,7 @@ func (h *Handler) GetOrganization(w http.ResponseWriter, r *http.Request) {
 	}
 
 	o, err := h.PeopleIndex.GetOrganizationByIdentifier(r.Context(), ident.Kind, ident.Value)
-	if errors.Is(err, people.ErrNotFound) {
+	if errors.Is(err, models.ErrNotFound) {
 		http.NotFound(w, r)
 		return
 	}
@@ -140,7 +140,7 @@ func (h *Handler) GetPerson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p, err := h.PeopleIndex.GetPersonByIdentifier(r.Context(), ident.Kind, ident.Value)
-	if errors.Is(err, people.ErrNotFound) {
+	if errors.Is(err, models.ErrNotFound) {
 		http.NotFound(w, r)
 		return
 	}
@@ -166,7 +166,7 @@ func (h *Handler) GetPeople(w http.ResponseWriter, r *http.Request) {
 		}
 
 		p, err := h.PeopleIndex.GetPersonByIdentifier(r.Context(), ident.Kind, ident.Value)
-		if errors.Is(err, people.ErrNotFound) {
+		if errors.Is(err, models.ErrNotFound) {
 			h.Log.Warnf("unable to find person with identifier %s", ident.String())
 			continue
 		}
@@ -192,7 +192,7 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 	p, err := h.PeopleRepo.GetActivePersonByIdentifier(r.Context(), ident.Kind, ident.Value)
 
-	if errors.Is(err, people.ErrNotFound) {
+	if errors.Is(err, models.ErrNotFound) {
 		http.NotFound(w, r)
 		return
 	}
@@ -207,7 +207,7 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 	p, err := h.PeopleRepo.GetActivePersonByUsername(r.Context(), bind.PathValue(r, "username"))
-	if errors.Is(err, people.ErrNotFound) {
+	if errors.Is(err, models.ErrNotFound) {
 		http.NotFound(w, r)
 		return
 	}
@@ -307,7 +307,7 @@ func (h *Handler) GetProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p, err := h.ProjectsIndex.GetProjectByIdentifier(r.Context(), ident.Kind, ident.Value)
-	if errors.Is(err, projects.ErrNotFound) {
+	if errors.Is(err, models.ErrNotFound) {
 		http.NotFound(w, r)
 		return
 	}

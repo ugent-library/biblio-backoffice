@@ -15,6 +15,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v6"
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/elastic/go-elasticsearch/v6/esutil"
+	"github.com/ugent-library/biblio-backoffice/models"
 	index "github.com/ugent-library/index/es6"
 )
 
@@ -194,7 +195,7 @@ func getByIdentifier(ctx context.Context, idx *Index, ident Identifier) (*Projec
 	}
 
 	if len(resBody.Hits.Hits) != 1 {
-		return nil, ErrNotFound
+		return nil, models.ErrNotFound
 	}
 
 	return resBody.Hits.Hits[0].Source.Record, nil

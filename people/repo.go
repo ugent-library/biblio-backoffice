@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/crypt"
 )
 
@@ -132,16 +133,16 @@ func (r *Repo) DeleteAllOrganizations(ctx context.Context) error {
 func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: %w", err)
 	}
 	defer tx.Rollback(ctx)
 
 	row, err := getOrganizationByIdentifier(ctx, tx, kind, value)
-	if err == pgx.ErrNoRows {
-		return nil, ErrNotFound
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: %w", models.ErrNotFound)
 	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: %w", err)
 	}
 
 	org := row.toOrganization()
@@ -149,7 +150,7 @@ func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value stri
 	if row.ParentID.Valid {
 		parentRows, err := tx.Query(ctx, getParentOrganizations, row.ParentID.Int64)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: %w", err)
 		}
 		defer parentRows.Close()
 		for parentRows.Next() {
@@ -162,14 +163,14 @@ func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value stri
 				&o.CreatedAt,
 				&o.UpdatedAt,
 			); err != nil {
-				return nil, err
+				return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: %w", err)
 			}
 			org.Parents = append(org.Parents, o.toParentOrganization())
 		}
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: %w", err)
 	}
 
 	return org, nil
@@ -179,45 +180,47 @@ func (r *Repo) CountPeople(ctx context.Context) (int64, error) {
 	var count int64
 	err := r.conn.QueryRow(ctx, "SELECT COUNT(*) FROM people").Scan(&count)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("repo.CountPeople: %w", err)
 	}
 	return count, nil
 }
 
 func (r *Repo) DeleteAllPeople(ctx context.Context) error {
-	_, err := r.conn.Exec(ctx, "TRUNCATE people CASCADE")
-	return err
+	if _, err := r.conn.Exec(ctx, "TRUNCATE people CASCADE"); err != nil {
+		return fmt.Errorf("repo.DeleteAllPeople: %w", err)
+	}
+	return nil
 }
 
 func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
 	row, err := getPersonByIdentifier(ctx, r.conn, kind, value)
-	if err == pgx.ErrNoRows {
-		return nil, ErrNotFound
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, fmt.Errorf("repo.GetPersonByIdentifier: %w", models.ErrNotFound)
 	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repo.GetPersonByIdentifier: %w", err)
 	}
 	return row.toPerson(r.tokenSecret)
 }
 
 func (r *Repo) GetActivePersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
 	row, err := getActivePersonByIdentifier(ctx, r.conn, kind, value)
-	if err == pgx.ErrNoRows {
-		return nil, ErrNotFound
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, fmt.Errorf("repo.GetActivePersonByIdentifier: %w", models.ErrNotFound)
 	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repo.GetActivePersonByIdentifier: %w", err)
 	}
 	return row.toPerson(r.tokenSecret)
 }
 
 func (r *Repo) GetActivePersonByUsername(ctx context.Context, username string) (*Person, error) {
 	row, err := getActivePersonByUsername(ctx, r.conn, username)
-	if err == pgx.ErrNoRows {
-		return nil, ErrNotFound
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, fmt.Errorf("repo.GetActivePersonByUsername: %w", models.ErrNotFound)
 	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("repo.GetActivePersonByUsername: %w", err)
 	}
 	return row.toPerson(r.tokenSecret)
 }
@@ -226,7 +229,7 @@ func (r *Repo) GetActivePersonByUsername(ctx context.Context, username string) (
 func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool) error {
 	rows, err := r.conn.Query(ctx, getAllOrganizationsQuery)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.EachOrganization: %w", err)
 	}
 	defer rows.Close()
 
@@ -243,7 +246,7 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 			&row.CreatedAt,
 			&row.UpdatedAt,
 		); err != nil {
-			return err
+			return fmt.Errorf("repo.EachOrganization: %w", err)
 		}
 
 		org := row.toOrganization()
@@ -251,7 +254,7 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 		if row.ParentID.Valid {
 			parentRows, err := r.conn.Query(ctx, getParentOrganizations, row.ParentID.Int64)
 			if err != nil {
-				return err
+				return fmt.Errorf("repo.EachOrganization: %w", err)
 			}
 			defer parentRows.Close()
 			for parentRows.Next() {
@@ -264,7 +267,7 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 					&o.CreatedAt,
 					&o.UpdatedAt,
 				); err != nil {
-					return err
+					return fmt.Errorf("repo.EachOrganization: %w", err)
 				}
 				org.Parents = append(org.Parents, o.toParentOrganization())
 			}
@@ -276,7 +279,7 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 	}
 
 	if err := rows.Err(); err != nil {
-		return err
+		return fmt.Errorf("repo.EachOrganization: %w", err)
 	}
 
 	return nil
@@ -286,7 +289,7 @@ func (r *Repo) EachOrganization(ctx context.Context, fn func(*Organization) bool
 func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 	rows, err := r.conn.Query(ctx, getAllPeopleQuery)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.EachPerson: %w", err)
 	}
 	defer rows.Close()
 
@@ -312,14 +315,14 @@ func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 			&pr.CreatedAt,
 			&pr.UpdatedAt,
 		); err != nil {
-			return err
+			return fmt.Errorf("repo.EachPerson: %w", err)
 		}
 
 		for _, orgID := range orgIDs {
 			var org *Organization
 			rows, err := r.conn.Query(ctx, getParentOrganizations, orgID)
 			if err != nil {
-				return err
+				return fmt.Errorf("repo.EachPerson: %w", err)
 			}
 			defer rows.Close()
 			for rows.Next() {
@@ -332,7 +335,7 @@ func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 					&o.CreatedAt,
 					&o.UpdatedAt,
 				); err != nil {
-					return err
+					return fmt.Errorf("repo.EachPerson: %w", err)
 				}
 				if org == nil {
 					org = o.toOrganization()
@@ -346,7 +349,7 @@ func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 
 		p, err := pr.toPerson(r.tokenSecret)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.EachPerson: %w", err)
 		}
 
 		if ok := fn(p); !ok {
@@ -354,7 +357,11 @@ func (r *Repo) EachPerson(ctx context.Context, fn func(*Person) bool) error {
 		}
 	}
 
-	return rows.Err()
+	if err := rows.Err(); err != nil {
+		return fmt.Errorf("repo.EachPerson: %w", err)
+	}
+
+	return nil
 }
 
 type AddPersonParams struct {
@@ -376,7 +383,7 @@ type AddPersonParams struct {
 func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("repo.AddPerson: %w", err)
 	}
 	defer tx.Rollback(ctx)
 
@@ -384,8 +391,8 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 
 	for _, id := range params.Identifiers {
 		row, err := getPersonByIdentifier(ctx, tx, id.Kind, id.Value)
-		if err != nil && err != pgx.ErrNoRows {
-			return err
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			return fmt.Errorf("repo.AddPerson: %w", err)
 		}
 		if err == pgx.ErrNoRows {
 			continue
@@ -409,27 +416,31 @@ func (r *Repo) AddPerson(ctx context.Context, params AddPersonParams) error {
 			params.Identifiers = append(params.Identifiers, newID())
 		}
 		if _, err := createPerson(ctx, tx, params); err != nil {
-			return err
+			return fmt.Errorf("repo.AddPerson: %w", err)
 		}
 	case 1:
 		params = transferValues(rows, params)
 		if err := updatePerson(ctx, tx, rows[0].ID, params); err != nil {
-			return err
+			return fmt.Errorf("repo.AddPerson: %w", err)
 		}
 	default:
 		params = transferValues(rows, params)
 		id, err := createPerson(ctx, tx, params)
 		if err != nil {
-			return err
+			return fmt.Errorf("repo.AddPerson: %w", err)
 		}
 		for _, row := range rows {
 			if err := setPersonReplacedBy(ctx, tx, row.ID, id); err != nil {
-				return err
+				return fmt.Errorf("repo.AddPerson: %w", err)
 			}
 		}
 	}
 
-	return tx.Commit(ctx)
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("repo.AddPerson: %w", err)
+	}
+
+	return nil
 }
 
 func (r *Repo) DeactivatePeople(ctx context.Context) error {
@@ -437,18 +448,24 @@ func (r *Repo) DeactivatePeople(ctx context.Context) error {
 		return nil
 	}
 	t := time.Now().Add(-r.deactivationPeriod)
-	_, err := r.conn.Exec(ctx, deactivatePeopleQuery, t)
-	return err
+	if _, err := r.conn.Exec(ctx, deactivatePeopleQuery, t); err != nil {
+		return fmt.Errorf("repo.DeactivatePeople: %w", err)
+	}
+	return nil
 }
 
 func (r *Repo) SetPersonPublicationCount(ctx context.Context, idKind, idValue string, n int) error {
-	_, err := r.conn.Exec(ctx, setPersonPublicationCountQuery, idKind, idValue, n)
-	return err
+	if _, err := r.conn.Exec(ctx, setPersonPublicationCountQuery, idKind, idValue, n); err != nil {
+		return fmt.Errorf("repo.SetPersonPublicationCount: %w", err)
+	}
+	return nil
 }
 
 func (r *Repo) SetPersonPreferredName(ctx context.Context, idKind, idValue, givenName, familyName string) error {
-	_, err := r.conn.Exec(ctx, setPersonPreferredNameQuery, idKind, idValue, givenName, familyName)
-	return err
+	if _, err := r.conn.Exec(ctx, setPersonPreferredNameQuery, idKind, idValue, givenName, familyName); err != nil {
+		return fmt.Errorf("repo.SetPersonPreferredName: %w", err)
+	}
+	return nil
 }
 
 func newID() Identifier {

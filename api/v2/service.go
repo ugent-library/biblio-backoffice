@@ -6,6 +6,7 @@ import (
 	"github.com/go-faster/errors"
 	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/backends"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/people"
 	"github.com/ugent-library/biblio-backoffice/projects"
 )
@@ -34,7 +35,7 @@ func (s *Service) IndexProjects(ctx context.Context) error {
 
 func (s *Service) GetOrganization(ctx context.Context, req *GetOrganizationRequest) (GetOrganizationRes, error) {
 	o, err := s.services.PeopleIndex.GetOrganizationByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
-	if errors.Is(err, people.ErrNotFound) {
+	if errors.Is(err, models.ErrNotFound) {
 		return nil, &ErrorStatusCode{
 			StatusCode: 404,
 			Response: Error{
@@ -53,7 +54,7 @@ func (s *Service) GetOrganization(ctx context.Context, req *GetOrganizationReque
 // TODO use index
 func (s *Service) GetPerson(ctx context.Context, req *GetPersonRequest) (GetPersonRes, error) {
 	p, err := s.services.PeopleIndex.GetPersonByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
-	if errors.Is(err, people.ErrNotFound) {
+	if errors.Is(err, models.ErrNotFound) {
 		return nil, &ErrorStatusCode{
 			StatusCode: 404,
 			Response: Error{
@@ -71,7 +72,7 @@ func (s *Service) GetPerson(ctx context.Context, req *GetPersonRequest) (GetPers
 
 func (s *Service) GetProject(ctx context.Context, req *GetProjectRequest) (GetProjectRes, error) {
 	p, err := s.services.ProjectsIndex.GetProjectByIdentifier(ctx, req.Identifier.Kind, req.Identifier.Value)
-	if errors.Is(err, projects.ErrNotFound) {
+	if errors.Is(err, models.ErrNotFound) {
 		return nil, &ErrorStatusCode{
 			StatusCode: 404,
 			Response: Error{

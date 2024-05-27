@@ -2,10 +2,12 @@ package projects
 
 import (
 	"context"
+	"fmt"
 	"slices"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 const idKind = "id"
@@ -27,7 +29,7 @@ func NewRepo(c RepoConfig) (*Repo, error) {
 func (r *Repo) GetProjectByIdentifier(ctx context.Context, kind, value string) (*Project, error) {
 	row, err := getProjectByIdentifier(ctx, r.conn, kind, value)
 	if err == pgx.ErrNoRows {
-		return nil, ErrNotFound
+		return nil, fmt.Errorf("index.GetProjectByIdentifier: %w", models.ErrNotFound)
 	}
 	if err != nil {
 		return nil, err

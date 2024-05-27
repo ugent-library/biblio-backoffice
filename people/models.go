@@ -2,13 +2,10 @@ package people
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
 )
-
-var ErrNotFound = errors.New("not found")
 
 type InvalidIdentifierError struct {
 	Identifier string
