@@ -48,7 +48,7 @@ func (r *Repo) ImportOrganizations(ctx context.Context, iter Iter[ImportOrganiza
 		// return error if identifier is already known
 		for _, ident := range o.Identifiers {
 			_, err := getOrganizationByIdentifier(ctx, tx, ident.Kind, ident.Value)
-			if err == pgx.ErrNoRows {
+			if errors.Is(err, pgx.ErrNoRows) {
 				continue
 			}
 			if err != nil {
