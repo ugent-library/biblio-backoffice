@@ -3,7 +3,6 @@ package candidaterecords
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 
@@ -22,8 +21,7 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("preview candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -36,14 +34,13 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	f := rec.Publication.GetFile(bind.PathValue(r, "file_id"))
 
 	if f == nil {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		c.HandleError(w, r, httperror.NotFound)
 		return
 	}
 
 	rc, err := c.FileStore.Get(r.Context(), f.SHA256)
 	if err != nil {
-		log.Printf("%+v", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 	defer rc.Close()
@@ -54,6 +51,4 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	)
 
 	io.Copy(w, rc)
-
-	fmt.Fprintf(w, "test")
 }

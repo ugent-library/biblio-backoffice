@@ -31,8 +31,7 @@ func AddDepartment(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := c.OrganizationSearchService.SuggestOrganizations("")
 	if err != nil {
-		c.Log.Errorw("add dataset department: could not suggest organization", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -50,8 +49,7 @@ func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := c.OrganizationSearchService.SuggestOrganizations(b.Query)
 	if err != nil {
-		c.Log.Errorw("add dataset department: could not suggest organization", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

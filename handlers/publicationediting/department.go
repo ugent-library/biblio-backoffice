@@ -31,8 +31,7 @@ func AddDepartment(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := c.OrganizationSearchService.SuggestOrganizations("")
 	if err != nil {
-		c.Log.Errorw("add publication department: could not suggest organization", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -44,15 +43,13 @@ func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
 
 	b := BindSuggestDepartments{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("suggest publication departments could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	hits, err := c.OrganizationSearchService.SuggestOrganizations(b.Query)
 	if err != nil {
-		c.Log.Errorw("add publication department: could not suggest organization", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -65,15 +62,13 @@ func CreateDepartment(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDepartment{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("create publication department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	org, err := c.OrganizationService.GetOrganization(b.DepartmentID)
 	if err != nil {
-		c.Log.Errorw("create publication department: could not find organization", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -90,8 +85,7 @@ func CreateDepartment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("create publication department: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -104,8 +98,7 @@ func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDeleteDepartment{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete publication department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -132,8 +125,7 @@ func DeleteDepartment(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteDepartment
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete publication department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -154,8 +146,7 @@ func DeleteDepartment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("delete publication department: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

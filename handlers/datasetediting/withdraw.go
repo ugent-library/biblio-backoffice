@@ -26,7 +26,6 @@ func Withdraw(w http.ResponseWriter, r *http.Request) {
 	dataset := ctx.GetDataset(r)
 
 	if !c.User.CanWithdrawDataset(dataset) {
-		c.Log.Warnw("withdraw dataset: user has no permission to withdraw", "dataset", dataset.ID, "user", c.User.ID)
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
@@ -51,8 +50,7 @@ func Withdraw(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("withdraw dataset: could not save the dataset:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

@@ -29,7 +29,6 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	publication := ctx.GetPublication(r)
 
 	if !c.User.CanDeletePublication(publication) {
-		c.Log.Warnw("delete publication: user is unauthorized", "publication", publication.ID, "user", c.User.ID)
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
@@ -48,8 +47,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("delete publication: Could not save the publication:", "errors", err, "publication", publication.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

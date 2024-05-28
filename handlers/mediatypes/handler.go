@@ -19,7 +19,6 @@ func Suggest(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := c.Services.MediaTypeSearchService.SuggestMediaTypes(query)
 	if err != nil {
-		c.Log.Errorw("suggest mediatype: could not suggest mediatypes:", "errors", err, "query", query, "user", c.User.ID)
 		c.HandleError(w, r, err)
 		return
 	}

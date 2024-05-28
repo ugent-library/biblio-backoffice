@@ -27,8 +27,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Request(r, searchArgs); err != nil {
-		c.Log.Warnw("publication search: could not bind search arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 	searchArgs.Cleanup()
@@ -53,17 +52,14 @@ func Search(w http.ResponseWriter, r *http.Request) {
 		searcher = searcher.WithScope("creator_id|author_id", c.User.ID)
 		currentScope = "all"
 	default:
-		errorUnkownScope := fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))
-		c.Log.Warnw("publication search: could not create searcher with passed filters", "errors", errorUnkownScope, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))))
 		return
 	}
 	delete(args.Filters, "scope")
 
 	hits, err := searcher.Search(args)
 	if err != nil {
-		c.Log.Errorw("publication search: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -76,8 +72,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	if hits.Total == 0 {
 		globalHits, globalHitsErr := globalSearch(searcher)
 		if globalHitsErr != nil {
-			c.Log.Errorw("publication search: could not execute global search", "errors", globalHitsErr, "user", c.User.ID)
-			c.HandleError(w, r, httperror.InternalServerError)
+			c.HandleError(w, r, globalHitsErr)
 			return
 		}
 		isFirstUse = globalHits.Total == 0
@@ -127,8 +122,7 @@ func CurationSearch(w http.ResponseWriter, r *http.Request) {
 
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Request(r, searchArgs); err != nil {
-		c.Log.Warnw("publication search: could not bind search arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 	searchArgs.Cleanup()
@@ -138,8 +132,7 @@ func CurationSearch(w http.ResponseWriter, r *http.Request) {
 	searcher := c.PublicationSearchIndex.WithScope("status", "private", "public", "returned")
 	hits, err := searcher.Search(searchArgs)
 	if err != nil {
-		c.Log.Errorw("publication search: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -152,8 +145,7 @@ func CurationSearch(w http.ResponseWriter, r *http.Request) {
 	if hits.Total == 0 {
 		globalHits, globalHitsErr := globalSearch(searcher)
 		if globalHitsErr != nil {
-			c.Log.Errorw("curation publication search: could not execute global search", "errors", globalHitsErr, "user", c.User.ID)
-			c.HandleError(w, r, httperror.InternalServerError)
+			c.HandleError(w, r, globalHitsErr)
 			return
 		}
 		isFirstUse = globalHits.Total == 0

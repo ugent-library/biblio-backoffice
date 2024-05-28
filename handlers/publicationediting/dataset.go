@@ -29,8 +29,7 @@ func AddDataset(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := searchRelatedDatasets(c, p, "")
 	if err != nil {
-		c.Log.Errorw("add publication dataset: could not execute search", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -42,8 +41,7 @@ func SuggestDatasets(w http.ResponseWriter, r *http.Request) {
 
 	b := BindSuggestDatasets{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("suggest publication datasets: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -51,8 +49,7 @@ func SuggestDatasets(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := searchRelatedDatasets(c, p, b.Query)
 	if err != nil {
-		c.Log.Errorw("add publication dataset: could not execute search", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -65,16 +62,14 @@ func CreateDataset(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDataset{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("create publication dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	// TODO reduce calls to repository
 	d, err := c.Repo.GetDataset(b.DatasetID)
 	if err != nil {
-		c.Log.Errorw("create publication dataset: could not get dataset", "errors", err, "publication", publication.ID, "dataset", b.DatasetID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -83,23 +78,20 @@ func CreateDataset(w http.ResponseWriter, r *http.Request) {
 	// TODO handle conflict
 	err = c.Repo.AddPublicationDataset(publication, d, c.User)
 	if err != nil {
-		c.Log.Errorw("create publication dataset: could not add dataset to publication", "errors", err, "publication", publication.ID, "dataset", b.DatasetID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
 	// Refresh the ctx.Publication: it still carries the old snapshotID
 	publication, err = c.Repo.GetPublication(publication.ID)
 	if err != nil {
-		c.Log.Errorw("create publication dataset: could not get publication", "errors", err, "publication", publication.ID, "dataset", b.DatasetID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
 	relatedDatasets, err := c.Repo.GetVisiblePublicationDatasets(c.User, publication)
 	if err != nil {
-		c.Log.Errorw("create publication dataset: could not get related datasets", "errors", err, "publication", publication.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -112,8 +104,7 @@ func ConfirmDeleteDataset(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDeleteDataset{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete publication dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -136,8 +127,7 @@ func DeleteDataset(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDeleteDataset{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete publication dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -149,8 +139,7 @@ func DeleteDataset(w http.ResponseWriter, r *http.Request) {
 	// TODO reduce calls to repository
 	d, err := c.Repo.GetDataset(b.DatasetID)
 	if err != nil {
-		c.Log.Errorw("delete publication dataset: could not get dataset", "errors", err, "publication", publication.ID, "dataset", b.DatasetID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -160,23 +149,20 @@ func DeleteDataset(w http.ResponseWriter, r *http.Request) {
 	err = c.Repo.RemovePublicationDataset(publication, d, c.User)
 
 	if err != nil {
-		c.Log.Errorw("delete publication dataset: could not remove dataset", "errors", err, "publication", publication.ID, "dataset", b.DatasetID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
 	// Refresh the ctx.Publication: it still carries the old snapshotID
 	publication, err = c.Repo.GetPublication(publication.ID)
 	if err != nil {
-		c.Log.Errorw("delete publication dataset: could not get publication", "errors", err, "publication", publication.ID, "dataset", b.DatasetID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
 	relatedDatasets, err := c.Repo.GetVisiblePublicationDatasets(c.User, publication)
 	if err != nil {
-		c.Log.Errorw("create publication dataset: could not get related datasets", "errors", err, "publication", publication.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
