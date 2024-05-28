@@ -45,12 +45,12 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 
 	allUPublicationYears, err := allUPublicationYears(c.PublicationSearchIndex)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 	allAPublicationYears, err := allAPublicationYears(c.PublicationSearchIndex)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 	bindPublications := BindPublications{}
@@ -87,7 +87,7 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -115,7 +115,7 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -179,7 +179,7 @@ func RefreshAPublications(w http.ResponseWriter, r *http.Request) {
 		return args
 	})
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -241,7 +241,7 @@ func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
 		return args
 	})
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 

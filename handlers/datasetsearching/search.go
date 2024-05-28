@@ -27,7 +27,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Request(r, searchArgs); err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(err))
+		c.HandleError(w, r, err)
 		return
 	}
 	searchArgs.Cleanup()
@@ -59,7 +59,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := searcher.Search(args)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -72,7 +72,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	if hits.Total == 0 {
 		globalHits, globalHitsErr := globalSearch(searcher)
 		if globalHitsErr != nil {
-			c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute global search: %w", globalHitsErr)))
+			c.HandleError(w, r, globalHitsErr)
 			return
 		}
 		isFirstUse = globalHits.Total == 0
@@ -123,7 +123,7 @@ func CurationSearch(w http.ResponseWriter, r *http.Request) {
 
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Request(r, searchArgs); err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(err))
+		c.HandleError(w, r, err)
 		return
 	}
 	searchArgs.Cleanup()
@@ -133,7 +133,7 @@ func CurationSearch(w http.ResponseWriter, r *http.Request) {
 	searcher := c.DatasetSearchIndex.WithScope("status", "private", "public", "returned")
 	hits, err := searcher.Search(searchArgs)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -146,7 +146,7 @@ func CurationSearch(w http.ResponseWriter, r *http.Request) {
 	if hits.Total == 0 {
 		globalHits, globalHitsErr := globalSearch(searcher)
 		if globalHitsErr != nil {
-			c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute global search: %w", globalHitsErr)))
+			c.HandleError(w, r, globalHitsErr)
 			return
 		}
 		isFirstUse = globalHits.Total == 0

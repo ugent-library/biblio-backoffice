@@ -1,7 +1,6 @@
 package datasetediting
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -29,7 +28,7 @@ func AddPublication(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := searchRelatedPublications(c, dataset, "")
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could find related publications: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -48,7 +47,7 @@ func SuggestPublications(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := searchRelatedPublications(c, dataset, b.Query)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could find related publications: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -68,7 +67,7 @@ func CreatePublication(w http.ResponseWriter, r *http.Request) {
 	// TODO reduce calls to repository
 	p, err := c.Repo.GetPublication(b.PublicationID)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get the publications: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -77,20 +76,20 @@ func CreatePublication(w http.ResponseWriter, r *http.Request) {
 	// TODO handle conflict
 	err = c.Repo.AddPublicationDataset(p, dataset, c.User)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not add the publication: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
 	// Refresh the ctx.Dataset: it still carries the old snapshotID
 	dataset, err = c.Repo.GetDataset(dataset.ID)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
 	relatedPublications, err := c.Repo.GetVisibleDatasetPublications(c.User, dataset)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get dataset publications: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -133,7 +132,7 @@ func DeletePublication(w http.ResponseWriter, r *http.Request) {
 	// TODO reduce calls to repository
 	p, err := c.Repo.GetPublication(b.PublicationID)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get the publication: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -143,20 +142,20 @@ func DeletePublication(w http.ResponseWriter, r *http.Request) {
 	err = c.Repo.RemovePublicationDataset(p, dataset, c.User)
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not delete the publication: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
 	// Refresh the dataset since it still caries the old snapshotid
 	dataset, err = c.Repo.GetDataset(dataset.ID)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get the dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
 	relatedPublications, err := c.Repo.GetVisibleDatasetPublications(c.User, dataset)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get dataset publications: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 

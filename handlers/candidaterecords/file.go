@@ -40,7 +40,7 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 
 	rc, err := c.FileStore.Get(r.Context(), f.SHA256)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(err))
+		c.HandleError(w, r, err)
 		return
 	}
 	defer rc.Close()

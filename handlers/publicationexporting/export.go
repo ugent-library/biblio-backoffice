@@ -28,7 +28,7 @@ func ExportByCurationSearch(w http.ResponseWriter, r *http.Request) {
 
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Request(r, searchArgs); err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(err))
+		c.HandleError(w, r, err)
 		return
 	}
 	searcher := c.PublicationSearchIndex.WithScope("status", "private", "public", "returned")
@@ -37,7 +37,7 @@ func ExportByCurationSearch(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if searcherErr != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("unable to execute search: %w", searcherErr)))
+		c.HandleError(w, r, searcherErr)
 		return
 	}
 
@@ -57,7 +57,7 @@ func ExportByCurationSearch(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Disposition", contentDisposition)
 
 	if err := exporter.Flush(); err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not export search %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 }

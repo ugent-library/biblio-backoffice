@@ -66,7 +66,7 @@ func ConfirmImport(w http.ResponseWriter, r *http.Request) {
 		existing, err := c.DatasetSearchIndex.Search(args)
 
 		if err != nil {
-			c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
+			c.HandleError(w, r, err)
 			return
 		}
 
@@ -142,7 +142,7 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 	err = c.Repo.SaveDataset(d, c.User)
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -204,7 +204,7 @@ func AddPublish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 

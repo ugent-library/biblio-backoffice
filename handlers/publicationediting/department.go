@@ -2,7 +2,6 @@ package publicationediting
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
 
@@ -32,7 +31,7 @@ func AddDepartment(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := c.OrganizationSearchService.SuggestOrganizations("")
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not suggest organization: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -50,7 +49,7 @@ func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := c.OrganizationSearchService.SuggestOrganizations(b.Query)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not suggest organizations: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -69,7 +68,7 @@ func CreateDepartment(w http.ResponseWriter, r *http.Request) {
 
 	org, err := c.OrganizationService.GetOrganization(b.DepartmentID)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not find organization: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -86,7 +85,7 @@ func CreateDepartment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -147,7 +146,7 @@ func DeleteDepartment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 

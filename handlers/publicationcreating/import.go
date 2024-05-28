@@ -65,7 +65,7 @@ func AddSingleImportConfirm(w http.ResponseWriter, r *http.Request) {
 
 		existing, err := c.PublicationSearchIndex.Search(args)
 		if err != nil {
-			c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search for duplicates: %w", err)))
+			c.HandleError(w, r, err)
 			return
 		}
 
@@ -146,7 +146,7 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request) {
 
 	err = c.Repo.SavePublication(p, c.User)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -214,7 +214,7 @@ func AddSinglePublish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -323,7 +323,7 @@ func AddMultipleConfirm(w http.ResponseWriter, r *http.Request) {
 		Search(searchArgs)
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -354,7 +354,7 @@ func AddMultiplePublish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not publish publications: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -382,7 +382,7 @@ func AddMultipleFinish(w http.ResponseWriter, r *http.Request) {
 		Search(searchArgs)
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 

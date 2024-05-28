@@ -2,7 +2,6 @@ package datasetediting
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -79,7 +78,7 @@ func CreateAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -171,7 +170,7 @@ func UpdateAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -222,7 +221,7 @@ func DeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 

@@ -1,12 +1,10 @@
 package publicationviewing
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
-	"github.com/ugent-library/httperror"
 )
 
 func Show(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +67,7 @@ func ShowDatasets(w http.ResponseWriter, r *http.Request) {
 
 	datasets, err := c.Repo.GetVisiblePublicationDatasets(c.User, p)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get publication datasets: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 

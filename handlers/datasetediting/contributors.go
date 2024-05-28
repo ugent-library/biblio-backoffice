@@ -100,7 +100,7 @@ func AddContributor(w http.ResponseWriter, r *http.Request) {
 	if b.FirstName != "" || b.LastName != "" {
 		people, err := c.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
-			c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not suggest people: %w", err)))
+			c.HandleError(w, r, err)
 			return
 		}
 
@@ -133,7 +133,7 @@ func AddContributorSuggest(w http.ResponseWriter, r *http.Request) {
 	if b.FirstName != "" || b.LastName != "" {
 		people, err := c.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
-			c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not suggest people: %w", err)))
+			c.HandleError(w, r, err)
 			return
 		}
 
@@ -235,7 +235,7 @@ func CreateContributor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -271,7 +271,7 @@ func EditContributor(w http.ResponseWriter, r *http.Request) {
 
 	cn, err := dataset.GetContributor(b.Role, b.Position)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get the contributor: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -284,7 +284,7 @@ func EditContributor(w http.ResponseWriter, r *http.Request) {
 
 	people, err := c.PersonSearchService.SuggestPeople(firstName + " " + lastName)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not suggest people: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -330,7 +330,7 @@ func EditContributorSuggest(w http.ResponseWriter, r *http.Request) {
 
 	cn, err := dataset.GetContributor(b.Role, b.Position)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get the contributor: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -339,7 +339,7 @@ func EditContributorSuggest(w http.ResponseWriter, r *http.Request) {
 	if b.FirstName != "" || b.LastName != "" {
 		people, err := c.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
-			c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not suggest people: %w", err)))
+			c.HandleError(w, r, err)
 			return
 		}
 
@@ -415,7 +415,7 @@ func UpdateContributor(w http.ResponseWriter, r *http.Request) {
 	if b.ID != "" {
 		newC, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
-			c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not fetch person: %w", err)))
+			c.HandleError(w, r, err)
 			return
 		}
 		cn = newC
@@ -430,7 +430,7 @@ func UpdateContributor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := dataset.SetContributor(b.Role, b.Position, cn); err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not set the contributor: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -455,7 +455,7 @@ func UpdateContributor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -464,7 +464,7 @@ func UpdateContributor(w http.ResponseWriter, r *http.Request) {
 		nextC := dataset.Contributors(b.Role)[nextPos]
 		people, err := c.PersonSearchService.SuggestPeople(nextC.Name())
 		if err != nil {
-			c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not suggest people: %w", err)))
+			c.HandleError(w, r, err)
 			return
 		}
 		hits := make([]*models.Contributor, len(people))
@@ -521,7 +521,7 @@ func DeleteContributor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := dataset.RemoveContributor(b.Role, b.Position); err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not remove contributor: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -540,7 +540,7 @@ func DeleteContributor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -580,7 +580,7 @@ func OrderContributors(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 

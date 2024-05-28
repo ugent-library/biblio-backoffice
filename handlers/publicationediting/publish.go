@@ -2,7 +2,6 @@ package publicationediting
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -51,7 +50,7 @@ func Publish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 

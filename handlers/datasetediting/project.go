@@ -2,7 +2,6 @@ package datasetediting
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
 
@@ -30,7 +29,7 @@ func AddProject(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := c.ProjectSearchService.SuggestProjects("")
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not suggest projects: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -49,7 +48,7 @@ func SuggestProjects(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := c.ProjectSearchService.SuggestProjects(b.Query)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not suggest projects: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -68,7 +67,7 @@ func CreateProject(w http.ResponseWriter, r *http.Request) {
 
 	project, err := c.ProjectService.GetProject(b.ProjectID)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get project: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -85,7 +84,7 @@ func CreateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -142,7 +141,7 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 

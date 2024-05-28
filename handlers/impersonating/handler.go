@@ -45,7 +45,7 @@ func AddImpersonationSuggest(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := c.UserSearchService.SuggestUsers(b.FirstName + " " + b.LastName)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not suggest users: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -79,7 +79,7 @@ func CreateImpersonation(w http.ResponseWriter, r *http.Request) {
 
 	user, err := c.UserService.GetUser(b.ID)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("unable to fetch user: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -87,7 +87,7 @@ func CreateImpersonation(w http.ResponseWriter, r *http.Request) {
 
 	session, err := c.SessionStore.Get(r, c.SessionName)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("session could not be retrieved: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -97,7 +97,7 @@ func CreateImpersonation(w http.ResponseWriter, r *http.Request) {
 	session.Values[ctx.UserRoleKey] = "user"
 
 	if err = session.Save(r, w); err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("session could not be saved: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -113,7 +113,7 @@ func DeleteImpersonation(w http.ResponseWriter, r *http.Request) {
 
 	session, err := c.SessionStore.Get(r, c.SessionName)
 	if err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("session could not be retrieved: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -123,7 +123,7 @@ func DeleteImpersonation(w http.ResponseWriter, r *http.Request) {
 	delete(session.Values, ctx.OriginalUserRoleKey)
 
 	if err = session.Save(r, w); err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("session could not be saved: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 

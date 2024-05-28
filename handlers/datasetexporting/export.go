@@ -38,7 +38,7 @@ func ExportByCurationSearch(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if searcherErr != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("unable to execute search: %w", searcherErr)))
+		c.HandleError(w, r, searcherErr)
 		return
 	}
 
@@ -58,7 +58,7 @@ func ExportByCurationSearch(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Disposition", contentDisposition)
 
 	if err := exporter.Flush(); err != nil {
-		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not export search: %w", err)))
+		c.HandleError(w, r, err)
 		return
 	}
 
