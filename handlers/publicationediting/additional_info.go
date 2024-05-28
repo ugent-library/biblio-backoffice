@@ -2,6 +2,7 @@ package publicationediting
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -31,8 +32,7 @@ func UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request) {
 
 	b := BindAdditionalInfo{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("update publication additional info: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -55,8 +55,7 @@ func UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("update publication additional info: could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 

@@ -2,6 +2,7 @@ package publicationediting
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -38,8 +39,7 @@ func CreateAbstract(w http.ResponseWriter, r *http.Request) {
 
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("create publication abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -71,8 +71,7 @@ func CreateAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("create publication abstract: could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 
@@ -85,8 +84,7 @@ func EditAbstract(w http.ResponseWriter, r *http.Request) {
 
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("edit publication abstract: could not bind request arguments", "error", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -114,8 +112,7 @@ func UpdateAbstract(w http.ResponseWriter, r *http.Request) {
 
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("update publication abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -153,8 +150,7 @@ func UpdateAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("update publication abstract: could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 
@@ -167,8 +163,7 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete publication abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -191,8 +186,7 @@ func DeleteAbstract(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete publication abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -207,8 +201,7 @@ func DeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("create publication abstract: could not save the publication:", "error", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 

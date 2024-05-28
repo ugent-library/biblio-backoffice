@@ -1,6 +1,7 @@
 package datasetviewing
 
 import (
+	"fmt"
 	"net/http"
 
 	"slices"
@@ -52,8 +53,7 @@ func ShowPublications(w http.ResponseWriter, r *http.Request) {
 
 	relatedPublications, err := c.Repo.GetVisibleDatasetPublications(c.User, dataset)
 	if err != nil {
-		c.Log.Errorw("show dataset publications: could not get publications", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get publications: %w", err)))
 		return
 	}
 

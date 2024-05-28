@@ -44,8 +44,7 @@ func CuratorDatasets(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
 		return
 	}
 	views.CuratorDashboardDatasets(c, &views.CuratorDashboardDatasetsArgs{

@@ -2,6 +2,7 @@ package datasetediting
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -38,8 +39,7 @@ func CreateLink(w http.ResponseWriter, r *http.Request) {
 
 	b := BindLink{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("add dataset link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -71,8 +71,7 @@ func CreateLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("add dataset link: Could not save the dataset:", "errors", err, "dataset", d.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
 		return
 	}
 
@@ -85,16 +84,14 @@ func EditLink(w http.ResponseWriter, r *http.Request) {
 
 	b := BindLink{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("edit dataset link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	// TODO catch non-existing item in UI
 	link := d.GetLink(b.LinkID)
 	if link == nil {
-		c.Log.Warnw("edit dataset link: could not get link", "link", b.LinkID, "dataset", d.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(errors.New("could not get link")))
 		return
 	}
 
@@ -114,8 +111,7 @@ func UpdateLink(w http.ResponseWriter, r *http.Request) {
 
 	b := BindLink{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("update dataset link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -153,8 +149,7 @@ func UpdateLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("update dataset link: Could not save the dataset:", "errors", err, "identifier", d.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
 		return
 	}
 
@@ -167,8 +162,7 @@ func ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteLink
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Errorw("confirm delete dataset link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -192,8 +186,7 @@ func DeleteLink(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteLink
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete dataset link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -208,8 +201,7 @@ func DeleteLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("delete dataset link: Could not save the dataset:", "errors", err, "dataset", d.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
 		return
 	}
 

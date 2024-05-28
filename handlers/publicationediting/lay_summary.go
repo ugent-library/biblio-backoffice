@@ -2,6 +2,7 @@ package publicationediting
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -38,8 +39,7 @@ func CreateLaySummary(w http.ResponseWriter, r *http.Request) {
 
 	var b BindLaySummary
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("create publication lay summary: could not bind request arguments", "error", err, "request", r)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -71,8 +71,7 @@ func CreateLaySummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("create publication lay summary: Could not save the publication:", "error", err, "publication", p.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 
@@ -85,8 +84,7 @@ func EditLaySummary(w http.ResponseWriter, r *http.Request) {
 
 	var b BindLaySummary
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("edit publication lay summary: could not bind request arguments", "error", err, "request", r)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -115,8 +113,7 @@ func UpdateLaySummary(w http.ResponseWriter, r *http.Request) {
 
 	b := BindLaySummary{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("update publication lay summary: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -157,8 +154,7 @@ func UpdateLaySummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("update publication lay summary: Could not save the publication:", "error", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 
@@ -171,8 +167,7 @@ func ConfirmDeleteLaySummary(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteLaySummary
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete publication lay summary: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -195,8 +190,7 @@ func DeleteLaySummary(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteLaySummary
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete publication lay summary: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -211,8 +205,7 @@ func DeleteLaySummary(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("delete publication lay summary: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 

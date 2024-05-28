@@ -2,6 +2,7 @@ package datasetediting
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -26,7 +27,6 @@ func Republish(w http.ResponseWriter, r *http.Request) {
 	dataset := ctx.GetDataset(r)
 
 	if !c.User.CanPublishDataset(dataset) {
-		c.Log.Warnw("republish dataset: user has no permission to republish", "dataset", dataset.ID, "user", c.User.ID)
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
@@ -51,8 +51,7 @@ func Republish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("republish dataset: could not save the dataset:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
 		return
 	}
 

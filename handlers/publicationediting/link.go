@@ -2,6 +2,7 @@ package publicationediting
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -39,8 +40,7 @@ func CreateLink(w http.ResponseWriter, r *http.Request) {
 
 	b := BindLink{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("add publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -71,8 +71,7 @@ func CreateLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("add publication link: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 
@@ -85,8 +84,7 @@ func EditLink(w http.ResponseWriter, r *http.Request) {
 
 	b := BindLink{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("edit publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -113,8 +111,7 @@ func UpdateLink(w http.ResponseWriter, r *http.Request) {
 
 	b := BindLink{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("update publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -152,8 +149,7 @@ func UpdateLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("update publication link: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 
@@ -166,8 +162,7 @@ func ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteLink
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Errorw("confirm delete publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -191,8 +186,7 @@ func DeleteLink(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteLink
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete publication link: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -207,8 +201,7 @@ func DeleteLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("delete publication link: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 

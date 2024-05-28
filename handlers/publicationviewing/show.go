@@ -1,6 +1,7 @@
 package publicationviewing
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -68,8 +69,7 @@ func ShowDatasets(w http.ResponseWriter, r *http.Request) {
 
 	datasets, err := c.Repo.GetVisiblePublicationDatasets(c.User, p)
 	if err != nil {
-		c.Log.Warn("show publication datasets: could not get publication datasets:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get publication datasets: %w", err)))
 		return
 	}
 

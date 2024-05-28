@@ -45,20 +45,17 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 
 	allUPublicationYears, err := allUPublicationYears(c.PublicationSearchIndex)
 	if err != nil {
-		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
 		return
 	}
 	allAPublicationYears, err := allAPublicationYears(c.PublicationSearchIndex)
 	if err != nil {
-		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
 		return
 	}
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
-		c.Log.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -90,8 +87,7 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
 		return
 	}
 
@@ -119,8 +115,7 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
 		return
 	}
 
@@ -158,8 +153,7 @@ func RefreshAPublications(w http.ResponseWriter, r *http.Request) {
 
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
-		c.Log.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -185,8 +179,7 @@ func RefreshAPublications(w http.ResponseWriter, r *http.Request) {
 		return args
 	})
 	if err != nil {
-		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
 		return
 	}
 
@@ -221,8 +214,7 @@ func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
 
 	bindPublications := BindPublications{}
 	if err := bind.Request(r, &bindPublications); err != nil {
-		c.Log.Warnw("publication dashboard could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -249,8 +241,7 @@ func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
 		return args
 	})
 	if err != nil {
-		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not execute search: %w", err)))
 		return
 	}
 

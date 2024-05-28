@@ -22,8 +22,7 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Request(r, searchArgs); err != nil {
-		c.Log.Warnw("could not bind search arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -58,8 +57,7 @@ func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
 
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("preview candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -93,8 +91,7 @@ func ConfirmRejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm reject candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -117,8 +114,7 @@ func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("reject candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -147,8 +143,7 @@ func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("import candidate record: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 

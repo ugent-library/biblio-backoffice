@@ -2,6 +2,7 @@ package datasetediting
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -41,8 +42,7 @@ func CreateAbstract(w http.ResponseWriter, r *http.Request) {
 
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("create dataset abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -79,8 +79,7 @@ func CreateAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("create dataset abstract: could not save the dataset:", "errors", err, "dataset", d.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
 		return
 	}
 
@@ -93,8 +92,7 @@ func EditAbstract(w http.ResponseWriter, r *http.Request) {
 
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("edit dataset abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -120,8 +118,7 @@ func UpdateAbstract(w http.ResponseWriter, r *http.Request) {
 
 	b := BindAbstract{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("update dataset abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -174,8 +171,7 @@ func UpdateAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Warnf("update dataset abstract: Could not save the dataset:", "errors", err, "dataset", d.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
 		return
 	}
 
@@ -188,8 +184,7 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -211,8 +206,7 @@ func DeleteAbstract(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteAbstract
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete datase abstract: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -228,8 +222,7 @@ func DeleteAbstract(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Warnf("delete dataset abstract: Could not save the dataset:", "errors", err, "dataset", d.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
 		return
 	}
 

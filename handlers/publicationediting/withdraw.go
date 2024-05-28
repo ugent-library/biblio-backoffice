@@ -2,6 +2,7 @@ package publicationediting
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -26,7 +27,6 @@ func Withdraw(w http.ResponseWriter, r *http.Request) {
 	publication := ctx.GetPublication(r)
 
 	if !c.User.CanWithdrawPublication(publication) {
-		c.Log.Warnw("witdraw publication: user has no permission to withdraw", "user", c.User.ID, "publication", publication.ID)
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
@@ -51,8 +51,7 @@ func Withdraw(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("withdraw publication: could not save the publication:", "error", err, "publication", publication.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 

@@ -2,6 +2,7 @@ package publicationediting
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -29,8 +30,7 @@ func AddProject(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := c.ProjectSearchService.SuggestProjects("")
 	if err != nil {
-		c.Log.Errorw("add publication project: could not suggest projects:", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not suggest projects: %w", err)))
 		return
 	}
 
@@ -42,15 +42,13 @@ func SuggestProjects(w http.ResponseWriter, r *http.Request) {
 
 	b := BindSuggestProjects{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("suggest publication project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	hits, err := c.ProjectSearchService.SuggestProjects(b.Query)
 	if err != nil {
-		c.Log.Errorw("suggest publication project: could not suggest projects:", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not suggest projects: %w", err)))
 		return
 	}
 
@@ -63,15 +61,13 @@ func CreateProject(w http.ResponseWriter, r *http.Request) {
 
 	b := BindProject{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("create publication project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	project, err := c.ProjectService.GetProject(b.ProjectID)
 	if err != nil {
-		c.Log.Errorw("create publication project: could not get project:", "errors", err, "publication", p.ID, "project", b.ProjectID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get project: %w", err)))
 		return
 	}
 	p.AddProject(project)
@@ -87,8 +83,7 @@ func CreateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("create publication project: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 
@@ -101,8 +96,7 @@ func ConfirmDeleteProject(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDeleteProject{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete publication project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -127,8 +121,7 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteProject
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete publication project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -147,8 +140,7 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("delete publication project: Could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the publication: %w", err)))
 		return
 	}
 

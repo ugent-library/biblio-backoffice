@@ -2,6 +2,7 @@ package datasetediting
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -29,7 +30,6 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	dataset := ctx.GetDataset(r)
 
 	if !c.User.CanDeleteDataset(dataset) {
-		c.Log.Warnw("delete dataset: user isn't allowed to delete dataset", "dataset", dataset.ID, "user", c.User.ID, "user", c.User.ID)
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
@@ -45,8 +45,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("delete dataset: Could not save the dataset:", "error", err, "identifier", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not save the dataset: %w", err)))
 		return
 	}
 

@@ -1,6 +1,7 @@
 package datasetediting
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -28,8 +29,7 @@ func AddPublication(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := searchRelatedPublications(c, dataset, "")
 	if err != nil {
-		c.Log.Errorf("add dataset publication: Could find related publications:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could find related publications: %w", err)))
 		return
 	}
 
@@ -42,15 +42,13 @@ func SuggestPublications(w http.ResponseWriter, r *http.Request) {
 
 	b := BindSuggestPublications{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("suggest dataset publications: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	hits, err := searchRelatedPublications(c, dataset, b.Query)
 	if err != nil {
-		c.Log.Errorf("add dataset publication: Could find related publications:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could find related publications: %w", err)))
 		return
 	}
 
@@ -63,16 +61,14 @@ func CreatePublication(w http.ResponseWriter, r *http.Request) {
 
 	b := BindPublication{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("create dataset publication: could not bind request arguments", "errors", err, "request", r)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	// TODO reduce calls to repository
 	p, err := c.Repo.GetPublication(b.PublicationID)
 	if err != nil {
-		c.Log.Errorw("create dataset publication: could not get the publication", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get the publications: %w", err)))
 		return
 	}
 
@@ -81,23 +77,20 @@ func CreatePublication(w http.ResponseWriter, r *http.Request) {
 	// TODO handle conflict
 	err = c.Repo.AddPublicationDataset(p, dataset, c.User)
 	if err != nil {
-		c.Log.Errorw("create dataset publication: could not add the publication", "error", err, "dataset", dataset.ID, "publication", p.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not add the publication: %w", err)))
 		return
 	}
 
 	// Refresh the ctx.Dataset: it still carries the old snapshotID
 	dataset, err = c.Repo.GetDataset(dataset.ID)
 	if err != nil {
-		c.Log.Errorw("create dataset publication: could not get dataset", "errors", err, "dataset", dataset.ID, "publication", b.PublicationID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get dataset: %w", err)))
 		return
 	}
 
 	relatedPublications, err := c.Repo.GetVisibleDatasetPublications(c.User, dataset)
 	if err != nil {
-		c.Log.Errorw("create dataset publication: could not get dataset publications", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get dataset publications: %w", err)))
 		return
 	}
 
@@ -110,8 +103,7 @@ func ConfirmDeletePublication(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDeletePublication{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete dataset publication: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -134,16 +126,14 @@ func DeletePublication(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDeletePublication{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete dataset publication: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	// TODO reduce calls to repository
 	p, err := c.Repo.GetPublication(b.PublicationID)
 	if err != nil {
-		c.Log.Errorw("delete dataset publication: could not get the publication", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get the publication: %w", err)))
 		return
 	}
 
@@ -153,23 +143,20 @@ func DeletePublication(w http.ResponseWriter, r *http.Request) {
 	err = c.Repo.RemovePublicationDataset(p, dataset, c.User)
 
 	if err != nil {
-		c.Log.Errorw("delete dataset publication: could not delete the publication", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not delete the publication: %w", err)))
 		return
 	}
 
 	// Refresh the dataset since it still caries the old snapshotid
 	dataset, err = c.Repo.GetDataset(dataset.ID)
 	if err != nil {
-		c.Log.Errorw("delete dataset publication: could not get the dataset", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get the dataset: %w", err)))
 		return
 	}
 
 	relatedPublications, err := c.Repo.GetVisibleDatasetPublications(c.User, dataset)
 	if err != nil {
-		c.Log.Errorw("create dataset publication: could not get dataset publications", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, httperror.InternalServerError.Wrap(fmt.Errorf("could not get dataset publications: %w", err)))
 		return
 	}
 
