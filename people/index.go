@@ -166,14 +166,22 @@ var sorts = map[string]string{
 }
 
 func (idx *Index) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
-	return getByIdentifier[Organization](ctx, idx, organizationsIndexName, "GetOrganization", Identifier{Kind: kind, Value: value})
+	o, err := getByIdentifier[Organization](ctx, idx, organizationsIndexName, Identifier{Kind: kind, Value: value})
+	if err != nil {
+		return nil, fmt.Errorf("index.GetOrganizationByIdentifier: %w", err)
+	}
+	return o, nil
 }
 
 func (idx *Index) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
-	return getByIdentifier[Person](ctx, idx, peopleIndexName, "GetPerson", Identifier{Kind: kind, Value: value})
+	p, err := getByIdentifier[Person](ctx, idx, peopleIndexName, Identifier{Kind: kind, Value: value})
+	if err != nil {
+		return nil, fmt.Errorf("index.GetPersonByIdentifier: %w", err)
+	}
+	return p, nil
 }
 
-func getByIdentifier[T any](ctx context.Context, idx *Index, indexName, method string, ident Identifier) (*T, error) {
+func getByIdentifier[T any](ctx context.Context, idx *Index, indexName string, ident Identifier) (*T, error) {
 	b := bytes.Buffer{}
 	err := identifierTmpl.Execute(&b, struct {
 		Limit      int
@@ -184,7 +192,7 @@ func getByIdentifier[T any](ctx context.Context, idx *Index, indexName, method s
 		Identifier: ident,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("index.%s %s: %w", method, ident.String(), err)
+		return nil, fmt.Errorf("%s: %w", ident.String(), err)
 	}
 
 	res, err := idx.client.Search(
@@ -194,16 +202,16 @@ func getByIdentifier[T any](ctx context.Context, idx *Index, indexName, method s
 		idx.client.Search.WithBody(strings.NewReader(b.String())),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("index.%s %s: %w", method, ident.String(), err)
+		return nil, fmt.Errorf("%s: %w", ident.String(), err)
 	}
 
 	resBody := searchResponseBody[*T]{}
 	if err := decodeResponseBody(res, &resBody); err != nil {
-		return nil, fmt.Errorf("index.%s %s: %w", method, ident.String(), err)
+		return nil, fmt.Errorf("%s: %w", ident.String(), err)
 	}
 
 	if len(resBody.Hits.Hits) != 1 {
-		return nil, fmt.Errorf("index.%s %s: %w", method, ident.String(), models.ErrNotFound)
+		return nil, fmt.Errorf("%s: %w", ident.String(), models.ErrNotFound)
 	}
 
 	return resBody.Hits.Hits[0].Source.Record, nil
