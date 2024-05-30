@@ -46,12 +46,12 @@ var updateExternalFields = &cobra.Command{
 			}
 
 			if err := repo.UpdatePublication(p.SnapshotID, p, nil); err != nil {
-				zapLogger.Errorf("unable to update external fields in publication %s: %s", p.ID, err)
+				logger.Error("unable to update external fields in publication", "id", p.ID, "error", err)
 				lastErr = err
 				return false
 			}
 
-			zapLogger.Infof("successfully updated external fields in publication %s", p.ID)
+			logger.Info("successfully updated external fields in publication", "id", p.ID)
 			return true
 		})
 

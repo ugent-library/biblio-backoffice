@@ -101,7 +101,7 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	if b.Identifier != "" {
 		p, err = fetchPublicationByIdentifier(c, b.Source, b.Identifier)
 		if err != nil {
-			c.Log.Warnw("import single publication: could not fetch publication", "errors", err, "publication", b.Identifier, "user", c.User.ID)
+			c.Log.Warn("import single publication: could not fetch publication", "errors", err, "publication", b.Identifier, "user", c.User.ID)
 
 			flash := flash.SimpleFlash().
 				WithLevel("error").
@@ -253,7 +253,7 @@ func AddMultipleImport(w http.ResponseWriter, r *http.Request) {
 
 	batchID, err := importPublications(c, source, file)
 	if err != nil {
-		c.Log.Warnw("add multiple import publication: could not import publications", "errors", err, "batch", batchID, "user", c.User.ID)
+		c.Log.Warn("add multiple import publication: could not import publications", "errors", err, "batch", batchID, "user", c.User.ID)
 
 		flash := flash.SimpleFlash().
 			WithLevel("error").
@@ -346,8 +346,6 @@ func AddMultiplePublish(w http.ResponseWriter, r *http.Request) {
 	// TODO this is useless to the user unless we point to the publication in question
 	var validationErrs *okay.Errors
 	if errors.As(err, &validationErrs) {
-		c.Log.Warnw("add multiple publish publication: could not validate abstract:", "errors", validationErrs, "batch", batchID, "user", c.User.ID)
-
 		errors := localize.ValidationErrors(c.Loc, validationErrs)
 		views.ShowModal(views.FormErrorsDialog("Unable to publish a publication due to the following errors", errors)).Render(r.Context(), w)
 		return

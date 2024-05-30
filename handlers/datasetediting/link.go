@@ -116,7 +116,7 @@ func UpdateLink(w http.ResponseWriter, r *http.Request) {
 
 	link := d.GetLink(b.LinkID)
 	if link == nil {
-		c.Log.Warnw("update dataset link: could not get link", "link", b.LinkID, "dataset", d.ID, "user", c.User.ID)
+		c.Log.Warn("update dataset link: could not get link", "link", b.LinkID, "dataset", d.ID, "user", c.User.ID)
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}

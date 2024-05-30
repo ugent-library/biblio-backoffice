@@ -47,7 +47,6 @@ func UpdateMessage(w http.ResponseWriter, r *http.Request) {
 	p.Message = b.Message
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		c.Log.Warnw("update publication reviewer note: could not validate message:", "errors", validationErrs, "publication", p.ID, "user", c.User.ID)
 		views.ReplaceModal(publicationviews.EditMessageDialog(c, publicationviews.EditMessageDialogArgs{
 			Publication: p,
 			Errors:      validationErrs.(*okay.Errors),
@@ -97,7 +96,6 @@ func UpdateReviewerTags(w http.ResponseWriter, r *http.Request) {
 	p.ReviewerTags = b.ReviewerTags
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		c.Log.Warnw("update publication reviewer tags: could not validate reviewer tags:", "errors", validationErrs, "publication", p.ID, "user", c.User.ID)
 		views.ReplaceModal(publicationviews.EditReviewerTagsDialog(c, publicationviews.EditReviewerTagsDialogArgs{
 			Publication: p,
 			Errors:      validationErrs.(*okay.Errors),
@@ -147,7 +145,6 @@ func UpdateReviewerNote(w http.ResponseWriter, r *http.Request) {
 	p.ReviewerNote = b.ReviewerNote
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		c.Log.Warnw("update dataset reviewer note: could not validate reviewer note:", "errors", validationErrs, "dataset", p.ID, "user", c.User.ID)
 		views.ReplaceModal(publicationviews.EditReviewerNoteDialog(c, publicationviews.EditReviewerNoteDialogArgs{
 			Publication: p,
 			Errors:      validationErrs.(*okay.Errors),

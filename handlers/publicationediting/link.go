@@ -89,7 +89,7 @@ func EditLink(w http.ResponseWriter, r *http.Request) {
 
 	link := p.GetLink(b.LinkID)
 	if link == nil {
-		c.Log.Warnw("edit publication link: could not get link", "link", b.LinkID, "publication", p.ID, "user", c.User.ID)
+		c.Log.Warn("edit publication link: could not get link", "link", b.LinkID, "publication", p.ID, "user", c.User.ID)
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
@@ -116,7 +116,7 @@ func UpdateLink(w http.ResponseWriter, r *http.Request) {
 
 	link := p.GetLink(b.LinkID)
 	if link == nil {
-		c.Log.Warnw("update publication link: could not get link", "link", b.LinkID, "publication", p.ID, "user", c.User.ID)
+		c.Log.Warn("update publication link: could not get link", "link", b.LinkID, "publication", p.ID, "user", c.User.ID)
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}

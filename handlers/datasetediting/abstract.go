@@ -99,7 +99,7 @@ func EditAbstract(w http.ResponseWriter, r *http.Request) {
 
 	// TODO catch non-existing item in UI
 	if abstract == nil {
-		c.Log.Warnf("edit dataset abstract: Could not fetch the abstract:", "dataset", d.ID, "abstract", b.AbstractID, "user", c.User.ID)
+		c.Log.Warn("edit dataset abstract: Could not fetch the abstract:", "dataset", d.ID, "abstract", b.AbstractID, "user", c.User.ID)
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}

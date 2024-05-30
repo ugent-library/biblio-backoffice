@@ -40,7 +40,6 @@ func UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request) {
 	p.ResearchField = b.ResearchField
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		c.Log.Warnw("update publication additional info: could not validate additional info:", "errors", validationErrs, "publication", p.ID, "user", c.User.ID)
 		views.ReplaceModal(publicationviews.EditAdditionalInfoDialog(c, p, false, validationErrs.(*okay.Errors))).Render(r.Context(), w)
 		return
 	}

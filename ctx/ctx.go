@@ -23,9 +23,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views/flash"
 	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/mix"
-	"github.com/ugent-library/zaphttp"
 	"github.com/unrolled/secure"
-	"go.uber.org/zap"
 )
 
 const (
@@ -56,7 +54,7 @@ func Set(config Config) func(http.Handler) http.Handler {
 				Config:     config,
 				host:       r.Host,
 				scheme:     r.URL.Scheme,
-				Log:        zaphttp.Logger(r.Context()).Sugar(),
+				Log:        config.Logger,
 				Loc:        config.Loc,
 				CSRFToken:  csrf.Token(r),
 				CSPNonce:   secure.CSPNonce(r.Context()),
@@ -105,6 +103,7 @@ func Set(config Config) func(http.Handler) http.Handler {
 
 type Config struct {
 	*backends.Services
+	Logger              *slog.Logger
 	Router              *ich.Mux
 	Assets              mix.Manifest
 	MaxFileSize         int
@@ -124,7 +123,7 @@ type Ctx struct {
 	Config
 	host         string
 	scheme       string
-	Log          *zap.SugaredLogger
+	Log          *slog.Logger
 	Loc          *gotext.Locale
 	User         *models.Person
 	UserRole     string

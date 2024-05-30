@@ -41,11 +41,8 @@ import (
 	"github.com/ugent-library/httpx"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
-	"github.com/ugent-library/zaphttp"
-	"github.com/ugent-library/zaphttp/zapchi"
 	"github.com/unrolled/secure"
 	"github.com/unrolled/secure/cspbuilder"
-	"go.uber.org/zap"
 )
 
 type Version struct {
@@ -65,7 +62,7 @@ type Config struct {
 	SessionName      string
 	Timezone         *time.Location
 	Loc              *gotext.Locale
-	Logger           *zap.SugaredLogger
+	Logger           *slog.Logger
 	OIDCAuth         *oidc.Auth
 	UsernameClaim    string
 	FrontendURL      string
@@ -94,8 +91,6 @@ func Register(c Config) {
 		},
 		QuietDownPeriod: 1 * time.Minute,
 	})))
-	// TODO remove
-	c.Router.Use(zaphttp.SetLogger(c.Logger.Desugar(), zapchi.RequestID))
 	c.Router.Use(middleware.StripSlashes)
 
 	// static files
@@ -182,6 +177,7 @@ func Register(c Config) {
 		r.Group(func(r *ich.Mux) {
 			r.Use(ctx.Set(ctx.Config{
 				Services:    c.Services,
+				Logger:      c.Logger,
 				Router:      c.Router,
 				Assets:      c.Assets,
 				MaxFileSize: c.MaxFileSize,

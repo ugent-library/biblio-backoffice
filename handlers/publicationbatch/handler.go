@@ -79,10 +79,10 @@ LINES:
 			} else if errors.As(err, &argErr) {
 				errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s: %s", currentID, argErr.Msg))
 			} else if len(mutations) == 1 {
-				c.Log.Error(err)
+				c.Log.Error("could not process publication batch", "id", currentID, "error", err)
 				errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s at line %d", currentID, mutations[0].Line))
 			} else {
-				c.Log.Error(err)
+				c.Log.Error("could not process publication batch", "id", currentID, "error", err)
 				errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s at lines %d-%d", currentID, mutations[0].Line, mutations[len(mutations)-1].Line))
 			}
 			mutations = nil
@@ -104,10 +104,10 @@ LINES:
 		} else if errors.As(err, &argErr) {
 			errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s: %s", currentID, argErr.Msg))
 		} else if len(mutations) == 1 {
-			c.Log.Error(err)
+			c.Log.Error("could not process publication batch", "id", currentID, "error", err)
 			errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s at line %d", currentID, mutations[0].Line))
 		} else {
-			c.Log.Error(err)
+			c.Log.Error("could not process publication batch", "id", currentID, "error", err)
 			errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s at lines %d-%d", currentID, mutations[0].Line, mutations[len(mutations)-1].Line))
 		}
 	}

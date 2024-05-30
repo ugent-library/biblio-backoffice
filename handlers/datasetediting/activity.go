@@ -47,7 +47,6 @@ func UpdateMessage(w http.ResponseWriter, r *http.Request) {
 	d.Message = b.Message
 
 	if validationErrs := d.Validate(); validationErrs != nil {
-		c.Log.Warnw("update dataset reviewer note: could not validate message:", "errors", validationErrs, "dataset", d.ID, "user", c.User.ID)
 		views.ReplaceModal(datasetviews.EditMessageDialog(c, datasetviews.EditMessageDialogArgs{
 			Dataset:  d,
 			Errors:   validationErrs.(*okay.Errors),
@@ -97,7 +96,6 @@ func UpdateReviewerTags(w http.ResponseWriter, r *http.Request) {
 	d.ReviewerTags = b.ReviewerTags
 
 	if validationErrs := d.Validate(); validationErrs != nil {
-		c.Log.Warnw("update dataset reviewer tags: could not validate reviewer tags:", "errors", validationErrs, "dataset", d.ID, "user", c.User.ID)
 		views.ReplaceModal(datasetviews.EditReviewerTagsDialog(c, datasetviews.EditReviewerTagsDialogArgs{
 			Dataset:  d,
 			Errors:   validationErrs.(*okay.Errors),
@@ -147,7 +145,6 @@ func UpdateReviewerNote(w http.ResponseWriter, r *http.Request) {
 	d.ReviewerNote = b.ReviewerNote
 
 	if validationErrs := d.Validate(); validationErrs != nil {
-		c.Log.Warnw("update dataset reviewer note: could not validate reviewer note:", "errors", validationErrs, "dataset", d.ID, "user", c.User.ID)
 		views.ReplaceModal(datasetviews.EditReviewerNoteDialog(c, datasetviews.EditReviewerNoteDialogArgs{
 			Dataset:  d,
 			Errors:   validationErrs.(*okay.Errors),

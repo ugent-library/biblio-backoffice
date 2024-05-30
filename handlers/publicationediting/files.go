@@ -73,7 +73,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("publication upload file: could not save file", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.Log.Error("publication upload file: could not save file", "errors", err, "publication", p.ID, "user", c.User.ID)
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.file_upload_error"))).Render(r.Context(), w)
 		return
 	}
@@ -123,7 +123,7 @@ func EditFile(w http.ResponseWriter, r *http.Request) {
 	file := p.GetFile(b.FileID)
 
 	if file == nil {
-		c.Log.Warnw("publication upload file: could not find file", "fileid", b.FileID, "publication", p.ID, "user", c.User.ID)
+		c.Log.Warn("publication upload file: could not find file", "fileid", b.FileID, "publication", p.ID, "user", c.User.ID)
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
@@ -231,7 +231,6 @@ func UpdateFile(w http.ResponseWriter, r *http.Request) {
 	if file.EmbargoDate != "" {
 		t, e := time.Parse("2006-01-02", file.EmbargoDate)
 		if e == nil && !t.After(time.Now()) {
-			c.Log.Infof("%+v", file)
 			validationErrs = okay.Add(validationErrs, okay.NewError(fmt.Sprintf("/file/%d/embargo_date", p.FileIndex(file.ID)), "publication.file.embargo_date.expired"))
 		}
 	}
