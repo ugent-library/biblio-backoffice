@@ -105,8 +105,8 @@ func (d *Decoder) Decode(p *models.Publication) error {
 		}
 	}
 
-	if d.scanner.Err() != nil {
-		return d.scanner.Err()
+	if err := d.scanner.Err(); err != nil {
+		return fmt.Errorf("ris: line scanner: %w", err)
 	}
 
 	return io.EOF
