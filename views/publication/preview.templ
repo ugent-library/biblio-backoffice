@@ -469,6 +469,14 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 										<ul class="list-group list-group-flush">
 											<li class="list-group-item bg-transparent">
 												<div class="form-group">
+													<label class="form-label form-label-top" for="Publishing status">Publishing status</label>
+													if p.PublicationStatus != "" {
+														<span>{ c.Loc.Get("publication_publishing_statuses." + p.PublicationStatus) }</span>
+													} else {
+														<span>-</span>
+													}
+												</div>
+												<div class="form-group">
 													<label class="form-label form-label-top" for="Publication year">Publication year</label>
 													if p.Year != "" {
 														<span>{ p.Year }</span>
