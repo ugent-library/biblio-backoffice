@@ -36,7 +36,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/httpx"
-	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
 	"github.com/ugent-library/zaphttp"
 	"github.com/ugent-library/zaphttp/zapchi"
@@ -57,7 +56,7 @@ type Config struct {
 	Services         *backends.Services
 	BaseURL          *url.URL
 	Router           *ich.Mux
-	Assets           mix.Manifest
+	Assets           map[string]string
 	SessionStore     sessions.Store
 	SessionName      string
 	Timezone         *time.Location

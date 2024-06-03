@@ -1,14 +1,14 @@
 // Start your CSS here
-@import "_colors";
-@import "_icon-font";
-@import "_settings.bootstrap";
-@import "_br-variables-override";
+@import "colors";
+@import "icon-font";
+@import "settings.bootstrap";
+@import "br-variables-override";
 
 /* Bootstrap upgrade (todo organise into file)
    ========================================================================== */
 
 // Functions come first
-@import "./node_modules/bootstrap/scss/functions";
+@import "bootstrap/scss/functions";
 
 // Optional variable overrides here
 $custom-color: #1e64c8;
@@ -17,23 +17,23 @@ $custom-theme-colors: (
 );
 
 // Variables come next
-@import "./node_modules/bootstrap/scss/variables";
+@import "bootstrap/scss/variables";
 
 // Optional Sass map overrides here
 $theme-colors: map-merge($theme-colors, $custom-theme-colors);
 
 // Followed by our default maps
-@import "./node_modules/bootstrap/scss/maps";
+@import "bootstrap/scss/maps";
 
 // Rest of our imports
-@import "./node_modules/bootstrap/scss/mixins";
-@import "./node_modules/bootstrap/scss/root";
-@import "./node_modules/bootstrap/scss/reboot";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
 
 /* Generic: CSS reset, box-sizing, global CSS tweaks
   ========================================================================== */
 
-//@import "_reset";
+//@import "reset";
 
 /*!
  * Bootstrap v4.6.0 (https://getbootstrap.com/)
@@ -42,34 +42,34 @@ $theme-colors: map-merge($theme-colors, $custom-theme-colors);
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
 
-@import "./node_modules/bootstrap/scss/type";
-@import "./node_modules/bootstrap/scss/images";
-//@import "./node_modules/bootstrap/scss/code";
-@import "./node_modules/bootstrap/scss/bootstrap-grid";
-@import "./node_modules/bootstrap/scss/tables";
-@import "./node_modules/bootstrap/scss/forms";
-@import "./node_modules/bootstrap/scss/buttons";
-@import "./node_modules/bootstrap/scss/transitions";
-@import "./node_modules/bootstrap/scss/dropdown";
-@import "./node_modules/bootstrap/scss/button-group";
-@import "./node_modules/bootstrap/scss/forms/input-group";
-@import "./node_modules/bootstrap/scss/nav";
-@import "./node_modules/bootstrap/scss/navbar";
-@import "./node_modules/bootstrap/scss/card";
-@import "./node_modules/bootstrap/scss/breadcrumb";
-@import "./node_modules/bootstrap/scss/pagination";
-@import "./node_modules/bootstrap/scss/badge";
-@import "./node_modules/bootstrap/scss/alert";
-@import "./node_modules/bootstrap/scss/progress";
-@import "./node_modules/bootstrap/scss/list-group";
-@import "./node_modules/bootstrap/scss/close";
-@import "./node_modules/bootstrap/scss/toasts";
-@import "./node_modules/bootstrap/scss/modal";
-@import "./node_modules/bootstrap/scss/tooltip";
-@import "./node_modules/bootstrap/scss/popover";
-@import "./node_modules/bootstrap/scss/carousel";
-@import "./node_modules/bootstrap/scss/spinners";
-@import "./node_modules/bootstrap/scss/bootstrap-utilities";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/images";
+//@import "bootstrap/scss/code";
+@import "bootstrap/scss/bootstrap-grid";
+@import "bootstrap/scss/tables";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/dropdown";
+@import "bootstrap/scss/button-group";
+@import "bootstrap/scss/forms/input-group";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";
+@import "bootstrap/scss/card";
+@import "bootstrap/scss/breadcrumb";
+@import "bootstrap/scss/pagination";
+@import "bootstrap/scss/badge";
+@import "bootstrap/scss/alert";
+@import "bootstrap/scss/progress";
+@import "bootstrap/scss/list-group";
+@import "bootstrap/scss/close";
+@import "bootstrap/scss/toasts";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/tooltip";
+@import "bootstrap/scss/popover";
+@import "bootstrap/scss/carousel";
+@import "bootstrap/scss/spinners";
+@import "bootstrap/scss/bootstrap-utilities";
 
 // Bootstrap additions
 @import "bootstrap-additions/alerts";

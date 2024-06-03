@@ -3,7 +3,6 @@ module github.com/ugent-library/biblio-backoffice
 go 1.21.4
 
 require (
-	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/a-h/templ v0.2.543
 	github.com/alexliesenfeld/health v0.7.0
 	github.com/aws/aws-sdk-go-v2 v1.21.2
@@ -15,7 +14,6 @@ require (
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
-	github.com/go-playground/form/v4 v4.2.1
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/csrf v1.7.1
 	github.com/gorilla/sessions v1.2.1
@@ -28,7 +26,6 @@ require (
 	github.com/ogen-go/ogen v1.0.0
 	github.com/ory/graceful v0.1.3
 	github.com/pkg/errors v0.9.1
-	github.com/rvflash/elapsed v0.3.0
 	github.com/samber/lo v1.39.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.16.0
@@ -61,8 +58,6 @@ require (
 require (
 	ariga.io/atlas v0.14.1 // indirect
 	entgo.io/ent v0.12.4 // indirect
-	github.com/Masterminds/goutils v1.1.1 // indirect
-	github.com/Masterminds/semver/v3 v3.2.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.14 // indirect
@@ -84,20 +79,17 @@ require (
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
+	github.com/go-playground/form/v4 v4.2.1 // indirect
 	github.com/golang/geo v0.0.0-20230421003525-6adc56603217 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.18.0 // indirect
-	github.com/huandu/xstrings v1.3.3 // indirect
-	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.6 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
-	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
@@ -161,7 +153,6 @@ require (
 	github.com/nics/ich v0.0.0-20231128155525-f5704f956383
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
-	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
@@ -174,7 +165,6 @@ require (
 	github.com/ugent-library/httperror v0.0.0-20230123152913-d3d289bcce20
 	github.com/ugent-library/httpx v0.0.0-20240403070226-3cd9bcf467c1
 	github.com/ugent-library/index v0.0.0-20240208101504-240e390f8d3d
-	github.com/ugent-library/mix v0.0.0-20230123152737-b51ce0c6439b
 	github.com/ugent-library/oidc v0.0.0-20240327104830-5735182db2e5
 	github.com/ugent-library/okay v0.0.0-20231205122923-396c4d3a29f2
 	github.com/ugent-library/zaphttp v0.0.0-20231026141151-4cbb4e2eb87a

@@ -1,10 +1,8 @@
 @font-face {
   font-family: "icon-font";
   src:
-    url("../fonts/icon-font.woff2?ef994dfceb96b405b7fb3fb47a03d0f3")
-      format("woff2"),
-    url("../fonts/icon-font.woff?ef994dfceb96b405b7fb3fb47a03d0f3")
-      format("woff");
+    url("../ugent/fonts/icon-font.woff2") format("woff2"),
+    url("../ugent/fonts/icon-font.woff") format("woff");
 }
 
 i[class^="if-"]:before,

@@ -14,10 +14,10 @@ by system administrators and data curators.
 
 The application stores data in several stores. You will need:
 
-* A PostgreSQL database
-* An ElasticSearch index
-* An OpenID Connect endpoint (e.g. [Keycloak](https://www.keycloak.org/))
-* Disk storage
+- A PostgreSQL database
+- An ElasticSearch index
+- An OpenID Connect endpoint (e.g. [Keycloak](https://www.keycloak.org/))
+- Disk storage
 
 ## Quickstart Web UI
 
@@ -105,7 +105,6 @@ GOOS=linux GOARCH=amd64 go build -o /tmp/biblio-backoffice-client.linux.amd64 cl
 The gRPC client is intended to be used from any machine (e.g. a data
 curator's local machine), not just the same server where the gRPC server is
 running. This allows for anyone with credentials to manage data remotely.
-
 
 ## Configuration
 
@@ -209,6 +208,7 @@ export BIBLIO_BACKOFFICE_BASE_URL="http://localhost:3001"
 ```
 
 Alternatively, adapt this command in your `reflex.conf` to suit your needs.
+
 ```
 'source .env && go run main.go server start --host localhost --port 3001'
 ```
@@ -253,16 +253,10 @@ Assets will be recompiled automatically if you use [reflex](https://github.com/c
 Build assets manually:
 
 ```
-npx mix
+node esbuild.mjs
 ```
 
-Build production assets manually:
-
-```
-npx mix --production
-```
-
-Laravel Mix [documentation](https://laravel.com/docs/8.x).
+esbuild [documentation](https://esbuild.github.io/).
 
 ## Database migrations
 
@@ -292,7 +286,6 @@ that logs into a Docker container. This will allow you to write and interact wit
 
 1. `cp .devcontainer.env.example .devcontainer.env`
 
-
 **Open in Dev Containers**
 
 1. Open the project directory in VS Code.
@@ -313,9 +306,9 @@ You are now logged into the dev container and ready to develop code, write code,
 
 The application and its dependencies run on these ports:
 
-| Application          | Port |
-| -------------------- | ---- |
-| Biblio Backoffice    | 3001 |
-| Mock OIDC            | 3002 |
-| DB Application       | 3051 |
-| Elastic Search       | 3061 |
+| Application       | Port |
+| ----------------- | ---- |
+| Biblio Backoffice | 3001 |
+| Mock OIDC         | 3002 |
+| DB Application    | 3051 |
+| Elastic Search    | 3061 |
