@@ -97,6 +97,10 @@ func (r *platoRecord) ToCandidateRecord(services *backends.Services) (*models.Ca
 				return false
 			}
 			p.Supervisor = append(p.Supervisor, models.ContributorFromPerson(hits[0]))
+
+			for _, aff := range hits[0].Affiliations {
+				p.AddOrganization(aff.Organization)
+			}
 		} else {
 			c := models.ContributorFromFirstLastName(val.Get("first").String(), val.Get("last").String())
 			c.ExternalPerson.Affiliation = val.Get("affil").String()
