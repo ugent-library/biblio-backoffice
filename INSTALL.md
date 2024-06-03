@@ -6,20 +6,20 @@ These installation instructions will guide you to set up this project on MacOS f
 
 These dependencies are required:
 
-* PostgreSQL 
-* ElasticSearch 6.8
-* An OIDC provider (e.g. Keycloak)
-* MongoDB
+- PostgreSQL
+- ElasticSearch 6.8
+- An OIDC provider (e.g. Keycloak)
+- MongoDB
 
 For development, you will also need:
 
-* Node 14
-* Go
-* Python 2 (for libsass)
+- Node 14
+- Go
+- Python 2 (for libsass)
 
 For importing data into the authority backend:
 
-* Benthos
+- Benthos
 
 ## Preparation
 
@@ -68,7 +68,7 @@ brew install elasticsearch@6
 brew services start elasticsearch@6
 ```
 
-**Note**: Elasticsearch@6 is disabled since 06/2023. You will need to edit the formula and 
+**Note**: Elasticsearch@6 is disabled since 06/2023. You will need to edit the formula and
 change this line:
 
 ```
@@ -210,7 +210,7 @@ export BIBLIO_BACKOFFICE_FILE_DIR=""
 export BIBLIO_BACKOFFICE_SESSION_SECRET="secret"
 # CSRF secret
 export BIBLIO_BACKOFFICE_CSRF_SECRET="secret"
-# Connection to a biblio frontend installation 
+# Connection to a biblio frontend installation
 export BIBLIO_BACKOFFICE_FRONTEND_URL=
 export BIBLIO_BACKOFFICE_FRONTEND_USERNAME=
 export BIBLIO_BACKOFFICE_FRONTEND_PASSWORD=
@@ -262,7 +262,7 @@ Development involves re-compiling and running the codebase via `go run`. Repeate
 command is cumbersome. The `reflex` utility solves this. It watches the codebase for any changes to
 files and will re-compile and restart the application.
 
-Install reflex: 
+Install reflex:
 
 ```
 go install github.com/cespare/reflex@latest
@@ -283,31 +283,23 @@ Starting service
 
 Open your browser and navigate to `http://localhost:3001`. You should see the application.
 
-If you want to edit the JavaScript or SCSS code, you will need to run the `mix` utility in a 
-seperate terminal session. Laravel Mix will watch the assets directory and rebuild the assets
-when it detects changes to the files.
-
-```
-npx mix
-```
-
 ## Step 3: setup the authority backend
 
 The authority backend embedded in the bibli-backoffice application serves two purposes:
 
-* Look up of profile information used for authorizing users after OIDC authentication during login.
-* A historic database of projects, organizations (affiliations) and people used to enrich records
+- Look up of profile information used for authorizing users after OIDC authentication during login.
+- A historic database of projects, organizations (affiliations) and people used to enrich records
   (i.e. Contributor fields, Project fields, Departments,...).
 
 The authority backend consists of:
 
-* A mongodb authority database containing these collections:
-  * person - profile information
-  * project - project information
-* Several ElasticSearch indices which power the "suggest" feature for people, projects and departments:
-  * person
-  * project
-  * organization
+- A mongodb authority database containing these collections:
+  - person - profile information
+  - project - project information
+- Several ElasticSearch indices which power the "suggest" feature for people, projects and departments:
+  - person
+  - project
+  - organization
 
 Without an initialized authority backend, users can't log in, or use the "suggest" feature.
 
@@ -369,9 +361,9 @@ While empty, you need these for the "suggest contributor, project, department" f
 
 You will need to obtain a full copy from the authority backend on either test or production environment:
 
-* MongoDB dump of the authority > person collection: `authority_person.json`
-* MongoDB dump of the authority > project collection: `authority_project.json`
-* ES dump of the organizations index: `es_organizations.json`
+- MongoDB dump of the authority > person collection: `authority_person.json`
+- MongoDB dump of the authority > project collection: `authority_project.json`
+- ES dump of the organizations index: `es_organizations.json`
 
 Importing the MongoDB data dumps:
 
@@ -438,7 +430,6 @@ cat authority_person.json | benthos -c benthos.yml
 
 ### Starting gRPC API
 
-
 First, start the API service in a separate terminal window/tab, don't close the terminal tab where the backoffice service is running!
 
 ```
@@ -452,7 +443,7 @@ Output:
 2023-04-21T13:48:33.744+0200    INFO    commands/api.go:59      Listening at localhost:3002
 ```
 
-The gRPC endpoint is now reachable at `localhost:3002`. Typically, gRPC endpoints are protected via 
+The gRPC endpoint is now reachable at `localhost:3002`. Typically, gRPC endpoints are protected via
 SSL/TLS, but for local development, this isn't used.
 
 The endpoint is secured via Basic Authorization. The username & password for the admin & curate users is configured in the `.env`. file via these variables:
@@ -543,4 +534,3 @@ Same for datasets:
 ```
 go run main.go dataset import < location-to-data/datasets.jsonl
 ```
-
