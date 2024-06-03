@@ -27,10 +27,10 @@ func New(c Config) (*Store, error) {
 		tempDir: c.TempDir,
 	}
 	if err := os.MkdirAll(s.dir, os.ModePerm); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("fsstore: can't create store dir: %w", err)
 	}
 	if err := os.MkdirAll(s.tempDir, os.ModePerm); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("fsstore: can't create temp dir: %w", err)
 	}
 	return s, nil
 }
@@ -61,24 +61,30 @@ func (s *Store) filePath(checksum string) string {
 }
 
 func (s *Store) Exists(ctx context.Context, checksum string) (bool, error) {
-	_, err := os.Stat(s.filePath(checksum))
+	fp := s.filePath(checksum)
+	_, err := os.Stat(fp)
 	if err == nil {
 		return true, nil
 	}
 	if os.IsNotExist(err) {
 		return false, nil
 	}
-	return false, err
+	return false, fmt.Errorf("fsstore.Exists: can't stat file %s for checksum %s: %w", fp, checksum, err)
 }
 
 func (s *Store) Get(ctx context.Context, checksum string) (io.ReadCloser, error) {
-	return os.Open(s.filePath(checksum))
+	fp := s.filePath(checksum)
+	r, err := os.Open(fp)
+	if err != nil {
+		return nil, fmt.Errorf("fsstore.Get: can't open file %s for checksum %s: %w", fp, checksum, err)
+	}
+	return r, nil
 }
 
 func (s *Store) Add(ctx context.Context, r io.Reader, oldChecksum string) (string, error) {
 	tmpFile, err := os.CreateTemp(s.tempDir, "")
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("fsstore.Add: can't create temp file: %w", err)
 	}
 	defer os.Remove(tmpFile.Name())
 
@@ -88,23 +94,23 @@ func (s *Store) Add(ctx context.Context, r io.Reader, oldChecksum string) (strin
 
 	bytesWritten, err := io.Copy(w, r)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("fsstore.Add: write failed: %w", err)
 	}
 	if bytesWritten == 0 {
-		return "", errors.New("file can't be empty")
+		return "", errors.New("fsstore.Add: file can't be empty")
 	}
 
 	checksum := fmt.Sprintf("%x", hasher.Sum(nil))
 
 	// check sha256 if given
 	if oldChecksum != "" && oldChecksum != checksum {
-		return "", fmt.Errorf("sha256 checksum did not match '%s', got '%s'", oldChecksum, checksum)
+		return "", fmt.Errorf("fsstore.Add: sha256 checksums don't match, expected %q, got %q", oldChecksum, checksum)
 	}
 
 	// file already stored
 	exists, err := s.Exists(ctx, checksum)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("fsstore.Add: %w", err)
 	}
 	if exists {
 		return checksum, nil
@@ -112,14 +118,16 @@ func (s *Store) Add(ctx context.Context, r io.Reader, oldChecksum string) (strin
 
 	// write to final location
 	fnv32 := fmt.Sprintf("%d", fnvHash(checksum))
-	pathToDir := path.Join(s.dir, segmentedPath(fnv32, 3))
+	fileDirPath := path.Join(s.dir, segmentedPath(fnv32, 3))
 
-	if err := os.MkdirAll(pathToDir, os.ModePerm); err != nil {
-		return "", err
+	if err := os.MkdirAll(fileDirPath, os.ModePerm); err != nil {
+		return "", fmt.Errorf("fsstore.Add: can't create dir %s for file with checksum %s: %w", fileDirPath, checksum, err)
 	}
 
-	if err := os.Rename(tmpFile.Name(), path.Join(pathToDir, checksum)); err != nil {
-		return "", err
+	filePath := path.Join(fileDirPath, checksum)
+
+	if err := os.Rename(tmpFile.Name(), filePath); err != nil {
+		return "", fmt.Errorf("fsstore.Add: can't move file with checksum %s to %s: %w", checksum, filePath, err)
 	}
 
 	return checksum, nil
@@ -127,9 +135,16 @@ func (s *Store) Add(ctx context.Context, r io.Reader, oldChecksum string) (strin
 
 // TODO remove empty intermediate directories?
 func (s *Store) Delete(ctx context.Context, checksum string) error {
-	return os.Remove(s.filePath(checksum))
+	fp := s.filePath(checksum)
+	if err := os.Remove(fp); err != nil {
+		return fmt.Errorf("fsstore.Delete: can't remove file %s for checksum %s: %w", fp, checksum, err)
+	}
+	return nil
 }
 
 func (s *Store) DeleteAll(ctx context.Context) error {
-	return os.RemoveAll(s.dir)
+	if err := os.RemoveAll(s.dir); err != nil {
+		return fmt.Errorf("fsstore.DeleteAll: can't remove all files: %w", err)
+	}
+	return nil
 }

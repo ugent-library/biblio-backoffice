@@ -40,24 +40,23 @@ func (c *Client) EncodePublication(p *models.Publication) ([]byte, error) {
 
 	req, err := http.NewRequest(http.MethodPost, c.url, buf)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("citeproc: request failed: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	res, err := c.http.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("citeproc: request failed: %w", err)
 	}
-	// log.Printf("%+v", res)
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("citeproc: request failed with status %d", res.StatusCode)
+	}
+
 	defer res.Body.Close()
 	src, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("citeproc: reading response failed: %w", err)
 	}
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("can't generate citation: %s", src)
-	}
-
-	// log.Printf("citation src: %s", src)
 
 	cite := gjson.GetBytes(src, "bibliography.1.0").String()
 

@@ -42,7 +42,7 @@ var seedOrganizationsCmd = &cobra.Command{
 				return err
 			}
 			if count > 0 {
-				zapLogger.Warnf("Not seeding dummy data because the database is not empty")
+				logger.Warn("not seeding dummy data because the database is not empty")
 				return nil
 			}
 		}
@@ -54,13 +54,12 @@ var seedOrganizationsCmd = &cobra.Command{
 				if err := dec.Decode(&params); errors.Is(err, io.EOF) {
 					break
 				} else if err != nil {
-					zapLogger.Errorf("unable to decode json: %w", err)
 					return err
 				}
 				if !fn(params) {
 					break
 				}
-				zapLogger.Infof("imported organization %s", params.Identifiers.Get("biblio"))
+				logger.Info("imported organization", "identifier", params.Identifiers.Get("biblio"))
 			}
 			return nil
 		}
@@ -85,7 +84,7 @@ var seedPeopleCmd = &cobra.Command{
 				return err
 			}
 			if count > 0 {
-				zapLogger.Warnf("Not seeding dummy data because the database is not empty")
+				logger.Warn("not seeding dummy data because the database is not empty")
 				return nil
 			}
 		}
@@ -96,14 +95,12 @@ var seedPeopleCmd = &cobra.Command{
 			if err := dec.Decode(&params); errors.Is(err, io.EOF) {
 				break
 			} else if err != nil {
-				zapLogger.Errorf("unable to decode json: %w", err)
 				return err
 			}
 			if err := peopleRepo.ImportPerson(context.TODO(), params); err != nil {
-				zapLogger.Errorf("unable to import person %s: %w", params.Username, err)
 				continue
 			}
-			zapLogger.Infof("imported person %s", params.Username)
+			logger.Info("imported person", "username", params.Username)
 		}
 		return nil
 	},
@@ -121,7 +118,7 @@ var seedProjectsCmd = &cobra.Command{
 				return err
 			}
 			if count > 0 {
-				zapLogger.Warnf("Not seeding dummy data because the database is not empty")
+				logger.Warn("not seeding dummy data because the database is not empty")
 				return nil
 			}
 		}
@@ -132,14 +129,12 @@ var seedProjectsCmd = &cobra.Command{
 			if err := dec.Decode(&params); errors.Is(err, io.EOF) {
 				break
 			} else if err != nil {
-				zapLogger.Errorf("unable to decode json: %w", err)
 				return err
 			}
 			if err := projectsRepo.ImportProject(context.TODO(), params); err != nil {
-				zapLogger.Errorf("unable to import project %s: %w", params.Identifiers.Get("iweto"), err)
 				continue
 			}
-			zapLogger.Infof("imported project %s", params.Identifiers.Get("iweto"))
+			logger.Info("imported project", "iwetoID", params.Identifiers.Get("iweto"))
 		}
 		return nil
 	},

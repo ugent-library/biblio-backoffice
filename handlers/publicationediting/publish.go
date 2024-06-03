@@ -26,7 +26,6 @@ func Publish(w http.ResponseWriter, r *http.Request) {
 	publication := ctx.GetPublication(r)
 
 	if !c.User.CanEditPublication(publication) {
-		c.Log.Warnw("publish dataset: user has no permission to publish", "user", c.User.ID, "publication", publication.ID)
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
@@ -51,8 +50,7 @@ func Publish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("publish dataset: could not save the dataset:", "error", err, "publication", publication.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

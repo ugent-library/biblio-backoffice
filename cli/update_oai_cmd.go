@@ -119,8 +119,7 @@ var updateOai = &cobra.Command{
 						MetadataPrefix: metadataPrefix,
 					})
 					if err != nil {
-						// TODO
-						zapLogger.Fatal(err)
+						logger.Error("cannot delete oai publication", "identifier", oaiID, "metadataPrefix", metadataPrefix)
 					}
 				}
 				return true
@@ -132,8 +131,8 @@ var updateOai = &cobra.Command{
 
 			metadata, err := oaiEncoder.EncodePublication(p)
 			if err != nil {
-				// TODO
-				zapLogger.Fatal(err)
+				logger.Error("cannot encode oai publication", "identifier", oaiID, "metadataPrefix", "oai_dc")
+				return true
 			}
 
 			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
@@ -142,13 +141,14 @@ var updateOai = &cobra.Command{
 				Content:        string(metadata),
 			})
 			if err != nil {
-				zapLogger.Fatal(err)
+				logger.Error("cannot add oai publication", "identifier", oaiID, "metadataPrefix", "oai_dc")
+				return true
 			}
 
 			metadata, err = modsEncoder.EncodePublication(p)
 			if err != nil {
-				// TODO
-				zapLogger.Fatal(err)
+				logger.Error("cannot encode oai publication", "identifier", oaiID, "metadataPrefix", "mods_36")
+				return true
 			}
 
 			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
@@ -157,8 +157,8 @@ var updateOai = &cobra.Command{
 				Content:        string(metadata),
 			})
 			if err != nil {
-				// TODO
-				zapLogger.Fatal(err)
+				logger.Error("cannot add oai publication", "identifier", oaiID, "metadataPrefix", "mods_36")
+				return true
 			}
 
 			setSpecs := []string{}
@@ -199,8 +199,8 @@ var updateOai = &cobra.Command{
 				SetSpecs:   setSpecs,
 			})
 			if err != nil {
-				// TODO
-				zapLogger.Fatal(err)
+				logger.Error("cannot add oai dataset item", "identifier", oaiID)
+				return true
 			}
 
 			return true
@@ -209,8 +209,8 @@ var updateOai = &cobra.Command{
 		repo.EachDataset(func(d *models.Dataset) bool {
 			oaiID := "oai:archive.ugent.be:" + d.ID
 
-			 // any record that has been part of the oai set but is now not visible anymore
-			 // because it is returned or deleted is marked as deleted in oai
+			// any record that has been part of the oai set but is now not visible anymore
+			// because it is returned or deleted is marked as deleted in oai
 			if d.HasBeenPublic && d.Status != "public" {
 				for _, metadataPrefix := range []string{"oai_dc", "mods_36"} {
 					err = client.DeleteRecord(context.TODO(), &api.DeleteRecordRequest{
@@ -218,8 +218,7 @@ var updateOai = &cobra.Command{
 						MetadataPrefix: metadataPrefix,
 					})
 					if err != nil {
-						// TODO
-						zapLogger.Fatal(err)
+						logger.Error("cannot delete oai dataset", "identifier", oaiID, "metadataPrefix", metadataPrefix)
 					}
 				}
 				return true
@@ -231,8 +230,8 @@ var updateOai = &cobra.Command{
 
 			metadata, err := oaiEncoder.EncodeDataset(d)
 			if err != nil {
-				// TODO
-				zapLogger.Fatal(err)
+				logger.Error("cannot encode oai dataset", "identifier", oaiID, "metadataPrefix", "oai_dc")
+				return true
 			}
 
 			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
@@ -241,13 +240,14 @@ var updateOai = &cobra.Command{
 				Content:        string(metadata),
 			})
 			if err != nil {
-				zapLogger.Fatal(err)
+				logger.Error("cannot add oai dataset", "identifier", oaiID, "metadataPrefix", "oai_dc")
+				return true
 			}
 
 			metadata, err = modsEncoder.EncodeDataset(d)
 			if err != nil {
-				// TODO
-				zapLogger.Fatal(err)
+				logger.Error("cannot encode oai dataset", "identifier", oaiID, "metadataPrefix", "mods_36")
+				return true
 			}
 
 			err = client.AddRecord(context.TODO(), &api.AddRecordRequest{
@@ -256,8 +256,8 @@ var updateOai = &cobra.Command{
 				Content:        string(metadata),
 			})
 			if err != nil {
-				// TODO
-				zapLogger.Fatal(err)
+				logger.Error("cannot add oai dataset", "identifier", oaiID, "metadataPrefix", "mods_36")
+				return true
 			}
 
 			err = client.AddItem(context.TODO(), &api.AddItemRequest{
@@ -265,8 +265,8 @@ var updateOai = &cobra.Command{
 				SetSpecs:   []string{},
 			})
 			if err != nil {
-				// TODO
-				zapLogger.Fatal(err)
+				logger.Error("cannot add oai dataset item", "identifier", oaiID)
+				return true
 			}
 
 			return true

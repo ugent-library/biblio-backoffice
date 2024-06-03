@@ -7,7 +7,6 @@ import (
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
-	"github.com/ugent-library/httperror"
 )
 
 var (
@@ -52,8 +51,7 @@ func ShowPublications(w http.ResponseWriter, r *http.Request) {
 
 	relatedPublications, err := c.Repo.GetVisibleDatasetPublications(c.User, dataset)
 	if err != nil {
-		c.Log.Errorw("show dataset publications: could not get publications", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

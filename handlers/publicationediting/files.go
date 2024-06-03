@@ -67,14 +67,13 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	maxBytesErr := &http.MaxBytesError{}
 	if errors.As(err, &maxBytesErr) {
-		c.Log.Errorf("publication upload file: could not save file", "errors", err, "publication", p.ID, "user", c.User.ID)
 		// TODO show friendly error
-		http.Error(w, http.StatusText(http.StatusRequestEntityTooLarge), http.StatusRequestEntityTooLarge)
+		c.HandleError(w, r, httperror.RequestEntityTooLarge.Wrap(fmt.Errorf("could not save file: %w", maxBytesErr)))
 		return
 	}
 
 	if err != nil {
-		c.Log.Errorf("publication upload file: could not save file", "errors", err, "publication", p.ID, "user", c.User.ID)
+		c.Log.Error("publication upload file: could not save file", "errors", err, "publication", p.ID, "user", c.User.ID)
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.file_upload_error"))).Render(r.Context(), w)
 		return
 	}
@@ -124,7 +123,7 @@ func EditFile(w http.ResponseWriter, r *http.Request) {
 	file := p.GetFile(b.FileID)
 
 	if file == nil {
-		c.Log.Warnw("publication upload file: could not find file", "fileid", b.FileID, "publication", p.ID, "user", c.User.ID)
+		c.Log.Warn("publication upload file: could not find file", "fileid", b.FileID, "publication", p.ID, "user", c.User.ID)
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}
@@ -143,8 +142,7 @@ func RefreshEditFileForm(w http.ResponseWriter, r *http.Request) {
 
 	var b BindFile
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("edit publication file license: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -195,8 +193,7 @@ func UpdateFile(w http.ResponseWriter, r *http.Request) {
 
 	b := BindFile{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("update publication file: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -234,7 +231,6 @@ func UpdateFile(w http.ResponseWriter, r *http.Request) {
 	if file.EmbargoDate != "" {
 		t, e := time.Parse("2006-01-02", file.EmbargoDate)
 		if e == nil && !t.After(time.Now()) {
-			c.Log.Infof("%+v", file)
 			validationErrs = okay.Add(validationErrs, okay.NewError(fmt.Sprintf("/file/%d/embargo_date", p.FileIndex(file.ID)), "publication.file.embargo_date.expired"))
 		}
 	}
@@ -253,8 +249,7 @@ func UpdateFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("update publication file: could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -267,8 +262,7 @@ func ConfirmDeleteFile(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteFile
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete publication file: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -293,8 +287,7 @@ func DeleteFile(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteFile
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete publication file: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -309,8 +302,7 @@ func DeleteFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("delete publication file: could not save the publication:", "error", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

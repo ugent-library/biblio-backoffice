@@ -35,8 +35,8 @@ var MutatePublicationsCmd = &cobra.Command{
 
 	Example input file:
 
-	    {"id":"1234", "op":"keyword.add", "args":["dna", "double helix"]}
-	    {"id":"2345", "op":"classification.set", "args":["A3"]}
+	    {"id":"1234", "op":"add_keyword", "args":["dna", "double helix"]}
+	    {"id":"2345", "op":"set_classification", "args":["A3"]}
 
 	`,
 	RunE: MutatePublications,

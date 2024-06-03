@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/backends"
 )
@@ -30,7 +32,7 @@ func updatePublicationEmbargoes(services *backends.Services) error {
 		return err
 	}
 
-	zapLogger.Infof("updated %d publication embargoes", n)
+	logger.Info(fmt.Sprintf("updated %d publication embargoes", n))
 
 	return nil
 }
@@ -41,7 +43,7 @@ func updateDatasetEmbargoes(e *backends.Services) error {
 		return err
 	}
 
-	zapLogger.Infof("updated %d dataset embargoes", n)
+	logger.Info(fmt.Sprintf("updated %d dataset embargoes", n))
 
 	return nil
 }

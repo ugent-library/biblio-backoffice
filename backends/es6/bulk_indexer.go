@@ -30,7 +30,7 @@ func newBulkIndexer[T any](client *elasticsearch.Client, index string, docFn fun
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("es6.newBulkIndexer: %w", err)
 	}
 
 	return &bulkIndexer[T]{
@@ -43,7 +43,7 @@ func newBulkIndexer[T any](client *elasticsearch.Client, index string, docFn fun
 func (b *bulkIndexer[T]) Index(ctx context.Context, t T) error {
 	id, doc, err := b.docFn(t)
 	if err != nil {
-		return err
+		return fmt.Errorf("bulkindexer.Index: %w", err)
 	}
 
 	err = b.bi.Add(
@@ -63,10 +63,15 @@ func (b *bulkIndexer[T]) Index(ctx context.Context, t T) error {
 		},
 	)
 
-	return err
+	if err != nil {
+		return fmt.Errorf("bulkindexer.Index: %w", err)
+	}
+	return nil
 }
 
 func (b *bulkIndexer[T]) Close(ctx context.Context) error {
-	// TODO wrap error
-	return b.bi.Close(ctx)
+	if err := b.bi.Close(ctx); err != nil {
+		return fmt.Errorf("bulkindexer.Close: %w", err)
+	}
+	return nil
 }

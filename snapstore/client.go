@@ -161,7 +161,7 @@ func (s *Store) AddAfter(snapshotID, id string, data any, o Options) (string, er
 
 	err = tx.QueryRow(ctx, sqlSnap, snapshotID).Scan(&snap.ID, &snap.DateFrom, &snap.DateUntil)
 
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return "", fmt.Errorf("unknown snapshot %s", snapshotID)
 	} else if err != nil {
 		return "", err

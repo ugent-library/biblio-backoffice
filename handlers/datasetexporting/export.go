@@ -21,12 +21,6 @@ func ExportByCurationSearch(w http.ResponseWriter, r *http.Request) {
 
 	exporterFactory, exporterFactoryFound := c.DatasetListExporters[format]
 	if !exporterFactoryFound {
-		e := fmt.Errorf("unable to find exporter %s", format)
-		c.Log.Errorw(
-			"dataset search: could not find exporter",
-			"errors", e,
-			"user", c.User.ID,
-		)
 		c.HandleError(w, r, httperror.NotFound)
 		return
 	}
@@ -34,8 +28,7 @@ func ExportByCurationSearch(w http.ResponseWriter, r *http.Request) {
 
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Request(r, searchArgs); err != nil {
-		c.Log.Warnw("publication search: could not bind search arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -45,12 +38,7 @@ func ExportByCurationSearch(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if searcherErr != nil {
-		c.Log.Errorw(
-			"dataset search: unable to execute search",
-			"errors", searcherErr,
-			"user", c.User.ID,
-		)
-		c.HandleError(w, r, fmt.Errorf("unable to execute search: %w", searcherErr))
+		c.HandleError(w, r, searcherErr)
 		return
 	}
 
@@ -70,7 +58,6 @@ func ExportByCurationSearch(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Disposition", contentDisposition)
 
 	if err := exporter.Flush(); err != nil {
-		c.Log.Errorw("dataset search: could not export search", "errors", err, "user", c.User.ID)
 		c.HandleError(w, r, err)
 		return
 	}

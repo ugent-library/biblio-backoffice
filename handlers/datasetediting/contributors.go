@@ -91,8 +91,7 @@ func AddContributor(w http.ResponseWriter, r *http.Request) {
 
 	b := BindAddContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("add dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -101,8 +100,7 @@ func AddContributor(w http.ResponseWriter, r *http.Request) {
 	if b.FirstName != "" || b.LastName != "" {
 		people, err := c.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
-			c.Log.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
-			c.HandleError(w, r, httperror.InternalServerError)
+			c.HandleError(w, r, err)
 			return
 		}
 
@@ -126,8 +124,7 @@ func AddContributorSuggest(w http.ResponseWriter, r *http.Request) {
 
 	b := BindAddContributorSuggest{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("suggest dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -136,8 +133,7 @@ func AddContributorSuggest(w http.ResponseWriter, r *http.Request) {
 	if b.FirstName != "" || b.LastName != "" {
 		people, err := c.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
-			c.Log.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
-			c.HandleError(w, r, httperror.InternalServerError)
+			c.HandleError(w, r, err)
 			return
 		}
 
@@ -163,8 +159,7 @@ func ConfirmCreateContributor(w http.ResponseWriter, r *http.Request) {
 
 	b := BindConfirmCreateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("confirm create dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -195,8 +190,7 @@ func CreateContributor(w http.ResponseWriter, r *http.Request) {
 
 	b := BindCreateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("create dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -241,8 +235,7 @@ func CreateContributor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("create dataset contributor: Could not save the dataset:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -272,15 +265,13 @@ func EditContributor(w http.ResponseWriter, r *http.Request) {
 
 	b := BindEditContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("edit dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	cn, err := dataset.GetContributor(b.Role, b.Position)
 	if err != nil {
-		c.Log.Errorw("edit dataset contributor: could not get the contributor", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -293,8 +284,7 @@ func EditContributor(w http.ResponseWriter, r *http.Request) {
 
 	people, err := c.PersonSearchService.SuggestPeople(firstName + " " + lastName)
 	if err != nil {
-		c.Log.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -334,15 +324,13 @@ func EditContributorSuggest(w http.ResponseWriter, r *http.Request) {
 
 	b := BindEditContributorSuggest{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("suggest dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	cn, err := dataset.GetContributor(b.Role, b.Position)
 	if err != nil {
-		c.Log.Errorw("edit dataset contributor: could not get the contributor", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -351,8 +339,7 @@ func EditContributorSuggest(w http.ResponseWriter, r *http.Request) {
 	if b.FirstName != "" || b.LastName != "" {
 		people, err := c.PersonSearchService.SuggestPeople(b.FirstName + " " + b.LastName)
 		if err != nil {
-			c.Log.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
-			c.HandleError(w, r, httperror.InternalServerError)
+			c.HandleError(w, r, err)
 			return
 		}
 
@@ -389,8 +376,7 @@ func ConfirmUpdateContributor(w http.ResponseWriter, r *http.Request) {
 
 	b := BindConfirmUpdateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("confirm update dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -421,8 +407,7 @@ func UpdateContributor(w http.ResponseWriter, r *http.Request) {
 
 	b := BindUpdateContributor{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("update dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -430,8 +415,7 @@ func UpdateContributor(w http.ResponseWriter, r *http.Request) {
 	if b.ID != "" {
 		newC, err := generateContributorFromPersonId(c, b.ID)
 		if err != nil {
-			c.Log.Errorw("update dataset contributor: could not fetch person", "errors", err, "personid", b.ID, "dataset", dataset.ID, "user", c.User.ID)
-			c.HandleError(w, r, httperror.InternalServerError)
+			c.HandleError(w, r, err)
 			return
 		}
 		cn = newC
@@ -446,8 +430,7 @@ func UpdateContributor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := dataset.SetContributor(b.Role, b.Position, cn); err != nil {
-		c.Log.Errorw("update dataset contributor: could not set the contributor", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -472,8 +455,7 @@ func UpdateContributor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("update dataset contributor: Could not save the dataset:", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -482,8 +464,7 @@ func UpdateContributor(w http.ResponseWriter, r *http.Request) {
 		nextC := dataset.Contributors(b.Role)[nextPos]
 		people, err := c.PersonSearchService.SuggestPeople(nextC.Name())
 		if err != nil {
-			c.Log.Errorw("suggest dataset contributor: could not suggest people", "errors", err, "request", r, "user", c.User.ID)
-			c.HandleError(w, r, httperror.InternalServerError)
+			c.HandleError(w, r, err)
 			return
 		}
 		hits := make([]*models.Contributor, len(people))
@@ -517,8 +498,7 @@ func ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDeleteContributor{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -536,14 +516,12 @@ func DeleteContributor(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDeleteContributor{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete dataset contributor: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	if err := dataset.RemoveContributor(b.Role, b.Position); err != nil {
-		c.Log.Warnw("delete dataset contributor: could not remove contributor", "errors", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -562,8 +540,7 @@ func DeleteContributor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("delete dataset contributor: Could not save the dataset:", "error", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -579,16 +556,13 @@ func OrderContributors(w http.ResponseWriter, r *http.Request) {
 
 	b := BindOrderContributors{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("order dataset contributors: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	contributors := dataset.Contributors(b.Role)
 	if len(b.Positions) != len(contributors) {
-		err := fmt.Errorf("positions don't match number of contributors")
-		c.Log.Warnw("order dataset contributors: could not order contributors", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(errors.New("positions don't match number of contributors")))
 		return
 	}
 	newContributors := make([]*models.Contributor, len(contributors))
@@ -606,8 +580,7 @@ func OrderContributors(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("order dataset contributors: Could not save the dataset:", "errors", err, "identifier", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/spf13/cobra"
 
@@ -35,7 +36,7 @@ var updateCandidateRecords = &cobra.Command{
 			}
 
 			if oldCandidateRec != nil {
-				zapLogger.Warnf("skipping duplicate candidate record from source %s/%s: already found in %s", srcRec.SourceName(), srcRec.SourceID(), oldCandidateRec.ID)
+				logger.Warn(fmt.Sprintf("skipping duplicate candidate record from source %s/%s: already found in %s", srcRec.SourceName(), srcRec.SourceID(), oldCandidateRec.ID))
 				return nil
 			}
 
@@ -47,8 +48,6 @@ var updateCandidateRecords = &cobra.Command{
 			if err := services.Repo.AddCandidateRecord(context.TODO(), candidateRec); err != nil {
 				return err
 			}
-
-			zapLogger.Infof("added candidate record %s from source %s/%s", candidateRec.ID, candidateRec.SourceName, candidateRec.SourceID)
 
 			return nil
 		})

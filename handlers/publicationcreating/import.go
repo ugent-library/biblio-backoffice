@@ -53,8 +53,7 @@ func AddSingleImportConfirm(w http.ResponseWriter, r *http.Request) {
 
 	b := BindImportSingle{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("import confirm single publication: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -66,8 +65,7 @@ func AddSingleImportConfirm(w http.ResponseWriter, r *http.Request) {
 
 		existing, err := c.PublicationSearchIndex.Search(args)
 		if err != nil {
-			c.Log.Warnw("import single publication: could not execute search for duplicates", "errors", err, "args", args, "user", c.User.ID)
-			c.HandleError(w, r, httperror.InternalServerError)
+			c.HandleError(w, r, err)
 			return
 		}
 
@@ -90,8 +88,7 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request) {
 
 	b := BindImportSingle{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("import single publication: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -104,7 +101,7 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request) {
 	if b.Identifier != "" {
 		p, err = fetchPublicationByIdentifier(c, b.Source, b.Identifier)
 		if err != nil {
-			c.Log.Warnw("import single publication: could not fetch publication", "errors", err, "publication", b.Identifier, "user", c.User.ID)
+			c.Log.Warn("import single publication: could not fetch publication", "errors", err, "publication", b.Identifier, "user", c.User.ID)
 
 			flash := flash.SimpleFlash().
 				WithLevel("error").
@@ -149,8 +146,7 @@ func AddSingleImport(w http.ResponseWriter, r *http.Request) {
 
 	err = c.Repo.SavePublication(p, c.User)
 	if err != nil {
-		c.Log.Errorf("import single publication: could not save the publication:", "error", err, "identifier", b.Identifier, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -197,7 +193,6 @@ func AddSinglePublish(w http.ResponseWriter, r *http.Request) {
 	publication := ctx.GetPublication(r)
 
 	if !c.User.CanPublishPublication(publication) {
-		c.Log.Warnw("add single publication publish: user has no permission to publish publication.", "publication", publication.ID, "user", c.User.ID)
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
@@ -219,8 +214,7 @@ func AddSinglePublish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("add single publication publish: could not save the publication:", "errors", err, "publication", publication.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -249,8 +243,7 @@ func AddMultipleImport(w http.ResponseWriter, r *http.Request) {
 
 	file, _, err := r.FormFile("file")
 	if err != nil {
-		c.Log.Warnw("add multiple import publication: could not retrieve file from request", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(fmt.Errorf("could not retrieve file from request: %w", err)))
 		return
 	}
 	defer file.Close()
@@ -260,7 +253,7 @@ func AddMultipleImport(w http.ResponseWriter, r *http.Request) {
 
 	batchID, err := importPublications(c, source, file)
 	if err != nil {
-		c.Log.Warnw("add multiple import publication: could not import publications", "errors", err, "batch", batchID, "user", c.User.ID)
+		c.Log.Warn("add multiple import publication: could not import publications", "errors", err, "batch", batchID, "user", c.User.ID)
 
 		flash := flash.SimpleFlash().
 			WithLevel("error").
@@ -315,8 +308,7 @@ func AddMultipleConfirm(w http.ResponseWriter, r *http.Request) {
 
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Query(r, searchArgs); err != nil {
-		c.Log.Warnw("add multiple confirm publication: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -331,8 +323,7 @@ func AddMultipleConfirm(w http.ResponseWriter, r *http.Request) {
 		Search(searchArgs)
 
 	if err != nil {
-		c.Log.Errorw("add multiple confirm publication: could not execute search", "errors", err, "batch", batchID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -355,16 +346,13 @@ func AddMultiplePublish(w http.ResponseWriter, r *http.Request) {
 	// TODO this is useless to the user unless we point to the publication in question
 	var validationErrs *okay.Errors
 	if errors.As(err, &validationErrs) {
-		c.Log.Warnw("add multiple publish publication: could not validate abstract:", "errors", validationErrs, "batch", batchID, "user", c.User.ID)
-
 		errors := localize.ValidationErrors(c.Loc, validationErrs)
 		views.ShowModal(views.FormErrorsDialog("Unable to publish a publication due to the following errors", errors)).Render(r.Context(), w)
 		return
 	}
 
 	if err != nil {
-		c.Log.Errorw("add multiple publish publication: could not publish publications", "errors", err, "batch", batchID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -377,8 +365,7 @@ func AddMultipleFinish(w http.ResponseWriter, r *http.Request) {
 
 	searchArgs := models.NewSearchArgs()
 	if err := bind.Query(r, searchArgs); err != nil {
-		c.Log.Warnw("add multiple finish publication: could not bind request arguments", "errors", err, "request", r)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -393,8 +380,7 @@ func AddMultipleFinish(w http.ResponseWriter, r *http.Request) {
 		Search(searchArgs)
 
 	if err != nil {
-		c.Log.Errorw("add multiple finish publication: could not execute search", "errors", err, "batch", batchID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

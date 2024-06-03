@@ -2,6 +2,7 @@ package es6
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 
@@ -31,7 +32,7 @@ func NewSearchService(c SearchServiceConfig) (backends.SearchService, error) {
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("es6.NewSearchService: %w", err)
 	}
 
 	return &SearchService{
@@ -59,7 +60,7 @@ func (s *SearchService) NewPublicationBulkIndexer(config backends.BulkIndexerCon
 func (s *SearchService) NewPublicationIndexSwitcher(config backends.BulkIndexerConfig) (backends.IndexSwitcher[*models.Publication], error) {
 	settings, err := os.ReadFile("etc/es6/publication.json")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("searchservice.NewPublicationIndexSwitcher: %w", err)
 	}
 
 	docFn := func(p *models.Publication) (string, []byte, error) {
@@ -88,7 +89,7 @@ func (s *SearchService) NewDatasetBulkIndexer(config backends.BulkIndexerConfig)
 func (s *SearchService) NewDatasetIndexSwitcher(config backends.BulkIndexerConfig) (backends.IndexSwitcher[*models.Dataset], error) {
 	settings, err := os.ReadFile("etc/es6/dataset.json")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("searchservice.NewDatasetIndexSwitcher: %w", err)
 	}
 
 	docFn := func(d *models.Dataset) (string, []byte, error) {

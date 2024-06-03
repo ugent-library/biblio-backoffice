@@ -1,6 +1,7 @@
 package bibtex
 
 import (
+	"fmt"
 	"io"
 	"regexp"
 	"strings"
@@ -26,7 +27,7 @@ func NewDecoder(r io.Reader) backends.PublicationDecoder {
 func (d *Decoder) Decode(p *models.Publication) error {
 	entry, err := d.parser.Next()
 	if err != nil {
-		return err
+		return fmt.Errorf("bibtex: parse: %w", err)
 	}
 	if entry == nil {
 		return io.EOF

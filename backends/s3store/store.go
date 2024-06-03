@@ -65,7 +65,7 @@ func (s *Store) Get(ctx context.Context, checksum string) (io.ReadCloser, error)
 		Key:    aws.String(checksum),
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("s3store.Get: s3.GetObject: %w", err)
 	}
 	return out.Body, nil
 }
@@ -80,7 +80,8 @@ func (s *Store) Exists(ctx context.Context, checksum string) (bool, error) {
 		if errors.As(err, &responseError) && responseError.ResponseError.HTTPStatusCode() == http.StatusNotFound {
 			return false, nil
 		}
-		return false, err
+		return false, fmt.Errorf("s3store.Exists: s3.HeadObject: %w", err)
+
 	}
 	return true, nil
 }
@@ -104,14 +105,15 @@ func (s *Store) Add(ctx context.Context, b io.Reader, oldChecksum string) (strin
 		// Expires: &tempExpires,
 	})
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("s3store.Add: s3.Uploader: %w", err)
+
 	}
 
 	checksum := fmt.Sprintf("%x", hasher.Sum(nil))
 
 	// check sha256 if given
 	if oldChecksum != "" && oldChecksum != checksum {
-		return "", fmt.Errorf("sha256 checksum did not match '%s', got '%s'", oldChecksum, checksum)
+		return "", fmt.Errorf("s3store.Add: sha256 checksums don't match, expected %q, got %q", oldChecksum, checksum)
 	}
 
 	_, err = s.client.CopyObject(ctx, &s3.CopyObjectInput{
@@ -120,7 +122,7 @@ func (s *Store) Add(ctx context.Context, b io.Reader, oldChecksum string) (strin
 		Key:        aws.String(checksum),
 	})
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("s3store.Add: s3.CopyObject: %w", err)
 	}
 
 	return checksum, nil
@@ -131,7 +133,10 @@ func (s *Store) Delete(ctx context.Context, checksum string) error {
 		Bucket: aws.String(s.bucket),
 		Key:    aws.String(checksum),
 	})
-	return err
+	if err != nil {
+		return fmt.Errorf("s3store.Delete: s3.DeleteObject: %w", err)
+	}
+	return nil
 }
 
 func (s *Store) DeleteAll(ctx context.Context) error {
@@ -142,7 +147,7 @@ func (s *Store) DeleteAll(ctx context.Context) error {
 	for pager.HasMorePages() {
 		page, err := pager.NextPage(ctx)
 		if err != nil {
-			return err
+			return fmt.Errorf("s3store.DeleteAll: s3.NextPage: %w", err)
 		}
 
 		var ids []types.ObjectIdentifier
@@ -163,7 +168,7 @@ func (s *Store) DeleteAll(ctx context.Context) error {
 			},
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("s3store.DeleteAll: s3.DeleteObjects: %w", err)
 		}
 	}
 

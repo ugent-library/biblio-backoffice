@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
@@ -8,11 +9,13 @@ import (
 
 	"github.com/alexliesenfeld/health"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httplog/v2"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
 	"github.com/jpillora/ipfilter"
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
+	"github.com/samber/lo"
 	"github.com/swaggest/swgui/v5emb"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -38,11 +41,8 @@ import (
 	"github.com/ugent-library/httpx"
 	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
-	"github.com/ugent-library/zaphttp"
-	"github.com/ugent-library/zaphttp/zapchi"
 	"github.com/unrolled/secure"
 	"github.com/unrolled/secure/cspbuilder"
-	"go.uber.org/zap"
 )
 
 type Version struct {
@@ -62,7 +62,7 @@ type Config struct {
 	SessionName      string
 	Timezone         *time.Location
 	Loc              *gotext.Locale
-	Logger           *zap.SugaredLogger
+	Logger           *slog.Logger
 	OIDCAuth         *oidc.Auth
 	UsernameClaim    string
 	FrontendURL      string
@@ -76,13 +76,21 @@ type Config struct {
 }
 
 func Register(c Config) {
-	c.Router.Use(middleware.RequestID)
 	if c.Env != "local" {
 		c.Router.Use(middleware.RealIP)
 	}
-	c.Router.Use(zaphttp.SetLogger(c.Logger.Desugar(), zapchi.RequestID))
-	c.Router.Use(middleware.RequestLogger(zapchi.LogFormatter()))
-	c.Router.Use(middleware.Recoverer)
+	c.Router.Use(httplog.RequestLogger(httplog.NewLogger("biblio-backoffice-http", httplog.Options{
+		JSON:             c.Env != "local",
+		LogLevel:         lo.Ternary(c.Env == "local", slog.LevelDebug, slog.LevelInfo),
+		Concise:          true,
+		RequestHeaders:   true,
+		MessageFieldName: "message",
+		QuietDownRoutes: []string{
+			"/dashboard-icon",
+			"/candidate-records-icon",
+		},
+		QuietDownPeriod: 1 * time.Minute,
+	})))
 	c.Router.Use(middleware.StripSlashes)
 
 	// static files
@@ -169,6 +177,7 @@ func Register(c Config) {
 		r.Group(func(r *ich.Mux) {
 			r.Use(ctx.Set(ctx.Config{
 				Services:    c.Services,
+				Logger:      c.Logger,
 				Router:      c.Router,
 				Assets:      c.Assets,
 				MaxFileSize: c.MaxFileSize,
