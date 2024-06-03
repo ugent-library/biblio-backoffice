@@ -2,6 +2,7 @@ package backends
 
 import (
 	"context"
+	"errors"
 	"io"
 
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -292,7 +293,7 @@ func (s *PersonWithOrganizationsService) GetPerson(id string) (*models.Person, e
 			continue
 		}
 		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
-		if err == models.ErrNotFound {
+		if errors.Is(err, models.ErrNotFound) {
 			a.Organization = NewDummyOrganization(a.OrganizationID)
 		} else if err != nil {
 			return nil, err
@@ -318,7 +319,7 @@ func (s *UserWithOrganizationsService) GetUser(id string) (*models.Person, error
 			continue
 		}
 		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
-		if err == models.ErrNotFound {
+		if errors.Is(err, models.ErrNotFound) {
 			a.Organization = NewDummyOrganization(a.OrganizationID)
 		} else if err != nil {
 			return nil, err
@@ -339,7 +340,7 @@ func (s *UserWithOrganizationsService) GetUserByUsername(username string) (*mode
 			continue
 		}
 		o, err := s.OrganizationService.GetOrganization(a.OrganizationID)
-		if err == models.ErrNotFound {
+		if errors.Is(err, models.ErrNotFound) {
 			a.Organization = NewDummyOrganization(a.OrganizationID)
 		} else if err != nil {
 			return nil, err

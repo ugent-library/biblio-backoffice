@@ -11,7 +11,8 @@ require (
 	github.com/caarlos0/env/v10 v10.0.0
 	github.com/caltechlibrary/doitools v0.0.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
-	github.com/go-chi/chi/v5 v5.0.10
+	github.com/go-chi/chi/v5 v5.0.12
+	github.com/go-chi/httplog/v2 v2.0.11
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
 	github.com/google/uuid v1.6.0
@@ -35,7 +36,6 @@ require (
 	github.com/ugent-library/crypt v0.0.0-20230630063634-8c02106fd40e
 	github.com/ugent-library/oai-service v0.0.0-20230922094424-2e5e8941ea8a
 	github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c
-	github.com/ugent-library/projects-service v0.0.0-20231124152414-66adc1aa8935
 	github.com/unrolled/secure v1.14.0
 	github.com/xuri/excelize/v2 v2.8.0
 	go.mongodb.org/mongo-driver v1.12.1
@@ -150,7 +150,7 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mschoch/smat v0.2.0 // indirect
-	github.com/nics/ich v0.0.0-20231128155525-f5704f956383
+	github.com/nics/ich v0.0.0-20240522120349-1d5aee282cb7
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
@@ -162,12 +162,11 @@ require (
 	github.com/ugent-library/bibtex v0.0.0-20231218123206-c910132512fe
 	github.com/ugent-library/bind v0.0.0-20231106145128-3b6630797063
 	github.com/ugent-library/friendly v0.0.0-20230811091914-e5eb37f47072
-	github.com/ugent-library/httperror v0.0.0-20230123152913-d3d289bcce20
+	github.com/ugent-library/httperror v0.0.0-20240522041727-58d71286fb15
 	github.com/ugent-library/httpx v0.0.0-20240403070226-3cd9bcf467c1
 	github.com/ugent-library/index v0.0.0-20240208101504-240e390f8d3d
 	github.com/ugent-library/oidc v0.0.0-20240327104830-5735182db2e5
 	github.com/ugent-library/okay v0.0.0-20231205122923-396c4d3a29f2
-	github.com/ugent-library/zaphttp v0.0.0-20231026141151-4cbb4e2eb87a
 	go.etcd.io/bbolt v1.3.7 // indirect
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.27.0

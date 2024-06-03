@@ -2,13 +2,10 @@ package people
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
 )
-
-var ErrNotFound = errors.New("not found")
 
 type InvalidIdentifierError struct {
 	Identifier string
@@ -24,14 +21,6 @@ type InvalidFilterError struct {
 
 func (e *InvalidFilterError) Error() string {
 	return fmt.Sprintf("%q is not a valid filter", e.Filter)
-}
-
-type InvalidSortError struct {
-	Sort string
-}
-
-func (e *InvalidSortError) Error() string {
-	return fmt.Sprintf("%q is not a valid sort order", e.Sort)
 }
 
 type DuplicateError struct {

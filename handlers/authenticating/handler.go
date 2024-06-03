@@ -29,7 +29,6 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	claims := &oidc.Claims{}
 	if err := h.auth.CompleteAuth(w, r, &claims); err != nil {
-		c.Log.Errorw("authentication: OIDC client could not complete exchange:", "errors", err)
 		c.HandleError(w, r, err)
 		return
 	}
@@ -38,15 +37,13 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 
 	user, err := c.UserService.GetUserByUsername(username)
 	if err != nil {
-		c.Log.Warnw("authentication: No user with that name could be found:", "errors", err, "user", username)
 		c.HandleError(w, r, err)
 		return
 	}
 
 	session, err := c.SessionStore.Get(r, c.SessionName)
 	if err != nil {
-		c.Log.Errorw("authentication: session could not be retrieved:", "errors", err)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, fmt.Errorf("session could not be retrieved: %w", err))
 		return
 	}
 
@@ -56,8 +53,7 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := session.Save(r, w); err != nil {
-		c.Log.Errorw("authentication: session could not be saved:", "errors", err)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, fmt.Errorf("session could not be saved: %w", err))
 		return
 	}
 
@@ -67,7 +63,6 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	if err := h.auth.BeginAuth(w, r); err != nil {
-		c.Log.Errorw("authentication: OIDC client could not begin exchange:", "errors", err)
 		c.HandleError(w, r, err)
 		return
 	}
@@ -77,8 +72,7 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	session, err := c.SessionStore.Get(r, c.SessionName)
 	if err != nil {
-		c.Log.Errorw("authentication: session could not be retrieved:", "errors", err)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, fmt.Errorf("session could not be retrieved: %w", err))
 		return
 	}
 
@@ -87,8 +81,7 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	delete(session.Values, ctx.OriginalUserIDKey)
 	delete(session.Values, ctx.OriginalUserRoleKey)
 	if err := session.Save(r, w); err != nil {
-		c.Log.Errorw("authentication: session could not be saved:", "errors", err)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, fmt.Errorf("session could not be saved: %w", err))
 		return
 	}
 
@@ -101,22 +94,20 @@ func UpdateRole(w http.ResponseWriter, r *http.Request) {
 	role := bind.PathValue(r, "role")
 
 	if !slices.Contains(vocabularies.Map["user_roles"], role) {
-		c.HandleError(w, r, fmt.Errorf("%w: %s is not a valid role", httperror.BadRequest, role))
+		c.HandleError(w, r, httperror.BadRequest.Wrap(fmt.Errorf("%s is not a valid role", role)))
 		return
 	}
 
 	session, err := c.SessionStore.Get(r, c.SessionName)
 	if err != nil {
-		c.Log.Errorw("authentication: session could not be retrieved:", "errors", err)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, fmt.Errorf("session could not be retrieved: %w", err))
 		return
 	}
 
 	session.Values[ctx.UserRoleKey] = role
 
 	if err := session.Save(r, w); err != nil {
-		c.Log.Errorw("authentication: session could not be saved:", "errors", err)
-		c.HandleError(w, r, err)
+		c.HandleError(w, r, fmt.Errorf("session could not be saved: %w", err))
 		return
 	}
 

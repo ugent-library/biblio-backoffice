@@ -399,7 +399,7 @@ func (p *Publication) SetContributors(role string, c []*Contributor) {
 func (p *Publication) GetContributor(role string, i int) (*Contributor, error) {
 	cc := p.Contributors(role)
 	if i >= len(cc) {
-		return nil, errors.New("index out of bounds")
+		return nil, fmt.Errorf("publication.GetContributor: index %d out of bounds", i)
 	}
 
 	return cc[i], nil
@@ -412,7 +412,7 @@ func (p *Publication) AddContributor(role string, c *Contributor) {
 func (p *Publication) SetContributor(role string, i int, c *Contributor) error {
 	cc := p.Contributors(role)
 	if i >= len(cc) {
-		return errors.New("index out of bounds")
+		return fmt.Errorf("publication.SetContributor: index %d out of bounds", i)
 	}
 
 	cc[i] = c
@@ -423,7 +423,7 @@ func (p *Publication) SetContributor(role string, i int, c *Contributor) error {
 func (p *Publication) RemoveContributor(role string, i int) error {
 	cc := p.Contributors(role)
 	if i >= len(cc) {
-		return errors.New("index out of bounds")
+		return fmt.Errorf("publication.RemoveContributor: index %d out of bounds", i)
 	}
 
 	p.SetContributors(role, append(cc[:i], cc[i+1:]...))

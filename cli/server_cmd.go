@@ -85,11 +85,11 @@ var serverStartCmd = &cobra.Command{
 			ReadTimeout:  5 * time.Minute,
 			WriteTimeout: 5 * time.Minute,
 		})
-		zapLogger.Infof("starting server at %s", addr)
+		logger.Info(fmt.Sprintf("starting server at %s", addr))
 		if err := graceful.Graceful(server.ListenAndServe, server.Shutdown); err != nil {
 			return err
 		}
-		zapLogger.Info("gracefully stopped server")
+		logger.Info("gracefully stopped server")
 
 		return nil
 	},
@@ -180,7 +180,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 		SessionName:      sessionName,
 		Timezone:         timezone,
 		Loc:              loc,
-		Logger:           zapLogger,
+		Logger:           logger,
 		OIDCAuth:         oidcAuth,
 		UsernameClaim:    config.OIDC.UsernameClaim,
 		FrontendURL:      config.Frontend.URL,

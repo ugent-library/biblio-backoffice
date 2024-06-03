@@ -39,8 +39,7 @@ func UpdateMessage(w http.ResponseWriter, r *http.Request) {
 
 	b := BindMessage{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("update publication reviewer note: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -48,7 +47,6 @@ func UpdateMessage(w http.ResponseWriter, r *http.Request) {
 	p.Message = b.Message
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		c.Log.Warnw("update publication reviewer note: could not validate message:", "errors", validationErrs, "publication", p.ID, "user", c.User.ID)
 		views.ReplaceModal(publicationviews.EditMessageDialog(c, publicationviews.EditMessageDialogArgs{
 			Publication: p,
 			Errors:      validationErrs.(*okay.Errors),
@@ -69,8 +67,7 @@ func UpdateMessage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("update publication message: could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -91,8 +88,7 @@ func UpdateReviewerTags(w http.ResponseWriter, r *http.Request) {
 
 	b := BindReviewerTags{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("update publication reviewer tags: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -100,7 +96,6 @@ func UpdateReviewerTags(w http.ResponseWriter, r *http.Request) {
 	p.ReviewerTags = b.ReviewerTags
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		c.Log.Warnw("update publication reviewer tags: could not validate reviewer tags:", "errors", validationErrs, "publication", p.ID, "user", c.User.ID)
 		views.ReplaceModal(publicationviews.EditReviewerTagsDialog(c, publicationviews.EditReviewerTagsDialogArgs{
 			Publication: p,
 			Errors:      validationErrs.(*okay.Errors),
@@ -121,8 +116,7 @@ func UpdateReviewerTags(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("update publication reviewer tags: could not save the publication:", "errors", err, "publication", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -143,8 +137,7 @@ func UpdateReviewerNote(w http.ResponseWriter, r *http.Request) {
 
 	b := BindReviewerNote{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("update dataset reviewer note: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -152,7 +145,6 @@ func UpdateReviewerNote(w http.ResponseWriter, r *http.Request) {
 	p.ReviewerNote = b.ReviewerNote
 
 	if validationErrs := p.Validate(); validationErrs != nil {
-		c.Log.Warnw("update dataset reviewer note: could not validate reviewer note:", "errors", validationErrs, "dataset", p.ID, "user", c.User.ID)
 		views.ReplaceModal(publicationviews.EditReviewerNoteDialog(c, publicationviews.EditReviewerNoteDialogArgs{
 			Publication: p,
 			Errors:      validationErrs.(*okay.Errors),
@@ -173,8 +165,7 @@ func UpdateReviewerNote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("update dataset reviewer note: could not save the dataset:", "errors", err, "dataset", p.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

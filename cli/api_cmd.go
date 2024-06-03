@@ -34,9 +34,9 @@ var apiStartCmd = &cobra.Command{
 				Role:     "curator",
 			},
 		}
-		srv := server.New(newServices(), users, zapLogger)
+		srv := server.New(newServices(), users)
 		addr := fmt.Sprintf("%s:%d", config.API.Host, config.API.Port)
-		zapLogger.Infof("Listening at %s", addr)
+		logger.Info(fmt.Sprintf("Listening at %s", addr))
 		listener, err := net.Listen("tcp", addr)
 		if err != nil {
 			return err

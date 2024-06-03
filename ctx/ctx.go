@@ -6,11 +6,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/httplog/v2"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
 	"github.com/leonelquinteros/gotext"
@@ -20,9 +23,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/flash"
 	"github.com/ugent-library/httperror"
-	"github.com/ugent-library/zaphttp"
 	"github.com/unrolled/secure"
-	"go.uber.org/zap"
 )
 
 const (
@@ -53,7 +54,7 @@ func Set(config Config) func(http.Handler) http.Handler {
 				Config:     config,
 				host:       r.Host,
 				scheme:     r.URL.Scheme,
-				Log:        zaphttp.Logger(r.Context()).Sugar(),
+				Log:        config.Logger,
 				Loc:        config.Loc,
 				CSRFToken:  csrf.Token(r),
 				CSPNonce:   secure.CSPNonce(r.Context()),
@@ -102,6 +103,7 @@ func Set(config Config) func(http.Handler) http.Handler {
 
 type Config struct {
 	*backends.Services
+	Logger              *slog.Logger
 	Router              *ich.Mux
 	Assets              map[string]string
 	MaxFileSize         int
@@ -121,7 +123,7 @@ type Ctx struct {
 	Config
 	host         string
 	scheme       string
-	Log          *zap.SugaredLogger
+	Log          *slog.Logger
 	Loc          *gotext.Locale
 	User         *models.Person
 	UserRole     string
@@ -147,22 +149,30 @@ func (c *Ctx) HandleError(w http.ResponseWriter, r *http.Request, err error) {
 		httpErr = httperror.InternalServerError
 	}
 
+	// TODO replace with LogEntrySetFields when https://github.com/go-chi/httplog/pull/38 is released
+	route := chi.RouteContext(r.Context())
+	httplog.LogEntrySetField(r.Context(), "error", slog.StringValue(err.Error()))
+	httplog.LogEntrySetField(r.Context(), "env", slog.StringValue(c.Env))
+	httplog.LogEntrySetField(r.Context(), "routeName", slog.StringValue(c.Router.RouteName(route.RouteMethod, route.RoutePattern())))
+	if c.User != nil {
+		httplog.LogEntrySetField(r.Context(), "userID", slog.StringValue(c.User.ID))
+		httplog.LogEntrySetField(r.Context(), "userRole", slog.StringValue(c.UserRole))
+	}
+
 	if h, ok := c.StatusErrorHandlers[httpErr.StatusCode]; ok {
 		h(w, r)
 		return
 	}
 
-	c.Log.Error(err)
-
 	http.Error(w, http.StatusText(httpErr.StatusCode), httpErr.StatusCode)
 }
 
-func (c *Ctx) PathTo(name string, pairs ...string) *url.URL {
-	return c.Router.PathTo(name, pairs...)
+func (c *Ctx) PathTo(name string, pairs ...any) *url.URL {
+	return c.Router.Path(name, pairs...)
 }
 
-func (c *Ctx) URLTo(name string, pairs ...string) *url.URL {
-	u := c.Router.PathTo(name, pairs...)
+func (c *Ctx) URLTo(name string, pairs ...any) *url.URL {
+	u := c.Router.Path(name, pairs...)
 	u.Scheme = c.BaseURL.Scheme
 	u.Host = c.BaseURL.Host
 	return u

@@ -9,7 +9,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/snapstore"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/flash"
-	"github.com/ugent-library/httperror"
 	"github.com/ugent-library/okay"
 )
 
@@ -36,8 +35,7 @@ func Lock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("lock dataset: could not save the dataset:", "error", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -76,8 +74,7 @@ func Unlock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("unlock dataset: could not save the dataset:", "error", err, "dataset", dataset.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

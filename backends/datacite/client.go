@@ -39,28 +39,28 @@ func New() *Client {
 func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 	doi, err := doitools.NormalizeDOI(id)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("datacite: invalid doi: %w", err)
 	}
 
 	req, err := http.NewRequest(http.MethodGet, c.url+url.PathEscape(doi), nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("datacite: request failed: %w", err)
 	}
 	req.Header.Set("Accept", ContentType)
 	res, err := c.http.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("datacite: request failed: %w", err)
 	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("datacite: request failed with status %d", res.StatusCode)
+	}
+
 	defer res.Body.Close()
 	src, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("datacite: reading response failed: %w", err)
 	}
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("can't import dataset: %s", src)
-	}
-
-	// log.Printf("import dataset src: %s", src)
 
 	attrs := gjson.ParseBytes(src)
 
@@ -144,8 +144,6 @@ func (c *Client) GetDataset(id string) (*models.Dataset, error) {
 	if res := attrs.Get(`rightsList.#(rightsUri%"info:eu-repo/semantics/*").rightsUri`); res.Exists() {
 		d.AccessLevel = res.String()
 	}
-
-	// log.Printf("import dataset: %+v", d)
 
 	return d, nil
 }

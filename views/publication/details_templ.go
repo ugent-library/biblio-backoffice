@@ -648,7 +648,7 @@ func DetailsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 			if p.UsesISBN() {
 				templ_7745c5c3_Err = display.Field(display.FieldArgs{
 					Label:   c.Loc.Get("builder.isbn"),
-					Content: display.List(p.ISSN, nil),
+					Content: display.List(p.ISBN, nil),
 				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err

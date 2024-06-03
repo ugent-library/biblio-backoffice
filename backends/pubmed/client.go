@@ -29,33 +29,31 @@ func New() *Client {
 }
 
 func (c *Client) GetPublication(id string) (*models.Publication, error) {
-	// log.Printf("import publication pubmed: %s", id)
-
 	u, _ := url.Parse(c.url)
 	q := u.Query()
 	q.Set("format", "json")
 	q.Set("query", id)
 	q.Set("resultType", "core")
 	u.RawQuery = q.Encode()
+
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("pubmed: request failed: %w", err)
 	}
 	res, err := c.http.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("pubmed: request failed: %w", err)
 	}
-	// log.Printf("%+v", res)
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("pubmed: request failed with status %d", res.StatusCode)
+	}
+
 	defer res.Body.Close()
 	src, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("pubmed: reading response failed: %w", err)
 	}
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("can't import publication: %s", src)
-	}
-
-	// log.Printf("import publication src: %s", src)
 
 	p := &models.Publication{
 		Type: "journal_article",
@@ -63,8 +61,8 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 
 	attrs := gjson.ParseBytes(src)
 
-	if attrs.Get("hitCount").Int() != 1 {
-		return nil, fmt.Errorf("no publication found")
+	if n := attrs.Get("hitCount").Int(); n != 1 {
+		return nil, fmt.Errorf("pubmed: expected 1 result, but found %d", n)
 	}
 
 	attrs = attrs.Get("resultList.result.0")
@@ -133,8 +131,6 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	if res := attrs.Get("language"); res.Exists() {
 		p.Language = append(p.Language, res.String())
 	}
-
-	// log.Printf("import publication: %+v", p)
 
 	return p, nil
 }

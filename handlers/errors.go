@@ -14,12 +14,12 @@ func UserNotFound(w http.ResponseWriter, r *http.Request) {
 	// clear session to make sure that baseHandler doesn't keep blocking other handlers
 	session, err := c.SessionStore.Get(r, c.SessionName)
 	if err != nil {
-		c.Log.Errorf("unable to retrieve session: %w", err)
+		c.Log.Error("unable to retrieve session", "error", err)
 		InternalServerError(w, r)
 		return
 	}
 	if err := clearSession(w, r, session); err != nil {
-		c.Log.Errorf("unable to save session: %w", err)
+		c.Log.Error("unable to save session", "error", err)
 		InternalServerError(w, r)
 		return
 	}

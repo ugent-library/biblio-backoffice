@@ -2,6 +2,7 @@ package people
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -497,7 +498,7 @@ func insertOrganization(ctx context.Context, conn Conn, o ImportOrganizationPara
 
 	if ident := o.ParentIdentifier; ident != nil {
 		err := tx.QueryRow(ctx, getOrganizationIDQuery, ident.Kind, ident.Value).Scan(&parentID.Int64)
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return fmt.Errorf("organization %s not found", ident.String())
 		}
 		if err != nil {
@@ -560,7 +561,7 @@ func insertPerson(ctx context.Context, conn Conn, p ImportPersonParams) error {
 	for _, a := range p.Affiliations {
 		var organizationID int64
 		err := conn.QueryRow(ctx, getOrganizationIDQuery, a.OrganizationIdentifier.Kind, a.OrganizationIdentifier.Value).Scan(&organizationID)
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return fmt.Errorf("organization %s not found", a.OrganizationIdentifier.String())
 		}
 		if err != nil {
@@ -788,7 +789,7 @@ func createPerson(ctx context.Context, conn Conn, params AddPersonParams) (int64
 	for _, a := range params.Affiliations {
 		var organizationID int64
 		err := conn.QueryRow(ctx, getOrganizationIDQuery, a.OrganizationIdentifier.Kind, a.OrganizationIdentifier.Value).Scan(&organizationID)
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return id, fmt.Errorf("organization %s not found", a.OrganizationIdentifier.String())
 		}
 		if err != nil {
@@ -828,7 +829,7 @@ func updatePerson(ctx context.Context, conn Conn, id int64, params AddPersonPara
 	for _, a := range params.Affiliations {
 		var organizationID int64
 		err := conn.QueryRow(ctx, getOrganizationIDQuery, a.OrganizationIdentifier.Kind, a.OrganizationIdentifier.Value).Scan(&organizationID)
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return fmt.Errorf("organization %s not found", a.OrganizationIdentifier.String())
 		}
 		if err != nil {

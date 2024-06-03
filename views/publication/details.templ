@@ -266,7 +266,7 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 				if p.UsesISBN() {
 					@display.Field(display.FieldArgs{
 						Label:   c.Loc.Get("builder.isbn"),
-						Content: display.List(p.ISSN, nil),
+						Content: display.List(p.ISBN, nil),
 					})
 					@display.Field(display.FieldArgs{
 						Label:   c.Loc.Get("builder.eisbn"),

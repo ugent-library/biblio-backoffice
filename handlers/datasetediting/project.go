@@ -29,8 +29,7 @@ func AddProject(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := c.ProjectSearchService.SuggestProjects("")
 	if err != nil {
-		c.Log.Errorw("add dataset project: could not suggest projects:", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -43,15 +42,13 @@ func SuggestProjects(w http.ResponseWriter, r *http.Request) {
 
 	b := BindSuggestProjects{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("suggest dataset project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	hits, err := c.ProjectSearchService.SuggestProjects(b.Query)
 	if err != nil {
-		c.Log.Errorw("suggest dataset project: could not suggest projects:", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -64,15 +61,13 @@ func CreateProject(w http.ResponseWriter, r *http.Request) {
 
 	b := BindProject{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("create dataset project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	project, err := c.ProjectService.GetProject(b.ProjectID)
 	if err != nil {
-		c.Log.Errorw("create dataset project: could not get project:", "errors", err, "dataset", d.ID, "project", b.ProjectID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -89,8 +84,7 @@ func CreateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("create dataset project: Could not save the dataset:", "errors", err, "dataset", d.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -103,8 +97,7 @@ func ConfirmDeleteProject(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDeleteProject{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete dataset project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -129,8 +122,7 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteProject
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete dataset project: could not bind request arguments:", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -149,8 +141,7 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("delete dataset project: Could not save the dataset:", "error", err, "dataset", d.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

@@ -34,8 +34,7 @@ func Add(w http.ResponseWriter, r *http.Request) {
 
 	b := BindAdd{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("add dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -56,8 +55,7 @@ func ConfirmImport(w http.ResponseWriter, r *http.Request) {
 
 	b := BindImport{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("confirm import dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -68,8 +66,7 @@ func ConfirmImport(w http.ResponseWriter, r *http.Request) {
 		existing, err := c.DatasetSearchIndex.Search(args)
 
 		if err != nil {
-			c.Log.Errorw("confirm import dataset: could not execute search", "errors", err, "user", c.User.ID)
-			c.HandleError(w, r, httperror.InternalServerError)
+			c.HandleError(w, r, err)
 			return
 		}
 
@@ -92,8 +89,7 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 
 	b := BindImport{}
 	if err := bind.Request(r, &b, bind.Vacuum); err != nil {
-		c.Log.Warnw("add import dataset: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -146,8 +142,7 @@ func AddImport(w http.ResponseWriter, r *http.Request) {
 	err = c.Repo.SaveDataset(d, c.User)
 
 	if err != nil {
-		c.Log.Warnw("add import dataset: could not save dataset:", "errors", err, "dataset", b.Identifier, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -209,8 +204,7 @@ func AddPublish(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Warnf("create dataset: Could not save the dataset:", "error", err, "identifier", dataset.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

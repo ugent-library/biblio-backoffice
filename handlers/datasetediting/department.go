@@ -31,8 +31,7 @@ func AddDepartment(w http.ResponseWriter, r *http.Request) {
 
 	hits, err := c.OrganizationSearchService.SuggestOrganizations("")
 	if err != nil {
-		c.Log.Errorw("add dataset department: could not suggest organization", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -44,15 +43,13 @@ func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
 
 	b := BindSuggestDepartments{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("suggest dataset departments could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	hits, err := c.OrganizationSearchService.SuggestOrganizations(b.Query)
 	if err != nil {
-		c.Log.Errorw("add dataset department: could not suggest organization", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -65,15 +62,13 @@ func CreateDepartment(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDepartment{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("create dataset department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
 	org, err := c.OrganizationService.GetOrganization(b.DepartmentID)
 	if err != nil {
-		c.Log.Errorw("create dataset department: could not find organization", "errors", err, "dataset", d.ID, "department", b.DepartmentID, r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -90,8 +85,7 @@ func CreateDepartment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("create dataset department: Could not save the dataset:", "errors", err, "dataset", d.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 
@@ -104,8 +98,7 @@ func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
 
 	b := BindDeleteDepartment{}
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("confirm delete dataset department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -124,7 +117,6 @@ func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
 		DeleteUrl:  c.PathTo("dataset_delete_department", "id", dataset.ID, "department_id", b.DepartmentID),
 		SnapshotID: dataset.SnapshotID,
 	}).Render(r.Context(), w)
-
 }
 
 func DeleteDepartment(w http.ResponseWriter, r *http.Request) {
@@ -133,8 +125,7 @@ func DeleteDepartment(w http.ResponseWriter, r *http.Request) {
 
 	var b BindDeleteDepartment
 	if err := bind.Request(r, &b); err != nil {
-		c.Log.Warnw("delete dataset department: could not bind request arguments", "errors", err, "request", r, "user", c.User.ID)
-		c.HandleError(w, r, httperror.BadRequest)
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
@@ -153,8 +144,7 @@ func DeleteDepartment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		c.Log.Errorf("delete dataset department: Could not save the dataset:", "error", err, "dataset", d.ID, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 

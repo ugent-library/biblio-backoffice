@@ -53,7 +53,9 @@ func listPermissions() map[string][]string {
 	}
 }
 
-func New(services *backends.Services, users Users, logger *zap.SugaredLogger) *grpc.Server {
+func New(services *backends.Services, users Users) *grpc.Server {
+	logger, _ := zap.NewProduction()
+
 	zap_opt := grpc_zap.WithLevels(
 		func(c codes.Code) zapcore.Level {
 			var l zapcore.Level
@@ -78,12 +80,12 @@ func New(services *backends.Services, users Users, logger *zap.SugaredLogger) *g
 		grpc.Creds(nil),
 		grpc_middleware.WithStreamServerChain(
 			grpc_recovery.StreamServerInterceptor(),
-			grpc_zap.StreamServerInterceptor(logger.Desugar(), zap_opt),
+			grpc_zap.StreamServerInterceptor(logger, zap_opt),
 			grpc.StreamServerInterceptor(basicAuthInterceptor.Stream()),
 		),
 		grpc_middleware.WithUnaryServerChain(
 			grpc_recovery.UnaryServerInterceptor(),
-			grpc_zap.UnaryServerInterceptor(logger.Desugar(), zap_opt),
+			grpc_zap.UnaryServerInterceptor(logger, zap_opt),
 			grpc.UnaryServerInterceptor(basicAuthInterceptor.Unary()),
 		),
 	)

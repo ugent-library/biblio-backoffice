@@ -3,7 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
-	"log"
+	"os"
 	"path"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -40,7 +40,8 @@ func newServices() *backends.Services {
 
 	pool, err := pgxpool.New(ctx, config.PgConn)
 	if err != nil {
-		panic(err)
+		logger.Error("fatal: can't create pgx pool", "error", err)
+		os.Exit(1)
 	}
 
 	peopleRepo, err := people.NewRepo(people.RepoConfig{
@@ -49,7 +50,8 @@ func newServices() *backends.Services {
 		DeactivationPeriod: config.People.DeactivationPeriod,
 	})
 	if err != nil {
-		panic(err)
+		logger.Error("fatal: can't create people repo", "error", err)
+		os.Exit(1)
 	}
 
 	peopleIndex, err := people.NewIndex(people.IndexConfig{
@@ -59,14 +61,16 @@ func newServices() *backends.Services {
 		Logger:      logger,
 	})
 	if err != nil {
-		panic(err)
+		logger.Error("fatal: can't create people index", "error", err)
+		os.Exit(1)
 	}
 
 	projectsRepo, err := projects.NewRepo(projects.RepoConfig{
 		Conn: pool,
 	})
 	if err != nil {
-		panic(err)
+		logger.Error("fatal: can't create projects repo", "error", err)
+		os.Exit(1)
 	}
 
 	projectsIndex, err := projects.NewIndex(projects.IndexConfig{
@@ -76,7 +80,8 @@ func newServices() *backends.Services {
 		Logger:      logger,
 	})
 	if err != nil {
-		panic(err)
+		logger.Error("fatal: can't create projects index", "error", err)
+		os.Exit(1)
 	}
 
 	orcidConfig := orcid.Config{
@@ -192,7 +197,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 			func(p *models.Publication) {
 				if p.DateUntil == nil {
 					if err := bp.Index(ctx, p); err != nil {
-						zapLogger.Errorf("error indexing publication %s: %w", p.ID, err)
+						logger.Error("error indexing publication", "id", p.ID, "error", err)
 					}
 				}
 			},
@@ -202,7 +207,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 			func(d *models.Dataset) {
 				if d.DateUntil == nil {
 					if err := bd.Index(ctx, d); err != nil {
-						zapLogger.Errorf("error indexing dataset %s: %w", d.ID, err)
+						logger.Error("error indexing dataset", "id", d.ID, "error", err)
 					}
 				}
 			},
@@ -213,7 +218,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 				if p.CreatorID != "" {
 					person, err := personService.GetPerson(p.CreatorID)
 					if err != nil {
-						zapLogger.Warnf("error loading person %s in publication %s:, %w", p.CreatorID, p.ID, err)
+						logger.Warn("error loading creator in publication", "personID", p.CreatorID, "id", p.ID, "error", err)
 						p.Creator = backends.NewDummyPerson(p.CreatorID)
 					} else {
 						p.Creator = person
@@ -222,7 +227,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 				if p.UserID != "" {
 					person, err := personService.GetPerson(p.UserID)
 					if err != nil {
-						zapLogger.Warnf("error loading person %s in publication %s:, %w", p.UserID, p.ID, err)
+						logger.Warn("error loading user in publication", "personID", p.UserID, "id", p.ID, "error", err)
 						p.User = backends.NewDummyPerson(p.UserID)
 					} else {
 						p.User = person
@@ -231,7 +236,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 				if p.LastUserID != "" {
 					person, err := personService.GetPerson(p.LastUserID)
 					if err != nil {
-						zapLogger.Warnf("error loading person %s in publication %s:, %w", p.LastUserID, p.ID, err)
+						logger.Warn("error loading last user in publication", "personID", p.LastUserID, "id", p.ID, "error", err)
 						p.LastUser = backends.NewDummyPerson(p.LastUserID)
 					} else {
 						p.LastUser = person
@@ -245,7 +250,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 						}
 						person, err := personService.GetPerson(c.PersonID)
 						if err != nil {
-							zapLogger.Warnf("error loading person %s in publication %s:, %w", c.PersonID, p.ID, err)
+							logger.Warn("error loading contributor in publication", "personID", c.PersonID, "id", p.ID, "error", err)
 							c.Person = backends.NewDummyPerson(c.PersonID)
 						} else {
 							c.Person = person
@@ -269,7 +274,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 				for _, rel := range p.RelatedProjects {
 					project, err := projectService.GetProject(rel.ProjectID)
 					if err != nil {
-						zapLogger.Warnf("error loading project %s in publication %s:, %w", rel.ProjectID, p.ID, err)
+						logger.Warn("error loading project in publication", "projectID", rel.ProjectID, "id", p.ID, "error", err)
 						rel.Project = backends.NewDummyProject(rel.ProjectID)
 					} else {
 						rel.Project = project
@@ -284,7 +289,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 				if d.CreatorID != "" {
 					person, err := personService.GetPerson(d.CreatorID)
 					if err != nil {
-						zapLogger.Warnf("error loading person %s in dataset %s:, %w", d.CreatorID, d.ID, err)
+						logger.Warn("error loading creator in dataset", "personID", d.CreatorID, "id", d.ID, "error", err)
 						d.Creator = backends.NewDummyPerson(d.CreatorID)
 					} else {
 						d.Creator = person
@@ -293,7 +298,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 				if d.UserID != "" {
 					person, err := personService.GetPerson(d.UserID)
 					if err != nil {
-						zapLogger.Warnf("error loading person %s in dataset %s:, %w", d.UserID, d.ID, err)
+						logger.Warn("error loading user in dataset", "personID", d.UserID, "id", d.ID, "error", err)
 						d.User = backends.NewDummyPerson(d.UserID)
 					} else {
 						d.User = person
@@ -302,7 +307,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 				if d.LastUserID != "" {
 					person, err := personService.GetPerson(d.LastUserID)
 					if err != nil {
-						zapLogger.Warnf("error loading person %s in dataset %s:, %w", d.LastUserID, d.ID, err)
+						logger.Warn("error loading last user in dataset", "personID", d.LastUserID, "id", d.ID, "error", err)
 						d.LastUser = backends.NewDummyPerson(d.LastUserID)
 					} else {
 						d.LastUser = person
@@ -316,7 +321,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 						}
 						person, err := personService.GetPerson(c.PersonID)
 						if err != nil {
-							zapLogger.Warnf("error loading person %s in dataset %s:, %w", c.PersonID, d.ID, err)
+							logger.Warn("error loading contributor in dataset", "personID", c.PersonID, "id", d.ID, "error", err)
 							c.Person = backends.NewDummyPerson(c.PersonID)
 						} else {
 							c.Person = person
@@ -340,7 +345,7 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 				for _, rel := range d.RelatedProjects {
 					project, err := projectService.GetProject(rel.ProjectID)
 					if err != nil {
-						zapLogger.Warnf("error loading project %s in dataset %s:, %w", rel.ProjectID, d.ID, err)
+						logger.Warn("error loading project in dataset", "projectID", rel.ProjectID, "id", d.ID, "error", err)
 						rel.Project = backends.NewDummyProject(rel.ProjectID)
 					} else {
 						rel.Project = project
@@ -379,7 +384,8 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 	})
 
 	if err != nil {
-		log.Fatalln("unable to create store", err)
+		logger.Error("fatal: unable to initialize store", "error", err)
+		os.Exit(1)
 	}
 
 	return repo
@@ -392,7 +398,8 @@ func newFileStore() backends.FileStore {
 			TempDir: path.Join(baseDir, "tmp"),
 		})
 		if err != nil {
-			log.Fatalln("Unable to initialize filestore", err)
+			logger.Error("fatal: unable to initialize filestore", "error", err)
+			os.Exit(1)
 		}
 		return store
 	}
@@ -407,7 +414,8 @@ func newFileStore() backends.FileStore {
 	})
 
 	if err != nil {
-		log.Fatalln("Unable to initialize filestore", err)
+		logger.Error("fatal: unable to initialize filestore", "error", err)
+		os.Exit(1)
 	}
 	return store
 }
@@ -423,7 +431,8 @@ func newSearchService() backends.SearchService {
 	s, err := es6.NewSearchService(config)
 
 	if err != nil {
-		zapLogger.Fatalln("unable to create search service", err)
+		logger.Error("fatal: unable to create search service", "error", err)
+		os.Exit(1)
 	}
 
 	return s
@@ -434,21 +443,23 @@ func newPublicationBulkIndexerService() backends.BulkIndexer[*models.Publication
 
 	bp, err := newSearchService().NewPublicationBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
-			zapLogger.Errorf("Indexing failed : %s", err)
+			logger.Error("indexing failed for publication", "error", err)
 		},
 		OnIndexError: func(id string, err error) {
-			zapLogger.Errorf("Indexing failed for publication [id: %s] : %s", id, err)
+			logger.Error("indexing failed for publication", "id", id, "error", err)
 		},
 	})
 
 	if err != nil {
-		zapLogger.Fatalln("unable to create publication bulk indexer", err)
+		logger.Error("fatal: unable to create publication bulk indexer", "error", err)
+		os.Exit(1)
 	}
 
 	cobra.OnFinalize(func() {
 		err := bp.Close(ctx)
 		if err != nil {
-			panic(err)
+			logger.Error("fatal: unable to close publication bulk indexer", "error", err)
+			os.Exit(1)
 		}
 	})
 
@@ -460,21 +471,23 @@ func newDatasetBulkIndexerService() backends.BulkIndexer[*models.Dataset] {
 
 	bd, err := newSearchService().NewDatasetBulkIndexer(backends.BulkIndexerConfig{
 		OnError: func(err error) {
-			zapLogger.Errorf("Indexing failed : %s", err)
+			logger.Error("indexing failed for dataset", "error", err)
 		},
 		OnIndexError: func(id string, err error) {
-			zapLogger.Errorf("Indexing failed for dataset [id: %s] : %s", id, err)
+			logger.Error("indexing failed for dataset", "id", id, "error", err)
 		},
 	})
 
 	if err != nil {
-		zapLogger.Fatalln("unable to create publication bulk indexer", err)
+		logger.Error("fatal: unable to create dataset bulk indexer", "error", err)
+		os.Exit(1)
 	}
 
 	cobra.OnFinalize(func() {
 		err := bd.Close(ctx)
 		if err != nil {
-			panic(err)
+			logger.Error("fatal: unable to close dataset bulk indexer", "error", err)
+			os.Exit(1)
 		}
 	})
 

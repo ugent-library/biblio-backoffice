@@ -11,7 +11,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
-	"github.com/ugent-library/httperror"
 )
 
 func CuratorDatasets(w http.ResponseWriter, r *http.Request) {
@@ -44,8 +43,7 @@ func CuratorDatasets(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		c.Log.Errorw("Dashboard: could not execute search", "errors", err, "user", c.User.ID)
-		c.HandleError(w, r, httperror.InternalServerError)
+		c.HandleError(w, r, err)
 		return
 	}
 	views.CuratorDashboardDatasets(c, &views.CuratorDashboardDatasetsArgs{

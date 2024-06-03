@@ -54,37 +54,34 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	q := u.Query()
 	q.Set("id_list", id)
 	u.RawQuery = q.Encode()
-	// log.Printf("import publication url: %s", u.String())
+
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("arxiv: request failed: %w", err)
 	}
 	res, err := c.http.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("arxiv: request failed: %w", err)
 	}
-	// log.Printf("%+v", res)
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("arxiv: request failed with status %d", res.StatusCode)
+	}
+
 	defer res.Body.Close()
 	src, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("arxiv: reading response failed: %w", err)
 	}
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("can't import publication: %s", src)
-	}
-
-	// log.Printf("import publication src: %s", src)
 
 	feed := Feed{}
 
 	if err := xml.Unmarshal(src, &feed); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("arxiv: unmarshalling response failed: %w", err)
 	}
 
-	// log.Printf("feed: %+v", feed)
-
 	if feed.TotalResults != 1 {
-		return nil, fmt.Errorf("no publication found")
+		return nil, fmt.Errorf("arxiv: expected 1 entry, but found %d", feed.TotalResults)
 	}
 
 	p := &models.Publication{
@@ -120,8 +117,6 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 		}
 		p.Author = append(p.Author, models.ContributorFromFirstLastName(firstName, lastName))
 	}
-
-	// log.Printf("import publication: %+v", p)
 
 	return p, nil
 }

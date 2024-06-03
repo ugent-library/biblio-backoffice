@@ -2,5 +2,5 @@ package models
 
 import "errors"
 
-var ErrNotFound = errors.New("record not found")
-var ErrUserNotFound = errors.New("user record not found")
+var ErrNotFound = errors.New("not found")
+var ErrUserNotFound = errors.New("user not found")

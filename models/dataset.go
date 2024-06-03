@@ -141,7 +141,7 @@ func (d *Dataset) SetContributors(role string, c []*Contributor) {
 func (d *Dataset) GetContributor(role string, i int) (*Contributor, error) {
 	cc := d.Contributors(role)
 	if i >= len(cc) {
-		return nil, errors.New("index out of bounds")
+		return nil, fmt.Errorf("dataset.GetContributor: index %d out of bounds", i)
 	}
 
 	return cc[i], nil
@@ -154,7 +154,7 @@ func (d *Dataset) AddContributor(role string, c *Contributor) {
 func (d *Dataset) SetContributor(role string, i int, c *Contributor) error {
 	cc := d.Contributors(role)
 	if i >= len(cc) {
-		return errors.New("index out of bounds")
+		return fmt.Errorf("dataset.SetContributor: index %d out of bounds", i)
 	}
 
 	cc[i] = c
@@ -165,7 +165,7 @@ func (d *Dataset) SetContributor(role string, i int, c *Contributor) error {
 func (d *Dataset) RemoveContributor(role string, i int) error {
 	cc := d.Contributors(role)
 	if i >= len(cc) {
-		return errors.New("index out of bounds")
+		return fmt.Errorf("dataset.RemoveContributor: index %d out of bounds", i)
 	}
 
 	d.SetContributors(role, append(cc[:i], cc[i+1:]...))

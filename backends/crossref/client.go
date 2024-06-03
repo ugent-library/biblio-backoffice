@@ -34,36 +34,33 @@ func New() *Client {
 func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	doi, err := doitools.NormalizeDOI(id)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("crossref: invalid doi: %w", err)
 	}
-
-	// log.Printf("import publication doi: %s", doi)
 
 	u, _ := url.Parse(c.url + url.PathEscape(doi))
 	q := u.Query()
 	// TODO remove hardcoded email
 	q.Set("mailto", "bib-infra@lists.ugent.be")
 	u.RawQuery = q.Encode()
-	// log.Printf("import publication url: %s", u.String())
+
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("crossref: request failed: %w", err)
 	}
 	res, err := c.http.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("crossref: request failed: %w", err)
 	}
-	// log.Printf("%+v", res)
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("crossref: request failed with status %d", res.StatusCode)
+	}
+
 	defer res.Body.Close()
 	src, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("crossref: reading response failed: %w", err)
 	}
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("can't import publication: %s", src)
-	}
-
-	// log.Printf("import publication src: %s", src)
 
 	attrs := gjson.ParseBytes(src).Get("message")
 
@@ -228,8 +225,6 @@ func (c *Client) GetPublication(id string) (*models.Publication, error) {
 	if res := attrs.Get("short-container-title.0"); res.Exists() {
 		p.PublicationAbbreviation = res.String()
 	}
-
-	// log.Printf("import publication: %+v", p)
 
 	return p, nil
 }
