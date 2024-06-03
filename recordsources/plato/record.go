@@ -51,13 +51,17 @@ func (r *platoRecord) ToCandidateRecord(services *backends.Services) (*models.Ca
 	} else if v := md.Get("titel.ned"); v.Exists() {
 		p.Title = v.String()
 	}
+
 	if v := md.Get("year"); v.Exists() {
 		p.Year = v.String()
 	}
+	p.PlaceOfPublication = "Ghent, Belgium"
+	p.PublicationStatus = "published"
+
 	if v := md.Get("defence.date"); v.Exists() {
 		p.DefenseDate = v.String()
 	}
-	p.DefensePlace = "Ghent, Belgium" // TODO
+	p.DefensePlace = "Ghent, Belgium"
 
 	ugentID := md.Get("student.ugentid").String()
 	if ugentID == "" && md.Get("student.studid").String() != "" {
