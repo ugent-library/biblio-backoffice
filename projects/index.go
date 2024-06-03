@@ -162,6 +162,8 @@ var (
 )
 
 func (idx *Index) GetProjectByIdentifier(ctx context.Context, kind, value string) (*Project, error) {
+	ident := Identifier{Kind: kind, Value: value}
+
 	b := bytes.Buffer{}
 	err := identifierTmpl.Execute(&b, struct {
 		Limit      int
@@ -169,10 +171,11 @@ func (idx *Index) GetProjectByIdentifier(ctx context.Context, kind, value string
 		Identifier Identifier
 	}{
 		Limit:      1,
-		Identifier: Identifier{Kind: kind, Value: value},
+		Identifier: ident,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("index.GetProjectByIdentifier: %w", err)
+		return nil, fmt.Errorf("index.GetProjectByIdentifier: identifier %q: %w", ident.String(), err)
+
 	}
 
 	res, err := idx.client.Search(
@@ -182,16 +185,16 @@ func (idx *Index) GetProjectByIdentifier(ctx context.Context, kind, value string
 		idx.client.Search.WithBody(strings.NewReader(b.String())),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("index.GetProjectByIdentifier: %w", err)
+		return nil, fmt.Errorf("index.GetProjectByIdentifier: identifier %q: %w", ident.String(), err)
 	}
 
 	resBody := searchResponseBody[*Project]{}
 	if err := decodeResponseBody(res, &resBody); err != nil {
-		return nil, fmt.Errorf("index.GetProjectByIdentifier: %w", err)
+		return nil, fmt.Errorf("index.GetProjectByIdentifier: identifier %q: %w", ident.String(), err)
 	}
 
 	if len(resBody.Hits.Hits) != 1 {
-		return nil, fmt.Errorf("index.GetProjectByIdentifier: %w", models.ErrNotFound)
+		return nil, fmt.Errorf("index.GetProjectByIdentifier: identifier %q: %w", ident.String(), models.ErrNotFound)
 	}
 
 	return resBody.Hits.Hits[0].Source.Record, nil

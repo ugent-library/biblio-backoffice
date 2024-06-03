@@ -91,7 +91,7 @@ func EditLaySummary(w http.ResponseWriter, r *http.Request) {
 
 	// TODO catch non-existing item in UI
 	if laySummary == nil {
-		c.Log.Warn("edit publication lay summary: Could not fetch the lay summary:", "publication", p.ID, "lay_summary", b.LaySummaryID, "user", c.User.ID)
+		c.Log.Warn("edit publication lay summary: could not fetch the lay summary:", "publication", p.ID, "lay_summary", b.LaySummaryID, "user", c.User.ID)
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("publication.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}

@@ -30,7 +30,7 @@ func NewRepo(c RepoConfig) (*Repo, error) {
 func (r *Repo) GetProjectByIdentifier(ctx context.Context, kind, value string) (*Project, error) {
 	row, err := getProjectByIdentifier(ctx, r.conn, kind, value)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, fmt.Errorf("repo.GetProjectByIdentifier: %w", models.ErrNotFound)
+		return nil, fmt.Errorf("repo.GetProjectByIdentifier: identifier %q: %w", Identifier{Kind: kind, Value: value}.String(), models.ErrNotFound)
 	}
 	if err != nil {
 		return nil, err

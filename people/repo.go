@@ -133,16 +133,16 @@ func (r *Repo) DeleteAllOrganizations(ctx context.Context) error {
 func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: %w", err)
+		return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: identifier %q: %w", Identifier{Kind: kind, Value: value}.String(), err)
 	}
 	defer tx.Rollback(ctx)
 
 	row, err := getOrganizationByIdentifier(ctx, tx, kind, value)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: %w", models.ErrNotFound)
+		return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: identifier %q: %w", Identifier{Kind: kind, Value: value}.String(), models.ErrNotFound)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: %w", err)
+		return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: identifier %q: %w", Identifier{Kind: kind, Value: value}.String(), err)
 	}
 
 	org := row.toOrganization()
@@ -150,7 +150,7 @@ func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value stri
 	if row.ParentID.Valid {
 		parentRows, err := tx.Query(ctx, getParentOrganizations, row.ParentID.Int64)
 		if err != nil {
-			return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: %w", err)
+			return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: identifier %q: %w", Identifier{Kind: kind, Value: value}.String(), err)
 		}
 		defer parentRows.Close()
 		for parentRows.Next() {
@@ -163,14 +163,14 @@ func (r *Repo) GetOrganizationByIdentifier(ctx context.Context, kind, value stri
 				&o.CreatedAt,
 				&o.UpdatedAt,
 			); err != nil {
-				return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: %w", err)
+				return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: identifier %q: %w", Identifier{Kind: kind, Value: value}.String(), err)
 			}
 			org.Parents = append(org.Parents, o.toParentOrganization())
 		}
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: %w", err)
+		return nil, fmt.Errorf("repo.GetOrganizationByIdentifier: identifier %q: %w", Identifier{Kind: kind, Value: value}, err)
 	}
 
 	return org, nil
@@ -195,10 +195,10 @@ func (r *Repo) DeleteAllPeople(ctx context.Context) error {
 func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
 	row, err := getPersonByIdentifier(ctx, r.conn, kind, value)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, fmt.Errorf("repo.GetPersonByIdentifier: %w", models.ErrNotFound)
+		return nil, fmt.Errorf("repo.GetPersonByIdentifier: identifier %q: %w", Identifier{Kind: kind, Value: value}.String(), models.ErrNotFound)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("repo.GetPersonByIdentifier: %w", err)
+		return nil, fmt.Errorf("repo.GetPersonByIdentifier: identifier %q: %w", Identifier{Kind: kind, Value: value}.String(), err)
 	}
 	return row.toPerson(r.tokenSecret)
 }
@@ -206,10 +206,10 @@ func (r *Repo) GetPersonByIdentifier(ctx context.Context, kind, value string) (*
 func (r *Repo) GetActivePersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
 	row, err := getActivePersonByIdentifier(ctx, r.conn, kind, value)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, fmt.Errorf("repo.GetActivePersonByIdentifier: %w", models.ErrNotFound)
+		return nil, fmt.Errorf("repo.GetActivePersonByIdentifier: identifier %q: %w", Identifier{Kind: kind, Value: value}.String(), models.ErrNotFound)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("repo.GetActivePersonByIdentifier: %w", err)
+		return nil, fmt.Errorf("repo.GetActivePersonByIdentifier: identifier %q: %w", Identifier{Kind: kind, Value: value}.String(), err)
 	}
 	return row.toPerson(r.tokenSecret)
 }
@@ -217,10 +217,10 @@ func (r *Repo) GetActivePersonByIdentifier(ctx context.Context, kind, value stri
 func (r *Repo) GetActivePersonByUsername(ctx context.Context, username string) (*Person, error) {
 	row, err := getActivePersonByUsername(ctx, r.conn, username)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, fmt.Errorf("repo.GetActivePersonByUsername: %w", models.ErrNotFound)
+		return nil, fmt.Errorf("repo.GetActivePersonByUsername: username %q: %w", username, models.ErrNotFound)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("repo.GetActivePersonByUsername: %w", err)
+		return nil, fmt.Errorf("repo.GetActivePersonByUsername: username %q: %w", username, err)
 	}
 	return row.toPerson(r.tokenSecret)
 }

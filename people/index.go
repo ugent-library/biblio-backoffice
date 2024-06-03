@@ -166,17 +166,20 @@ var sorts = map[string]string{
 }
 
 func (idx *Index) GetOrganizationByIdentifier(ctx context.Context, kind, value string) (*Organization, error) {
-	o, err := getByIdentifier[Organization](ctx, idx, organizationsIndexName, Identifier{Kind: kind, Value: value})
+	ident := Identifier{Kind: kind, Value: value}
+	o, err := getByIdentifier[Organization](ctx, idx, organizationsIndexName, ident)
 	if err != nil {
-		return nil, fmt.Errorf("index.GetOrganizationByIdentifier: %w", err)
+		return nil, fmt.Errorf("index.GetOrganizationByIdentifier: identifier %q: %w", ident.String(), err)
+
 	}
 	return o, nil
 }
 
 func (idx *Index) GetPersonByIdentifier(ctx context.Context, kind, value string) (*Person, error) {
-	p, err := getByIdentifier[Person](ctx, idx, peopleIndexName, Identifier{Kind: kind, Value: value})
+	ident := Identifier{Kind: kind, Value: value}
+	p, err := getByIdentifier[Person](ctx, idx, peopleIndexName, ident)
 	if err != nil {
-		return nil, fmt.Errorf("index.GetPersonByIdentifier: %w", err)
+		return nil, fmt.Errorf("index.GetPersonByIdentifier: identifier %q: %w", ident.String(), err)
 	}
 	return p, nil
 }
