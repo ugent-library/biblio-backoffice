@@ -4,8 +4,6 @@
 @import "_settings.bootstrap";
 @import "_br-variables-override";
 
-
-
 /* Bootstrap upgrade (todo organise into file)
    ========================================================================== */
 
@@ -13,9 +11,9 @@
 @import "./node_modules/bootstrap/scss/functions";
 
 // Optional variable overrides here
-$custom-color: #1E64C8;
+$custom-color: #1e64c8;
 $custom-theme-colors: (
-  "custom": $custom-color
+  "custom": $custom-color,
 );
 
 // Variables come next
@@ -31,8 +29,6 @@ $theme-colors: map-merge($theme-colors, $custom-theme-colors);
 @import "./node_modules/bootstrap/scss/mixins";
 @import "./node_modules/bootstrap/scss/root";
 @import "./node_modules/bootstrap/scss/reboot";
-
-
 
 /* Generic: CSS reset, box-sizing, global CSS tweaks
   ========================================================================== */
@@ -177,7 +173,8 @@ h4 {
   line-height: 1.5;
 }
 
-ul,ol {
+ul,
+ol {
   margin-bottom: 0;
 }
 
@@ -191,17 +188,17 @@ ul,ol {
 
 .if--small {
   font-size: 1.6rem;
-  line-height: 1.6rem
+  line-height: 1.6rem;
 }
 
 .if--xsmall {
   font-size: 1.4rem;
-  line-height: 1.4rem
+  line-height: 1.4rem;
 }
 
 .if--large {
   font-size: 3.2rem;
-  line-height:  3.2rem;
+  line-height: 3.2rem;
 }
 
 .if--success {

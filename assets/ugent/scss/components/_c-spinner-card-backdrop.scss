@@ -3,8 +3,8 @@
   To disable backgrounds for cards
   ========================================================================== */
 
-$spinner-backdrop-bg:                 $gray-25;
-$spinner-backdrop-opacity:            .8;
+$spinner-backdrop-bg: $gray-25;
+$spinner-backdrop-opacity: 0.8;
 
 .spinner-card-backdrop {
   position: absolute;

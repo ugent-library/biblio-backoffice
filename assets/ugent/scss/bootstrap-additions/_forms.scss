@@ -22,7 +22,7 @@
 
   .form-control-sm {
     padding-left: 1.4rem;
-    &  + .svg-icon {
+    & + .svg-icon {
       left: 0.35rem;
       top: 0.2rem;
     }
@@ -52,22 +52,22 @@
   }
 }
 
-[class^='col-sm-'].col-form-label,
-[class^='col-sm-'].form-label {
+[class^="col-sm-"].col-form-label,
+[class^="col-sm-"].form-label {
   @include media-breakpoint-up(sm) {
     justify-content: flex-end;
   }
 }
 
-[class^='col-md-'].col-form-label,
-[class^='col-md-'].form-label {
+[class^="col-md-"].col-form-label,
+[class^="col-md-"].form-label {
   @include media-breakpoint-up(md) {
     justify-content: flex-end;
   }
 }
 
-[class^='col-lg-'].col-form-label,
-[class^='col-lg-'].form-label {
+[class^="col-lg-"].col-form-label,
+[class^="col-lg-"].form-label {
   @include media-breakpoint-up(lg) {
     justify-content: flex-end;
   }
@@ -78,7 +78,6 @@
   text-decoration: none;
   margin-right: 0.2rem;
 }
-
 
 abbr {
   border-bottom: 1px dotted $gray-400;
@@ -97,7 +96,6 @@ abbr {
   align-items: flex-start;
   align-content: flex-start;
 }
-
 
 /* Better focus states
    ========================================================================== */
@@ -119,15 +117,12 @@ abbr {
 .input-group-w-small {
   width: 15rem;
   max-width: 100%;
-
 }
 
 .form-control-w-medium,
 .input-group-w-medium {
   width: 39rem;
   max-width: 100%;
-
-
 }
 
 .form-control-w-large,
@@ -142,23 +137,21 @@ abbr {
   max-width: 100%;
 }
 
-
 /* Override Bootstrap 4 code */
-.btn-group > .btn:nth-child(n+2) {
+.btn-group > .btn:nth-child(n + 2) {
   border-top-left-radius: $border-radius;
   border-bottom-left-radius: $border-radius;
-
 }
 
 /* Bootstrap 5 code */
 .btn-check {
   position: absolute;
-  clip: rect(0,0,0,0);
+  clip: rect(0, 0, 0, 0);
   pointer-events: none;
 }
 
-.btn-check:active+.btn-outline-primary,
-.btn-check:checked+.btn-outline-primary,
+.btn-check:active + .btn-outline-primary,
+.btn-check:checked + .btn-outline-primary,
 .btn-outline-primary.active,
 .btn-outline-primary.dropdown-toggle.show,
 .btn-outline-primary:active {
@@ -167,13 +160,12 @@ abbr {
   border-color: $primary;
 }
 
-.btn-group>.btn-group:not(:first-child)>.btn,
-.btn-group>.btn:nth-child(n+3),
-.btn-group>:not(.btn-check) + .btn {
+.btn-group > .btn-group:not(:first-child) > .btn,
+.btn-group > .btn:nth-child(n + 3),
+.btn-group > :not(.btn-check) + .btn {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-
 
 .form-group:last-child {
   margin-bottom: 0;

@@ -1,10 +1,9 @@
-import htmx from 'htmx.org';
+import htmx from "htmx.org";
 
 export default function (error) {
+  let modals = document.querySelector("#modals");
 
-  let modals = document.querySelector("#modals")
-
-  if (!modals) return
+  if (!modals) return;
 
   /*
    * Expects somewhere in the document ..
@@ -13,19 +12,21 @@ export default function (error) {
    *
    * .. a template that encapsulates the modal body
    * */
-  let templateModalError = document.querySelector("template.template-modal-error")
+  let templateModalError = document.querySelector(
+    "template.template-modal-error",
+  );
 
-  if (!templateModalError) return
+  if (!templateModalError) return;
 
-  let modal = templateModalError.content.cloneNode(true)
+  let modal = templateModalError.content.cloneNode(true);
 
   // modal-close not triggered for dynamically added modals
-  modal.querySelector(".modal-close").addEventListener("click", function(){
-    modals.innerHTML = ""
-  })
+  modal.querySelector(".modal-close").addEventListener("click", function () {
+    modals.innerHTML = "";
+  });
 
-  modal.querySelector(".msg").textContent = error
+  modal.querySelector(".msg").textContent = error;
 
-  modals.innerHTML = ""
-  modals.appendChild(modal)
+  modals.innerHTML = "";
+  modals.appendChild(modal);
 }

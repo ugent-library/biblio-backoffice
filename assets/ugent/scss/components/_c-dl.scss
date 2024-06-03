@@ -22,25 +22,23 @@
   margin-top: 1.6rem;
 }
 
-
 .c-dl.row {
-
-  [class^='col-md-'].c-dl-term {
+  [class^="col-md-"].c-dl-term {
     @include media-breakpoint-up(md) {
       justify-content: flex-end;
       margin-top: 0;
     }
   }
 
-  [class^='col-md-'].c-dl-desc {
+  [class^="col-md-"].c-dl-desc {
     @include media-breakpoint-up(md) {
       padding-top: 0.4rem;
       padding-bottom: 0.4rem;
     }
   }
 
-  [class^='col-md-'].c-dl-term,
-  [class^='col-md-'].c-dl-desc {
+  [class^="col-md-"].c-dl-term,
+  [class^="col-md-"].c-dl-desc {
     @include media-breakpoint-up(md) {
       margin-bottom: 0.8rem;
     }
@@ -50,5 +48,4 @@
     padding-top: 0.4rem;
     padding-bottom: 0.4rem;
   }
-
 }
