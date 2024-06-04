@@ -47,9 +47,32 @@ func (x *BaseExporter) addHeader() {
 	x.headerSet = true
 }
 
+/*
+Add formatting style to format text as regular text
+cf. https://xuri.me/excelize/en/style.html#number_format
+cf. https://github.com/qax-os/excelize/issues/1915
+*/
+func (x *BaseExporter) addStyles() {
+	style, _ := x.xlsxFile.NewStyle(&excelize.Style{NumFmt: 49})
+	var leftCol, rightCol string
+	for i := range x.Headers {
+		columnPrefix, _ := excelize.ColumnNumberToName(i + 1)
+		if i == 0 {
+			leftCol = columnPrefix
+		}
+		if i == len(x.Headers)-1 {
+			rightCol = columnPrefix
+		}
+	}
+	if len(x.Headers) > 0 {
+		x.xlsxFile.SetColStyle(sheetName, fmt.Sprintf("%s:%s", leftCol, rightCol), style)
+	}
+}
+
 func (x *BaseExporter) Add(row []string) {
 	if !x.headerSet {
 		x.addHeader()
+		x.addStyles()
 	}
 	x.addRow(row)
 }
