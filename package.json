@@ -11,7 +11,7 @@
     "cypress:open:bibliodev": "env-cmd --file ./cypress/.env npm run cypress:open --",
     "cypress:record": "cypress/cypress-record.sh",
     "db:reset": "go run main.go reset --force",
-    "db:seed": "go run main.go seed organizations < .devcontainer/people/organizations.json && go run main.go seed people < .devcontainer/people/people.json && go run main.go seed projects < .devcontainer/projects/projects.json",
+    "db:seed": "go run main.go seed organizations < .devcontainer/people/organizations.json && go run main.go seed people < .devcontainer/people/people.json && go run main.go seed projects < .devcontainer/projects/projects.json && go run main.go seed candidate-records < .devcontainer/candidate_records/candidate_records.json",
     "precommit": "node node_modules/js-precommit-hook",
     "generate-issue-test": "node ./cypress/scripts/generate-issue-test.mjs"
   },
