@@ -37,6 +37,7 @@
     "esbuild-plugin-clean": "^1.0.1",
     "esbuild-plugin-manifest": "^1.0.3",
     "esbuild-sass-plugin": "^3.3.0",
+    "glob": "^10.4.1",
     "js-precommit-hook": "git+https://github.com/ugent-library/js-precommit-hook.git",
     "prettier": "^3.2.5",
     "resolve-url-loader": "^5.0.0",
