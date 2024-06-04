@@ -51,13 +51,17 @@ func (r *platoRecord) ToCandidateRecord(services *backends.Services) (*models.Ca
 	} else if v := md.Get("titel.ned"); v.Exists() {
 		p.Title = v.String()
 	}
+
 	if v := md.Get("year"); v.Exists() {
 		p.Year = v.String()
 	}
+	p.PlaceOfPublication = "Ghent, Belgium"
+	p.PublicationStatus = "published"
+
 	if v := md.Get("defence.date"); v.Exists() {
 		p.DefenseDate = v.String()
 	}
-	p.DefensePlace = "Ghent, Belgium" // TODO
+	p.DefensePlace = "Ghent, Belgium"
 
 	ugentID := md.Get("student.ugentid").String()
 	if ugentID == "" && md.Get("student.studid").String() != "" {
@@ -93,6 +97,10 @@ func (r *platoRecord) ToCandidateRecord(services *backends.Services) (*models.Ca
 				return false
 			}
 			p.Supervisor = append(p.Supervisor, models.ContributorFromPerson(hits[0]))
+
+			for _, aff := range hits[0].Affiliations {
+				p.AddOrganization(aff.Organization)
+			}
 		} else {
 			c := models.ContributorFromFirstLastName(val.Get("first").String(), val.Get("last").String())
 			c.ExternalPerson.Affiliation = val.Get("affil").String()
@@ -109,7 +117,7 @@ func (r *platoRecord) ToCandidateRecord(services *backends.Services) (*models.Ca
 		p.ISBN = append(p.ISBN, v.String())
 	}
 	if v := md.Get("pdf.abstract"); v.Exists() {
-		p.AddAbstract(&models.Text{Lang: "und", Text: v.String()})
+		p.AddAbstract(&models.Text{Lang: "dut", Text: v.String()})
 	}
 	if v := md.Get("pdf.url"); v.Exists() {
 		sha256, size, err := recordsources.StoreURL(context.TODO(), v.String(), services.FileStore)
