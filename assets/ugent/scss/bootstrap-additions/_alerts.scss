@@ -38,7 +38,6 @@
   flex: 1;
 }
 
-
 .alert-dismissible .btn-close {
   opacity: 1;
   mix-blend-mode: multiply;
@@ -62,7 +61,6 @@
   .alert-title {
     color: $green-900;
   }
-
 
   > .if:first-child {
     color: $success;
@@ -142,7 +140,7 @@
   color: $gray-600;
 
   .alert-title {
-    color: $gray-900
+    color: $gray-900;
   }
 
   > .if:first-child {

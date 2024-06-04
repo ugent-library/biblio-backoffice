@@ -121,7 +121,6 @@ $bc-toolbar-height: 5.6rem !default;
   overflow: hidden;
 }
 
-
 /* Component alignment
   Within the toolbar-left, toolbar-center or toolbar-right part, there are toolbar-item divs,
   these are flexed to position the elements
@@ -156,10 +155,10 @@ $bc-toolbar-height: 5.6rem !default;
 
 .bc-toolbar--small-spacing {
   .bc-toolbar-left .bc-toolbar-item:not(:last-child) {
-    padding-right: .8rem;
+    padding-right: 0.8rem;
   }
   .bc-toolbar-right .bc-toolbar-item:not(:first-child) {
-    padding-left: .8rem;
+    padding-left: 0.8rem;
   }
 }
 
@@ -171,8 +170,6 @@ $bc-toolbar-height: 5.6rem !default;
     padding: 0;
   }
 }
-
-
 
 .bc-toolbar-sm .bc-toolbar-left .bc-toolbar-item {
   padding-right: calc($grid-gutter-width / 4);
@@ -202,7 +199,6 @@ $bc-toolbar-height: 5.6rem !default;
       justify-content: flex-start;
     }
   }
-
 }
 
 .bc-toolbar-md-responsive {
@@ -220,5 +216,4 @@ $bc-toolbar-height: 5.6rem !default;
       justify-content: flex-start;
     }
   }
-
 }

@@ -21,7 +21,6 @@
   padding: 1.2rem 1.6rem;
 }
 
-
 .table .c-button-toolbar {
   display: flex;
   align-items: center;
@@ -67,7 +66,6 @@
   }
 }
 
-
 /* Table with clickable rows
    ========================================================================== */
 
@@ -80,7 +78,6 @@
   background: $gray-25;
   cursor: pointer;
 }
-
 
 /* Fixed table columns
    ========================================================================== */
@@ -97,8 +94,8 @@
   &.table-col-sm-fixed-right {
     @include media-breakpoint-down(md) {
       filter: unset;
+    }
   }
-}
 }
 @include media-breakpoint-up(sm) {
   .table-col-sm-fixed {
@@ -123,7 +120,6 @@
     left: 63.5px;
   }
 
-
   .table-col-sm-fixed.dropdown-active {
     z-index: $zindex-sticky;
   }
@@ -133,7 +129,6 @@
   padding-left: 2.4rem;
   padding-right: 2.4rem;
 }
-
 
 /* Table section headers
    ========================================================================== */
@@ -147,4 +142,3 @@
     height: 4rem;
   }
 }
-

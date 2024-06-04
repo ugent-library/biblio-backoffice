@@ -9,7 +9,7 @@ export default function () {
   class Header {
     constructor(el) {
       this.el = el;
-      this.collapsers = el.querySelectorAll('.c-header-collapse-trigger');
+      this.collapsers = el.querySelectorAll(".c-header-collapse-trigger");
       this.collapsed = false;
       this.init();
     }
@@ -17,12 +17,12 @@ export default function () {
     init() {
       try {
         const savedState = JSON.parse(
-          localStorage.getItem(HEADER_STATE_STORAGE_KEY)
+          localStorage.getItem(HEADER_STATE_STORAGE_KEY),
         );
         headerState = Object.assign({}, headerState, savedState);
       } catch (err) {
         console.warn(
-          'There was an error parsing the saved state for the prototype navigation.'
+          "There was an error parsing the saved state for the prototype navigation.",
         );
       }
 
@@ -34,7 +34,7 @@ export default function () {
       }
 
       this.collapsers?.forEach((collapser) =>
-        collapser.addEventListener('click', this)
+        collapser.addEventListener("click", this),
       );
     }
 
@@ -58,7 +58,7 @@ export default function () {
     saveNavState() {
       localStorage.setItem(
         HEADER_STATE_STORAGE_KEY,
-        JSON.stringify(headerState)
+        JSON.stringify(headerState),
       );
     }
 
@@ -74,8 +74,11 @@ export default function () {
     isExpanded: false,
   };
 
-  const collapsibleHeaders = document.querySelectorAll('.c-header-collapsible');
+  const collapsibleHeaders = document.querySelectorAll(".c-header-collapsible");
   const HEADER_STATE_STORAGE_KEY = `bedrockheaderState`;
 
-  if (collapsibleHeaders.length) [...collapsibleHeaders].map((collapsibleHeader) => new Header(collapsibleHeader));
+  if (collapsibleHeaders.length)
+    [...collapsibleHeaders].map(
+      (collapsibleHeader) => new Header(collapsibleHeader),
+    );
 }

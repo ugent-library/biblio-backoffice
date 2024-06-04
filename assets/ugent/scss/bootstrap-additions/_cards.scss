@@ -3,7 +3,7 @@
    ========================================================================== */
 
 .card {
-  box-shadow: 0 .2rem .2rem 0 rgba($gray-500, .12);
+  box-shadow: 0 0.2rem 0.2rem 0 rgba($gray-500, 0.12);
 }
 
 .card-header {
@@ -40,11 +40,14 @@
 }
 
 .card-collapsible .collapse-trigger[aria-expanded="true"] {
-  border-bottom: .1rem solid $border;
+  border-bottom: 0.1rem solid $border;
 }
 
-.card-collapsible .collapse-trigger[aria-expanded="true"]~.if-chevron-right,
-.card-collapsible .collapse-trigger[aria-expanded="true"]~.bc-toolbar .if-chevron-right {
+.card-collapsible .collapse-trigger[aria-expanded="true"] ~ .if-chevron-right,
+.card-collapsible
+  .collapse-trigger[aria-expanded="true"]
+  ~ .bc-toolbar
+  .if-chevron-right {
   transform: rotate(90deg);
 }
 
@@ -66,28 +69,28 @@
 .card-body,
 .card-body .table-responsive {
   // Padding for tables inside of cards
-  >.table tr td:first-child,
-  >.table tr th:first-child {
+  > .table tr td:first-child,
+  > .table tr th:first-child {
     padding-left: 2.4rem;
   }
 
-  >.table tr td:last-child,
-  >.table tr th:last-child {
+  > .table tr td:last-child,
+  > .table tr th:last-child {
     padding-right: 2.4rem;
   }
 
   // Fix bordered tables within cards
-  >.table-bordered tr td:first-child,
-  >.table-bordered tr th:first-child {
+  > .table-bordered tr td:first-child,
+  > .table-bordered tr th:first-child {
     border-left: none;
   }
 
-  >.table-bordered tr td:last-child,
-  >.table-bordered tr th:last-child {
+  > .table-bordered tr td:last-child,
+  > .table-bordered tr th:last-child {
     border-right: none;
   }
 
-  >.table-bordered tr:last-child td {
+  > .table-bordered tr:last-child td {
     border-bottom: none;
   }
 }
@@ -107,29 +110,29 @@
 .card--danger {
   position: relative;
   &::before {
-    content:'';
+    content: "";
     position: absolute;
     width: 0.3rem;
     height: 100%;
     top: 0;
-    left:0;
+    left: 0;
   }
 }
 
 .card--primary::before {
-    background-color: $primary;
+  background-color: $primary;
 }
 
 .card--success::before {
-    background-color: $success;
+  background-color: $success;
 }
 
 .card--danger::before {
-    background-color: $danger;
+  background-color: $danger;
 }
 
 .card--warning::before {
-    background-color: $warning;
+  background-color: $warning;
 }
 
 .card-deck {
@@ -139,8 +142,8 @@
   border-radius: 0 0 8px 8px;
   padding: 0.6rem 0;
   margin: 0 auto;
-  background-color: #FFF;
-  box-shadow: 0 .2rem .2rem 0 rgba($gray-500, .12);
+  background-color: #fff;
+  box-shadow: 0 0.2rem 0.2rem 0 rgba($gray-500, 0.12);
 }
 
 .card--dashed {

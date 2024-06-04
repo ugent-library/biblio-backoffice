@@ -19,7 +19,7 @@
 }
 
 .c-content pre {
-  background: #F5F6F9;
+  background: #f5f6f9;
   padding: 1.6rem;
   margin: 0 0 1rem;
   font-size: 75%;
@@ -57,16 +57,15 @@
 }
 
 .c-subline {
-   color: $text-muted;
-   font-size: 1.2rem;
-   font-weight: 500;
+  color: $text-muted;
+  font-size: 1.2rem;
+  font-weight: 500;
 }
 
 .c-label {
   font-weight: 500;
   color: $gray-600;
 }
-
 
 .c-code {
   display: inline-flex;
@@ -81,7 +80,10 @@
 .c-content-i {
   color: rgba($white, 0.7);
 
-  h1,h2,h3,h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     color: $white;
   }
 }

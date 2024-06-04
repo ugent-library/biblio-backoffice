@@ -38,7 +38,6 @@
   min-width: 75rem;
 }
 
-
 .u-max-lines {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -54,7 +53,7 @@
 }
 
 .u-divide-x {
-   > :not([hidden])~:not([hidden]) {
+  > :not([hidden]) ~ :not([hidden]) {
     border-left: 1px solid $border;
   }
 }
@@ -90,4 +89,3 @@
 .u-min-w-auto {
   min-width: auto;
 }
-

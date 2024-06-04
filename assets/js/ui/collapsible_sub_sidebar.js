@@ -6,28 +6,27 @@
 //     $('[data-sidebar]').toggleClass('collapsed');
 //   });
 
-import htmx from 'htmx.org';
+import htmx from "htmx.org";
 
-export default function() {
-    let toggler = function(evt) {
-        let showSidebar = evt.currentTarget.closest('#show-sidebar')
-        let sidebar = showSidebar.querySelector('[data-sidebar]')
-        sidebar.classList.toggle('collapsed')
-    }
+export default function () {
+  let toggler = function (evt) {
+    let showSidebar = evt.currentTarget.closest("#show-sidebar");
+    let sidebar = showSidebar.querySelector("[data-sidebar]");
+    sidebar.classList.toggle("collapsed");
+  };
 
-    let addEvents = function() {
-        document.querySelectorAll('[data-sidebar-toggle]').forEach(sidebar =>
-            sidebar.addEventListener('click', toggler)
-        )
-    }
+  let addEvents = function () {
+    document
+      .querySelectorAll("[data-sidebar-toggle]")
+      .forEach((sidebar) => sidebar.addEventListener("click", toggler));
+  };
 
-    addEvents()
+  addEvents();
 
-    htmx.onLoad(function(el) {
-        addEvents()
-    });
+  htmx.onLoad(function (el) {
+    addEvents();
+  });
 }
-
 
 //   import htmx from 'htmx.org';
 

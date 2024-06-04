@@ -10,7 +10,7 @@
   min-width: 2rem;
 
   // Fix Safari
-  -webkit-appearance: none
+  -webkit-appearance: none;
 }
 
 .badge .if {
@@ -22,16 +22,16 @@
 .badge-value + .if,
 .bc-avatar + .badge-text,
 .badge-text + .bc-avatar {
-  padding-left: .6rem;
+  padding-left: 0.6rem;
 }
 
 .c-counter + .badge-text,
 .badge-text + .c-counter {
-  margin-left: .4rem;
+  margin-left: 0.4rem;
 }
 
 .badge .bc-avatar:first-child {
-  margin-left: -.8rem;
+  margin-left: -0.8rem;
 }
 
 .badge-value {
@@ -40,12 +40,12 @@
 
 .badge .if:last-child,
 .badge .bc-avatar:last-child {
-  margin-right: -.6rem;
+  margin-right: -0.6rem;
 }
 
 .badge .if:first-child,
 .badge .bc-avatar:first-child {
-  margin-left: -.6rem;
+  margin-left: -0.6rem;
 }
 
 .badge-lg {
@@ -53,9 +53,9 @@
 }
 
 .badge-circle {
-  width: .6rem;
-  height: .6rem;
-  border-radius: .8rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 0.8rem;
   display: block;
   margin-right: 0.6rem;
 }
@@ -118,7 +118,7 @@ a.badge-secondary {
 }
 
 .badge-outline-secondary {
-  border: .1rem solid $border-color;
+  border: 0.1rem solid $border-color;
   background-color: $white;
   color: $gray-600;
 }
@@ -142,5 +142,5 @@ a.badge-secondary {
 
 .badge-sm .if:last-child,
 .badge-sm .bc-avatar:last-child {
-  margin-right: -.2rem;
+  margin-right: -0.2rem;
 }
