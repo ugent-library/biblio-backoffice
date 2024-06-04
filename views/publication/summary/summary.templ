@@ -38,7 +38,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 			}
 			<div class="c-thumbnail-text">
 				<div class="hstack-md-responsive align-items-start gap-3 w-100" data-collapsible-card>
-					<div class="vstack gap-5">
+					<div class="vstack gap-4">
 						<div class="vstack gap-2">
 							<div class="d-inline-flex align-items-center flex-wrap">
 								@views.BadgeStatus(args.Publication.Status)
@@ -132,27 +132,27 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 							</ul>
 							// TODO: pass on args.Target
 							@contributorviews.Summary(c, "author", args.Publication.Author, views.URL(args.URL).SetQueryParam("show", "contributors").String())
+							<div class="d-flex align-items-center">
+								<i class="if if-building if--small if--muted me-2"></i>
+								if len(args.Publication.RelatedOrganizations) > 0 {
+									// TODO: pass on args.Target
+									@relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
+								} else {
+									<a
+										href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
+										class="c-link-muted"
+										if args.Target != "" {
+											target={ args.Target }
+										}
+									>
+										<i class="if if-edit if--small"></i>
+										<em>Add department</em>
+									</a>
+								}
+							</div>
 						</div>
-						<div class="collapsible-card-content collapse" data-collapsible-card-content>
+						if vabb := args.Publication.VABB(); vabb != "" || args.Publication.Legacy || len(args.Publication.RelatedDataset) > 0 {
 							<div class="vstack gap-3">
-								<div class="d-flex align-items-center">
-									<i class="if if-building if--small if--muted me-2"></i>
-									if len(args.Publication.RelatedOrganizations) > 0 {
-										// TODO: pass on args.Target
-										@relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
-									} else {
-										<a
-											href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
-											class="c-link-muted"
-											if args.Target != "" {
-												target={ args.Target }
-											}
-										>
-											<i class="if if-edit if--small"></i>
-											<em>Add department</em>
-										</a>
-									}
-								</div>
 								<ul class="c-meta-list c-meta-list-inline">
 									if vabb := args.Publication.VABB(); vabb != "" {
 										if c.User.CanCurate() {
@@ -181,7 +181,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									}
 								</ul>
 							</div>
-						</div>
+						}
 						if args.Footer != nil {
 							@args.Footer
 						}

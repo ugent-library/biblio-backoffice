@@ -12,7 +12,6 @@ import modalClose from "./ui/modal_close.js";
 import radioCard from "./ui/radio_card.js";
 import toast from "./ui/toast.js";
 import sortable from "./ui/sortable.js";
-import collapseCard from "./ui/collapsible_card.js";
 import collapseSubSidebar from "./ui/collapsible_sub_sidebar.js";
 import formAutoFocus from "./ui/form_auto_focus.js";
 import fileUpload from "./ui/file_upload.js";
