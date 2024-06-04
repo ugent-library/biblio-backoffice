@@ -83,6 +83,13 @@ func (r *Repo) CountProjects(ctx context.Context) (int64, error) {
 	return count, nil
 }
 
+func (r *Repo) DeleteAllProjects(ctx context.Context) error {
+	if _, err := r.conn.Exec(ctx, "TRUNCATE projects CASCADE"); err != nil {
+		return fmt.Errorf("repo.DeleteAllProjects: %w", err)
+	}
+	return nil
+}
+
 func (r *Repo) ImportProject(ctx context.Context, p ImportProjectParams) error {
 	tx, err := r.conn.Begin(ctx)
 	if err != nil {

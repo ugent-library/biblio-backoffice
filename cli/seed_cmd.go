@@ -68,7 +68,7 @@ var seedOrganizationsCmd = &cobra.Command{
 			return err
 		}
 
-		return nil
+		return newServices().PeopleIndex.ReindexOrganizations(context.TODO(), peopleRepo.EachOrganization)
 	},
 }
 
@@ -102,7 +102,8 @@ var seedPeopleCmd = &cobra.Command{
 			}
 			logger.Info("imported person", "username", params.Username)
 		}
-		return nil
+
+		return newServices().PeopleIndex.ReindexPeople(context.TODO(), peopleRepo.EachPerson)
 	},
 }
 
@@ -136,6 +137,7 @@ var seedProjectsCmd = &cobra.Command{
 			}
 			logger.Info("imported project", "iwetoID", params.Identifiers.Get("iweto"))
 		}
-		return nil
+
+		return newServices().ProjectsIndex.ReindexProjects(context.TODO(), projectsRepo.EachProject)
 	},
 }

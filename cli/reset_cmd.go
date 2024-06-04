@@ -78,6 +78,10 @@ var resetCmd = &cobra.Command{
 			return err
 		}
 
+		if err := services.ProjectsRepo.DeleteAllProjects(ctx); err != nil {
+			return err
+		}
+
 		return nil
 	},
 }
