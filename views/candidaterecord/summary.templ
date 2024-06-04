@@ -39,17 +39,18 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 								</span>
 								if mainFile := p.MainFile(); mainFile != nil {
 									<span class={ "c-subline", "me-3", "pe-3", templ.KV("border-end", mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }>
+
 										if mainFile.AccessLevel == "info:eu-repo/semantics/openAccess" {
 											<i class="if if-download if--small if--success"></i>
 											<span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
 										} else if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
-											<i class="if if-time if--small if--muted"></i>
+											<i class="if if-time if--small if--warning"></i>
 											<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
 										} else if mainFile.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
 											<i class="if if-ghent-university if--small if--primary"></i>
 											<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
 										} else if mainFile.AccessLevel == "info:eu-repo/semantics/closedAccess" {
-											<i class="if if-eye-off if--small if--muted"></i>
+											<i class="if if-forbid if--small if--danger"></i>
 											<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
 										}
 									</span>

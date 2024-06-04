@@ -8,20 +8,20 @@ import (
 templ PreviewAccesLevel(c *ctx.Ctx, f *models.PublicationFile) {
 	switch f.AccessLevel {
 		case "info:eu-repo/semantics/openAccess":
-			<div class="bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue">
+			<div class="bc-avatar bc-avatar--square mt-2 bc-avatar--success-light">
 				<i class="if if-download"></i>
 			</div>
 			<div class="bc-avatar-text">
 				<h4>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</h4>
-				<p class="text-muted c-body-small">[BLANK COPY]</p>
+				<p class="text-muted c-body-small">The document will be visible to anyone.</p>
 			</div>
 		case "info:eu-repo/semantics/embargoedAccess":
-			<div class="bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue">
+			<div class="bc-avatar bc-avatar--square mt-2 bc-avatar--warning-light">
 				<i class="if if-time text-muted"></i>
 			</div>
 			<div class="bc-avatar-text">
 				<h4>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</h4>
-				<p class="text-muted c-body-small">[BLANK COPY]</p>
+				<p class="text-muted c-body-small">Use to switch access levels after a specified period. Recommended for AAM journal articles.</p>
 			</div>
 		case "info:eu-repo/semantics/restrictedAccess":
 			<div class="bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue">
@@ -32,12 +32,12 @@ templ PreviewAccesLevel(c *ctx.Ctx, f *models.PublicationFile) {
 				<p class="text-muted c-body-small">The document will be visible to users within the UGent network only. The metadata will be available to anyone.</p>
 			</div>
 		case "info:eu-repo/semantics/closedAccess":
-			<div class="bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue">
-				<i class="if if-eye-off text-muted"></i>
+			<div class="bc-avatar bc-avatar--square mt-2 bc-avatar--danger-light">
+				<i class="if if-forbid text-muted"></i>
 			</div>
 			<div class="bc-avatar-text">
 				<h4>{ c.Loc.Get("publication_file_access_levels." + f.AccessLevel) }</h4>
-				<p class="text-muted c-body-small">[BLANK COPY]</p>
+				<p class="text-muted c-body-small">Only you, related UGent members and Biblio team members can see the document. The metadata will be available to anyone.</p>
 			</div>
 	}
 }
