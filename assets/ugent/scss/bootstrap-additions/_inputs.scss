@@ -18,7 +18,7 @@
 }
 
 .custom-switch .form-check-label::after {
-  top: .5rem;
+  top: 0.5rem;
   left: calc(-4.4rem + 2px);
   background-color: $white;
 }
@@ -27,10 +27,10 @@
   transform: translateX(1.6rem);
 }
 
-.form-check-input[disabled] ~ .form-check-label::before, .form-check-input:disabled ~ .form-check-label::before {
+.form-check-input[disabled] ~ .form-check-label::before,
+.form-check-input:disabled ~ .form-check-label::before {
   background-color: $gray-100 !important;
 }
-
 
 .form-check-no-label {
   padding-left: 0;

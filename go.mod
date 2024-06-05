@@ -165,7 +165,6 @@ require (
 	github.com/ugent-library/httperror v0.0.0-20240522041727-58d71286fb15
 	github.com/ugent-library/httpx v0.0.0-20240403070226-3cd9bcf467c1
 	github.com/ugent-library/index v0.0.0-20240208101504-240e390f8d3d
-	github.com/ugent-library/mix v0.0.0-20230123152737-b51ce0c6439b
 	github.com/ugent-library/oidc v0.0.0-20240327104830-5735182db2e5
 	github.com/ugent-library/okay v0.0.0-20231205122923-396c4d3a29f2
 	go.etcd.io/bbolt v1.3.7 // indirect

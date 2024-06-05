@@ -2,9 +2,11 @@ package cli
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -17,7 +19,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/routes"
 	"github.com/ugent-library/bind"
-	"github.com/ugent-library/mix"
 	"github.com/ugent-library/oidc"
 )
 
@@ -115,10 +116,7 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	router := ich.New()
 
 	// assets
-	assets, err := mix.New(mix.Config{
-		ManifestFile: "static/mix-manifest.json",
-		PublicPath:   baseURL.Path + "/static/",
-	})
+	assets, err := loadAssets("static/manifest.json")
 	if err != nil {
 		return nil, err
 	}
@@ -196,4 +194,18 @@ func buildRouter(services *backends.Services) (*ich.Mux, error) {
 	})
 
 	return router, nil
+}
+
+func loadAssets(manifestFile string) (map[string]string, error) {
+	data, err := os.ReadFile(manifestFile)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't read manifest '%s': %w", manifestFile, err)
+	}
+
+	assets := make(map[string]string)
+	if err = json.Unmarshal(data, &assets); err != nil {
+		return nil, fmt.Errorf("couldn't parse manifest '%s': %w", manifestFile, err)
+	}
+
+	return assets, nil
 }

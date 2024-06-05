@@ -21,15 +21,17 @@
 
 .if + .btn-text,
 .btn-text + .if {
-  margin-left: .4rem;
+  margin-left: 0.4rem;
 }
 
-.btn:not(.btn-icon-only):not(.btn-link-p-0):not(.btn-sm):not(.btn-tertiary) .if:first-child {
-  margin-left: -.8rem;
+.btn:not(.btn-icon-only):not(.btn-link-p-0):not(.btn-sm):not(.btn-tertiary)
+  .if:first-child {
+  margin-left: -0.8rem;
 }
 
-.btn:not(.btn-icon-only):not(.btn-link-p-0):not(.btn-sm):not(.btn-tertiary) .if:last-child {
-  margin-right: -.8rem;
+.btn:not(.btn-icon-only):not(.btn-link-p-0):not(.btn-sm):not(.btn-tertiary)
+  .if:last-child {
+  margin-right: -0.8rem;
 }
 
 .btn-link {
@@ -55,7 +57,7 @@
   padding-left: 0;
   padding-right: 0;
 
-  &:not(:has(> .if)){
+  &:not(:has(> .if)) {
     text-decoration: underline;
   }
 
@@ -86,7 +88,6 @@
   &:focus {
     background-color: $gray-50;
   }
-
 }
 
 .btn-outline-success {
@@ -116,7 +117,7 @@
 .btn-outline-info {
   &:hover,
   &:focus {
-    background-color: rgba($aqua, .1);
+    background-color: rgba($aqua, 0.1);
     color: $aqua;
   }
 }
@@ -124,7 +125,7 @@
 .btn-outline-light {
   &:hover,
   &:focus {
-    background-color: rgba($white, .1);
+    background-color: rgba($white, 0.1);
     color: $white;
   }
 }
@@ -153,10 +154,10 @@
 }
 
 .btn-dark {
-  background-color:  mix($dark-gray, $white, 80%);;
+  background-color: mix($dark-gray, $white, 80%);
   &:hover,
   &:focus {
-    background-color:  mix($dark-gray, $white, 75%);;
+    background-color: mix($dark-gray, $white, 75%);
   }
 }
 
@@ -209,7 +210,7 @@
   &:hover,
   &:focus,
   &:active {
-    background-color: rgba($blue, .2);
+    background-color: rgba($blue, 0.2);
     color: $blue;
   }
 
@@ -281,7 +282,7 @@
   .btn-outline-info {
     &:hover,
     &:focus {
-      background-color: rgba($aqua, .1);
+      background-color: rgba($aqua, 0.1);
       color: $aqua;
     }
   }
@@ -289,7 +290,7 @@
   .btn-outline-light {
     &:hover,
     &:focus {
-      background-color: rgba($white, .1);
+      background-color: rgba($white, 0.1);
       color: $white;
     }
   }
@@ -307,8 +308,8 @@
 .btn-success,
 .btn-danger,
 .btn-info {
-  --bs-btn-color: #FFF;
-  --bs-btn-hover-color: #FFF;
+  --bs-btn-color: #fff;
+  --bs-btn-hover-color: #fff;
 }
 
 .btn-secondary,

@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"net/url"
@@ -22,7 +23,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/flash"
 	"github.com/ugent-library/httperror"
-	"github.com/ugent-library/mix"
 	"github.com/unrolled/secure"
 )
 
@@ -105,7 +105,7 @@ type Config struct {
 	*backends.Services
 	Logger              *slog.Logger
 	Router              *ich.Mux
-	Assets              mix.Manifest
+	Assets              map[string]string
 	MaxFileSize         int
 	Timezone            *time.Location
 	Loc                 *gotext.Locale
@@ -179,11 +179,11 @@ func (c *Ctx) URLTo(name string, pairs ...any) *url.URL {
 }
 
 func (c *Ctx) AssetPath(asset string) string {
-	p, err := c.Assets.AssetPath(asset)
-	if err != nil {
-		panic(err)
+	a, ok := c.Assets[asset]
+	if !ok {
+		panic(fmt.Errorf("asset '%s' not found in manifest", asset))
 	}
-	return p
+	return a
 }
 
 func (c *Ctx) PersistFlash(w http.ResponseWriter, f flash.Flash) {

@@ -171,7 +171,6 @@ var seedCandidateRecordsCmd = &cobra.Command{
 			} else if err != nil {
 				return err
 			}
-			logger.Info("imported candidate record", "rec", rec)
 			if err := repo.AddCandidateRecord(context.TODO(), rec); err != nil {
 				return err
 			}

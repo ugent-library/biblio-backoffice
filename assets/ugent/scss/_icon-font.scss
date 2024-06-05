@@ -1,311 +1,313 @@
 @font-face {
-    font-family: "icon-font";
-    src: url("../fonts/icon-font.woff2?ef994dfceb96b405b7fb3fb47a03d0f3") format("woff2"),
-url("../fonts/icon-font.woff?ef994dfceb96b405b7fb3fb47a03d0f3") format("woff");
+  font-family: "icon-font";
+  src:
+    url("../ugent/fonts/icon-font.woff2") format("woff2"),
+    url("../ugent/fonts/icon-font.woff") format("woff");
 }
 
-i[class^="if-"]:before, i[class*=" if-"]:before {
-    font-family: icon-font !important;
-    font-style: normal;
-    font-weight: normal !important;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+i[class^="if-"]:before,
+i[class*=" if-"]:before {
+  font-family: icon-font !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .if-add:before {
-    content: "\f101";
+  content: "\f101";
 }
 .if-alert-fill:before {
-    content: "\f102";
+  content: "\f102";
 }
 .if-alert:before {
-    content: "\f103";
+  content: "\f103";
 }
 .if-arrow-double-down:before {
-    content: "\f104";
+  content: "\f104";
 }
 .if-arrow-double-up:before {
-    content: "\f105";
+  content: "\f105";
 }
 .if-arrow-down:before {
-    content: "\f106";
+  content: "\f106";
 }
 .if-arrow-go-back:before {
-    content: "\f107";
+  content: "\f107";
 }
 .if-arrow-left:before {
-    content: "\f108";
+  content: "\f108";
 }
 .if-arrow-right:before {
-    content: "\f109";
+  content: "\f109";
 }
 .if-arrow-up:before {
-    content: "\f10a";
+  content: "\f10a";
 }
 .if-article:before {
-    content: "\f10b";
+  content: "\f10b";
 }
 .if-asterisk:before {
-    content: "\f10c";
+  content: "\f10c";
 }
 .if-bar-chart:before {
-    content: "\f10d";
+  content: "\f10d";
 }
 .if-book:before {
-    content: "\f10e";
+  content: "\f10e";
 }
 .if-briefcase:before {
-    content: "\f10f";
+  content: "\f10f";
 }
 .if-building:before {
-    content: "\f110";
+  content: "\f110";
 }
 .if-calendar-1:before {
-    content: "\f111";
+  content: "\f111";
 }
 .if-calendar:before {
-    content: "\f112";
+  content: "\f112";
 }
 .if-caret-down:before {
-    content: "\f113";
+  content: "\f113";
 }
 .if-caret-left:before {
-    content: "\f114";
+  content: "\f114";
 }
 .if-caret-right:before {
-    content: "\f115";
+  content: "\f115";
 }
 .if-caret-up:before {
-    content: "\f116";
+  content: "\f116";
 }
 .if-cc-by-line:before {
-    content: "\f117";
+  content: "\f117";
 }
 .if-cc-line:before {
-    content: "\f118";
+  content: "\f118";
 }
 .if-cc-nc-line:before {
-    content: "\f119";
+  content: "\f119";
 }
 .if-cc-nd-line:before {
-    content: "\f11a";
+  content: "\f11a";
 }
 .if-cc-sa-line:before {
-    content: "\f11b";
+  content: "\f11b";
 }
 .if-cc-zero-line:before {
-    content: "\f11c";
+  content: "\f11c";
 }
 .if-check-circle-fill:before {
-    content: "\f11d";
+  content: "\f11d";
 }
 .if-check-circle:before {
-    content: "\f11e";
+  content: "\f11e";
 }
 .if-check-double:before {
-    content: "\f11f";
+  content: "\f11f";
 }
 .if-check:before {
-    content: "\f120";
+  content: "\f120";
 }
 .if-chevron-down:before {
-    content: "\f121";
+  content: "\f121";
 }
 .if-chevron-left:before {
-    content: "\f122";
+  content: "\f122";
 }
 .if-chevron-right:before {
-    content: "\f123";
+  content: "\f123";
 }
 .if-chevron-up:before {
-    content: "\f124";
+  content: "\f124";
 }
 .if-close-circle-fill:before {
-    content: "\f125";
+  content: "\f125";
 }
 .if-close:before {
-    content: "\f126";
+  content: "\f126";
 }
 .if-copy:before {
-    content: "\f127";
+  content: "\f127";
 }
 .if-database:before {
-    content: "\f128";
+  content: "\f128";
 }
 .if-delete:before {
-    content: "\f129";
+  content: "\f129";
 }
 .if-double-quotes:before {
-    content: "\f12a";
+  content: "\f12a";
 }
 .if-download:before {
-    content: "\f12b";
+  content: "\f12b";
 }
 .if-draft-fill:before {
-    content: "\f12c";
+  content: "\f12c";
 }
 .if-draft:before {
-    content: "\f12d";
+  content: "\f12d";
 }
 .if-drag:before {
-    content: "\f12e";
+  content: "\f12e";
 }
 .if-edit:before {
-    content: "\f12f";
+  content: "\f12f";
 }
 .if-empty:before {
-    content: "\f130";
+  content: "\f130";
 }
 .if-error-circle-fill:before {
-    content: "\f131";
+  content: "\f131";
 }
 .if-error-circle:before {
-    content: "\f132";
+  content: "\f132";
 }
 .if-external-link:before {
-    content: "\f133";
+  content: "\f133";
 }
 .if-eye-fill:before {
-    content: "\f134";
+  content: "\f134";
 }
 .if-eye-off:before {
-    content: "\f135";
+  content: "\f135";
 }
 .if-eye:before {
-    content: "\f136";
+  content: "\f136";
 }
 .if-feedback-fill:before {
-    content: "\f137";
+  content: "\f137";
 }
 .if-file-pdf:before {
-    content: "\f138";
+  content: "\f138";
 }
 .if-file-text:before {
-    content: "\f139";
+  content: "\f139";
 }
 .if-file-word:before {
-    content: "\f13a";
+  content: "\f13a";
 }
 .if-file:before {
-    content: "\f13b";
+  content: "\f13b";
 }
 .if-forbid:before {
-    content: "\f13c";
+  content: "\f13c";
 }
 .if-ghent-university:before {
-    content: "\f13d";
+  content: "\f13d";
 }
 .if-global:before {
-    content: "\f13e";
+  content: "\f13e";
 }
 .if-grid:before {
-    content: "\f13f";
+  content: "\f13f";
 }
 .if-home:before {
-    content: "\f140";
+  content: "\f140";
 }
 .if-info-circle-filled:before {
-    content: "\f141";
+  content: "\f141";
 }
 .if-info-circle:before {
-    content: "\f142";
+  content: "\f142";
 }
 .if-list-check:before {
-    content: "\f143";
+  content: "\f143";
 }
 .if-list-unordered:before {
-    content: "\f144";
+  content: "\f144";
 }
 .if-lock-unlock:before {
-    content: "\f145";
+  content: "\f145";
 }
 .if-lock:before {
-    content: "\f146";
+  content: "\f146";
 }
 .if-log-out:before {
-    content: "\f147";
+  content: "\f147";
 }
 .if-mail:before {
-    content: "\f148";
+  content: "\f148";
 }
 .if-menu:before {
-    content: "\f149";
+  content: "\f149";
 }
 .if-message:before {
-    content: "\f14a";
+  content: "\f14a";
 }
 .if-messages:before {
-    content: "\f14b";
+  content: "\f14b";
 }
 .if-more:before {
-    content: "\f14c";
+  content: "\f14c";
 }
 .if-move-bottom:before {
-    content: "\f14d";
+  content: "\f14d";
 }
 .if-move-left:before {
-    content: "\f14e";
+  content: "\f14e";
 }
 .if-move-right:before {
-    content: "\f14f";
+  content: "\f14f";
 }
 .if-move-top:before {
-    content: "\f150";
+  content: "\f150";
 }
 .if-no-edit:before {
-    content: "\f151";
+  content: "\f151";
 }
 .if-notification:before {
-    content: "\f152";
+  content: "\f152";
 }
 .if-orcid:before {
-    content: "\f153";
+  content: "\f153";
 }
 .if-pin:before {
-    content: "\f154";
+  content: "\f154";
 }
 .if-request-change:before {
-    content: "\f155";
+  content: "\f155";
 }
 .if-search:before {
-    content: "\f156";
+  content: "\f156";
 }
 .if-service:before {
-    content: "\f157";
+  content: "\f157";
 }
 .if-settings:before {
-    content: "\f158";
+  content: "\f158";
 }
 .if-share:before {
-    content: "\f159";
+  content: "\f159";
 }
 .if-start:before {
-    content: "\f15a";
+  content: "\f15a";
 }
 .if-subtract:before {
-    content: "\f15b";
+  content: "\f15b";
 }
 .if-table:before {
-    content: "\f15c";
+  content: "\f15c";
 }
 .if-time:before {
-    content: "\f15d";
+  content: "\f15d";
 }
 .if-tool:before {
-    content: "\f15e";
+  content: "\f15e";
 }
 .if-upload:before {
-    content: "\f15f";
+  content: "\f15f";
 }
 .if-user-add:before {
-    content: "\f160";
+  content: "\f160";
 }
 .if-user:before {
-    content: "\f161";
+  content: "\f161";
 }
 .if-zoom-in:before {
-    content: "\f162";
+  content: "\f162";
 }

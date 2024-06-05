@@ -1,19 +1,19 @@
 .autocomplete {
-    position: relative;
+  position: relative;
 
-    .autocomplete-hits {
-        position: absolute;
-        z-index: 9999;
-        left: 1.2rem;
-        right: 1.2rem;
+  .autocomplete-hits {
+    position: absolute;
+    z-index: 9999;
+    left: 1.2rem;
+    right: 1.2rem;
 
-        .list-group {
-            max-height: 200px;
-            overflow-y: auto;    
-        }
-
-        .autocomplete-hit {
-            cursor: pointer;
-        }
+    .list-group {
+      max-height: 200px;
+      overflow-y: auto;
     }
+
+    .autocomplete-hit {
+      cursor: pointer;
+    }
+  }
 }
