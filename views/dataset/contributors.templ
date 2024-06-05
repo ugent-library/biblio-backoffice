@@ -148,9 +148,22 @@ templ ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, posit
 			}
 			<div class="bc-avatar-text">
 				{ contributor.Name() }
-				if orcid := contributor.ORCID(); orcid != "" {
-					<span class="text-muted c-body-small ms-4"><i class="if if-orcid if--small text-success"></i> { orcid }</span>
-				}
+				<ul class="c-meta-list c-meta-list-horizontal">
+					if contributor.Person != nil && len(contributor.Person.UGentID) > 0 {
+						for _, ugentID := range contributor.Person.UGentID {
+							<li class="c-meta-item text-nowrap">
+								<i class="if if-ghent-university if--small text-primary"></i>
+								<small>{ ugentID }</small>
+							</li>
+						}
+					}
+					if orcid := contributor.ORCID(); orcid != "" {
+						<li class="c-meta-item text-nowrap">
+							<i class="if if-orcid if--small text-success"></i>
+							<small>{ orcid }</small>
+						</li>
+					}
+				</ul>
 			</div>
 		</div>
 	</td>
