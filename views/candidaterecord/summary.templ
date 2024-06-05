@@ -88,8 +88,15 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 									<li class="c-meta-item">{ summaryPart }</li>
 								}
 							</ul>
-							@contributorviews.Summary(c, "author", p.Author, "")
-							@contributorviews.Summary(c, "supervisor", p.Supervisor, "")
+
+							<div class="d-inline-flex align-items-center flex-wrap">
+								<span class="badge rounded-pill badge-light me-4">Authors</span>
+								@contributorviews.Summary(c, "author", p.Author, "")
+							</div>
+							<div class="d-inline-flex align-items-center flex-wrap">
+								<span class="badge rounded-pill badge-light me-4">Supervisors</span>
+								@contributorviews.Summary(c, "supervisor", p.Supervisor, "")
+							</div>
 						</div>
 					</div>
 					<div class="c-button-toolbar flex-row-reverse flex-lg-row">

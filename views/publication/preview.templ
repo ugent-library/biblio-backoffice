@@ -138,7 +138,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 														</div>
 														<div class="bc-avatar-text">
 															<div class="hstack-md-responsive gap-3 gap-lg-4">
-																<div class="vstack gap-3">
+																<div class="vstack gap-2">
 																	<h4 class="mb-0">{ f.Name }</h4>
 																	<ul class="c-meta-list c-meta-list-horizontal">
 																		<li class="c-meta-item">Full text</li>
@@ -350,28 +350,30 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 											<div class="list-group rounded-lg">
 												for _, a := range p.Author {
 													<div class="list-group-item">
-														<div class="bc-avatar-and-text align-items-start">
-															<div class="bc-avatar mt-3 bc-avatar--light-blue" data-avatar-item="data-avatar-item">
+														<div class="bc-avatar-and-text">
+															<div class="bc-avatar bc-avatar--light-blue" data-avatar-item="data-avatar-item">
 																<i class="if if-ghent-university"></i>
 															</div>
 															<div class="bc-avatar-text">
 																<div class="hstack-md-responsive gap-3 gap-lg-4">
-																	<div class="vstack gap-3">
+																	<div class="vstack gap-2">
 																		<h4 class="mb-0">{ a.Name() }</h4>
-																		<ul class="c-meta-list c-meta-list-horizontal">
-																			if a.Person != nil {
-																				<li class="c-meta-item">
-																					<i class="if if-ghent-university if--small if--muted"></i>
-																					<span class="text-muted">UGent author</span>
-																				</li>
-																			}
-																			if a.ORCID() != "" {
-																				<li class="c-meta-item text-nowrap">
-																					<i class="if if-orcid if--small if--success"></i>
-																					<span>{ a.ORCID() }</span>
-																				</li>
-																			}
-																		</ul>
+																		if a.Person != nil || a.ORCID() != "" {
+																			<ul class="c-meta-list c-meta-list-horizontal">
+																				if a.Person != nil {
+																					<li class="c-meta-item">
+																						<i class="if if-ghent-university if--small if--muted"></i>
+																						<span class="text-muted">UGent author</span>
+																					</li>
+																				}
+																				if a.ORCID() != "" {
+																					<li class="c-meta-item text-nowrap">
+																						<i class="if if-orcid if--small if--success"></i>
+																						<span>{ a.ORCID() }</span>
+																					</li>
+																				}
+																			</ul>
+																		}
 																	</div>
 																</div>
 															</div>
@@ -393,28 +395,36 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 											<ul class="list-group rounded-lg">
 												for _, s := range p.Supervisor {
 													<li class="list-group-item">
-														<div class="bc-avatar-and-text align-items-start">
-															<div class="bc-avatar mt-3 bc-avatar--light-blue" data-avatar-item="data-avatar-item">
-																<i class="if if-ghent-university"></i>
-															</div>
+														<div class="bc-avatar-and-text">
+															if s.Person != nil {
+																<div class="bc-avatar bc-avatar--light-blue" data-avatar-item="data-avatar-item">
+																	<i class="if if-ghent-university"></i>
+																</div>
+															} else {
+																<div class="bc-avatar bc-avatar--muted" data-avatar-item="data-avatar-item">
+																	<i class="if if-user"></i>
+																</div>
+															}
 															<div class="bc-avatar-text">
 																<div class="hstack-md-responsive gap-3 gap-lg-4">
-																	<div class="vstack gap-3">
+																	<div class="vstack gap-2">
 																		<h4 class="mb-0">{ s.Name() }</h4>
-																		<ul class="c-meta-list c-meta-list-horizontal">
-																			if s.Person != nil {
-																				<li class="c-meta-item">
-																					<i class="if if-ghent-university if--small if--muted"></i>
-																					<span class="text-muted">UGent author</span>
-																				</li>
-																			}
-																			if s.ORCID() != "" {
-																				<li class="c-meta-item text-nowrap">
-																					<i class="if if-orcid if--small if--success"></i>
-																					<span>{ s.ORCID() }</span>
-																				</li>
-																			}
-																		</ul>
+																		if s.Person != nil || s.ORCID() != "" {
+																			<ul class="c-meta-list c-meta-list-horizontal">
+																				if s.Person != nil {
+																					<li class="c-meta-item">
+																						<i class="if if-ghent-university if--small if--muted"></i>
+																						<span class="text-muted">UGent author</span>
+																					</li>
+																				}
+																				if s.ORCID() != "" {
+																					<li class="c-meta-item text-nowrap">
+																						<i class="if if-orcid if--small if--success"></i>
+																						<span>{ s.ORCID() }</span>
+																					</li>
+																				}
+																			</ul>
+																		}
 																	</div>
 																</div>
 															</div>
@@ -442,7 +452,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 															</div>
 															<div class="bc-avatar-text">
 																<div class="hstack-md-responsive gap-3 gap-lg-4">
-																	<div class="vstack gap-3">
+																	<div class="vstack gap-2">
 																		<h4 class="mb-0">{ o.Organization.Name }</h4>
 																		<div class="c-body-small text-muted">Department ID: { o.OrganizationID }</div>
 																	</div>
