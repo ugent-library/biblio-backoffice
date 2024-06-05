@@ -363,7 +363,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 																				if a.Person != nil {
 																					<li class="c-meta-item">
 																						<i class="if if-ghent-university if--small if--muted"></i>
-																						<span class="text-muted">UGent author</span>
+																						<span class="text-muted">UGent</span>
 																					</li>
 																				}
 																				if a.ORCID() != "" {
@@ -414,9 +414,10 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 																				if s.Person != nil {
 																					<li class="c-meta-item">
 																						<i class="if if-ghent-university if--small if--muted"></i>
-																						<span class="text-muted">UGent author</span>
+																						<span class="text-muted">UGent</span>
 																					</li>
 																				}
+
 																				if s.ORCID() != "" {
 																					<li class="c-meta-item text-nowrap">
 																						<i class="if if-orcid if--small if--success"></i>
