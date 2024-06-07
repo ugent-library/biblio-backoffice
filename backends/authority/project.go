@@ -203,7 +203,7 @@ func (c *Client) SuggestProjects(q string) ([]*models.Project, error) {
 	}
 
 	for _, h := range responseBody.Hits.Hits {
-		var m map[string]any = make(map[string]any)
+		m := make(map[string]any)
 		if e := json.Unmarshal(h.Source, &m); e != nil {
 			return nil, e
 		}
