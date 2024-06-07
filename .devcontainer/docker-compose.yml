@@ -97,9 +97,9 @@ services:
         || ./bin/elasticsearch-plugin install https://artifacts.elastic.co/downloads/elasticsearch-plugins/analysis-icu/analysis-icu-6.8.16.zip;
         /usr/local/bin/docker-entrypoint.sh"
     healthcheck:
-      test: curl -s -f es:9200/_cat/health >/dev/null || exit 1
-      interval: 10s
-      timeout: 5s
+      test: curl -s -f es:3061/_cat/health >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
       retries: 5
 
   mongo:
