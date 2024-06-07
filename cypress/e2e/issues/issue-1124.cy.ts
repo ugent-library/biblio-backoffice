@@ -1,5 +1,7 @@
+// https://github.com/ugent-library/biblio-backoffice/issues/1124
+
 describe("Issue #1124:  Add friendlier consistent confirmation toaster when locking or unlocking a record", () => {
-  it("should not split up keywords by newlines", () => {
+  it("should display a toast and badge when publications are locked/unlocked", () => {
     cy.loginAsResearcher();
 
     cy.setUpPublication("Dissertation");
