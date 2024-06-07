@@ -23,7 +23,7 @@ import (
 //go:embed person_settings.json
 var personSettings string
 
-func (c *Client) EnsurePersonIndexExists() error {
+func (c *Client) EnsurePersonSeedIndexExists() error {
 	res, err := esapi.IndicesExistsRequest{
 		Index: []string{"biblio_person"},
 	}.Do(context.Background(), c.es)
@@ -55,7 +55,7 @@ func (c *Client) SeedPerson(data []byte) error {
 	} else {
 		doc["active"] = 0
 	}
-	if _, err := c.mongo.Database("authority").Collection("person").InsertOne(context.Background(), doc); err != nil {
+	if _, err := c.mongo.Database("authority").Collection("person").ReplaceOne(context.Background(), bson.M{"_id": id}, doc, options.Replace().SetUpsert(true)); err != nil {
 		return err
 	}
 	res, err := c.es.Index(

@@ -47,7 +47,7 @@ var seedOrganizationsCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if err := authorityClient.EnsureOrganizationIndexExists(); err != nil {
+		if err := authorityClient.EnsureOrganizationSeedIndexExists(); err != nil {
 			return err
 		}
 
@@ -89,7 +89,7 @@ var seedPeopleCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if err := authorityClient.EnsurePersonIndexExists(); err != nil {
+		if err := authorityClient.EnsurePersonSeedIndexExists(); err != nil {
 			return err
 		}
 
@@ -131,7 +131,7 @@ var seedProjectsCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if err := authorityClient.EnsureProjectIndexExists(); err != nil {
+		if err := authorityClient.EnsureProjectSeedIndexExists(); err != nil {
 			return err
 		}
 

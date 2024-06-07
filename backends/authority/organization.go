@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -37,7 +38,7 @@ type searchEnvelope struct {
 //go:embed organization_settings.json
 var organizationSettings string
 
-func (c *Client) EnsureOrganizationIndexExists() error {
+func (c *Client) EnsureOrganizationSeedIndexExists() error {
 	res, err := esapi.IndicesExistsRequest{
 		Index: []string{"biblio_organization"},
 	}.Do(context.Background(), c.es)
@@ -52,6 +53,7 @@ func (c *Client) EnsureOrganizationIndexExists() error {
 		if res.IsError() {
 			return fmt.Errorf("%+v", res)
 		}
+		time.Sleep(5 * time.Second)
 	}
 	return nil
 }
@@ -63,7 +65,7 @@ func (c *Client) SeedOrganization(data []byte) error {
 	}
 	id := doc["id"].(string)
 	doc["_id"] = id
-	if _, err := c.mongo.Database("authority").Collection("organization").InsertOne(context.Background(), doc); err != nil {
+	if _, err := c.mongo.Database("authority").Collection("organization").ReplaceOne(context.Background(), bson.M{"_id": id}, doc, options.Replace().SetUpsert(true)); err != nil {
 		return err
 	}
 	res, err := c.es.Index(

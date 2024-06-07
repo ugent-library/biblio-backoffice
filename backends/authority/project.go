@@ -19,7 +19,7 @@ import (
 //go:embed project_settings.json
 var projectSettings string
 
-func (c *Client) EnsureProjectIndexExists() error {
+func (c *Client) EnsureProjectSeedIndexExists() error {
 	res, err := esapi.IndicesExistsRequest{
 		Index: []string{"biblio_project"},
 	}.Do(context.Background(), c.es)
@@ -45,7 +45,7 @@ func (c *Client) SeedProject(data []byte) error {
 	}
 	id := doc["iweto_id"].(string)
 	doc["_id"] = id
-	if _, err := c.mongo.Database("authority").Collection("project").InsertOne(context.Background(), doc); err != nil {
+	if _, err := c.mongo.Database("authority").Collection("project").ReplaceOne(context.Background(), bson.M{"_id": id}, doc, options.Replace().SetUpsert(true)); err != nil {
 		return err
 	}
 	res, err := c.es.Index(

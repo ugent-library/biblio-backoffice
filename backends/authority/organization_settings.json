@@ -1,20 +1,21 @@
 {
-    "settings": {
-      "number_of_shards": 1,
-      "number_of_replicas": 0,
-      "analysis": {
-        "analyzer": {
-          "tag": {
-            "type": "custom",
-            "tokenizer": "keyword",
-            "filter": [
-              "lowercase"
-            ]
-          }
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "analysis": {
+      "analyzer": {
+        "tag": {
+          "type": "custom",
+          "tokenizer": "keyword",
+          "filter": [
+            "lowercase"
+          ]
         }
       }
-    },
-    "mapping": {
+    }
+  },
+  "mappings": {
+    "_doc": {
       "dynamic": "false",
       "numeric_detection": "false",
       "date_detection": "false",
@@ -45,3 +46,4 @@
       }
     }
   }
+}
