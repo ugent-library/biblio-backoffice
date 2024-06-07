@@ -3,7 +3,6 @@ package frontoffice
 import (
 	"fmt"
 	"regexp"
-	"sort"
 	"strconv"
 	"time"
 
@@ -11,11 +10,8 @@ import (
 
 	"github.com/caltechlibrary/doitools"
 	"github.com/iancoleman/strcase"
-	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/people"
-	"github.com/ugent-library/biblio-backoffice/projects"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 )
 
@@ -128,31 +124,6 @@ type Project struct {
 	GISMOID              string `json:"gismo_id,omitempty"`
 	IWETOID              string `json:"iweto_id,omitempty"`
 	Abstract             string `json:"abstract,omitempty"`
-}
-
-func MapProject(p *projects.Project) *Project {
-	rec := &Project{
-		ID:                   p.Identifiers.Get("iweto"),
-		IWETOID:              p.Identifiers.Get("iweto"),
-		GISMOID:              p.Attributes.Get("gismo", "gismo_id"),
-		EUID:                 p.Attributes.Get("cordis", "eu_id"),
-		EUCallID:             p.Attributes.Get("cordis", "eu_call_id"),
-		EUAcronym:            p.Attributes.Get("cordis", "eu_acronym"),
-		EUFrameworkProgramme: p.Attributes.Get("cordis", "eu_framework_programme"),
-	}
-
-	if len(p.Names) > 0 {
-		rec.Title = p.Names[0].Value
-	}
-
-	if len(p.Descriptions) > 0 {
-		rec.Abstract = p.Descriptions[0].Value
-	}
-
-	rec.StartDate = p.StartDate
-	rec.EndDate = p.EndDate
-
-	return rec
 }
 
 type Publisher struct {
@@ -1019,174 +990,11 @@ func MapDataset(d *models.Dataset, repo *repositories.Repo) *Record {
 
 	if d.Status == "private" { // private is called unsubmitted in frontoffice
 		rec.Status = "unsubmitted"
-	} else if d.HasBeenPublic && d.Status != "public" {  // the frontoffice has an extra status pdeleted for records that are deleted but have bene public in the past
+	} else if d.HasBeenPublic && d.Status != "public" { // the frontoffice has an extra status pdeleted for records that are deleted but have bene public in the past
 		rec.Status = "pdeleted"
 	} else {
 		rec.Status = d.Status
 	}
 
-	return rec
-}
-
-type Person struct {
-	ID                 string         `json:"_id"`
-	IDs                []string       `json:"ids"`
-	UGentID            []string       `json:"ugent_id,omitempty"`
-	Active             int            `json:"active"`
-	FullName           string         `json:"full_name,omitempty"`
-	FirstName          string         `json:"first_name,omitempty"`
-	PreferredFirstName string         `json:"preferred_first_name,omitempty"`
-	LastName           string         `json:"last_name,omitempty"`
-	PreferredLastName  string         `json:"preferred_last_name,omitempty"`
-	Email              string         `json:"email,omitempty"`
-	Title              string         `json:"title,omitempty"`
-	OrcidID            string         `json:"orcid_id,omitempty"`
-	OrcidToken         string         `json:"orcid_token,omitempty"`
-	OrcidBio           string         `json:"orcid_bio,omitempty"`
-	OrcidSettings      map[string]any `json:"orcid_settings,omitempty"`
-	UGentDepartmentID  []string       `json:"ugent_department_id,omitempty"`
-	UGentMemorialisID  string         `json:"ugent_memorialis_id,omitempty"`
-	PublicationCount   int            `json:"publication_count"`
-}
-
-func MapPerson(p *people.Person) *Person {
-	rec := &Person{
-		FullName:           p.Name,
-		FirstName:          p.GivenName,
-		PreferredFirstName: p.PreferredGivenName,
-		LastName:           p.FamilyName,
-		PreferredLastName:  p.PreferredFamilyName,
-		Email:              p.Email,
-		Title:              p.HonorificPrefix,
-		PublicationCount:   p.PublicationCount,
-	}
-	if p.Active {
-		rec.Active = 1
-	}
-	if p.PreferredName != "" {
-		rec.FullName = p.PreferredName
-	}
-	for _, ident := range p.Identifiers {
-		switch ident.Kind {
-		case "id":
-			rec.ID = ident.Value
-			rec.IDs = append(rec.IDs, ident.Value)
-		case "ugentID", "ugentHistoricID":
-			rec.UGentID = append(rec.UGentID, ident.Value)
-		case "orcid":
-			rec.OrcidID = ident.Value
-		case "ugentMemorialisID":
-			rec.UGentMemorialisID = ident.Value
-		}
-	}
-	for _, token := range p.Tokens {
-		switch token.Kind {
-		case "orcid":
-			rec.OrcidToken = string(token.Value)
-		}
-	}
-	for _, attr := range p.Attributes {
-		if attr.Scope == "orcid" && attr.Key == "bio" {
-			rec.OrcidBio = attr.Value
-		} else if attr.Scope == "orcid" && attr.Key == "sendEmails" {
-			rec.OrcidSettings = map[string]any{"send-emails": 1}
-		}
-	}
-	for _, a := range p.Affiliations {
-		for _, ident := range a.Organization.Identifiers {
-			switch ident.Kind {
-			case "biblio":
-				rec.UGentDepartmentID = append(rec.UGentDepartmentID, ident.Value)
-			}
-		}
-	}
-	return rec
-}
-
-type ParentOrganization struct {
-	ID string `json:"id"`
-}
-
-type Organization struct {
-	ID       string               `json:"id"`
-	Name     string               `json:"name"`
-	Tree     []ParentOrganization `json:"tree"`
-	Position int                  `json:"position"`
-}
-
-type OrganizationNode struct {
-	ID       string              `json:"id"`
-	Name     string              `json:"name"`
-	Position int                 `json:"position"`
-	Children []*OrganizationNode `json:"children,omitempty"`
-}
-
-type ByOrganizationNode []*OrganizationNode
-
-func (nodes ByOrganizationNode) Len() int {
-	return len(nodes)
-}
-
-func (nodes ByOrganizationNode) Swap(i, j int) {
-	nodes[i], nodes[j] = nodes[j], nodes[i]
-}
-
-func (nodes ByOrganizationNode) Less(i, j int) bool {
-	return nodes[i].Position < nodes[j].Position
-}
-
-func sortOrganizationTrees(trees []*OrganizationNode) []*OrganizationNode {
-	sort.Sort(ByOrganizationNode(trees))
-	for _, tree := range trees {
-		if len(tree.Children) > 0 {
-			tree.Children = sortOrganizationTrees(tree.Children)
-		}
-	}
-	return trees
-}
-
-func ToOrganizationTrees(orgs []*Organization) []*OrganizationNode {
-	treeNodes := make([]*OrganizationNode, 0)
-	treeNodesP := &treeNodes
-
-	for _, org := range orgs {
-		tnp := treeNodesP
-		for _, pOrg := range lo.Reverse(org.Tree) {
-			var thisParentOrgNode *OrganizationNode
-			for _, o := range *tnp {
-				if o.ID == pOrg.ID {
-					thisParentOrgNode = o
-					break
-				}
-			}
-			if thisParentOrgNode == nil {
-				thisParentOrgNode = &OrganizationNode{
-					ID:   pOrg.ID,
-					Name: pOrg.ID,
-				}
-				*tnp = append(*tnp, thisParentOrgNode)
-			}
-			if thisParentOrgNode.ID == org.ID {
-				thisParentOrgNode.Position = org.Position
-				thisParentOrgNode.Name = org.Name
-			}
-			tnp = &thisParentOrgNode.Children
-		}
-	}
-
-	return sortOrganizationTrees(*treeNodesP)
-}
-
-func MapOrganization(o *people.Organization) *Organization {
-	id := o.Identifiers.Get("biblio")
-	rec := &Organization{
-		ID:       id,
-		Name:     o.Names.Get("eng"),
-		Tree:     []ParentOrganization{{ID: id}},
-		Position: o.Position,
-	}
-	for _, po := range o.Parents {
-		rec.Tree = append(rec.Tree, ParentOrganization{ID: po.Identifiers.Get("biblio")})
-	}
 	return rec
 }

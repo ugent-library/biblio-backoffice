@@ -51,13 +51,38 @@ services:
   # NOTE: Elastic 6.8 doesn't provide an arm64 image. So, we need to use a 
   # custom image for the time being. Switch to the container below if you are on x86_64.
 
+  # es:
+  #   platform: "linux/amd64"
+  #   image: elasticsearch:6.8.23
+  #   environment:
+  #     - http.host=0.0.0.0
+  #     - http.port=3061
+  #     - ES_JAVA_OPTS=-Xmx2G -Xms2G -server
+  #     - discovery.type=single-node
+  #     - xpack.ml.enabled=false
+  #     - bootstrap.system_call_filter=false
+  #   volumes:
+  #     - esdata:/usr/share/elasticsearch/data
+  #   ulimits:
+  #     nofile:
+  #       soft: 65536
+  #       hard: 65536
+  #   command: >
+  #       /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-icu
+  #       || ./bin/elasticsearch-plugin install analysis-icu;
+  #       /usr/local/bin/docker-entrypoint.sh"
+  #   healthcheck:
+  #     test: curl -s -f es:3061/_cat/health >/dev/null || exit 1
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+
   es:
-    platform: "linux/amd64"
-    image: elasticsearch:6.8.23
+    image: elyalvarado/elasticsearch-arm64:6.8.16
     environment:
       - http.host=0.0.0.0
       - http.port=3061
-      - ES_JAVA_OPTS=-Xmx1G -Xms1G -server
+      - ES_JAVA_OPTS=-Xmx2G -Xms2G -server
       - discovery.type=single-node
       - xpack.ml.enabled=false
       - bootstrap.system_call_filter=false
@@ -69,38 +94,17 @@ services:
         hard: 65536
     command: >
         /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-icu
-        || ./bin/elasticsearch-plugin install analysis-icu;
+        || ./bin/elasticsearch-plugin install https://artifacts.elastic.co/downloads/elasticsearch-plugins/analysis-icu/analysis-icu-6.8.16.zip;
         /usr/local/bin/docker-entrypoint.sh"
     healthcheck:
-      test: curl -s -f es:3061/_cat/health >/dev/null || exit 1
-      interval: 30s
-      timeout: 10s
+      test: curl -s -f es:9200/_cat/health >/dev/null || exit 1
+      interval: 10s
+      timeout: 5s
       retries: 5
 
-  #  es:
-  #    image: elyalvarado/elasticsearch-arm64:6.8.16
-  #    environment:
-  #      - http.host=0.0.0.0
-  #      - http.port=3061
-  #      - ES_JAVA_OPTS=-Xmx512m -Xms512m -server
-  #      - discovery.type=single-node
-  #      - xpack.ml.enabled=false
-  #      - bootstrap.system_call_filter=false
-  #    volumes:
-  #      - esdata:/usr/share/elasticsearch/data
-  #    ulimits:
-  #      nofile:
-  #        soft: 65536
-  #        hard: 65536
-  #    command: >
-  #        /bin/sh -c "./bin/elasticsearch-plugin list | grep -q analysis-icu
-  #        || ./bin/elasticsearch-plugin install https://artifacts.elastic.co/downloads/elasticsearch-plugins/analysis-icu/analysis-icu-6.8.16.zip;
-  #        /usr/local/bin/docker-entrypoint.sh"
-  #    healthcheck:
-  #      test: curl -s -f es:9200/_cat/health >/dev/null || exit 1
-  #      interval: 10s
-  #      timeout: 5s
-  #      retries: 5
+  mongo:
+    image: mongo
+    command: --port 3081
 
   minio:
     image: minio/minio:RELEASE.2023-12-09T18-17-51Z

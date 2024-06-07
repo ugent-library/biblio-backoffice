@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"errors"
@@ -8,9 +9,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/ugent-library/biblio-backoffice/backends/authority"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/people"
-	"github.com/ugent-library/biblio-backoffice/projects"
 )
 
 func init() {
@@ -38,10 +38,21 @@ var seedOrganizationsCmd = &cobra.Command{
 	Use:   "organizations",
 	Short: "seed organization data",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		peopleRepo := newServices().PeopleRepo
+		authorityClient, err := authority.New(authority.Config{
+			MongoDBURI: config.MongoDBURL,
+			ESURI:      []string{config.Frontend.Es6URL},
+		})
+		if err != nil {
+			logger.Error("fatal: can't create authority client", "error", err)
+			os.Exit(1)
+		}
+
+		if err := authorityClient.EnsureOrganizationIndexExists(); err != nil {
+			return err
+		}
 
 		if force, _ := cmd.Flags().GetBool("force"); !force {
-			count, err := peopleRepo.CountOrganizations(cmd.Context())
+			count, err := authorityClient.CountOrganizations()
 			if err != nil {
 				return err
 			}
@@ -51,28 +62,17 @@ var seedOrganizationsCmd = &cobra.Command{
 			}
 		}
 
-		iter := func(ctx context.Context, fn func(people.ImportOrganizationParams) bool) error {
-			dec := json.NewDecoder(os.Stdin)
-			for {
-				params := people.ImportOrganizationParams{}
-				if err := dec.Decode(&params); errors.Is(err, io.EOF) {
-					break
-				} else if err != nil {
-					return err
-				}
-				if !fn(params) {
-					break
-				}
-				logger.Info("imported organization", "identifier", params.Identifiers.Get("biblio"))
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			if err := authorityClient.SeedOrganization(scanner.Bytes()); err != nil {
+				return err
 			}
-			return nil
+			logger.Info("imported organization")
 		}
-
-		if err := peopleRepo.ImportOrganizations(context.TODO(), iter); err != nil {
+		if err := scanner.Err(); err != nil {
 			return err
 		}
-
-		return newServices().PeopleIndex.ReindexOrganizations(context.TODO(), peopleRepo.EachOrganization)
+		return nil
 	},
 }
 
@@ -80,10 +80,21 @@ var seedPeopleCmd = &cobra.Command{
 	Use:   "people",
 	Short: "seed person data",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		peopleRepo := newServices().PeopleRepo
+		authorityClient, err := authority.New(authority.Config{
+			MongoDBURI: config.MongoDBURL,
+			ESURI:      []string{config.Frontend.Es6URL},
+		})
+		if err != nil {
+			logger.Error("fatal: can't create authority client", "error", err)
+			os.Exit(1)
+		}
+
+		if err := authorityClient.EnsurePersonIndexExists(); err != nil {
+			return err
+		}
 
 		if force, _ := cmd.Flags().GetBool("force"); !force {
-			count, err := peopleRepo.CountPeople(cmd.Context())
+			count, err := authorityClient.CountPeople()
 			if err != nil {
 				return err
 			}
@@ -93,21 +104,17 @@ var seedPeopleCmd = &cobra.Command{
 			}
 		}
 
-		dec := json.NewDecoder(os.Stdin)
-		for {
-			params := people.ImportPersonParams{}
-			if err := dec.Decode(&params); errors.Is(err, io.EOF) {
-				break
-			} else if err != nil {
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			if err := authorityClient.SeedPerson(scanner.Bytes()); err != nil {
 				return err
 			}
-			if err := peopleRepo.ImportPerson(context.TODO(), params); err != nil {
-				return err
-			}
-			logger.Info("imported person", "username", params.Username)
+			logger.Info("imported person")
 		}
-
-		return newServices().PeopleIndex.ReindexPeople(context.TODO(), peopleRepo.EachPerson)
+		if err := scanner.Err(); err != nil {
+			return err
+		}
+		return nil
 	},
 }
 
@@ -115,10 +122,21 @@ var seedProjectsCmd = &cobra.Command{
 	Use:   "projects",
 	Short: "seed project data",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		projectsRepo := newServices().ProjectsRepo
+		authorityClient, err := authority.New(authority.Config{
+			MongoDBURI: config.MongoDBURL,
+			ESURI:      []string{config.Frontend.Es6URL},
+		})
+		if err != nil {
+			logger.Error("fatal: can't create authority client", "error", err)
+			os.Exit(1)
+		}
+
+		if err := authorityClient.EnsureProjectIndexExists(); err != nil {
+			return err
+		}
 
 		if force, _ := cmd.Flags().GetBool("force"); !force {
-			count, err := projectsRepo.CountProjects(cmd.Context())
+			count, err := authorityClient.CountProjects()
 			if err != nil {
 				return err
 			}
@@ -128,21 +146,17 @@ var seedProjectsCmd = &cobra.Command{
 			}
 		}
 
-		dec := json.NewDecoder(os.Stdin)
-		for {
-			params := projects.ImportProjectParams{}
-			if err := dec.Decode(&params); errors.Is(err, io.EOF) {
-				break
-			} else if err != nil {
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			if err := authorityClient.SeedProject(scanner.Bytes()); err != nil {
 				return err
 			}
-			if err := projectsRepo.ImportProject(context.TODO(), params); err != nil {
-				return err
-			}
-			logger.Info("imported project", "iwetoID", params.Identifiers.Get("iweto"))
+			logger.Info("imported project")
 		}
-
-		return newServices().ProjectsIndex.ReindexProjects(context.TODO(), projectsRepo.EachProject)
+		if err := scanner.Err(); err != nil {
+			return err
+		}
+		return nil
 	},
 }
 
