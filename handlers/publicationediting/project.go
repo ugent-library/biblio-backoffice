@@ -33,7 +33,7 @@ func AddProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publicationviews.AddProject(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
+	views.ShowModal(publicationviews.AddProject(c, ctx.GetPublication(r), hits)).Render(r.Context(), w)
 }
 
 func SuggestProjects(w http.ResponseWriter, r *http.Request) {

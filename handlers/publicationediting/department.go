@@ -35,7 +35,7 @@ func AddDepartment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publicationviews.AddDepartment(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
+	views.ShowModal(publicationviews.AddDepartment(c, ctx.GetPublication(r), hits)).Render(r.Context(), w)
 }
 
 func SuggestDepartments(w http.ResponseWriter, r *http.Request) {

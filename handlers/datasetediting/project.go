@@ -33,8 +33,7 @@ func AddProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	datasetviews.AddProject(c, ctx.GetDataset(r), hits).Render(r.Context(), w)
-
+	views.ShowModal(datasetviews.AddProject(c, ctx.GetDataset(r), hits)).Render(r.Context(), w)
 }
 
 func SuggestProjects(w http.ResponseWriter, r *http.Request) {

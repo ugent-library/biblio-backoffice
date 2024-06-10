@@ -35,7 +35,7 @@ func AddDepartment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	datasetviews.AddDepartment(c, ctx.GetDataset(r), hits).Render(r.Context(), w)
+	views.ShowModal(datasetviews.AddDepartment(c, ctx.GetDataset(r), hits)).Render(r.Context(), w)
 }
 
 func SuggestDepartments(w http.ResponseWriter, r *http.Request) {

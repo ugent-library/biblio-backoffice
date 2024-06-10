@@ -33,7 +33,7 @@ func AddDataset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publicationviews.AddDataset(c, p, hits).Render(r.Context(), w)
+	views.ShowModal(publicationviews.AddDataset(c, p, hits)).Render(r.Context(), w)
 }
 
 func SuggestDatasets(w http.ResponseWriter, r *http.Request) {
