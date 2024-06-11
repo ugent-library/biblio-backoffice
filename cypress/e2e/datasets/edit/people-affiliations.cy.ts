@@ -1,6 +1,6 @@
 import { testFocusForLabel } from "support/util";
 
-describe("Editing publication people & affiliations", () => {
+describe("Editing dataset people & affiliations", () => {
   beforeEach(() => {
     cy.loginAsResearcher();
   });
