@@ -1,5 +1,3 @@
-import htmx from "htmx.org";
-
 export default function (error) {
   let modals = document.querySelector("#modals");
 
