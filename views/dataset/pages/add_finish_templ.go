@@ -57,7 +57,9 @@ func AddFinish(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			templ_7745c5c3_Err = datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
 				Dataset: dataset,
 				URL:     c.PathTo("dataset", "id", dataset.ID),
-				Actions: datasetsummaryviews.DefaultActions(c, dataset),
+				Actions: datasetsummaryviews.DefaultActions(c, datasetsummaryviews.DefaultActionsArgs{
+					Dataset: dataset,
+				}),
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

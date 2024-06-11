@@ -130,7 +130,11 @@ func addDuplicate(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 		templ_7745c5c3_Err = datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
 			Dataset: args.Dataset,
 			URL:     c.PathTo("dataset", "id", args.Dataset.ID),
-			Actions: datasetsummaryviews.DefaultActions(c, args.Dataset),
+			Target:  "_blank",
+			Actions: datasetsummaryviews.DefaultActions(c, datasetsummaryviews.DefaultActionsArgs{
+				Dataset: args.Dataset,
+				Target:  "_blank",
+			}),
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

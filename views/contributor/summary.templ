@@ -12,6 +12,7 @@ type SummaryArgs struct {
 	Role         string
 	Contributors []*models.Contributor
 	URL          string
+	URLTarget    string
 }
 
 templ Summary(c *ctx.Ctx, args SummaryArgs) {
@@ -23,7 +24,13 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 				}
 				<div class="c-author">
 					if args.URL != "" {
-						<a class="c-link c-link-muted" href={ templ.URL(args.URL) }>
+						<a
+							class="c-link c-link-muted"
+							href={ templ.URL(args.URL) }
+							if args.URLTarget != "" {
+								target={ args.URLTarget }
+							}
+						>
 							@moreContributors(args)
 						</a>
 					} else {
@@ -36,7 +43,13 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 				}
 			}
 		} else {
-			<a href={ templ.URL(args.URL) } class="c-link-muted">
+			<a
+				class="c-link-muted"
+				href={ templ.URL(args.URL) }
+				if args.URLTarget != "" {
+					target={ args.URLTarget }
+				}
+			>
 				<i class="if if-edit if--small"></i>
 				<em>UGent { args.Role + "s" } missing</em>
 			</a>

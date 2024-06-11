@@ -426,6 +426,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			Role:         "author",
 			Contributors: args.Publication.Author,
 			URL:          views.URL(args.URL).SetQueryParam("show", "contributors").String(),
+			URLTarget:    args.Target,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

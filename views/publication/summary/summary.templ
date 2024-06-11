@@ -130,11 +130,11 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									<li class="c-meta-item">{ summaryPart }</li>
 								}
 							</ul>
-							// TODO: pass on args.Target
 							@contributorviews.Summary(c, contributorviews.SummaryArgs{
 								Role:         "author",
 								Contributors: args.Publication.Author,
 								URL:          views.URL(args.URL).SetQueryParam("show", "contributors").String(),
+								URLTarget:    args.Target,
 							})
 						</div>
 						<div class="collapsible-card-content collapse" data-collapsible-card-content>

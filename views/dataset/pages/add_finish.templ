@@ -50,7 +50,9 @@ templ AddFinish(c *ctx.Ctx, dataset *models.Dataset) {
 											@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
 												Dataset: dataset,
 												URL:     c.PathTo("dataset", "id", dataset.ID),
-												Actions: datasetsummaryviews.DefaultActions(c, dataset),
+												Actions: datasetsummaryviews.DefaultActions(c, datasetsummaryviews.DefaultActionsArgs{
+													Dataset: dataset,
+												}),
 											})
 										</div>
 									</div>

@@ -13,6 +13,7 @@ import (
 type SummaryArgs struct {
 	Dataset *models.Dataset
 	URL     *url.URL
+	Target  string
 	Actions templ.Component
 	Footer  templ.Component
 	Links   templ.Component
@@ -23,7 +24,12 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 		<div class="c-thumbnail-and-text align-items-start w-100">
 			if c.UserRole == "curator" {
 				<div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-md-small c-thumbnail-lg-large d-none d-lg-block">
-					<a href={ templ.URL(args.URL.String()) }>
+					<a
+						href={ templ.URL(args.URL.String()) }
+						if args.Target != "" {
+							target={ args.Target }
+						}
+					>
 						<div class="c-thumbnail-inner">
 							<i class="if if-article"></i>
 						</div>
@@ -43,7 +49,13 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									if args.Dataset.License != "" {
 										<span class="c-subline text-truncate ps-2">{ args.Dataset.License }</span>
 									} else {
-										<a href={ views.URL(args.URL).SetQueryParam("show", "description").SafeURL() } class="c-link-muted">
+										<a
+											class="c-link-muted"
+											href={ views.URL(args.URL).SetQueryParam("show", "description").SafeURL() }
+											if args.Target != "" {
+												target={ args.Target }
+											}
+										>
 											<i class="if if-edit if--small"></i>
 											<em>Add license</em>
 										</a>
@@ -73,7 +85,13 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 											{ c.Loc.Get("dataset_access_levels." + args.Dataset.AccessLevel) }
 										</span>
 									} else {
-										<a href={ views.URL(args.URL).SetQueryParam("show", "description").SafeURL() } class="c-link-muted">
+										<a
+											class="c-link-muted"
+											href={ views.URL(args.URL).SetQueryParam("show", "description").SafeURL() }
+											if args.Target != "" {
+												target={ args.Target }
+											}
+										>
 											<i class="if if-edit if--small"></i>
 											<em>Add document access level</em>
 										</a>
@@ -100,7 +118,12 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 										Untitled record
 									}
 								} else {
-									<a href={ templ.URL(args.URL.String()) }>
+									<a
+										href={ templ.URL(args.URL.String()) }
+										if args.Target != "" {
+											target={ args.Target }
+										}
+									>
 										<span class="list-group-item-title">
 											if args.Dataset.Title != "" {
 												{ args.Dataset.Title }
@@ -126,18 +149,12 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									<li class="c-meta-item">{ args.Dataset.Format[0] }</li>
 								}
 							</ul>
-							if len(args.Dataset.Author) > 0 {
-								@contributorviews.Summary(c, contributorviews.SummaryArgs{
-									Role:         "author",
-									Contributors: args.Dataset.Author,
-									URL:          views.URL(args.URL).SetQueryParam("show", "contributors").String(),
-								})
-							} else {
-								<a href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() } class="c-link-muted">
-									<i class="if if-edit if--small"></i>
-									<em>UGent authors missing</em>
-								</a>
-							}
+							@contributorviews.Summary(c, contributorviews.SummaryArgs{
+								Role:         "author",
+								Contributors: args.Dataset.Author,
+								URL:          views.URL(args.URL).SetQueryParam("show", "contributors").String(),
+								URLTarget:    args.Target,
+							})
 						</div>
 						<div class="collapsible-card-content collapse" data-collapsible-card-content>
 							<div class="vstack gap-3">
@@ -146,7 +163,13 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									if len(args.Dataset.RelatedOrganizations) > 0 {
 										@relatedorganizationviews.Summary(c, args.Dataset.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
 									} else {
-										<a href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() } class="c-link-muted">
+										<a
+											class="c-link-muted"
+											href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
+											if args.Target != "" {
+												target={ args.Target }
+											}
+										>
 											<i class="if if-edit if--small"></i>
 											<em>Add department</em>
 										</a>
