@@ -107,7 +107,7 @@ func ConfirmDeleteProject(w http.ResponseWriter, r *http.Request) {
 
 	projectID, _ := url.PathUnescape(b.ProjectID)
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this project from the dataset?",
 		DeleteUrl:  c.PathTo("dataset_delete_project", "id", d.ID, "project_id", projectID),

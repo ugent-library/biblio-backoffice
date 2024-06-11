@@ -6,18 +6,18 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 )
 
-type ConfirmDeleteArgs struct {
+type ConfirmDeleteDialogArgs struct {
 	Context    *ctx.Ctx
 	Question   string
 	DeleteUrl  *url.URL
 	SnapshotID string
 }
 
-templ ConfirmDelete(args ConfirmDeleteArgs) {
+templ ConfirmDeleteDialog(args ConfirmDeleteDialogArgs) {
 	@ShowModal(dialog(args))
 }
 
-templ dialog(args ConfirmDeleteArgs) {
+templ dialog(args ConfirmDeleteDialogArgs) {
 	<div class="modal-dialog modal-dialog-centered" role="document">
 		<div class="modal-content">
 			<div class="modal-header">

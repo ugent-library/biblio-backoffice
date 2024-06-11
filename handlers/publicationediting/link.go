@@ -171,7 +171,7 @@ func ConfirmDeleteLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this link?",
 		DeleteUrl:  c.PathTo("publication_delete_link", "id", p.ID, "link_id", b.LinkID),

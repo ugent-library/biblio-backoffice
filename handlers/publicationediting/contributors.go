@@ -509,7 +509,7 @@ func ConfirmDeleteContributor(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   fmt.Sprintf("Are you sure you want to remove this %s?", c.Loc.Get("publication.contributor.role."+b.Role)),
 		DeleteUrl:  c.PathTo("publication_delete_contributor", "id", publication.ID, "role", b.Role, "position", strconv.Itoa(b.Position)),

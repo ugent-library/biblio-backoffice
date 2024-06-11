@@ -273,7 +273,7 @@ func ConfirmDeleteFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   fmt.Sprintf("Are you sure you want to remove <b>%s</b> from the publication?", file.Name),
 		DeleteUrl:  c.PathTo("publication_delete_file", "id", p.ID, "file_id", file.ID),

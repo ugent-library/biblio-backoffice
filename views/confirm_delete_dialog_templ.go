@@ -16,14 +16,14 @@ import (
 	"net/url"
 )
 
-type ConfirmDeleteArgs struct {
+type ConfirmDeleteDialogArgs struct {
 	Context    *ctx.Ctx
 	Question   string
 	DeleteUrl  *url.URL
 	SnapshotID string
 }
 
-func ConfirmDelete(args ConfirmDeleteArgs) templ.Component {
+func ConfirmDeleteDialog(args ConfirmDeleteDialogArgs) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -47,7 +47,7 @@ func ConfirmDelete(args ConfirmDeleteArgs) templ.Component {
 	})
 }
 
-func dialog(args ConfirmDeleteArgs) templ.Component {
+func dialog(args ConfirmDeleteDialogArgs) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {

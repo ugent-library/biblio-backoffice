@@ -111,7 +111,7 @@ func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this department from the dataset?",
 		DeleteUrl:  c.PathTo("dataset_delete_department", "id", dataset.ID, "department_id", b.DepartmentID),
