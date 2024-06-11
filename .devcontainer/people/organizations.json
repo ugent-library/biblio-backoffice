@@ -1,320 +1,320 @@
-{"identifiers":[{"kind":"biblio","value":"UGent"}],"names":[{"value":"Ghent University","lang":"eng"}],"ceased":false}
-{"identifiers":[{"value":"LW","kind":"biblio"}],"ceased":false,"names":[{"lang":"eng","value":"Faculty of Arts and Philosophy"}],"parentIdentifier":{"kind":"biblio","value":"UGent"}}
-{"parentIdentifier":{"value":"LW","kind":"biblio"},"names":[{"value":"Department of Philosophy and moral sciences","lang":"eng"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"LW01"}]}
-{"identifiers":[{"value":"LW02","kind":"biblio"}],"ceased":false,"names":[{"lang":"eng","value":"Department of Archaeology"}],"parentIdentifier":{"kind":"biblio","value":"LW"}}
-{"identifiers":[{"value":"LW03","kind":"biblio"}],"ceased":false,"names":[{"value":"Department of History","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"LW"}}
-{"identifiers":[{"value":"LW06","kind":"biblio"}],"ceased":false,"names":[{"value":"Department of Linguistics","lang":"eng"}],"parentIdentifier":{"value":"LW","kind":"biblio"}}
-{"identifiers":[{"kind":"biblio","value":"LW07"}],"ceased":false,"names":[{"value":"Department of Literary studies","lang":"eng"}],"parentIdentifier":{"value":"LW","kind":"biblio"}}
-{"identifiers":[{"kind":"biblio","value":"LW17"}],"parentIdentifier":{"value":"LW","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Art, music and theatre sciences"}],"ceased":false}
-{"identifiers":[{"value":"LW18","kind":"biblio"}],"parentIdentifier":{"value":"LW","kind":"biblio"},"names":[{"value":"Department of Comparative sciences of culture","lang":"eng"}],"ceased":false}
-{"names":[{"lang":"eng","value":"Department of Language and communication"}],"parentIdentifier":{"kind":"biblio","value":"LW"},"ceased":false,"identifiers":[{"kind":"biblio","value":"LW20"}]}
-{"parentIdentifier":{"kind":"biblio","value":"LW"},"names":[{"value":"Department of Languages and cultures","lang":"eng"}],"ceased":false,"identifiers":[{"value":"LW21","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"LW22"}],"names":[{"value":"Department of Translation, Interpreting and Communication","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"LW"},"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"LW51"}],"ceased":false,"parentIdentifier":{"kind":"biblio","value":"LW"},"names":[{"value":"Dean's Office of the Faculty of Arts and Philosophy","lang":"eng"}]}
-{"identifiers":[{"kind":"biblio","value":"LW52"}],"ceased":false,"names":[{"lang":"eng","value":"Student Administration Office of the Faculty of Arts and Philosophy"}],"parentIdentifier":{"value":"LW","kind":"biblio"}}
-{"identifiers":[{"value":"LW53","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"LW"},"names":[{"value":"Logistic Department for Teaching at the Faculty Arts and Philosophy","lang":"eng"}],"ceased":false}
-{"names":[{"lang":"eng","value":"PC-Lab of the Faculty of Arts and Philosophy"}],"parentIdentifier":{"value":"LW","kind":"biblio"},"ceased":false,"identifiers":[{"kind":"biblio","value":"LW54"}]}
-{"identifiers":[{"kind":"biblio","value":"LW55"}],"ceased":false,"names":[{"lang":"eng","value":"Library of the Faculty of Arts and Philosophy"}],"parentIdentifier":{"value":"LW","kind":"biblio"}}
-{"identifiers":[{"value":"LW58","kind":"biblio"}],"names":[{"value":"Faculty Education Services Arts and Philosophy","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"LW"},"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"LW03*"}],"ceasedOn":"2010-01-01T12:00:00Z","names":[{"lang":"eng","value":"Department of Medieval History (ceased 1-1-2010)"}],"parentIdentifier":{"kind":"biblio","value":"LW"},"ceased":true}
-{"parentIdentifier":{"value":"LW","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Early Modern History (ceased 1-1-2010)"}],"ceased":true,"identifiers":[{"kind":"biblio","value":"LW04*"}],"ceasedOn":"2010-01-01T12:00:00Z"}
-{"names":[{"lang":"eng","value":"Department of Modern History (ceased 1-1-2010)"}],"parentIdentifier":{"value":"LW","kind":"biblio"},"ceased":true,"identifiers":[{"value":"LW05*","kind":"biblio"}],"ceasedOn":"2010-01-01T12:00:00Z"}
-{"identifiers":[{"kind":"biblio","value":"LW06*"}],"ceasedOn":"2011-01-01T12:00:00Z","ceased":true,"names":[{"value":"Department of Latin and Greek (ceased 1-1-2011)","lang":"eng"}],"parentIdentifier":{"value":"LW","kind":"biblio"}}
-{"names":[{"value":"Department of French (ceased 1-1-2011)","lang":"eng"}],"parentIdentifier":{"value":"LW","kind":"biblio"},"ceased":true,"ceasedOn":"2011-01-01T12:00:00Z","identifiers":[{"value":"LW07*","kind":"biblio"}]}
-{"names":[{"lang":"eng","value":"Department of Romance languages (other than French) (ceased 1-1-2011)"}],"parentIdentifier":{"kind":"biblio","value":"LW"},"ceased":true,"ceasedOn":"2011-01-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"LW08*"}]}
-{"names":[{"value":"Department of Dutch Linguistics (ceased 1-1-2011)","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"LW"},"ceased":true,"identifiers":[{"value":"LW09*","kind":"biblio"}],"ceasedOn":"2011-01-01T12:00:00Z"}
-{"names":[{"value":"Department of Dutch Literature (ceased 1-1-2011)","lang":"eng"}],"parentIdentifier":{"value":"LW","kind":"biblio"},"ceased":true,"ceasedOn":"2011-01-01T12:00:00Z","identifiers":[{"value":"LW10*","kind":"biblio"}]}
-{"identifiers":[{"value":"LW11*","kind":"biblio"}],"ceasedOn":"2011-01-01T12:00:00Z","ceased":true,"parentIdentifier":{"value":"LW","kind":"biblio"},"names":[{"lang":"eng","value":"Department of English (ceased 1-1-2011)"}]}
-{"identifiers":[{"kind":"biblio","value":"LW12*"}],"ceasedOn":"2011-01-01T12:00:00Z","names":[{"lang":"eng","value":"Department of German (ceased 1-1-2011)"}],"parentIdentifier":{"value":"LW","kind":"biblio"},"ceased":true}
-{"names":[{"lang":"eng","value":"Department of Nordic studies (ceased 1-1-2011)"}],"parentIdentifier":{"kind":"biblio","value":"LW"},"ceased":true,"ceasedOn":"2011-01-01T12:00:00Z","identifiers":[{"value":"LW13*","kind":"biblio"}]}
-{"ceasedOn":"2013-01-01T12:00:00Z","identifiers":[{"value":"LW14","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"LW"},"names":[{"value":"Department of Languages and cultures of the Near East and North Africa (ceased 1-1-2013)","lang":"eng"}],"ceased":true}
-{"names":[{"value":"Department of Languages and cultures of South and East Asia (ceased 1-1-2013)","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"LW"},"ceased":true,"identifiers":[{"value":"LW15","kind":"biblio"}],"ceasedOn":"2013-01-01T12:00:00Z"}
-{"ceasedOn":"2013-01-01T12:00:00Z","identifiers":[{"value":"LW16","kind":"biblio"}],"names":[{"value":"Department of Slavonic and East-European studies (ceased 1-1-2013)","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"LW"},"ceased":true}
-{"names":[{"value":"Department of African languages and cultures (ceased 1-1-2013)","lang":"eng"}],"parentIdentifier":{"value":"LW","kind":"biblio"},"ceased":true,"identifiers":[{"kind":"biblio","value":"LW19"}],"ceasedOn":"2013-01-01T12:00:00Z"}
-{"names":[{"lang":"eng","value":"Faculty of Law and Criminology"}],"parentIdentifier":{"value":"UGent","kind":"biblio"},"ceased":false,"identifiers":[{"value":"RE","kind":"biblio"}]}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"RE"},"names":[{"value":"Department of Interdisciplinary Study of Law, Private Law and Business Law","lang":"eng"}],"identifiers":[{"value":"RE21","kind":"biblio"}]}
-{"ceased":false,"names":[{"value":"Department of European, Public and International Law","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"RE"},"identifiers":[{"kind":"biblio","value":"RE22"}]}
-{"names":[{"lang":"eng","value":"Department of Criminology, Penal Law and Social Law"}],"parentIdentifier":{"kind":"biblio","value":"RE"},"ceased":false,"identifiers":[{"value":"RE23","kind":"biblio"}]}
-{"names":[{"lang":"eng","value":"Dean's Office of the Faculty of Law and Criminology"}],"parentIdentifier":{"value":"RE","kind":"biblio"},"ceased":false,"identifiers":[{"value":"RE51","kind":"biblio"}]}
-{"parentIdentifier":{"value":"RE","kind":"biblio"},"names":[{"value":"PC-Lab of the Faculty of Law and Criminology","lang":"eng"}],"ceased":false,"identifiers":[{"value":"RE54","kind":"biblio"}]}
-{"names":[{"value":"Library of the Faculty of Law and Criminology","lang":"eng"}],"parentIdentifier":{"value":"RE","kind":"biblio"},"ceased":false,"identifiers":[{"kind":"biblio","value":"RE55"}]}
-{"parentIdentifier":{"value":"RE","kind":"biblio"},"names":[{"value":"Institute for Continuing Education in Law","lang":"eng"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"RE56"}]}
-{"ceased":false,"parentIdentifier":{"value":"RE","kind":"biblio"},"names":[{"lang":"eng","value":"Faculty Education Services Law and Criminology"}],"identifiers":[{"kind":"biblio","value":"RE58"}]}
-{"parentIdentifier":{"value":"RE","kind":"biblio"},"names":[{"value":"Department of Legal theory and legal history (ceased 1-10-2014)","lang":"eng"}],"ceased":true,"ceasedOn":"2014-10-01T12:00:00Z","identifiers":[{"value":"RE02","kind":"biblio"}]}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"RE"},"names":[{"value":"Department of Civil law (ceased 1-10-2014)","lang":"eng"}],"ceasedOn":"2014-10-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"RE03"}]}
-{"ceasedOn":"2014-10-01T12:00:00Z","identifiers":[{"value":"RE05","kind":"biblio"}],"names":[{"value":"Department of Business law (ceased 1-10-2014)","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"RE"},"ceased":true}
-{"ceasedOn":"2014-10-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"RE06"}],"ceased":true,"parentIdentifier":{"kind":"biblio","value":"RE"},"names":[{"lang":"eng","value":"Department of International public law (ceased 1-10-2014)"}]}
-{"ceased":true,"names":[{"lang":"eng","value":"Department of European law (ceased 1-10-2014)"}],"parentIdentifier":{"value":"RE","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"RE07"}],"ceasedOn":"2014-10-01T12:00:00Z"}
-{"parentIdentifier":{"value":"RE","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Penal law and criminology (ceased 1-10-2014)"}],"ceased":true,"ceasedOn":"2014-10-01T12:00:00Z","identifiers":[{"value":"RE08","kind":"biblio"}]}
-{"ceasedOn":"2014-10-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"RE09"}],"ceased":true,"names":[{"value":"Department of Labour law and social security law (ceased 1-10-2014)","lang":"eng"}],"parentIdentifier":{"value":"RE","kind":"biblio"}}
-{"identifiers":[{"kind":"biblio","value":"RE10"}],"ceasedOn":"2014-10-01T12:00:00Z","parentIdentifier":{"value":"RE","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Tax law (ceased 1-10-2014)"}],"ceased":true}
-{"ceased":true,"names":[{"value":"Department of Procedural law, arbitration and private international law (ceased 1-10-2014)","lang":"eng"}],"parentIdentifier":{"value":"RE","kind":"biblio"},"identifiers":[{"value":"RE11","kind":"biblio"}],"ceasedOn":"2014-10-01T12:00:00Z"}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"RE"},"names":[{"lang":"eng","value":"Department of Public Law (ceased 1-10-2014)"}],"identifiers":[{"kind":"biblio","value":"RE12"}],"ceasedOn":"2014-10-01T12:00:00Z"}
-{"identifiers":[{"value":"RE52","kind":"biblio"}],"names":[{"value":"Student Administration Office of the Faculty of Law (ceased)","lang":"eng"}],"parentIdentifier":{"value":"RE","kind":"biblio"},"ceased":true}
-{"ceased":false,"names":[{"value":"Faculty of Sciences","lang":"eng"}],"parentIdentifier":{"value":"UGent","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"WE"}]}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"WE"},"names":[{"value":"Department of Mathematics: Algebra and Geometry","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"WE01"}]}
-{"identifiers":[{"kind":"biblio","value":"WE02"}],"ceased":false,"names":[{"value":"Department of Applied mathematics, computer science and statistics","lang":"eng"}],"parentIdentifier":{"value":"WE","kind":"biblio"}}
-{"identifiers":[{"value":"WE04","kind":"biblio"}],"names":[{"lang":"eng","value":"Department of Solid state sciences"}],"parentIdentifier":{"value":"WE","kind":"biblio"},"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"WE05"}],"ceased":false,"parentIdentifier":{"kind":"biblio","value":"WE"},"names":[{"lang":"eng","value":"Department of Physics and astronomy"}]}
-{"identifiers":[{"value":"WE06","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"WE"},"names":[{"lang":"eng","value":"Department of Chemistry"}],"ceased":false}
-{"identifiers":[{"value":"WE07","kind":"biblio"}],"parentIdentifier":{"value":"WE","kind":"biblio"},"names":[{"value":"Department of Organic and Macromolecular Chemistry","lang":"eng"}],"ceased":false}
-{"parentIdentifier":{"value":"WE","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Plant Biotechnology and Bioinformatics"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"WE09"}]}
-{"parentIdentifier":{"value":"WE","kind":"biblio"},"names":[{"value":"Department of Biochemistry and microbiology","lang":"eng"}],"ceased":false,"identifiers":[{"value":"WE10","kind":"biblio"}]}
-{"names":[{"value":"Department of Biology","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"WE"},"ceased":false,"identifiers":[{"value":"WE11","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"WE12"}],"ceased":false,"parentIdentifier":{"kind":"biblio","value":"WE"},"names":[{"lang":"eng","value":"Department of Geography"}]}
-{"ceased":false,"names":[{"lang":"eng","value":"Department of Geology"}],"parentIdentifier":{"value":"WE","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"WE13"}]}
-{"names":[{"lang":"eng","value":"Department of Biomedical molecular biology"}],"parentIdentifier":{"kind":"biblio","value":"WE"},"ceased":false,"identifiers":[{"kind":"biblio","value":"WE14"}]}
-{"ceased":false,"names":[{"lang":"eng","value":"Department of Mathematics: Analysis, Logic and Discrete Mathematics"}],"parentIdentifier":{"kind":"biblio","value":"WE"},"identifiers":[{"kind":"biblio","value":"WE16"}]}
-{"identifiers":[{"kind":"biblio","value":"WE51"}],"parentIdentifier":{"kind":"biblio","value":"WE"},"names":[{"value":"Dean's Office of the Faculty of Science","lang":"eng"}],"ceased":false}
-{"names":[{"lang":"eng","value":"PC-Lab of the Faculty of Science"}],"parentIdentifier":{"kind":"biblio","value":"WE"},"ceased":false,"identifiers":[{"kind":"biblio","value":"WE54"}]}
-{"ceased":false,"names":[{"value":"Science Faculty Library","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"WE"},"identifiers":[{"value":"WE55","kind":"biblio"}]}
-{"names":[{"lang":"eng","value":"Institute for Continuing Education in Science - ICES"}],"parentIdentifier":{"value":"WE","kind":"biblio"},"ceased":false,"identifiers":[{"kind":"biblio","value":"WE56"}]}
-{"identifiers":[{"kind":"biblio","value":"WE58"}],"ceased":false,"names":[{"lang":"eng","value":"Faculty Education Services Sciences"}],"parentIdentifier":{"kind":"biblio","value":"WE"}}
-{"identifiers":[{"kind":"biblio","value":"WE61"}],"names":[{"lang":"eng","value":"Botanical Garden"}],"parentIdentifier":{"value":"WE","kind":"biblio"},"ceased":false}
-{"ceased":false,"names":[{"value":"Workshop of the Faculty of Science","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"WE"},"identifiers":[{"kind":"biblio","value":"WE62"}]}
-{"ceased":false,"names":[{"lang":"eng","value":"Zoology Museum"}],"parentIdentifier":{"kind":"biblio","value":"WE"},"identifiers":[{"kind":"biblio","value":"WE63"}]}
-{"identifiers":[{"value":"WE64","kind":"biblio"}],"names":[{"lang":"eng","value":"Museum of the History of Sciences"}],"parentIdentifier":{"kind":"biblio","value":"WE"},"ceased":false}
-{"parentIdentifier":{"value":"WE","kind":"biblio"},"names":[{"value":"Honeybee Valley","lang":"eng"}],"ceased":false,"identifiers":[{"value":"WE65","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"WE01*"}],"ceasedOn":"2019-01-01T12:00:00Z","names":[{"value":"Department of Mathematics (ceased 1-1-2019)","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"WE"},"ceased":true}
-{"identifiers":[{"kind":"biblio","value":"WE03*"}],"ceasedOn":"2010-01-01T12:00:00Z","ceased":true,"names":[{"value":"Department of Mathematical Physics and Astronomy (ceased 1-1-2010)","lang":"eng"}],"parentIdentifier":{"value":"WE","kind":"biblio"}}
-{"ceasedOn":"2018-01-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"WE06*"}],"ceased":true,"parentIdentifier":{"kind":"biblio","value":"WE"},"names":[{"lang":"eng","value":"Department of Inorganic and physical chemistry (ceased 1-1-2018)"}]}
-{"ceasedOn":"2018-01-01T12:00:00Z","identifiers":[{"value":"WE08","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"WE"},"names":[{"value":"Department of Analytical chemistry (ceased 1-1-2018)","lang":"eng"}],"ceased":true}
-{"parentIdentifier":{"value":"WE","kind":"biblio"},"names":[{"value":"Department of Physiology (ceased)","lang":"eng"}],"ceased":true,"identifiers":[{"kind":"biblio","value":"WE15"}]}
-{"ceased":true,"parentIdentifier":{"value":"WE","kind":"biblio"},"names":[{"value":"Student Administration Office of the Faculty of Science (ceased)","lang":"eng"}],"identifiers":[{"value":"WE52","kind":"biblio"}]}
-{"ceased":true,"parentIdentifier":{"value":"WE","kind":"biblio"},"names":[{"value":"Logistic Department for Teaching at the Faculty of Sciences (ceased)","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"WE53"}]}
-{"ceased":false,"names":[{"lang":"eng","value":"Faculty of Medicine and Health Sciences"}],"parentIdentifier":{"kind":"biblio","value":"UGent"},"identifiers":[{"value":"GE","kind":"biblio"}]}
-{"parentIdentifier":{"value":"GE","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Movement and Sports Sciences"}],"ceased":false,"identifiers":[{"value":"GE30","kind":"biblio"}]}
-{"identifiers":[{"value":"GE31","kind":"biblio"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Biomolecular Medicine"}],"ceased":false}
-{"ceased":false,"names":[{"value":"Department of Diagnostic Sciences","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"GE"},"identifiers":[{"value":"GE32","kind":"biblio"}]}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"GE"},"names":[{"value":"Department of Basic and Applied Medical Sciences","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"GE33"}]}
-{"ceased":false,"names":[{"value":"Department of Head and Skin","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"GE"},"identifiers":[{"value":"GE34","kind":"biblio"}]}
-{"ceased":false,"names":[{"lang":"eng","value":"Department of Internal Medicine and Pediatrics"}],"parentIdentifier":{"kind":"biblio","value":"GE"},"identifiers":[{"kind":"biblio","value":"GE35"}]}
-{"identifiers":[{"kind":"biblio","value":"GE36"}],"ceased":false,"parentIdentifier":{"kind":"biblio","value":"GE"},"names":[{"lang":"eng","value":"Department of Oral Health Sciences"}]}
-{"identifiers":[{"value":"GE37","kind":"biblio"}],"names":[{"value":"Department of Rehabilitation Sciences","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"GE"},"ceased":false}
-{"identifiers":[{"value":"GE38","kind":"biblio"}],"ceased":false,"names":[{"lang":"eng","value":"Department of Human Structure and Repair"}],"parentIdentifier":{"kind":"biblio","value":"GE"}}
-{"names":[{"lang":"eng","value":"Department of Public Health and Primary Care"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"ceased":false,"identifiers":[{"kind":"biblio","value":"GE39"}]}
-{"identifiers":[{"kind":"biblio","value":"GE51"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"names":[{"value":"Dean's Office of the Faculty of Medicine and Health Sciences","lang":"eng"}],"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"GE54"}],"ceased":false,"names":[{"lang":"eng","value":"PC-Lab of the Faculty of Medicine and Health Sciences"}],"parentIdentifier":{"kind":"biblio","value":"GE"}}
-{"identifiers":[{"value":"GE55","kind":"biblio"}],"ceased":false,"parentIdentifier":{"value":"GE","kind":"biblio"},"names":[{"lang":"eng","value":"Knowledge Centre for Health Ghent"}]}
-{"identifiers":[{"kind":"biblio","value":"GE56"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"names":[{"lang":"eng","value":"The GHALL (Ghent Health Academy for Lifelong Learning)"}],"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"GE57"}],"parentIdentifier":{"kind":"biblio","value":"GE"},"names":[{"lang":"eng","value":"IPVK-Institute for Postgraduate Activities in Physiotherapy"}],"ceased":false}
-{"ceased":false,"names":[{"lang":"eng","value":"Faculty Education Services Medicine and Health Sciences"}],"parentIdentifier":{"kind":"biblio","value":"GE"},"identifiers":[{"value":"GE58","kind":"biblio"}]}
-{"identifiers":[{"value":"GE61","kind":"biblio"}],"names":[{"value":"Animalarium","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"GE"},"ceased":false}
-{"ceased":false,"names":[{"value":"Center for Healthy and Safe Working Conditions","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"GE"},"identifiers":[{"kind":"biblio","value":"GE63"}]}
-{"parentIdentifier":{"value":"GE","kind":"biblio"},"names":[{"value":"Center for Prevention and Early Detection of Cancer","lang":"eng"}],"ceased":false,"identifiers":[{"value":"GE64","kind":"biblio"}]}
-{"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"value":"GE01","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"GE"},"names":[{"value":"Department of Internal medicine (ceased 1-10-2018)","lang":"eng"}],"ceased":true}
-{"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"GE02"}],"ceased":true,"parentIdentifier":{"kind":"biblio","value":"GE"},"names":[{"lang":"eng","value":"Department of Pediatrics and medical genetics (ceased 1-10-2018)"}]}
-{"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"value":"GE03","kind":"biblio"}],"names":[{"lang":"eng","value":"Department of Physical medicine and orthopaedic surgery (ceased 1-10-2018)"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"ceased":true}
-{"ceased":true,"parentIdentifier":{"value":"GE","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Uro-gynaecology (ceased 1-10-2018)"}],"identifiers":[{"kind":"biblio","value":"GE04"}],"ceasedOn":"2018-10-01T12:00:00Z"}
-{"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"GE05"}],"ceased":true,"names":[{"lang":"eng","value":"Department of Basic Medical Sciences (ceased 1-10-2018)"}],"parentIdentifier":{"kind":"biblio","value":"GE"}}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"GE"},"names":[{"value":"Department of Clinical chemistry, microbiology and immunology (ceased 1-10-2018)","lang":"eng"}],"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"GE06"}]}
-{"identifiers":[{"value":"GE07","kind":"biblio"}],"ceasedOn":"2018-10-01T12:00:00Z","names":[{"lang":"eng","value":"Department of Biochemistry (ceased 1-10-2018)"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"ceased":true}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"GE"},"names":[{"value":"Department of Pharmacology (ceased 1-10-2018)","lang":"eng"}],"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"value":"GE09","kind":"biblio"}]}
-{"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"value":"GE10","kind":"biblio"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"names":[{"value":"Department of Surgery (ceased 1-10-2018)","lang":"eng"}],"ceased":true}
-{"names":[{"lang":"eng","value":"Department of Dentistry (ceased 1-10-2018)"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"ceased":true,"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"GE11"}]}
-{"identifiers":[{"value":"GE12","kind":"biblio"}],"ceasedOn":"2018-10-01T12:00:00Z","ceased":true,"names":[{"lang":"eng","value":"Department of Public health (ceased 1-10-2018)"}],"parentIdentifier":{"value":"GE","kind":"biblio"}}
-{"identifiers":[{"kind":"biblio","value":"GE13"}],"ceasedOn":"2018-10-01T12:00:00Z","names":[{"lang":"eng","value":"Department of Psychiatry and Medical Psychology (ceased 1-10-2018)"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"ceased":true}
-{"ceased":true,"names":[{"lang":"eng","value":"Department of Forensic medicine (ceased 1-10-2018)"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"GE14"}],"ceasedOn":"2018-10-01T12:00:00Z"}
-{"identifiers":[{"value":"GE15","kind":"biblio"}],"ceasedOn":"2018-10-01T12:00:00Z","parentIdentifier":{"kind":"biblio","value":"GE"},"names":[{"lang":"eng","value":"Department of Dermatology (ceased 1-10-2018)"}],"ceased":true}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"GE"},"names":[{"lang":"eng","value":"Department of Radiology and nuclear medicine (ceased 1-10-2018)"}],"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"value":"GE16","kind":"biblio"}]}
-{"ceased":true,"names":[{"lang":"eng","value":"Department of Radiation oncology and experimental cancer research (ceased 1-10-2018)"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"GE17"}],"ceasedOn":"2018-10-01T12:00:00Z"}
-{"names":[{"lang":"eng","value":"Department of Ophthalmology (ceased 1-10-2018)"}],"parentIdentifier":{"kind":"biblio","value":"GE"},"ceased":true,"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"GE18"}]}
-{"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"GE19"}],"ceased":true,"names":[{"lang":"eng","value":"Department of Oto-rhino-laryngology and logopaedic-audiologic sciences (ceased 1-10-2018)"}],"parentIdentifier":{"value":"GE","kind":"biblio"}}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"GE"},"names":[{"value":"Department of General practice and primary health care (ceased 1-10-2018)","lang":"eng"}],"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"value":"GE21","kind":"biblio"}]}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"GE"},"names":[{"lang":"eng","value":"Department of Pathology (ceased 1-10-2018)"}],"identifiers":[{"kind":"biblio","value":"GE22"}],"ceasedOn":"2018-10-01T12:00:00Z"}
-{"identifiers":[{"kind":"biblio","value":"GE23"}],"ceasedOn":"2018-10-01T12:00:00Z","names":[{"value":"Department of Anaesthesiology (ceased 1-10-2018)","lang":"eng"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"ceased":true}
-{"ceased":true,"names":[{"lang":"eng","value":"Department of Physical therapy and motor rehabilitation (ceased 1-10-2018)"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"GE24"}],"ceasedOn":"2018-10-01T12:00:00Z"}
-{"identifiers":[{"kind":"biblio","value":"GE25"}],"ceasedOn":"2018-10-01T12:00:00Z","ceased":true,"parentIdentifier":{"value":"GE","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Movement and Sports Sciences (ceased 1-10-2018)"}]}
-{"ceasedOn":"2018-10-01T12:00:00Z","identifiers":[{"value":"GE27","kind":"biblio"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Speech, Language and Hearing Sciences (ceased 1-10-2018)"}],"ceased":true}
-{"ceased":true,"names":[{"lang":"eng","value":"Student Administration Office of the Faculty of Medicine and Health Sciences (ceased)"}],"parentIdentifier":{"value":"GE","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"GE52"}]}
-{"ceased":true,"names":[{"lang":"eng","value":"Logistic Department for Teaching (ceased)"}],"parentIdentifier":{"kind":"biblio","value":"GE"},"identifiers":[{"kind":"biblio","value":"GE53"}]}
-{"ceased":true,"parentIdentifier":{"value":"GE","kind":"biblio"},"names":[{"value":"Department of General physiology and human physiology and pathophysiology (ceased 01-10-2008)","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"GE08"}],"ceasedOn":"2008-10-01T12:00:00Z"}
-{"identifiers":[{"kind":"biblio","value":"TW"}],"parentIdentifier":{"value":"UGent","kind":"biblio"},"names":[{"value":"Faculty of Engineering and Architecture","lang":"eng"}],"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"TW01"}],"ceased":false,"names":[{"lang":"eng","value":"Department of Architecture and urban planning"}],"parentIdentifier":{"value":"TW","kind":"biblio"}}
-{"names":[{"lang":"eng","value":"Department of Flow, heat and combustion mechanics"}],"parentIdentifier":{"kind":"biblio","value":"TW"},"ceased":false,"identifiers":[{"kind":"biblio","value":"TW03"}]}
-{"parentIdentifier":{"kind":"biblio","value":"TW"},"names":[{"value":"Department of Mechanical construction and production","lang":"eng"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"TW04"}]}
-{"parentIdentifier":{"kind":"biblio","value":"TW"},"names":[{"value":"Department of Information technology","lang":"eng"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"TW05"}]}
-{"names":[{"value":"Department of Electronics and information systems","lang":"eng"}],"parentIdentifier":{"value":"TW","kind":"biblio"},"ceased":false,"identifiers":[{"value":"TW06","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"TW07"}],"ceased":false,"names":[{"lang":"eng","value":"Department of Telecommunications and information processing"}],"parentIdentifier":{"kind":"biblio","value":"TW"}}
-{"identifiers":[{"kind":"biblio","value":"TW08"}],"ceased":false,"names":[{"value":"Department of Electromechanical, Systems and Metal Engineering","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"TW"}}
-{"identifiers":[{"kind":"biblio","value":"TW11"}],"parentIdentifier":{"kind":"biblio","value":"TW"},"names":[{"lang":"eng","value":"Department of Materials, Textiles and Chemical Engineering"}],"ceased":false}
-{"ceased":false,"names":[{"lang":"eng","value":"Department of Structural Engineering and Building Materials"}],"parentIdentifier":{"kind":"biblio","value":"TW"},"identifiers":[{"value":"TW14","kind":"biblio"}]}
-{"names":[{"value":"Department of Civil engineering","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"TW"},"ceased":false,"identifiers":[{"kind":"biblio","value":"TW15"}]}
-{"identifiers":[{"kind":"biblio","value":"TW16"}],"ceased":false,"parentIdentifier":{"kind":"biblio","value":"TW"},"names":[{"lang":"eng","value":"Department of Mathematical analysis"}]}
-{"identifiers":[{"kind":"biblio","value":"TW17"}],"parentIdentifier":{"kind":"biblio","value":"TW"},"names":[{"lang":"eng","value":"Department of Applied physics"}],"ceased":false}
-{"ceased":false,"names":[{"value":"Department of Industrial Systems Engineering and Product Design","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"TW"},"identifiers":[{"kind":"biblio","value":"TW18"}]}
-{"identifiers":[{"kind":"biblio","value":"TW19"}],"parentIdentifier":{"value":"TW","kind":"biblio"},"names":[{"value":"Department of Industrial System and Product Design","lang":"eng"}],"ceased":false}
-{"names":[{"lang":"eng","value":"Department of Industrial Technology and Construction"}],"parentIdentifier":{"value":"TW","kind":"biblio"},"ceased":false,"identifiers":[{"value":"TW20","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"TW51"}],"ceased":false,"parentIdentifier":{"kind":"biblio","value":"TW"},"names":[{"lang":"eng","value":"Dean's Office of the Faculty of Engineering and Architecture"}]}
-{"identifiers":[{"value":"TW52","kind":"biblio"}],"names":[{"value":"Student Administration Office of the Faculty of Engineering and Architecture","lang":"eng"}],"parentIdentifier":{"value":"TW","kind":"biblio"},"ceased":false}
-{"ceased":false,"names":[{"lang":"eng","value":"Logistic Department for Teaching at the Faculty of Engineering and Architecture"}],"parentIdentifier":{"value":"TW","kind":"biblio"},"identifiers":[{"value":"TW53","kind":"biblio"}]}
-{"identifiers":[{"value":"TW54","kind":"biblio"}],"names":[{"lang":"eng","value":"PC-Lab of the Faculty of Engineering and Architecture"}],"parentIdentifier":{"value":"TW","kind":"biblio"},"ceased":false}
-{"identifiers":[{"value":"TW55","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"TW"},"names":[{"value":"Facultaire bibliotheek Ingenieurswetenschappen en Architectuur","lang":"eng"}],"ceased":false}
-{"identifiers":[{"value":"TW56","kind":"biblio"}],"ceased":false,"parentIdentifier":{"value":"TW","kind":"biblio"},"names":[{"lang":"eng","value":"Instituut permanente vorming van de faculteit Ingenieurswetenschappen en Architectuur (IVPV)"}]}
-{"ceased":true,"names":[{"value":"Department of Materials Science and Engineering (ceased 1-2-2017)","lang":"eng"}],"parentIdentifier":{"value":"TW","kind":"biblio"},"identifiers":[{"value":"TW10","kind":"biblio"}],"ceasedOn":"2017-02-01T12:00:00Z"}
-{"ceasedOn":"2017-02-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"TW12"}],"ceased":true,"parentIdentifier":{"value":"TW","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Chemical engineering and technical chemistry (ceased 1-2-2017)"}]}
-{"ceasedOn":"2017-02-01T12:00:00Z","identifiers":[{"value":"TW11*","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"TW"},"names":[{"lang":"eng","value":"Department of Textiles (ceased 1-2-2017)"}],"ceased":true}
-{"identifiers":[{"value":"EB","kind":"biblio"}],"parentIdentifier":{"value":"UGent","kind":"biblio"},"names":[{"lang":"eng","value":"Faculty of Economics and Business Administration"}],"ceased":false}
-{"ceased":false,"names":[{"value":"Department of Economics","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"EB"},"identifiers":[{"value":"EB21","kind":"biblio"}]}
-{"identifiers":[{"value":"EB22","kind":"biblio"}],"names":[{"lang":"eng","value":"Department of Accounting, Corporate Finance and Taxation"}],"parentIdentifier":{"value":"EB","kind":"biblio"},"ceased":false}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"EB"},"names":[{"value":"Department of Marketing, Innovation and Organisation","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"EB23"}]}
-{"parentIdentifier":{"value":"EB","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Business Informatics and Operations Management"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"EB24"}]}
-{"ceased":false,"names":[{"lang":"eng","value":"Department of Public Governance and Management"}],"parentIdentifier":{"value":"EB","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"EB25"}]}
-{"ceased":false,"names":[{"lang":"eng","value":"Dean's Office of the Faculty of Economics and Business Administration"}],"parentIdentifier":{"value":"EB","kind":"biblio"},"identifiers":[{"value":"EB51","kind":"biblio"}]}
-{"parentIdentifier":{"value":"EB","kind":"biblio"},"names":[{"lang":"eng","value":"PC-Lab of the Faculty of Economics and Business Administration"}],"ceased":false,"identifiers":[{"value":"EB54","kind":"biblio"}]}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"EB"},"names":[{"lang":"eng","value":"Library of the Faculty of Economics and Business Administration"}],"identifiers":[{"value":"EB55","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"EB56"}],"ceased":false,"names":[{"lang":"eng","value":"FEB Academy"}],"parentIdentifier":{"value":"EB","kind":"biblio"}}
-{"parentIdentifier":{"kind":"biblio","value":"EB"},"names":[{"value":"Institute of Higher Education in Accounting and Tax","lang":"eng"}],"ceased":false,"identifiers":[{"value":"EB57","kind":"biblio"}]}
-{"names":[{"value":"Faculty Education Services Economics and Business Administration","lang":"eng"}],"parentIdentifier":{"value":"EB","kind":"biblio"},"ceased":false,"identifiers":[{"value":"EB58","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"EB61"}],"parentIdentifier":{"kind":"biblio","value":"EB"},"names":[{"value":"Technique and Budget","lang":"eng"}],"ceased":false}
-{"names":[{"lang":"eng","value":"Department of General economics (ceased)"}],"parentIdentifier":{"kind":"biblio","value":"EB"},"ceased":true,"identifiers":[{"value":"EB01","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"EB02"}],"parentIdentifier":{"value":"EB","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Financial economics (ceased)"}],"ceased":true}
-{"identifiers":[{"value":"EB03","kind":"biblio"}],"names":[{"value":"Department of Social economics (ceased)","lang":"eng"}],"parentIdentifier":{"value":"EB","kind":"biblio"},"ceased":true}
-{"identifiers":[{"kind":"biblio","value":"EB05"}],"names":[{"lang":"eng","value":"Department of Accountancy and Corporate Finance (ceased)"}],"parentIdentifier":{"value":"EB","kind":"biblio"},"ceased":true}
-{"names":[{"lang":"eng","value":"Department of Marketing (ceased)"}],"parentIdentifier":{"kind":"biblio","value":"EB"},"ceased":true,"identifiers":[{"kind":"biblio","value":"EB07"}]}
-{"parentIdentifier":{"value":"EB","kind":"biblio"},"names":[{"value":"Department of Business Informatics and Operations Management (ceased)","lang":"eng"}],"ceased":true,"identifiers":[{"value":"EB08","kind":"biblio"}]}
-{"ceased":true,"names":[{"value":"Department of Innovation, Entrepreneurship and Service Management (ceased)","lang":"eng"}],"parentIdentifier":{"value":"EB","kind":"biblio"},"identifiers":[{"value":"EB09","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"EB10"}],"ceased":true,"parentIdentifier":{"value":"EB","kind":"biblio"},"names":[{"value":"Department of Public Governance, Management and Finance (ceased)","lang":"eng"}]}
-{"parentIdentifier":{"value":"EB","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Human Resource Management and Organizational Behaviour (ceased)"}],"ceased":true,"identifiers":[{"value":"EB11","kind":"biblio"}]}
-{"identifiers":[{"value":"EB52","kind":"biblio"}],"parentIdentifier":{"value":"EB","kind":"biblio"},"names":[{"value":"Student Administration Office of the Faculty of Economics and Business Administration (ceased)","lang":"eng"}],"ceased":true}
-{"identifiers":[{"value":"DI","kind":"biblio"}],"ceased":false,"parentIdentifier":{"value":"UGent","kind":"biblio"},"names":[{"lang":"eng","value":"Faculty of Veterinary Medicine"}]}
-{"ceased":false,"names":[{"value":"Department of Comparative physiology and biometrics","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"DI"},"identifiers":[{"value":"DI01","kind":"biblio"}]}
-{"ceased":true,"names":[{"value":"Department of Pharmacology, Toxicology and Biochemistry (ceased 1-1-2022)","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"DI"},"ceasedOn":"2022-01-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"DI02"}]}
-{"names":[{"lang":"eng","value":"Department of Morphology (ceased 1-1-2022)"}],"parentIdentifier":{"kind":"biblio","value":"DI"},"ceased":true,"identifiers":[{"kind":"biblio","value":"DI03"}],"ceasedOn":"2022-01-01T12:00:00Z"}
-{"ceasedOn":"2022-01-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"DI04*"}],"ceased":true,"parentIdentifier":{"value":"DI","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Virology, parasitology and immunology (ceased 1-1-2022)"}]}
-{"ceased":false,"names":[{"value":"Department of Translational Physiology, Infectiology and Public Health","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"DI"},"identifiers":[{"value":"DI04","kind":"biblio"}]}
-{"ceased":true,"parentIdentifier":{"value":"DI","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Pathology, bacteriology and poultry diseases (ceased 1-1-2022)"}],"identifiers":[{"value":"DI05*","kind":"biblio"}],"ceasedOn":"2022-01-01T12:00:00Z"}
-{"parentIdentifier":{"value":"DI","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Pathobiology, Pharmacology and Zoological Medicine"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"DI05"}]}
-{"ceasedOn":"2022-01-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"DI06"}],"ceased":true,"names":[{"lang":"eng","value":"Department of Veterinary Public Health and Food Safety (ceased 1-1-2022)"}],"parentIdentifier":{"kind":"biblio","value":"DI"}}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"DI"},"names":[{"value":"Department of Nutrition, Genetics and Ethology (ceased 1-1-2022)","lang":"eng"}],"ceasedOn":"2022-01-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"DI07*"}]}
-{"ceased":false,"parentIdentifier":{"value":"DI","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Veterinary and Biosciences"}],"identifiers":[{"value":"DI07","kind":"biblio"}]}
-{"parentIdentifier":{"value":"DI","kind":"biblio"},"names":[{"value":"Department of Obstetrics, reproduction and herd health (ceased 1-1-2022)","lang":"eng"}],"ceased":true,"identifiers":[{"kind":"biblio","value":"DI08*"}],"ceasedOn":"2022-01-01T12:00:00Z"}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"DI"},"names":[{"lang":"eng","value":"Department of Internal Medicine, Reproduction and Population Medicine"}],"identifiers":[{"value":"DI08","kind":"biblio"}]}
-{"identifiers":[{"value":"DI09","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"DI"},"names":[{"value":"Department of Small animals","lang":"eng"}],"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"DI10"}],"ceased":false,"names":[{"value":"Department of Large Animal Surgery, Anaesthesia and Orthopaedics","lang":"eng"}],"parentIdentifier":{"value":"DI","kind":"biblio"}}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"DI"},"names":[{"value":"Department of Veterinary medical imaging and small animal orthopaedics (ceased 1-1-2022)","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"DI11*"}],"ceasedOn":"2022-01-01T12:00:00Z"}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"DI"},"names":[{"value":"Department of Morphology, Imaging, Orthopedics, Rehabilitation and Nutrition","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"DI11"}]}
-{"ceasedOn":"2022-01-01T12:00:00Z","identifiers":[{"value":"DI12","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"DI"},"names":[{"lang":"eng","value":"Department of Internal medicine and clinical biology of large animals (ceased 1-1-2022)"}],"ceased":true}
-{"ceased":false,"parentIdentifier":{"value":"DI","kind":"biblio"},"names":[{"value":"Dean's Office of the Faculty of Veterinary Medicine","lang":"eng"}],"identifiers":[{"value":"DI51","kind":"biblio"}]}
-{"parentIdentifier":{"kind":"biblio","value":"DI"},"names":[{"value":"Student Administration Office of the Faculty of Veterinary Medicine","lang":"eng"}],"ceased":false,"identifiers":[{"value":"DI52","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"DI54"}],"ceased":false,"names":[{"value":"PC-Lab of the faculty of Veterinary Medicine","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"DI"}}
-{"identifiers":[{"value":"DI56","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"DI"},"names":[{"lang":"eng","value":"Faculty of Veterinary Medicine - Institute for Continuing Education"}],"ceased":false}
-{"identifiers":[{"value":"DI61","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"DI"},"names":[{"value":"Faculty of Veterinary Medicine Workshop","lang":"eng"}],"ceased":false}
-{"names":[{"value":"Biocenter AgriVet","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"DI"},"ceased":false,"identifiers":[{"kind":"biblio","value":"DI62"}]}
-{"identifiers":[{"value":"PP","kind":"biblio"}],"parentIdentifier":{"value":"UGent","kind":"biblio"},"names":[{"lang":"eng","value":"Faculty of Psychology and Educational Sciences"}],"ceased":false}
-{"identifiers":[{"value":"PP01","kind":"biblio"}],"parentIdentifier":{"value":"PP","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Data-analysis"}],"ceased":false}
-{"identifiers":[{"value":"PP02","kind":"biblio"}],"parentIdentifier":{"value":"PP","kind":"biblio"},"names":[{"value":"Department of Experimental psychology","lang":"eng"}],"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"PP03"}],"ceased":false,"parentIdentifier":{"kind":"biblio","value":"PP"},"names":[{"lang":"eng","value":"Department of Pedagogy"}]}
-{"identifiers":[{"value":"PP04","kind":"biblio"}],"names":[{"value":"Department of Social Work and Social Pedagogy","lang":"eng"}],"parentIdentifier":{"value":"PP","kind":"biblio"},"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"PP05"}],"names":[{"value":"Department of Experimental clinical and health psychology","lang":"eng"}],"parentIdentifier":{"value":"PP","kind":"biblio"},"ceased":false}
-{"parentIdentifier":{"value":"PP","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Educational Studies"}],"ceased":false,"identifiers":[{"value":"PP06","kind":"biblio"}]}
-{"ceased":false,"names":[{"value":"Department of developmental, personality and social psychology","lang":"eng"}],"parentIdentifier":{"value":"PP","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"PP07"}]}
-{"identifiers":[{"value":"PP08","kind":"biblio"}],"parentIdentifier":{"value":"PP","kind":"biblio"},"names":[{"value":"Department of Psycho-analysis and clinical consulting","lang":"eng"}],"ceased":false}
-{"parentIdentifier":{"value":"PP","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Work, Organisation and Society"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"PP09"}]}
-{"identifiers":[{"value":"PP10","kind":"biblio"}],"ceased":false,"names":[{"lang":"eng","value":"Department of Special Needs Education"}],"parentIdentifier":{"kind":"biblio","value":"PP"}}
-{"identifiers":[{"kind":"biblio","value":"PP11"}],"ceased":false,"parentIdentifier":{"value":"PP","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Human Resource Management and Organisational Psychology"}]}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"PP"},"names":[{"lang":"eng","value":"Dean's Office of the Faculty of Psychology and Educational Sciences"}],"identifiers":[{"kind":"biblio","value":"PP51"}]}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"PP"},"names":[{"value":"PC-Lab of the Faculty of Psychology and Educational Sciences","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"PP54"}]}
-{"identifiers":[{"value":"PP55","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"PP"},"names":[{"lang":"eng","value":"Library of the Faculty of Psychology and Educational Sciences"}],"ceased":false}
-{"identifiers":[{"value":"PP58","kind":"biblio"}],"names":[{"lang":"eng","value":"Faculty Education Services Psychology and Educational Sciences"}],"parentIdentifier":{"kind":"biblio","value":"PP"},"ceased":false}
-{"identifiers":[{"value":"PP59","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"PP"},"names":[{"lang":"eng","value":"Research Support Office FPPW"}],"ceased":false}
-{"ceased":false,"names":[{"value":"Testing Laboratory at the Faculty of Psychology and Pedagogical Sciences","lang":"eng"}],"parentIdentifier":{"value":"PP","kind":"biblio"},"identifiers":[{"value":"PP61","kind":"biblio"}]}
-{"names":[{"lang":"eng","value":"Student Administration Office of the Faculty of Psychology and Educational Sciences (ceased 1-10-2014)"}],"parentIdentifier":{"kind":"biblio","value":"PP"},"ceased":true,"ceasedOn":"2014-10-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"PP52"}]}
-{"parentIdentifier":{"value":"PP","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Teaching Support of the Faculty of Psychology and Pedagogical Sciences (ceased 1-10-2014)"}],"ceased":true,"ceasedOn":"2014-10-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"PP53"}]}
-{"identifiers":[{"kind":"biblio","value":"PP62"}],"ceased":true,"names":[{"lang":"eng","value":"Management Common Infrastructure of the Faculty PP (ceased)"}],"parentIdentifier":{"value":"PP","kind":"biblio"}}
-{"identifiers":[{"kind":"biblio","value":"LA"}],"ceased":false,"names":[{"value":"Faculty of Bioscience Engineering","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"UGent"}}
-{"ceased":false,"names":[{"value":"Department of Environment","lang":"eng"}],"parentIdentifier":{"value":"LA","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"LA20"}]}
-{"identifiers":[{"value":"LA21","kind":"biblio"}],"parentIdentifier":{"value":"LA","kind":"biblio"},"names":[{"value":"Department of Plants and Crops","lang":"eng"}],"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"LA22"}],"ceased":false,"parentIdentifier":{"value":"LA","kind":"biblio"},"names":[{"value":"Department of Animal Sciences and Aquatic Ecology","lang":"eng"}]}
-{"names":[{"lang":"eng","value":"Department of Food technology, Safety and Health"}],"parentIdentifier":{"kind":"biblio","value":"LA"},"ceased":false,"identifiers":[{"value":"LA23","kind":"biblio"}]}
-{"ceased":false,"parentIdentifier":{"value":"LA","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Green Chemistry and Technology"}],"identifiers":[{"value":"LA24","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"LA25"}],"ceased":false,"names":[{"lang":"eng","value":"Department of Biotechnology"}],"parentIdentifier":{"value":"LA","kind":"biblio"}}
-{"identifiers":[{"value":"LA26","kind":"biblio"}],"parentIdentifier":{"value":"LA","kind":"biblio"},"names":[{"value":"Department of Data analysis and mathematical modelling","lang":"eng"}],"ceased":false}
-{"names":[{"lang":"eng","value":"Department of Agricultural Economics"}],"parentIdentifier":{"kind":"biblio","value":"LA"},"ceased":false,"identifiers":[{"value":"LA27","kind":"biblio"}]}
-{"parentIdentifier":{"kind":"biblio","value":"LA"},"names":[{"lang":"eng","value":"Dean's Office of the Faculty of Agricultural and Applied Biological Sciences"}],"ceased":false,"identifiers":[{"value":"LA51","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"LA55"}],"names":[{"value":"Library faculty of Bioscience Engineering","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"LA"},"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"LA58"}],"ceased":false,"names":[{"value":"Faculty Education Services Bioscience Engineering","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"LA"}}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"LA"},"names":[{"value":"Research Services of the Faculty Bioscience Engineering","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"LA59"}]}
-{"identifiers":[{"kind":"biblio","value":"LA60"}],"parentIdentifier":{"value":"LA","kind":"biblio"},"names":[{"lang":"eng","value":"Internationalization Services of the Faculty Bioscience Engineering"}],"ceased":false}
-{"identifiers":[{"value":"LA62","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"LA"},"names":[{"lang":"eng","value":"PR & Communication Services of the Faculty Bioscience Engineering"}],"ceased":false}
-{"identifiers":[{"value":"LA63","kind":"biblio"}],"names":[{"lang":"eng","value":"Logistics Services of the Faculty Bioscience Engineering"}],"parentIdentifier":{"kind":"biblio","value":"LA"},"ceased":false}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"LA"},"names":[{"value":"Department of Agricultural economics (ceased 1-1-2018)","lang":"eng"}],"ceasedOn":"2018-01-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"LA01"}]}
-{"ceasedOn":"2018-01-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"LA02"}],"names":[{"value":"Department of Plant production (ceased 1-1-2018)","lang":"eng"}],"parentIdentifier":{"value":"LA","kind":"biblio"},"ceased":true}
-{"identifiers":[{"value":"LA03","kind":"biblio"}],"ceasedOn":"2018-01-01T12:00:00Z","ceased":true,"parentIdentifier":{"kind":"biblio","value":"LA"},"names":[{"value":"Department of Crop protection (ceased 1-1-2018)","lang":"eng"}]}
-{"ceasedOn":"2018-01-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"LA04"}],"ceased":true,"names":[{"lang":"eng","value":"Department of Forest and water management (ceased 1-1-2018)"}],"parentIdentifier":{"value":"LA","kind":"biblio"}}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"LA"},"names":[{"lang":"eng","value":"Department of Biosystems Engineering (ceased 1-1-2018)"}],"identifiers":[{"kind":"biblio","value":"LA05"}],"ceasedOn":"2018-01-01T12:00:00Z"}
-{"parentIdentifier":{"kind":"biblio","value":"LA"},"names":[{"value":"Department of Biochemical and microbial technology (ceased 1-1-2018)","lang":"eng"}],"ceased":true,"identifiers":[{"kind":"biblio","value":"LA06"}],"ceasedOn":"2018-01-01T12:00:00Z"}
-{"names":[{"value":"Department of Food safety and food quality (ceased 1-1-2018)","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"LA"},"ceased":true,"ceasedOn":"2018-01-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"LA07"}]}
-{"ceased":true,"names":[{"lang":"eng","value":"Department of Applied analytical and physical chemistry (ceased 1-1-2018)"}],"parentIdentifier":{"kind":"biblio","value":"LA"},"ceasedOn":"2018-01-01T12:00:00Z","identifiers":[{"value":"LA08","kind":"biblio"}]}
-{"parentIdentifier":{"kind":"biblio","value":"LA"},"names":[{"value":"Department of Applied ecology and environmental biology (ceased 1-1-2018)","lang":"eng"}],"ceased":true,"ceasedOn":"2018-01-01T12:00:00Z","identifiers":[{"value":"LA09","kind":"biblio"}]}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"LA"},"names":[{"value":"Department of Mathematical Modelling, Statistics and Bio-informatics (ceased 1-1-2018)","lang":"eng"}],"identifiers":[{"value":"LA10","kind":"biblio"}],"ceasedOn":"2018-01-01T12:00:00Z"}
-{"names":[{"lang":"eng","value":"Department of Sustainable Organic Chemistry and Technology (ceased 1-1-2018)"}],"parentIdentifier":{"value":"LA","kind":"biblio"},"ceased":true,"identifiers":[{"kind":"biblio","value":"LA11"}],"ceasedOn":"2018-01-01T12:00:00Z"}
-{"ceasedOn":"2018-01-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"LA12"}],"ceased":true,"names":[{"lang":"eng","value":"Department of Soil Management (ceased 1-1-2018)"}],"parentIdentifier":{"value":"LA","kind":"biblio"}}
-{"identifiers":[{"kind":"biblio","value":"LA13"}],"ceasedOn":"2018-01-01T12:00:00Z","ceased":true,"parentIdentifier":{"value":"LA","kind":"biblio"},"names":[{"lang":"eng","value":"Department of Animal production (ceased 1-1-2018)"}]}
-{"ceased":true,"names":[{"lang":"eng","value":"Department of Molecular biotechnology (ceased 1-1-2018)"}],"parentIdentifier":{"value":"LA","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"LA14"}],"ceasedOn":"2018-01-01T12:00:00Z"}
-{"ceasedOn":"2018-01-01T12:00:00Z","identifiers":[{"value":"LA15","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"LA"},"names":[{"lang":"eng","value":"Department of Applied biosciences (ceased 1-1-2018)"}],"ceased":true}
-{"identifiers":[{"value":"LA16","kind":"biblio"}],"ceasedOn":"2018-01-01T12:00:00Z","names":[{"lang":"eng","value":"Department of Industrial Biological Sciences (ceased 1-1-2018)"}],"parentIdentifier":{"kind":"biblio","value":"LA"},"ceased":true}
-{"ceased":true,"parentIdentifier":{"kind":"biblio","value":"LA"},"names":[{"lang":"eng","value":"Student Administration Office of the Faculty of Agricultural and Applied Biological Sciences (ceased 1-1-2018)"}],"identifiers":[{"kind":"biblio","value":"LA52"}],"ceasedOn":"2018-01-01T12:00:00Z"}
-{"ceasedOn":"2018-01-01T12:00:00Z","identifiers":[{"kind":"biblio","value":"LA53"}],"ceased":true,"parentIdentifier":{"value":"LA","kind":"biblio"},"names":[{"lang":"eng","value":"Quality Cell Education Faculty of Agricultural and Applied Biological Sciences (ceased 1-1-2018)"}]}
-{"ceased":true,"names":[{"value":"PC-Lab of the Faculty of Agricultural and Applied Biological Sciences (ceased 1-1-2018)","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"LA"},"identifiers":[{"value":"LA54","kind":"biblio"}],"ceasedOn":"2018-01-01T12:00:00Z"}
-{"parentIdentifier":{"value":"LA","kind":"biblio"},"names":[{"lang":"eng","value":"Biocenter AgriVet (ceased 1-1-2018)"}],"ceased":true,"identifiers":[{"kind":"biblio","value":"LA61"}],"ceasedOn":"2018-01-01T12:00:00Z"}
-{"names":[{"lang":"eng","value":"Faculty of Pharmaceutical Sciences"}],"parentIdentifier":{"value":"UGent","kind":"biblio"},"ceased":false,"identifiers":[{"value":"FW","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"FW01"}],"names":[{"lang":"eng","value":"Department of Pharmaceutics"}],"parentIdentifier":{"value":"FW","kind":"biblio"},"ceased":false}
-{"identifiers":[{"value":"FW02","kind":"biblio"}],"ceased":false,"parentIdentifier":{"value":"FW","kind":"biblio"},"names":[{"value":"Department of Pharmaceutical analysis","lang":"eng"}]}
-{"names":[{"value":"Department of Bio-analysis","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"FW"},"ceased":false,"identifiers":[{"value":"FW03","kind":"biblio"}]}
-{"names":[{"lang":"eng","value":"Dean's Office of the Faculty of Pharmaceutical Sciences"}],"parentIdentifier":{"kind":"biblio","value":"FW"},"ceased":false,"identifiers":[{"kind":"biblio","value":"FW51"}]}
-{"identifiers":[{"kind":"biblio","value":"FW52"}],"parentIdentifier":{"value":"FW","kind":"biblio"},"names":[{"lang":"eng","value":"Student Administration Office of the Faculty of Pharmaceutical Sciences"}],"ceased":false}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"FW"},"names":[{"value":"PC-Lab of the Faculty of Pharmaceutical Sciences","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"FW54"}]}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"FW"},"names":[{"value":"Laboratories of the Faculty of Pharmaceutical Sciences","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"FW61"}]}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"UGent"},"names":[{"value":"Faculty of Political and Social Sciences","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"PS"}]}
-{"identifiers":[{"kind":"biblio","value":"PS01"}],"ceased":false,"names":[{"lang":"eng","value":"Department of Communication studies"}],"parentIdentifier":{"kind":"biblio","value":"PS"}}
-{"ceased":false,"names":[{"lang":"eng","value":"Department of Political science"}],"parentIdentifier":{"kind":"biblio","value":"PS"},"identifiers":[{"kind":"biblio","value":"PS03"}]}
-{"ceased":false,"names":[{"lang":"eng","value":"Department of Sociology"}],"parentIdentifier":{"value":"PS","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"PS04"}]}
-{"parentIdentifier":{"kind":"biblio","value":"PS"},"names":[{"value":"Department of Conflict and Development Studies","lang":"eng"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"PS05"}]}
-{"identifiers":[{"kind":"biblio","value":"PS51"}],"ceased":false,"names":[{"value":"Dean's Office of the Faculty of Political and Social Sciences","lang":"eng"}],"parentIdentifier":{"value":"PS","kind":"biblio"}}
-{"names":[{"lang":"eng","value":"Student Administration Office of the Faculty of Political and Social Sciences"}],"parentIdentifier":{"kind":"biblio","value":"PS"},"ceased":false,"identifiers":[{"value":"PS52","kind":"biblio"}]}
-{"names":[{"value":"Service for Educational Support Faculty PS","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"PS"},"ceased":false,"identifiers":[{"value":"PS53","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"PS54"}],"ceased":false,"names":[{"lang":"eng","value":"PC-Lab of the Faculty of Political and Social Sciences"}],"parentIdentifier":{"kind":"biblio","value":"PS"}}
-{"identifiers":[{"kind":"biblio","value":"PS56"}],"ceased":false,"names":[{"lang":"eng","value":"Faculty of Political and Social Sciences - Institute for Permanent Education"}],"parentIdentifier":{"kind":"biblio","value":"PS"}}
-{"names":[{"lang":"eng","value":"Research and Internationalization Office (RIO)"}],"parentIdentifier":{"kind":"biblio","value":"PS"},"ceased":false,"identifiers":[{"value":"PS57","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"PS58"}],"names":[{"value":"Faculty Education Services Political and Social Sciences","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"PS"},"ceased":false}
-{"identifiers":[{"value":"DS","kind":"biblio"}],"ceased":false,"parentIdentifier":{"value":"UGent","kind":"biblio"},"names":[{"lang":"eng","value":"Doctoral Schools"}]}
-{"ceased":false,"names":[{"lang":"eng","value":"Doctoral School of Arts, Humanities and Law"}],"parentIdentifier":{"value":"DS","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"DS10"}]}
-{"identifiers":[{"value":"DS20","kind":"biblio"}],"ceased":false,"names":[{"value":"Doctoral School of Social and Behavioural Sciences","lang":"eng"}],"parentIdentifier":{"value":"DS","kind":"biblio"}}
-{"ceased":false,"names":[{"lang":"eng","value":"Doctoral School of Natural Sciences"}],"parentIdentifier":{"kind":"biblio","value":"DS"},"identifiers":[{"kind":"biblio","value":"DS30"}]}
-{"ceased":false,"names":[{"lang":"eng","value":"Doctoral School of Life Sciences and Medicine"}],"parentIdentifier":{"kind":"biblio","value":"DS"},"identifiers":[{"kind":"biblio","value":"DS40"}]}
-{"identifiers":[{"value":"DS50","kind":"biblio"}],"parentIdentifier":{"value":"DS","kind":"biblio"},"names":[{"value":"Doctoral School of (Bioscience) Engineering","lang":"eng"}],"ceased":false}
-{"names":[{"value":"Central Administration","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"UGent"},"ceased":false,"identifiers":[{"kind":"biblio","value":"CA"}]}
-{"identifiers":[{"kind":"biblio","value":"CA01"}],"names":[{"value":"Rector's Office","lang":"eng"}],"parentIdentifier":{"value":"CA","kind":"biblio"},"ceased":false}
-{"ceased":false,"parentIdentifier":{"value":"CA","kind":"biblio"},"names":[{"lang":"eng","value":"Vice-rector's Office"}],"identifiers":[{"kind":"biblio","value":"CA02"}]}
-{"identifiers":[{"kind":"biblio","value":"CA03"}],"parentIdentifier":{"value":"CA","kind":"biblio"},"names":[{"lang":"eng","value":"Chief Academic Administrator"}],"ceased":false}
-{"identifiers":[{"value":"CA04","kind":"biblio"}],"names":[{"lang":"eng","value":"Chief Logistics Administrator"}],"parentIdentifier":{"kind":"biblio","value":"CA"},"ceased":false}
-{"identifiers":[{"value":"CA05","kind":"biblio"}],"ceased":false,"parentIdentifier":{"value":"CA","kind":"biblio"},"names":[{"lang":"eng","value":"Secretariat of the Board of Governors"}]}
-{"identifiers":[{"value":"CA08","kind":"biblio"}],"parentIdentifier":{"kind":"biblio","value":"CA"},"names":[{"value":"Academic Director of Internationalization","lang":"eng"}],"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"CA09"}],"ceased":false,"names":[{"value":"Centre for Academic Heritage and Archives","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"CA"}}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"CA"},"names":[{"lang":"eng","value":"Department of Educational Affairs"}],"identifiers":[{"value":"CA10","kind":"biblio"}]}
-{"identifiers":[{"value":"CA20","kind":"biblio"}],"names":[{"lang":"eng","value":"Department of Research Affairs"}],"parentIdentifier":{"value":"CA","kind":"biblio"},"ceased":false}
-{"names":[{"value":"Department of Administrative Affairs","lang":"eng"}],"parentIdentifier":{"value":"CA","kind":"biblio"},"ceased":false,"identifiers":[{"value":"CA30","kind":"biblio"}]}
-{"ceased":false,"names":[{"lang":"eng","value":"Department of Personnel and Organization"}],"parentIdentifier":{"value":"CA","kind":"biblio"},"identifiers":[{"kind":"biblio","value":"CA40"}]}
-{"identifiers":[{"value":"CA50","kind":"biblio"}],"ceased":false,"names":[{"value":"Financial Department","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"CA"}}
-{"identifiers":[{"kind":"biblio","value":"CA60"}],"names":[{"value":"Information and Communication Technology Department","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"CA"},"ceased":false}
-{"identifiers":[{"kind":"biblio","value":"CA70"}],"names":[{"value":"Department of Infrastructure and Facility Management","lang":"eng"}],"parentIdentifier":{"value":"CA","kind":"biblio"},"ceased":false}
-{"parentIdentifier":{"kind":"biblio","value":"CA"},"names":[{"lang":"eng","value":"Department of Student Facilities"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"CA80"}]}
-{"parentIdentifier":{"value":"CA","kind":"biblio"},"names":[{"value":"Supervisory authorities","lang":"eng"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"CA93"}]}
-{"identifiers":[{"kind":"biblio","value":"CA94"}],"ceased":false,"names":[{"lang":"eng","value":"Court of Audit"}],"parentIdentifier":{"value":"CA","kind":"biblio"}}
-{"parentIdentifier":{"kind":"biblio","value":"CA"},"names":[{"lang":"eng","value":"Ghent University Association"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"CA95"}]}
-{"identifiers":[{"value":"CA06","kind":"biblio"}],"names":[{"lang":"eng","value":"Department UCBO-UCRO"}],"parentIdentifier":{"kind":"biblio","value":"CA"},"ceased":false}
-{"identifiers":[{"value":"UZGent","kind":"biblio"}],"names":[{"lang":"eng","value":"Ghent University Hospital"}],"ceased":false}
-{"ceased":false,"names":[{"lang":"eng","value":"University College"}],"identifiers":[{"value":"UGentAssoc","kind":"biblio"}]}
-{"ceased":false,"parentIdentifier":{"kind":"biblio","value":"UGentAssoc"},"names":[{"value":"University College Ghent","lang":"eng"}],"identifiers":[{"kind":"biblio","value":"HOGENT"}]}
-{"parentIdentifier":{"kind":"biblio","value":"UGentAssoc"},"names":[{"lang":"eng","value":"University College West Flanders"}],"ceased":false,"identifiers":[{"value":"HOWEST","kind":"biblio"}]}
-{"ceased":false,"names":[{"value":"University College Artevelde","lang":"eng"}],"parentIdentifier":{"kind":"biblio","value":"UGentAssoc"},"identifiers":[{"value":"HOART","kind":"biblio"}]}
-{"names":[{"lang":"eng","value":"Interuniversity Research Center"}],"ceased":false,"identifiers":[{"kind":"biblio","value":"ResearchCenter"}]}
-{"ceased":false,"parentIdentifier":{"value":"ResearchCenter","kind":"biblio"},"names":[{"lang":"eng","value":"VIB"}],"identifiers":[{"kind":"biblio","value":"VIB"}]}
-{"ceased":false,"names":[{"lang":"eng","value":"Imec"}],"parentIdentifier":{"kind":"biblio","value":"ResearchCenter"},"identifiers":[{"kind":"biblio","value":"IMEC"}]}
-{"identifiers":[{"kind":"biblio","value":"IBBT"}],"names":[{"value":"iMinds","lang":"eng"}],"parentIdentifier":{"value":"ResearchCenter","kind":"biblio"},"ceased":false}
-{"ceased":false,"parentIdentifier":{"value":"ResearchCenter","kind":"biblio"},"names":[{"lang":"eng","value":"Flanders Make"}],"identifiers":[{"value":"FlandersMake","kind":"biblio"}]}
-{"identifiers":[{"kind":"biblio","value":"GUK"}],"names":[{"value":"Global Campus Korea","lang":"eng"}],"ceased":false}
-{"identifiers":[{"value":"KR01","kind":"biblio"}],"ceased":false,"parentIdentifier":{"kind":"biblio","value":"GUK"},"names":[{"value":"Department of Environmental Technology, Food Technology and Molecular Biotechnology","lang":"eng"}]}
-{"names":[{"lang":"eng","value":"Admissions and enrollment office"}],"parentIdentifier":{"kind":"biblio","value":"GUK"},"ceased":false,"identifiers":[{"value":"KR71","kind":"biblio"}]}
-{"names":[{"value":"Recruitment office","lang":"eng"}],"parentIdentifier":{"value":"GUK","kind":"biblio"},"ceased":false,"identifiers":[{"value":"KR73","kind":"biblio"}]}
+{"name":"Department of Pathobiology, Pharmacology and Zoological Medicine","id":"DI05","tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI05"}]}
+{"name":"Department of Industrial Biological Sciences (ceased 1-1-2018)","id":"LA16","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA16"}]}
+{"id":"TW","name":"Faculty of Engineering and Architecture","tree":[{"id":"UGent"},{"id":"TW"}]}
+{"name":"Department of Marketing, Innovation and Organisation","id":"EB23","tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB23"}]}
+{"id":"WE07","name":"Department of Organic and Macromolecular Chemistry","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE07"}]}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE02"}],"id":"GE02","name":"Department of Pediatrics and medical genetics (ceased 1-10-2018)"}
+{"tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI08*"}],"id":"DI08*","name":"Department of Obstetrics, reproduction and herd health (ceased 1-1-2022)"}
+{"id":"LW01","name":"Department of Philosophy and moral sciences","tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW01"}]}
+{"name":"Department of Movement and Sports Sciences (ceased 1-10-2018)","id":"GE25","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE25"}]}
+{"tree":[{"id":"UGent"},{"id":"FW"}],"name":"Faculty of Pharmaceutical Sciences","id":"FW"}
+{"id":"LA25","name":"Department of Biotechnology","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA25"}]}
+{"id":"DS10","name":"Doctoral School of Arts, Humanities and Law","tree":[{"id":"UGent"},{"id":"DS"},{"id":"DS10"}]}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW51"}],"name":"Dean's Office of the Faculty of Engineering and Architecture","id":"TW51"}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW02"}],"name":"Department of Archaeology","id":"LW02"}
+{"name":"Department of Data analysis and mathematical modelling","id":"LA26","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA26"}]}
+{"name":"Department of Applied biosciences (ceased 1-1-2018)","id":"LA15","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA15"}]}
+{"name":"Department of African languages and cultures (ceased 1-1-2013)","id":"LW19","tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW19"}]}
+{"name":"Department of Pharmacology (ceased 1-10-2018)","id":"GE09","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE09"}]}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW06"}],"name":"Department of Linguistics","id":"LW06"}
+{"name":"Department of Educational Affairs","id":"CA10","tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA10"}]}
+{"name":"Department of Basic and Applied Medical Sciences","id":"GE33","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE33"}]}
+{"id":"WE09","name":"Department of Plant Biotechnology and Bioinformatics","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE09"}]}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW17"}],"id":"LW17","name":"Department of Art, music and theatre sciences"}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW18"}],"id":"LW18","name":"Department of Comparative sciences of culture"}
+{"name":"Department of Tax law (ceased 1-10-2014)","id":"RE10","tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE10"}]}
+{"name":"Library of the Faculty of Economics and Business Administration","id":"EB55","tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB55"}]}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE52"}],"name":"Student Administration Office of the Faculty of Medicine and Health Sciences (ceased)","id":"GE52"}
+{"name":"Knowledge Centre for Health Ghent","id":"GE55","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE55"}]}
+{"tree":[{"id":"UGent"},{"id":"FW"},{"id":"FW02"}],"id":"FW02","name":"Department of Pharmaceutical analysis"}
+{"tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE58"}],"id":"RE58","name":"Faculty Education Services Law and Criminology"}
+{"tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI56"}],"name":"Faculty of Veterinary Medicine - Institute for Continuing Education","id":"DI56"}
+{"id":"RE52","name":"Student Administration Office of the Faculty of Law (ceased)","tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE52"}]}
+{"id":"RE","name":"Faculty of Law and Criminology","tree":[{"id":"UGent"},{"id":"RE"}]}
+{"tree":[{"id":"UGent"},{"id":"GE"}],"name":"Faculty of Medicine and Health Sciences","id":"GE"}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA01"}],"name":"Department of Agricultural economics (ceased 1-1-2018)","id":"LA01"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE57"}],"name":"IPVK-Institute for Postgraduate Activities in Physiotherapy","id":"GE57"}
+{"tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA60"}],"name":"Information and Communication Technology Department","id":"CA60"}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB11"}],"name":"Department of Human Resource Management and Organizational Behaviour (ceased)","id":"EB11"}
+{"id":"LW20","name":"Department of Language and communication","tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW20"}]}
+{"name":"Department of Oral Health Sciences","id":"GE36","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE36"}]}
+{"name":"Department of Biomolecular Medicine","id":"GE31","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE31"}]}
+{"id":"CA40","name":"Department of Personnel and Organization","tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA40"}]}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW03"}],"name":"Department of History","id":"LW03"}
+{"name":"PC-Lab of the Faculty of Arts and Philosophy","id":"LW54","tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW54"}]}
+{"name":"Department of Pharmaceutics","id":"FW01","tree":[{"id":"UGent"},{"id":"FW"},{"id":"FW01"}]}
+{"name":"PC-Lab of the Faculty of Law and Criminology","id":"RE54","tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE54"}]}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW21"}],"name":"Department of Languages and cultures","id":"LW21"}
+{"id":"LW22","name":"Department of Translation, Interpreting and Communication","tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW22"}]}
+{"id":"CA30","name":"Department of Administrative Affairs","tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA30"}]}
+{"tree":[{"id":"UGent"},{"id":"PS"},{"id":"PS53"}],"id":"PS53","name":"Service for Educational Support Faculty PS"}
+{"name":"Department of Information technology","id":"TW05","tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW05"}]}
+{"id":"EB57","name":"Institute of Higher Education in Accounting and Tax","tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB57"}]}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW11*"}],"name":"Department of English (ceased 1-1-2011)","id":"LW11*"}
+{"id":"DS30","name":"Doctoral School of Natural Sciences","tree":[{"id":"UGent"},{"id":"DS"},{"id":"DS30"}]}
+{"tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI11*"}],"name":"Department of Veterinary medical imaging and small animal orthopaedics (ceased 1-1-2022)","id":"DI11*"}
+{"name":"Internationalization Services of the Faculty Bioscience Engineering","id":"LA60","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA60"}]}
+{"id":"EB61","name":"Technique and Budget","tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB61"}]}
+{"id":"LA55","name":"Library faculty of Bioscience Engineering","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA55"}]}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB56"}],"id":"EB56","name":"FEB Academy"}
+{"name":"Library of the Faculty of Arts and Philosophy","id":"LW55","tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW55"}]}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA61"}],"id":"LA61","name":"Biocenter AgriVet (ceased 1-1-2018)"}
+{"name":"Department of Oto-rhino-laryngology and logopaedic-audiologic sciences (ceased 1-10-2018)","id":"GE19","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE19"}]}
+{"tree":[{"id":"UGent"},{"id":"PS"},{"id":"PS57"}],"name":"Research and Internationalization Office (RIO)","id":"PS57"}
+{"id":"WE62","name":"Workshop of the Faculty of Science","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE62"}]}
+{"tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP09"}],"name":"Department of Work, Organisation and Society","id":"PP09"}
+{"name":"iMinds","id":"IBBT","url":"http://www.iminds.be/","tree":[{"id":"ResearchCenter"},{"id":"IBBT"}]}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"FlandersMake"}],"name":"Flanders Make","id":"FlandersMake"}
+{"tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP10"}],"name":"Department of Special Needs Education","id":"PP10"}
+{"name":"Chief Logistics Administrator","id":"CA04","tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA04"}]}
+{"tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE21"}],"id":"RE21","name":"Department of Interdisciplinary Study of Law, Private Law and Business Law"}
+{"id":"GE54","name":"PC-Lab of the Faculty of Medicine and Health Sciences","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE54"}]}
+{"id":"LA62","name":"PR & Communication Services of the Faculty Bioscience Engineering","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA62"}]}
+{"tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI06"}],"id":"DI06","name":"Department of Veterinary Public Health and Food Safety (ceased 1-1-2022)"}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA24"}],"id":"LA24","name":"Department of Green Chemistry and Technology"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE06"}],"id":"GE06","name":"Department of Clinical chemistry, microbiology and immunology (ceased 1-10-2018)"}
+{"id":"RE23","name":"Department of Criminology, Penal Law and Social Law","tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE23"}]}
+{"tree":[{"id":"UGent"},{"id":"FW"},{"id":"FW54"}],"name":"PC-Lab of the Faculty of Pharmaceutical Sciences","id":"FW54"}
+{"name":"Botanical Garden","id":"WE61","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE61"}]}
+{"name":"Department of Internal Medicine and Pediatrics","id":"GE35","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE35"}]}
+{"tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE03"}],"id":"RE03","name":"Department of Civil law (ceased 1-10-2014)"}
+{"id":"PP05","name":"Department of Experimental clinical and health psychology","tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP05"}]}
+{"name":"Department of Head and Skin","id":"GE34","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE34"}]}
+{"name":"Department of Uro-gynaecology (ceased 1-10-2018)","id":"GE04","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE04"}]}
+{"id":"GE56","name":"The GHALL (Ghent Health Academy for Lifelong Learning)","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE56"}]}
+{"name":"Department of Data-analysis","id":"PP01","tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP01"}]}
+{"id":"WE55","name":"Science Faculty Library","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE55"}]}
+{"tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP02"}],"name":"Department of Experimental psychology","id":"PP02"}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB10"}],"id":"EB10","name":"Department of Public Governance, Management and Finance (ceased)"}
+{"id":"PP","name":"Faculty of Psychology and Educational Sciences","tree":[{"id":"UGent"},{"id":"PP"}]}
+{"id":"GE37","name":"Department of Rehabilitation Sciences","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE37"}]}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE15"}],"id":"GE15","name":"Department of Dermatology (ceased 1-10-2018)"}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW07"}],"id":"LW07","name":"Department of Literary studies"}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE16"}],"name":"Department of Mathematics: Analysis, Logic and Discrete Mathematics","id":"WE16"}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB51"}],"name":"Dean's Office of the Faculty of Economics and Business Administration","id":"EB51"}
+{"id":"RE08","name":"Department of Penal law and criminology (ceased 1-10-2014)","tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE08"}]}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE05"}],"id":"WE05","name":"Department of Physics and astronomy"}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW06"}],"name":"Department of Electronics and information systems","id":"TW06"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE18"}],"name":"Department of Ophthalmology (ceased 1-10-2018)","id":"GE18"}
+{"name":"Department of Inorganic and physical chemistry (ceased 1-1-2018)","id":"WE06*","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE06*"}]}
+{"tree":[{"id":"UGent"},{"id":"PS"},{"id":"PS54"}],"name":"PC-Lab of the Faculty of Political and Social Sciences","id":"PS54"}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA14"}],"name":"Department of Molecular biotechnology (ceased 1-1-2018)","id":"LA14"}
+{"id":"DI11","name":"Department of Morphology, Imaging, Orthopedics, Rehabilitation and Nutrition","tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI11"}]}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW04*"}],"name":"Department of Early Modern History (ceased 1-1-2010)","id":"LW04*"}
+{"name":"Department of Animal production (ceased 1-1-2018)","id":"LA13","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA13"}]}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE01"}],"name":"Department of Internal medicine (ceased 1-10-2018)","id":"GE01"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE64"}],"name":"Center for Prevention and Early Detection of Cancer","id":"GE64"}
+{"id":"WE63","name":"Zoology Museum","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE63"}]}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE07"}],"id":"GE07","name":"Department of Biochemistry (ceased 1-10-2018)"}
+{"name":"Department of Industrial Systems Engineering and Product Design","id":"TW18","tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW18"}]}
+{"name":"Department of Applied analytical and physical chemistry (ceased 1-1-2018)","id":"LA08","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA08"}]}
+{"tree":[{"id":"UGent"},{"id":"DS"},{"id":"DS20"}],"id":"DS20","name":"Doctoral School of Social and Behavioural Sciences"}
+{"name":"Doctoral School of Life Sciences and Medicine","id":"DS40","tree":[{"id":"UGent"},{"id":"DS"},{"id":"DS40"}]}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW15"}],"name":"Department of Languages and cultures of South and East Asia (ceased 1-1-2013)","id":"LW15"}
+{"id":"GE10","name":"Department of Surgery (ceased 1-10-2018)","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE10"}]}
+{"id":"EB22","name":"Department of Accounting, Corporate Finance and Taxation","tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB22"}]}
+{"tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI02"}],"name":"Department of Pharmacology, Toxicology and Biochemistry (ceased 1-1-2022)","id":"DI02"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE03"}],"name":"Department of Physical medicine and orthopaedic surgery (ceased 1-10-2018)","id":"GE03"}
+{"tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP11"}],"id":"PP11","name":"Department of Human Resource Management and Organisational Psychology"}
+{"name":"Chief Academic Administrator","id":"CA03","tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA03"}]}
+{"tree":[{"id":"UGent"},{"id":"PS"},{"id":"PS56"}],"id":"PS56","name":"Faculty of Political and Social Sciences - Institute for Permanent Education"}
+{"name":"Dean's Office of the Faculty of Pharmaceutical Sciences","id":"FW51","tree":[{"id":"UGent"},{"id":"FW"},{"id":"FW51"}]}
+{"tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE05"}],"name":"Department of Business law (ceased 1-10-2014)","id":"RE05"}
+{"name":"Department of Mathematics: Algebra and Geometry","id":"WE01","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE01"}]}
+{"id":"RE09","name":"Department of Labour law and social security law (ceased 1-10-2014)","tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE09"}]}
+{"id":"GE58","name":"Faculty Education Services Medicine and Health Sciences","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE58"}]}
+{"id":"WE","name":"Faculty of Sciences","tree":[{"id":"UGent"},{"id":"WE"}]}
+{"tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE12"}],"id":"RE12","name":"Department of Public Law (ceased 1-10-2014)"}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA22"}],"name":"Department of Animal Sciences and Aquatic Ecology","id":"LA22"}
+{"name":"Department of Chemistry","id":"WE06","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE06"}]}
+{"name":"Faculty of Bioscience Engineering","id":"LA","tree":[{"id":"UGent"},{"id":"LA"}]}
+{"id":"PS04","name":"Department of Sociology","tree":[{"id":"UGent"},{"id":"PS"},{"id":"PS04"}]}
+{"id":"RE55","name":"Library of the Faculty of Law and Criminology","tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE55"}]}
+{"name":"Dean's Office of the Faculty of Law and Criminology","id":"RE51","tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE51"}]}
+{"name":"Student Administration Office of the Faculty of Psychology and Educational Sciences (ceased 1-10-2014)","id":"PP52","tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP52"}]}
+{"id":"UZGent","name":"Ghent University Hospital","tree":[{"id":"UZGent"}],"url":"https://www.uzgent.be/"}
+{"id":"VIB","name":"VIB","tree":[{"id":"ResearchCenter"},{"id":"VIB"}],"url":"http://www.vib.be/"}
+{"name":"Department of International public law (ceased 1-10-2014)","id":"RE06","tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE06"}]}
+{"name":"Dean's Office of the Faculty of Medicine and Health Sciences","id":"GE51","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE51"}]}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW58"}],"name":"Faculty Education Services Arts and Philosophy","id":"LW58"}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW12*"}],"id":"LW12*","name":"Department of German (ceased 1-1-2011)"}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE64"}],"id":"WE64","name":"Museum of the History of Sciences"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE30"}],"name":"Department of Movement and Sports Sciences","id":"GE30"}
+{"name":"Dean's Office of the Faculty of Arts and Philosophy","id":"LW51","tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW51"}]}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW12"}],"id":"TW12","name":"Department of Chemical engineering and technical chemistry (ceased 1-2-2017)"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE22"}],"id":"GE22","name":"Department of Pathology (ceased 1-10-2018)"}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE03*"}],"id":"WE03*","name":"Department of Mathematical Physics and Astronomy (ceased 1-1-2010)"}
+{"tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA80"}],"id":"CA80","name":"Department of Student Facilities"}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA21"}],"id":"LA21","name":"Department of Plants and Crops"}
+{"id":"GE14","name":"Department of Forensic medicine (ceased 1-10-2018)","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE14"}]}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW11*"}],"name":"Department of Textiles (ceased 1-2-2017)","id":"TW11*"}
+{"tree":[{"id":"UGentAssoc"}],"id":"UGentAssoc","name":"University College"}
+{"id":"WE52","name":"Student Administration Office of the Faculty of Science (ceased)","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE52"}]}
+{"tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI54"}],"name":"PC-Lab of the faculty of Veterinary Medicine","id":"DI54"}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB02"}],"name":"Department of Financial economics (ceased)","id":"EB02"}
+{"name":"Department of Biochemistry and microbiology","id":"WE10","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE10"}]}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE24"}],"id":"GE24","name":"Department of Physical therapy and motor rehabilitation (ceased 1-10-2018)"}
+{"tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP59"}],"id":"PP59","name":"Research Support Office FPPW"}
+{"tree":[{"id":"UGent"},{"id":"FW"},{"id":"FW52"}],"name":"Student Administration Office of the Faculty of Pharmaceutical Sciences","id":"FW52"}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW15"}],"name":"Department of Civil engineering","id":"TW15"}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW03"}],"id":"TW03","name":"Department of Flow, heat and combustion mechanics"}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW08*"}],"name":"Department of Romance languages (other than French) (ceased 1-1-2011)","id":"LW08*"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE05"}],"id":"GE05","name":"Department of Basic Medical Sciences (ceased 1-10-2018)"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE53"}],"name":"Logistic Department for Teaching (ceased)","id":"GE53"}
+{"tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA50"}],"name":"Financial Department","id":"CA50"}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA09"}],"name":"Department of Applied ecology and environmental biology (ceased 1-1-2018)","id":"LA09"}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW14"}],"name":"Department of Languages and cultures of the Near East and North Africa (ceased 1-1-2013)","id":"LW14"}
+{"tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP62"}],"id":"PP62","name":"Management Common Infrastructure of the Faculty PP (ceased)"}
+{"name":"Department of Soil Management (ceased 1-1-2018)","id":"LA12","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA12"}]}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE38"}],"name":"Department of Human Structure and Repair","id":"GE38"}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW13*"}],"name":"Department of Nordic studies (ceased 1-1-2011)","id":"LW13*"}
+{"tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI51"}],"name":"Dean's Office of the Faculty of Veterinary Medicine","id":"DI51"}
+{"name":"Department of Modern History (ceased 1-1-2010)","id":"LW05*","tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW05*"}]}
+{"name":"Quality Cell Education Faculty of Agricultural and Applied Biological Sciences (ceased 1-1-2018)","id":"LA53","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA53"}]}
+{"tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA20"}],"name":"Department of Research Affairs","id":"CA20"}
+{"id":"DI04","name":"Department of Translational Physiology, Infectiology and Public Health","tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI04"}]}
+{"id":"TW08","name":"Department of Electromechanical, Systems and Metal Engineering","tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW08"}]}
+{"id":"GE63","name":"Center for Healthy and Safe Working Conditions","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE63"}]}
+{"name":"Student Administration Office of the Faculty of Political and Social Sciences","id":"PS52","tree":[{"id":"UGent"},{"id":"PS"},{"id":"PS52"}]}
+{"name":"Department of Virology, parasitology and immunology (ceased 1-1-2022)","id":"DI04*","tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI04*"}]}
+{"tree":[{"id":"UGent"},{"id":"DS"}],"id":"DS","name":"Doctoral Schools"}
+{"id":"HOGENT","name":"University College Ghent","tree":[{"id":"UGentAssoc"},{"id":"HOGENT"}],"url":"http://www.hogent.be/"}
+{"name":"Department of Analytical chemistry (ceased 1-1-2018)","id":"WE08","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE08"}]}
+{"name":"Student Administration Office of the Faculty of Veterinary Medicine","id":"DI52","tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI52"}]}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW04"}],"id":"TW04","name":"Department of Mechanical construction and production"}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB25"}],"name":"Department of Public Governance and Management","id":"EB25"}
+{"name":"Department of Mathematical Modelling, Statistics and Bio-informatics (ceased 1-1-2018)","id":"LA10","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA10"}]}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB21"}],"id":"EB21","name":"Department of Economics"}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB08"}],"id":"EB08","name":"Department of Business Informatics and Operations Management (ceased)"}
+{"tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA94"}],"id":"CA94","name":"Court of Audit"}
+{"name":"Department of Morphology (ceased 1-1-2022)","id":"DI03","tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI03"}]}
+{"tree":[{"id":"UGentAssoc"},{"id":"HOART"}],"url":"http://www.arteveldehs.be/","name":"University College Artevelde","id":"HOART"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE61"}],"id":"GE61","name":"Animalarium"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE23"}],"name":"Department of Anaesthesiology (ceased 1-10-2018)","id":"GE23"}
+{"id":"TW55","name":"Facultaire bibliotheek Ingenieurswetenschappen en Architectuur","tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW55"}]}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE15"}],"name":"Department of Physiology (ceased)","id":"WE15"}
+{"name":"Department of Dutch Linguistics (ceased 1-1-2011)","id":"LW09*","tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW09*"}]}
+{"id":"TW54","name":"PC-Lab of the Faculty of Engineering and Architecture","tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW54"}]}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW01"}],"name":"Department of Architecture and urban planning","id":"TW01"}
+{"name":"Secretariat of the Board of Governors","id":"CA05","tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA05"}]}
+{"tree":[{"id":"ResearchCenter"}],"id":"ResearchCenter","name":"Interuniversity Research Center"}
+{"name":"Department of European law (ceased 1-10-2014)","id":"RE07","tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE07"}]}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB52"}],"id":"EB52","name":"Student Administration Office of the Faculty of Economics and Business Administration (ceased)"}
+{"tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE11"}],"name":"Department of Procedural law, arbitration and private international law (ceased 1-10-2014)","id":"RE11"}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA59"}],"id":"LA59","name":"Research Services of the Faculty Bioscience Engineering"}
+{"tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA09"}],"name":"Centre for Academic Heritage and Archives","id":"CA09"}
+{"tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA08"}],"id":"CA08","name":"Academic Director of Internationalization"}
+{"name":"Department of Environmental Technology, Food Technology and Molecular Biotechnology","id":"KR01","tree":[{"id":"GUK"},{"id":"KR01"}]}
+{"tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP03"}],"name":"Department of Pedagogy","id":"PP03"}
+{"name":"Department of Radiology and nuclear medicine (ceased 1-10-2018)","id":"GE16","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE16"}]}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA04"}],"name":"Department of Forest and water management (ceased 1-1-2018)","id":"LA04"}
+{"id":"LA03","name":"Department of Crop protection (ceased 1-1-2018)","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA03"}]}
+{"name":"Faculty Education Services Psychology and Educational Sciences","id":"PP58","tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP58"}]}
+{"tree":[{"id":"UGent"},{"id":"PS"},{"id":"PS03"}],"id":"PS03","name":"Department of Political science"}
+{"name":"Department of Nutrition, Genetics and Ethology (ceased 1-1-2022)","id":"DI07*","tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI07*"}]}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE01*"}],"id":"WE01*","name":"Department of Mathematics (ceased 1-1-2019)"}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW03*"}],"name":"Department of Medieval History (ceased 1-1-2010)","id":"LW03*"}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA27"}],"id":"LA27","name":"Department of Agricultural Economics"}
+{"tree":[{"id":"GUK"},{"id":"KR71"}],"name":"Admissions and enrollment office","id":"KR71"}
+{"id":"LA58","name":"Faculty Education Services Bioscience Engineering","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA58"}]}
+{"tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE22"}],"id":"RE22","name":"Department of European, Public and International Law"}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE53"}],"name":"Logistic Department for Teaching at the Faculty of Sciences (ceased)","id":"WE53"}
+{"id":"FW03","name":"Department of Bio-analysis","tree":[{"id":"UGent"},{"id":"FW"},{"id":"FW03"}]}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB09"}],"id":"EB09","name":"Department of Innovation, Entrepreneurship and Service Management (ceased)"}
+{"id":"PP06","name":"Department of Educational Studies","tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP06"}]}
+{"id":"RE02","name":"Department of Legal theory and legal history (ceased 1-10-2014)","tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE02"}]}
+{"name":"Testing Laboratory at the Faculty of Psychology and Pedagogical Sciences","id":"PP61","tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP61"}]}
+{"tree":[{"id":"UGent"},{"id":"PS"},{"id":"PS05"}],"id":"PS05","name":"Department of Conflict and Development Studies"}
+{"name":"Department of Diagnostic Sciences","id":"GE32","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE32"}]}
+{"tree":[{"id":"UGent"},{"id":"PS"},{"id":"PS58"}],"name":"Faculty Education Services Political and Social Sciences","id":"PS58"}
+{"id":"GE12","name":"Department of Public health (ceased 1-10-2018)","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE12"}]}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW16"}],"id":"TW16","name":"Department of Mathematical analysis"}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA51"}],"name":"Dean's Office of the Faculty of Agricultural and Applied Biological Sciences","id":"LA51"}
+{"name":"Department of Biomedical molecular biology","id":"WE14","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE14"}]}
+{"name":"Department of Food technology, Safety and Health","id":"LA23","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA23"}]}
+{"id":"HOWEST","name":"University College West Flanders","url":"http://www.howest.be/","tree":[{"id":"UGentAssoc"},{"id":"HOWEST"}]}
+{"name":"Department of Telecommunications and information processing","id":"TW07","tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW07"}]}
+{"tree":[{"id":"GUK"},{"id":"KR73"}],"name":"Recruitment office","id":"KR73"}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE13"}],"name":"Department of Geology","id":"WE13"}
+{"name":"Vice-rector's Office","id":"CA02","tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA02"}]}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW53"}],"name":"Logistic Department for Teaching at the Faculty of Engineering and Architecture","id":"TW53"}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB54"}],"id":"EB54","name":"PC-Lab of the Faculty of Economics and Business Administration"}
+{"id":"CA","name":"Central Administration","tree":[{"id":"UGent"},{"id":"CA"}]}
+{"name":"PC-Lab of the Faculty of Psychology and Educational Sciences","id":"PP54","tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP54"}]}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE02"}],"id":"WE02","name":"Department of Applied mathematics, computer science and statistics"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE17"}],"name":"Department of Radiation oncology and experimental cancer research (ceased 1-10-2018)","id":"GE17"}
+{"id":"DI61","name":"Faculty of Veterinary Medicine Workshop","tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI61"}]}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE65"}],"id":"WE65","name":"Honeybee Valley"}
+{"name":"Department of Teaching Support of the Faculty of Psychology and Pedagogical Sciences (ceased 1-10-2014)","id":"PP53","tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP53"}]}
+{"name":"Department of Communication studies","id":"PS01","tree":[{"id":"UGent"},{"id":"PS"},{"id":"PS01"}]}
+{"id":"PP51","name":"Dean's Office of the Faculty of Psychology and Educational Sciences","tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP51"}]}
+{"id":"WE54","name":"PC-Lab of the Faculty of Science","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE54"}]}
+{"tree":[{"id":"ResearchCenter"},{"id":"IMEC"}],"url":"http://www.imec.be/","name":"Imec","id":"IMEC"}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB58"}],"id":"EB58","name":"Faculty Education Services Economics and Business Administration"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE08"}],"name":"Department of General physiology and human physiology and pathophysiology (ceased 01-10-2008)","id":"GE08"}
+{"tree":[{"id":"UGent"}],"id":"UGent","name":"Ghent University"}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW17"}],"name":"Department of Applied physics","id":"TW17"}
+{"name":"Biocenter AgriVet","id":"DI62","tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI62"}]}
+{"tree":[{"id":"UGent"},{"id":"LW"}],"id":"LW","name":"Faculty of Arts and Philosophy"}
+{"tree":[{"id":"UGent"},{"id":"EB"}],"id":"EB","name":"Faculty of Economics and Business Administration"}
+{"tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI08"}],"name":"Department of Internal Medicine, Reproduction and Population Medicine","id":"DI08"}
+{"tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP08"}],"id":"PP08","name":"Department of Psycho-analysis and clinical consulting"}
+{"id":"TW20","name":"Department of Industrial Technology and Construction","tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW20"}]}
+{"tree":[{"id":"UGent"},{"id":"DS"},{"id":"DS50"}],"name":"Doctoral School of (Bioscience) Engineering","id":"DS50"}
+{"name":"Department of Sustainable Organic Chemistry and Technology (ceased 1-1-2018)","id":"LA11","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA11"}]}
+{"name":"Instituut permanente vorming van de faculteit Ingenieurswetenschappen en Architectuur (IVPV)","id":"TW56","tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW56"}]}
+{"tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA70"}],"name":"Department of Infrastructure and Facility Management","id":"CA70"}
+{"id":"LA63","name":"Logistics Services of the Faculty Bioscience Engineering","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA63"}]}
+{"id":"WE58","name":"Faculty Education Services Sciences","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE58"}]}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE13"}],"id":"GE13","name":"Department of Psychiatry and Medical Psychology (ceased 1-10-2018)"}
+{"name":"Faculty of Political and Social Sciences","id":"PS","tree":[{"id":"UGent"},{"id":"PS"}]}
+{"id":"DI10","name":"Department of Large Animal Surgery, Anaesthesia and Orthopaedics","tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI10"}]}
+{"tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP55"}],"name":"Library of the Faculty of Psychology and Educational Sciences","id":"PP55"}
+{"name":"Department of Industrial System and Product Design","id":"TW19","tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW19"}]}
+{"tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB01"}],"name":"Department of General economics (ceased)","id":"EB01"}
+{"id":"EB05","name":"Department of Accountancy and Corporate Finance (ceased)","tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB05"}]}
+{"tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI09"}],"id":"DI09","name":"Department of Small animals"}
+{"id":"PS51","name":"Dean's Office of the Faculty of Political and Social Sciences","tree":[{"id":"UGent"},{"id":"PS"},{"id":"PS51"}]}
+{"tree":[{"id":"UGent"},{"id":"FW"},{"id":"FW61"}],"name":"Laboratories of the Faculty of Pharmaceutical Sciences","id":"FW61"}
+{"id":"CA06","name":"Department UCBO-UCRO","tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA06"}]}
+{"id":"EB03","name":"Department of Social economics (ceased)","tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB03"}]}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE51"}],"name":"Dean's Office of the Faculty of Science","id":"WE51"}
+{"name":"Faculty of Veterinary Medicine","id":"DI","tree":[{"id":"UGent"},{"id":"DI"}]}
+{"name":"Department of Veterinary and Biosciences","id":"DI07","tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI07"}]}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA52"}],"name":"Student Administration Office of the Faculty of Agricultural and Applied Biological Sciences (ceased 1-1-2018)","id":"LA52"}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE04"}],"id":"WE04","name":"Department of Solid state sciences"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE11"}],"name":"Department of Dentistry (ceased 1-10-2018)","id":"GE11"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE21"}],"name":"Department of General practice and primary health care (ceased 1-10-2018)","id":"GE21"}
+{"name":"Department of Marketing (ceased)","id":"EB07","tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB07"}]}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA02"}],"name":"Department of Plant production (ceased 1-1-2018)","id":"LA02"}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW52"}],"id":"TW52","name":"Student Administration Office of the Faculty of Engineering and Architecture"}
+{"id":"GE39","name":"Department of Public Health and Primary Care","tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE39"}]}
+{"tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI12"}],"id":"DI12","name":"Department of Internal medicine and clinical biology of large animals (ceased 1-1-2022)"}
+{"id":"LA54","name":"PC-Lab of the Faculty of Agricultural and Applied Biological Sciences (ceased 1-1-2018)","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA54"}]}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW10*"}],"id":"LW10*","name":"Department of Dutch Literature (ceased 1-1-2011)"}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW06*"}],"id":"LW06*","name":"Department of Latin and Greek (ceased 1-1-2011)"}
+{"name":"Department of Social Work and Social Pedagogy","id":"PP04","tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP04"}]}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA06"}],"id":"LA06","name":"Department of Biochemical and microbial technology (ceased 1-1-2018)"}
+{"id":"WE11","name":"Department of Biology","tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE11"}]}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA05"}],"name":"Department of Biosystems Engineering (ceased 1-1-2018)","id":"LA05"}
+{"tree":[{"id":"GUK"}],"name":"Global Campus Korea","id":"GUK"}
+{"id":"LW52","name":"Student Administration Office of the Faculty of Arts and Philosophy","tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW52"}]}
+{"tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI05*"}],"name":"Department of Pathology, bacteriology and poultry diseases (ceased 1-1-2022)","id":"DI05*"}
+{"name":"Department of Environment","id":"LA20","tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA20"}]}
+{"id":"TW10","name":"Department of Materials Science and Engineering (ceased 1-2-2017)","tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW10"}]}
+{"name":"Institute for Continuing Education in Law","id":"RE56","tree":[{"id":"UGent"},{"id":"RE"},{"id":"RE56"}]}
+{"tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA93"}],"name":"Supervisory authorities","id":"CA93"}
+{"tree":[{"id":"UGent"},{"id":"LA"},{"id":"LA07"}],"id":"LA07","name":"Department of Food safety and food quality (ceased 1-1-2018)"}
+{"tree":[{"id":"UGent"},{"id":"GE"},{"id":"GE27"}],"id":"GE27","name":"Department of Speech, Language and Hearing Sciences (ceased 1-10-2018)"}
+{"tree":[{"id":"UGent"},{"id":"PP"},{"id":"PP07"}],"id":"PP07","name":"Department of developmental, personality and social psychology"}
+{"id":"CA95","name":"Ghent University Association","tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA95"}]}
+{"id":"LW07*","name":"Department of French (ceased 1-1-2011)","tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW07*"}]}
+{"name":"Department of Comparative physiology and biometrics","id":"DI01","tree":[{"id":"UGent"},{"id":"DI"},{"id":"DI01"}]}
+{"tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW16"}],"id":"LW16","name":"Department of Slavonic and East-European studies (ceased 1-1-2013)"}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW11"}],"name":"Department of Materials, Textiles and Chemical Engineering","id":"TW11"}
+{"tree":[{"id":"UGent"},{"id":"CA"},{"id":"CA01"}],"id":"CA01","name":"Rector's Office"}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE12"}],"id":"WE12","name":"Department of Geography"}
+{"name":"Logistic Department for Teaching at the Faculty Arts and Philosophy","id":"LW53","tree":[{"id":"UGent"},{"id":"LW"},{"id":"LW53"}]}
+{"id":"EB24","name":"Department of Business Informatics and Operations Management","tree":[{"id":"UGent"},{"id":"EB"},{"id":"EB24"}]}
+{"tree":[{"id":"UGent"},{"id":"WE"},{"id":"WE56"}],"name":"Institute for Continuing Education in Science - ICES","id":"WE56"}
+{"tree":[{"id":"UGent"},{"id":"TW"},{"id":"TW14"}],"name":"Department of Structural Engineering and Building Materials","id":"TW14"}

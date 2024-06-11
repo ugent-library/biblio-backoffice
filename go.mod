@@ -13,8 +13,6 @@ require (
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/httplog/v2 v2.0.11
-	github.com/go-faster/errors v0.7.1
-	github.com/go-faster/jx v1.1.0
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/csrf v1.7.2
 	github.com/gorilla/sessions v1.2.1
@@ -24,24 +22,18 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/jpillora/ipfilter v1.2.9
 	github.com/leonelquinteros/gotext v1.5.2
-	github.com/ogen-go/ogen v1.0.0
 	github.com/ory/graceful v0.1.3
 	github.com/pkg/errors v0.9.1
 	github.com/samber/lo v1.39.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.9.0
-	github.com/swaggest/swgui v1.8.0
 	github.com/tidwall/gjson v1.17.0
-	github.com/ugent-library/crypt v0.0.0-20230630063634-8c02106fd40e
 	github.com/ugent-library/oai-service v0.0.0-20230922094424-2e5e8941ea8a
 	github.com/ugent-library/orcid v0.0.0-20230615125240-eb68c23bc33c
 	github.com/unrolled/secure v1.14.0
 	github.com/xuri/excelize/v2 v2.8.0
 	go.mongodb.org/mongo-driver v1.12.1
-	go.opentelemetry.io/otel v1.24.0
-	go.opentelemetry.io/otel/metric v1.24.0
-	go.opentelemetry.io/otel/trace v1.24.0
 	golang.org/x/text v0.14.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231012201019-e917dd12ba7a
 	google.golang.org/grpc v1.59.0
@@ -74,6 +66,8 @@ require (
 	github.com/dlclark/regexp2 v1.11.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
+	github.com/go-faster/errors v0.7.1 // indirect
+	github.com/go-faster/jx v1.1.0 // indirect
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.1 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
@@ -94,6 +88,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
+	github.com/ogen-go/ogen v1.0.0 // indirect
 	github.com/phuslu/iploc v1.0.20231130 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
@@ -102,7 +97,7 @@ require (
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce // indirect
-	github.com/vearutop/statigz v1.4.0 // indirect
+	github.com/ugent-library/crypt v0.0.0-20230630063634-8c02106fd40e // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
@@ -110,6 +105,9 @@ require (
 	github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	github.com/zclconf/go-cty v1.14.0 // indirect
+	go.opentelemetry.io/otel v1.24.0 // indirect
+	go.opentelemetry.io/otel/metric v1.24.0 // indirect
+	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	golang.org/x/exp v0.0.0-20240409090435-93d18d7e34b8 // indirect
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/net v0.22.0 // indirect
@@ -164,11 +162,10 @@ require (
 	github.com/ugent-library/friendly v0.0.0-20230811091914-e5eb37f47072
 	github.com/ugent-library/httperror v0.0.0-20240522041727-58d71286fb15
 	github.com/ugent-library/httpx v0.0.0-20240403070226-3cd9bcf467c1
-	github.com/ugent-library/index v0.0.0-20240208101504-240e390f8d3d
 	github.com/ugent-library/oidc v0.0.0-20240327104830-5735182db2e5
 	github.com/ugent-library/okay v0.0.0-20231205122923-396c4d3a29f2
 	go.etcd.io/bbolt v1.3.7 // indirect
-	go.uber.org/multierr v1.11.0
+	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/oauth2 v0.18.0 // indirect
