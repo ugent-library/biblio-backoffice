@@ -2,14 +2,15 @@ package contributorviews
 
 import (
 	"fmt"
-	"strings"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
 templ Summary(c *ctx.Ctx,  role string, contribs []*models.Contributor, url string) {
-	if len(contribs) > 0 {
-		<div class="c-author-list">
+	<div class="c-author-list">
+		if len(contribs) > 0 {
 			if len(contribs) > 3 {
 				for _, contrib := range contribs[:3] {
 					@summaryItem(c, role, contrib)
@@ -38,13 +39,13 @@ templ Summary(c *ctx.Ctx,  role string, contribs []*models.Contributor, url stri
 					@summaryItem(c, role, contrib)
 				}
 			}
-		</div>
-	} else {
-		<a href={ templ.URL(url) } class="c-link-muted">
-			<i class="if if-edit if--small"></i>
-			<em>UGent { role + "s" } missing</em>
-		</a>
-	}
+		} else {
+			<a href={ templ.URL(url) } class="c-link-muted">
+				<i class="if if-edit if--small"></i>
+				<em>UGent { role + "s" } missing</em>
+			</a>
+		}
+	</div>
 }
 
 templ summaryItem(c *ctx.Ctx, role string, contrib *models.Contributor) {
@@ -53,7 +54,7 @@ templ summaryItem(c *ctx.Ctx, role string, contrib *models.Contributor) {
 			<i class="if if-ghent-university" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ "UGent " + role }></i>
 		}
 		if contrib.ORCID() != "" {
-			<i class="if if-orcid" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ strings.Title(role) + " with ORCID" }></i>
+			<i class="if if-orcid" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ cases.Title(language.English).String(role) + " with ORCID" }></i>
 		}
 		<span>{ contrib.Name() }</span>
 	</div>
