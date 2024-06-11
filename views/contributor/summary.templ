@@ -8,41 +8,37 @@ import (
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-templ Summary(c *ctx.Ctx,  role string, contribs []*models.Contributor, url string) {
+type SummaryArgs struct {
+	Role         string
+	Contributors []*models.Contributor
+	URL          string
+}
+
+templ Summary(c *ctx.Ctx, args SummaryArgs) {
 	<div class="c-author-list">
-		if len(contribs) > 0 {
-			if len(contribs) > 3 {
-				for _, contrib := range contribs[:3] {
-					@summaryItem(c, role, contrib)
+		if len(args.Contributors) > 0 {
+			if len(args.Contributors) > 3 {
+				for _, contrib := range args.Contributors[:3] {
+					@summaryItem(c, args.Role, contrib)
 				}
 				<div class="c-author">
-					if url != "" {
-						<a class="c-link c-link-muted" href={ templ.URL(url) }>
-							{ fmt.Sprint(len(contribs) - 3) } more
-							if len(contribs) - 3 > 1 {
-								{ role + "s" }
-							} else {
-								{ role }
-							}
+					if args.URL != "" {
+						<a class="c-link c-link-muted" href={ templ.URL(args.URL) }>
+							@moreContributors(args)
 						</a>
 					} else {
-						{ fmt.Sprint(len(contribs) - 3) } more
-						if len(contribs) - 3 > 1 {
-							{ role + "s" }
-						} else {
-							{ role }
-						}
+						@moreContributors(args)
 					}
 				</div>
 			} else {
-				for _, contrib := range contribs {
-					@summaryItem(c, role, contrib)
+				for _, contrib := range args.Contributors {
+					@summaryItem(c, args.Role, contrib)
 				}
 			}
 		} else {
-			<a href={ templ.URL(url) } class="c-link-muted">
+			<a href={ templ.URL(args.URL) } class="c-link-muted">
 				<i class="if if-edit if--small"></i>
-				<em>UGent { role + "s" } missing</em>
+				<em>UGent { args.Role + "s" } missing</em>
 			</a>
 		}
 	</div>
@@ -58,4 +54,13 @@ templ summaryItem(c *ctx.Ctx, role string, contrib *models.Contributor) {
 		}
 		<span>{ contrib.Name() }</span>
 	</div>
+}
+
+templ moreContributors(args SummaryArgs) {
+	{ fmt.Sprint(len(args.Contributors) - 3) } more
+	if len(args.Contributors) - 3 > 1 {
+		{ args.Role + "s" }
+	} else {
+		{ args.Role }
+	}
 }

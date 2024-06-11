@@ -127,7 +127,11 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								}
 							</ul>
 							if len(args.Dataset.Author) > 0 {
-								@contributorviews.Summary(c, "author", args.Dataset.Author, views.URL(args.URL).SetQueryParam("show", "contributors").String())
+								@contributorviews.Summary(c, contributorviews.SummaryArgs{
+									Role:         "author",
+									Contributors: args.Dataset.Author,
+									URL:          views.URL(args.URL).SetQueryParam("show", "contributors").String(),
+								})
 							} else {
 								<a href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() } class="c-link-muted">
 									<i class="if if-edit if--small"></i>

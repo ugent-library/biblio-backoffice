@@ -131,7 +131,11 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								}
 							</ul>
 							// TODO: pass on args.Target
-							@contributorviews.Summary(c, "author", args.Publication.Author, views.URL(args.URL).SetQueryParam("show", "contributors").String())
+							@contributorviews.Summary(c, contributorviews.SummaryArgs{
+								Role:         "author",
+								Contributors: args.Publication.Author,
+								URL:          views.URL(args.URL).SetQueryParam("show", "contributors").String(),
+							})
 						</div>
 						<div class="collapsible-card-content collapse" data-collapsible-card-content>
 							<div class="vstack gap-3">
