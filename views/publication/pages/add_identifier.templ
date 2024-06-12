@@ -2,7 +2,6 @@ package pages
 
 import (
 	"fmt"
-	"net/url"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -93,12 +92,7 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 			</div>
 		</form>
 		if args.DuplicatePublication != nil {
-			@views.ShowModal(addIdentifierDuplicate(c, addIdentifierDuplicateArgs{
-				Publication:    args.DuplicatePublication,
-				PublicationURL: c.PathTo("publication", "id", args.DuplicatePublication.ID),
-				Source:         args.Source,
-				Identifier:     args.Identifier,
-			}))
+			@views.ShowModal(addIdentifierDuplicate(c, args))
 		}
 		if len(args.Errors) > 0 {
 			@views.ShowModal(views.FormErrorsDialog("Unable to import this publication due to the following errors", args.Errors))
@@ -106,14 +100,7 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 	}
 }
 
-type addIdentifierDuplicateArgs struct {
-	Publication    *models.Publication
-	PublicationURL *url.URL
-	Source         string
-	Identifier     string
-}
-
-templ addIdentifierDuplicate(c *ctx.Ctx, args addIdentifierDuplicateArgs) {
+templ addIdentifierDuplicate(c *ctx.Ctx, args AddIdentifierArgs) {
 	<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -127,11 +114,11 @@ templ addIdentifierDuplicate(c *ctx.Ctx, args addIdentifierDuplicateArgs) {
 							<div class="w-100">
 								<div class="d-flex align-items-start">
 									@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
-										Publication: args.Publication,
-										URL:         args.PublicationURL,
+										Publication: args.DuplicatePublication,
+										URL:         c.PathTo("publication", "id", args.DuplicatePublication.ID),
 										Target:      "_blank",
 										Actions: publicationsummaryviews.DefaultActions(publicationsummaryviews.DefaultActionsArgs{
-											URL:    args.PublicationURL,
+											URL:    c.PathTo("publication", "id", args.DuplicatePublication.ID),
 											Target: "_blank",
 										}),
 									})

@@ -79,7 +79,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if args.DuplicateDataset {
-				templ_7745c5c3_Err = addDuplicate(c, args).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = views.ShowModal(addDuplicate(c, args)).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -123,7 +123,7 @@ func addDuplicate(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"modal-backdrop\" class=\"d-block modal-backdrop fade show\"></div><div class=\"d-block modal show\" tabindex=\"-1\" aria-modal=\"true\" role=\"dialog\"><div class=\"modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Are you sure you want to import this dataset?</h2></div><div class=\"modal-body\"><p>Biblio contains another dataset with the same DOI:</p><ul class=\"list-group mt-6\"><li class=\"list-group-item\"><div class=\"d-flex w-100\"><div class=\"w-100\"><div class=\"d-flex align-items-start\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Are you sure you want to import this dataset?</h2></div><div class=\"modal-body\"><p>Biblio contains another dataset with the same DOI:</p><ul class=\"list-group mt-6\"><li class=\"list-group-item\"><div class=\"d-flex w-100\"><div class=\"w-100\"><div class=\"d-flex align-items-start\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -168,7 +168,7 @@ func addDuplicate(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <button type=\"submit\" class=\"btn btn-danger\">Import Anyway</button></form></div></div></div></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <button type=\"submit\" class=\"btn btn-danger\">Import Anyway</button></form></div></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

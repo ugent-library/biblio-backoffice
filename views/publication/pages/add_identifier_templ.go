@@ -17,7 +17,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
-	"net/url"
 )
 
 type AddIdentifierArgs struct {
@@ -87,7 +86,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(args.Step))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_identifier.templ`, Line: 43, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_identifier.templ`, Line: 42, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -123,7 +122,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(sourceLabels[i])
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_identifier.templ`, Line: 79, Col: 32}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_identifier.templ`, Line: 78, Col: 32}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -147,12 +146,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if args.DuplicatePublication != nil {
-				templ_7745c5c3_Err = views.ShowModal(addIdentifierDuplicate(c, addIdentifierDuplicateArgs{
-					Publication:    args.DuplicatePublication,
-					PublicationURL: c.PathTo("publication", "id", args.DuplicatePublication.ID),
-					Source:         args.Source,
-					Identifier:     args.Identifier,
-				})).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = views.ShowModal(addIdentifierDuplicate(c, args)).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -183,14 +177,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 	})
 }
 
-type addIdentifierDuplicateArgs struct {
-	Publication    *models.Publication
-	PublicationURL *url.URL
-	Source         string
-	Identifier     string
-}
-
-func addIdentifierDuplicate(c *ctx.Ctx, args addIdentifierDuplicateArgs) templ.Component {
+func addIdentifierDuplicate(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -208,11 +195,11 @@ func addIdentifierDuplicate(c *ctx.Ctx, args addIdentifierDuplicateArgs) templ.C
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
-			Publication: args.Publication,
-			URL:         args.PublicationURL,
+			Publication: args.DuplicatePublication,
+			URL:         c.PathTo("publication", "id", args.DuplicatePublication.ID),
 			Target:      "_blank",
 			Actions: publicationsummaryviews.DefaultActions(publicationsummaryviews.DefaultActionsArgs{
-				URL:    args.PublicationURL,
+				URL:    c.PathTo("publication", "id", args.DuplicatePublication.ID),
 				Target: "_blank",
 			}),
 		}).Render(ctx, templ_7745c5c3_Buffer)

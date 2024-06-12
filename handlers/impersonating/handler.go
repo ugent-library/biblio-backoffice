@@ -27,7 +27,7 @@ func AddImpersonation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.AddImpersonation(c).Render(r.Context(), w)
+	views.ShowModal(views.AddImpersonation(c)).Render(r.Context(), w)
 }
 
 func AddImpersonationSuggest(w http.ResponseWriter, r *http.Request) {

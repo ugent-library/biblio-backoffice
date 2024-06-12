@@ -33,7 +33,7 @@ func AddProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publicationviews.AddProject(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
+	views.ShowModal(publicationviews.AddProject(c, ctx.GetPublication(r), hits)).Render(r.Context(), w)
 }
 
 func SuggestProjects(w http.ResponseWriter, r *http.Request) {
@@ -106,7 +106,7 @@ func ConfirmDeleteProject(w http.ResponseWriter, r *http.Request) {
 
 	projectID, _ := url.PathUnescape(b.ProjectID)
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this project from the publication?",
 		DeleteUrl:  c.PathTo("publication_delete_project", "id", p.ID, "project_id", projectID),

@@ -35,7 +35,7 @@ func AddDepartment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publicationviews.AddDepartment(c, ctx.GetPublication(r), hits).Render(r.Context(), w)
+	views.ShowModal(publicationviews.AddDepartment(c, ctx.GetPublication(r), hits)).Render(r.Context(), w)
 }
 
 func SuggestDepartments(w http.ResponseWriter, r *http.Request) {
@@ -111,7 +111,7 @@ func ConfirmDeleteDepartment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this department from the publication?",
 		DeleteUrl:  c.PathTo("publication_delete_department", "id", p.ID, "department_id", b.DepartmentID),

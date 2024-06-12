@@ -33,7 +33,7 @@ func AddDataset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	publicationviews.AddDataset(c, p, hits).Render(r.Context(), w)
+	views.ShowModal(publicationviews.AddDataset(c, p, hits)).Render(r.Context(), w)
 }
 
 func SuggestDatasets(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +113,7 @@ func ConfirmDeleteDataset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this dataset from the publication?",
 		DeleteUrl:  c.PathTo("publication_delete_dataset", "id", publication.ID, "dataset_id", b.DatasetID),

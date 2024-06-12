@@ -67,7 +67,7 @@ func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	candidaterecordviews.Preview(c, rec).Render(r.Context(), w)
+	views.ShowModal(candidaterecordviews.Preview(c, rec)).Render(r.Context(), w)
 }
 
 func CandidateRecordsIcon(w http.ResponseWriter, r *http.Request) {
@@ -101,7 +101,7 @@ func ConfirmRejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	candidaterecordviews.ConfirmHide(c, rec).Render(r.Context(), w)
+	views.ShowModal(candidaterecordviews.ConfirmHide(c, rec)).Render(r.Context(), w)
 }
 
 func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {

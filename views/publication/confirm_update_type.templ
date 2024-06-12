@@ -4,36 +4,33 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/views"
 )
 
 templ ConfirmUpdateType(c *ctx.Ctx, publication *models.Publication, publicationType string) {
-	@views.ShowModalLayout(c) {
-		<div class="modal-dialog modal-dialog-centered" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h2 class="modal-title">Changing the publication type might result in data loss</h2>
-				</div>
-				<div class="modal-body">
-					<p>Are you sure you want to change the type to { c.Loc.Get("publication_types." + publicationType) }?</p>
-				</div>
-				<div class="modal-footer">
-					<div class="bc-toolbar">
-						<div class="bc-toolbar-left">
-							<button class="btn btn-link modal-close">Cancel</button>
-						</div>
-						<div class="bc-toolbar-right">
-							<button
-								class="btn btn-danger"
-								hx-put={ c.PathTo("publication_update_type", "id", publication.ID).String() }
-								hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
-								hx-vals={ fmt.Sprintf(`{"type": "%s"}`, publicationType) }
-								hx-swap="none"
-							>Proceed</button>
-						</div>
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Changing the publication type might result in data loss</h2>
+			</div>
+			<div class="modal-body">
+				<p>Are you sure you want to change the type to { c.Loc.Get("publication_types." + publicationType) }?</p>
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<button class="btn btn-link modal-close">Cancel</button>
+					</div>
+					<div class="bc-toolbar-right">
+						<button
+							class="btn btn-danger"
+							hx-put={ c.PathTo("publication_update_type", "id", publication.ID).String() }
+							hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
+							hx-vals={ fmt.Sprintf(`{"type": "%s"}`, publicationType) }
+							hx-swap="none"
+						>Proceed</button>
 					</div>
 				</div>
 			</div>
 		</div>
-	}
+	</div>
 }

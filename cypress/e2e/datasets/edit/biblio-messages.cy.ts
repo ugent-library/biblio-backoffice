@@ -1,6 +1,6 @@
 import { testFocusForLabel } from "support/util";
 
-describe("Editing publication Biblio messages", () => {
+describe("Editing dataset Biblio messages", () => {
   describe("as researcher", () => {
     beforeEach(() => {
       cy.loginAsResearcher();

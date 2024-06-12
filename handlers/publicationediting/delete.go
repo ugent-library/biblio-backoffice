@@ -16,7 +16,7 @@ func ConfirmDelete(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	publication := ctx.GetPublication(r)
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   "Are you sure you want to delete this publication?",
 		DeleteUrl:  c.PathTo("publication_delete", "id", publication.ID, "redirect-url", r.URL.Query().Get("redirect-url")),

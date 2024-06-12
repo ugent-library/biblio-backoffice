@@ -18,7 +18,7 @@ func ConfirmWithdraw(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	redirectUrl := r.URL.Query().Get("redirect-url")
 
-	datasetviews.ConfirmWithdraw(c, ctx.GetDataset(r), redirectUrl).Render(r.Context(), w)
+	views.ShowModal(datasetviews.ConfirmWithdraw(c, ctx.GetDataset(r), redirectUrl)).Render(r.Context(), w)
 }
 
 func Withdraw(w http.ResponseWriter, r *http.Request) {
