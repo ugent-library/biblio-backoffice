@@ -151,7 +151,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								}
 							</div>
 						</div>
-						if vabb := args.Publication.VABB(); vabb != "" || args.Publication.Legacy || len(args.Publication.RelatedDataset) > 0 {
+						if args.Publication.VABBID != "" || args.Publication.Legacy || len(args.Publication.RelatedDataset) > 0 {
 							<div class="vstack gap-3">
 								<ul class="c-meta-list c-meta-list-inline">
 									if vabb := args.Publication.VABB(); vabb != "" {

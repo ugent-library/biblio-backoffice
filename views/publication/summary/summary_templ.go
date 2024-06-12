@@ -476,7 +476,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if vabb := args.Publication.VABB(); vabb != "" || args.Publication.Legacy || len(args.Publication.RelatedDataset) > 0 {
+		if args.Publication.VABBID != "" || args.Publication.Legacy || len(args.Publication.RelatedDataset) > 0 {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"vstack gap-3\"><ul class=\"c-meta-list c-meta-list-inline\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
