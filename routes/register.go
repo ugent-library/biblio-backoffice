@@ -16,7 +16,6 @@ import (
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
 	"github.com/samber/lo"
-	"github.com/swaggest/swgui/v5emb"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers"
@@ -71,7 +70,6 @@ type Config struct {
 	MaxFileSize      int
 	CSRFName         string
 	CSRFSecret       string
-	ApiServer        http.Handler
 }
 
 func Register(c Config) {
@@ -101,26 +99,12 @@ func Register(c Config) {
 		httpx.RenderJSON(w, http.StatusOK, c.Version)
 	})
 
-	// rest api (api/v2)
-	c.Router.Mount("/api/v2", http.StripPrefix("/api/v2", c.ApiServer))
-	c.Router.Get("/api/v2/openapi.yaml", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "api/v2/openapi.yaml")
-	})
-	c.Router.Mount("/api/v2/docs", v5emb.New(
-		"Biblio Backoffice",
-		"/api/v2/openapi.yaml",
-		"/api/v2/docs",
-	))
-
 	// frontoffice data exchange api
 	frontofficeHandler := &frontoffice.Handler{
-		Log:           c.Logger,
-		Repo:          c.Services.Repo,
-		FileStore:     c.Services.FileStore,
-		PeopleRepo:    c.Services.PeopleRepo,
-		PeopleIndex:   c.Services.PeopleIndex,
-		ProjectsIndex: c.Services.ProjectsIndex,
-		IPRanges:      c.IPRanges,
+		Log:       c.Logger,
+		Repo:      c.Services.Repo,
+		FileStore: c.Services.FileStore,
+		IPRanges:  c.IPRanges,
 		IPFilter: ipfilter.New(ipfilter.Options{
 			AllowedIPs:     strings.Split(c.IPRanges, ","),
 			BlockByDefault: true,
@@ -133,17 +117,6 @@ func Register(c Config) {
 		r.Get("/frontoffice/publication", frontofficeHandler.GetAllPublications)
 		r.Get("/frontoffice/dataset/{id}", frontofficeHandler.GetDataset)
 		r.Get("/frontoffice/dataset", frontofficeHandler.GetAllDatasets)
-		r.Get("/frontoffice/organization/{id}", frontofficeHandler.GetOrganization)
-		r.Get("/frontoffice/organization", frontofficeHandler.GetAllOrganizations)
-		r.Get("/frontoffice/organization-trees", frontofficeHandler.GetAllOrganizationTrees)
-		r.Get("/frontoffice/user/{id}", frontofficeHandler.GetUser)
-		r.Get("/frontoffice/user/username/{username}", frontofficeHandler.GetUserByUsername)
-		r.Get("/frontoffice/person/{id}", frontofficeHandler.GetPerson)
-		r.Put("/frontoffice/person/{id}/preferred-name", frontofficeHandler.SetPersonPreferredName)
-		r.Get("/frontoffice/person/list", frontofficeHandler.GetPeople)
-		r.Get("/frontoffice/person", frontofficeHandler.SearchPeople)
-		r.Get("/frontoffice/project/{id}", frontofficeHandler.GetProject)
-		r.Get("/frontoffice/project/browse", frontofficeHandler.BrowseProjects)
 	})
 
 	// frontoffice file download
@@ -156,9 +129,9 @@ func Register(c Config) {
 			[]byte(c.CSRFSecret),
 			csrf.CookieName(c.CSRFName),
 			csrf.Path("/"),
-			csrf.Secure(c.BaseURL.Scheme == "https"),
 			csrf.SameSite(csrf.SameSiteStrictMode),
 			csrf.FieldName("csrf-token"),
+			csrf.Secure(c.Env != "local"),
 		))
 		r.Use(secure.New(secure.Options{
 			IsDevelopment: c.Env == "local",

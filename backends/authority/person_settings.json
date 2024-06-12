@@ -1,0 +1,78 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "analysis": {
+      "analyzer": {
+        "text_default": {
+          "tokenizer": "standard",
+          "filter": [
+            "icu_folding"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "_doc": {
+      "dynamic": "false",
+      "numeric_detection": "false",
+      "date_detection": "false",
+      "properties": {
+        "all": {
+          "type": "text",
+          "analyzer": "text_default"
+        },
+        "ids": {
+          "type": "keyword",
+          "copy_to": "all"
+        },
+        "date_created": {
+          "type": "date",
+          "format": "date_time_no_millis"
+        },
+        "date_updated": {
+          "type": "date",
+          "format": "date_time_no_millis"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "publication_count": {
+          "type": "integer"
+        },
+        "last_name": {
+          "type": "text",
+          "analyzer": "text_default",
+          "copy_to": "all"
+        },
+        "first_name": {
+          "type": "text",
+          "analyzer": "text_default",
+          "copy_to": "all"
+        },
+        "full_name": {
+          "type": "text",
+          "analyzer": "text_default",
+          "copy_to": "all"
+        },
+        "ugent_id": {
+          "type": "keyword",
+          "copy_to": "all"
+        },
+        "orcid": {
+          "type": "keyword",
+          "copy_to": "all"
+        },
+        "department": {
+          "properties": {
+            "_id": {
+              "type": "keyword",
+              "copy_to": "all"
+            }
+          }
+        }
+      }
+    }
+  }
+}

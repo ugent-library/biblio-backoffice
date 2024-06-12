@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/backends/arxiv"
+	"github.com/ugent-library/biblio-backoffice/backends/authority"
 	"github.com/ugent-library/biblio-backoffice/backends/bibtex"
 	"github.com/ugent-library/biblio-backoffice/backends/citeproc"
 	"github.com/ugent-library/biblio-backoffice/backends/crossref"
@@ -23,8 +24,6 @@ import (
 	"github.com/ugent-library/biblio-backoffice/caching"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/mutate"
-	"github.com/ugent-library/biblio-backoffice/people"
-	"github.com/ugent-library/biblio-backoffice/projects"
 
 	"github.com/ugent-library/biblio-backoffice/backends/ianamedia"
 	"github.com/ugent-library/biblio-backoffice/backends/jsonl"
@@ -44,43 +43,12 @@ func newServices() *backends.Services {
 		os.Exit(1)
 	}
 
-	peopleRepo, err := people.NewRepo(people.RepoConfig{
-		Conn:               pool,
-		TokenSecret:        []byte(config.TokenSecret),
-		DeactivationPeriod: config.People.DeactivationPeriod,
+	authorityClient, err := authority.New(authority.Config{
+		MongoDBURI: config.MongoDBURL,
+		ESURI:      []string{config.Frontend.Es6URL},
 	})
 	if err != nil {
-		logger.Error("fatal: can't create people repo", "error", err)
-		os.Exit(1)
-	}
-
-	peopleIndex, err := people.NewIndex(people.IndexConfig{
-		Conn:        config.Es6URL,
-		IndexPrefix: "biblio_backoffice_", // TODO make configurable
-		Retention:   config.IndexRetention,
-		Logger:      logger,
-	})
-	if err != nil {
-		logger.Error("fatal: can't create people index", "error", err)
-		os.Exit(1)
-	}
-
-	projectsRepo, err := projects.NewRepo(projects.RepoConfig{
-		Conn: pool,
-	})
-	if err != nil {
-		logger.Error("fatal: can't create projects repo", "error", err)
-		os.Exit(1)
-	}
-
-	projectsIndex, err := projects.NewIndex(projects.IndexConfig{
-		Conn:        config.Es6URL,
-		IndexPrefix: "biblio_backoffice_", // TODO make configurable
-		Retention:   config.IndexRetention,
-		Logger:      logger,
-	})
-	if err != nil {
-		logger.Error("fatal: can't create projects index", "error", err)
+		logger.Error("fatal: can't create authority client", "error", err)
 		os.Exit(1)
 	}
 
@@ -107,24 +75,21 @@ func newServices() *backends.Services {
 		)
 	}
 
-	peopleFacade := backends.NewPeopleFacade(peopleRepo, peopleIndex)
-
-	organizationService := caching.NewOrganizationService(peopleFacade)
+	organizationService := caching.NewOrganizationService(authorityClient)
 
 	// always add organization info to user affiliations
 	userService := &backends.UserWithOrganizationsService{
-		UserService:         caching.NewUserService(peopleFacade),
+		UserService:         caching.NewUserService(authorityClient),
 		OrganizationService: organizationService,
 	}
 
 	// always add organization info to person affiliations
 	personService := &backends.PersonWithOrganizationsService{
-		PersonService:       caching.NewPersonService(peopleFacade),
+		PersonService:       caching.NewPersonService(authorityClient),
 		OrganizationService: organizationService,
 	}
 
-	projectsFacade := backends.NewProjectsFacade(projectsIndex)
-	projectsService := caching.NewProjectService(projectsFacade)
+	projectsService := caching.NewProjectService(authorityClient)
 
 	repo := newRepo(pool, personService, organizationService, projectsService)
 
@@ -142,10 +107,10 @@ func newServices() *backends.Services {
 		PersonService:             personService,
 		ProjectService:            projectsService,
 		UserService:               userService,
-		OrganizationSearchService: peopleFacade,
-		PersonSearchService:       peopleFacade,
-		ProjectSearchService:      projectsFacade,
-		UserSearchService:         peopleFacade,
+		OrganizationSearchService: authorityClient,
+		PersonSearchService:       authorityClient,
+		ProjectSearchService:      authorityClient,
+		UserSearchService:         authorityClient,
 		LicenseSearchService:      spdxlicenses.New(),
 		MediaTypeSearchService:    ianamedia.New(),
 		DatasetSources: map[string]backends.DatasetGetter{
@@ -177,10 +142,6 @@ func newServices() *backends.Services {
 			"xlsx": excel_dataset.NewExporter,
 		},
 		HandleService: handleService,
-		PeopleRepo:    peopleRepo,
-		PeopleIndex:   peopleIndex,
-		ProjectsRepo:  projectsRepo,
-		ProjectsIndex: projectsIndex,
 	}
 }
 
