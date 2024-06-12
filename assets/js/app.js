@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
   toast();
   sortable();
   collapseSubSidebar();
-  collapseCard();
   formAutoFocus();
   fileUpload();
   tags();
