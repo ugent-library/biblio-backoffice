@@ -21,7 +21,7 @@ func ConfirmUpdateType(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
 	// TODO validate type
-	publicationviews.ConfirmUpdateType(c, ctx.GetPublication(r), r.URL.Query().Get("type")).Render(r.Context(), w)
+	views.ShowModal(publicationviews.ConfirmUpdateType(c, ctx.GetPublication(r), r.URL.Query().Get("type"))).Render(r.Context(), w)
 }
 
 func UpdateType(w http.ResponseWriter, r *http.Request) {

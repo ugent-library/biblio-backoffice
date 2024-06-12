@@ -3,9 +3,12 @@ package candidaterecordviews
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 )
+
+templ Preview(c *ctx.Ctx, rec *models.CandidateRecord) {
+	@publicationviews.Preview(c, rec.Publication, actions(c, rec), downloadMainFileAction(c, rec))
+}
 
 templ actions(c *ctx.Ctx, rec *models.CandidateRecord) {
 	<button
@@ -23,11 +26,5 @@ templ downloadMainFileAction(c *ctx.Ctx, rec *models.CandidateRecord) {
 			<i class="if if-eye"></i>
 			<span class="btn-text">View file</span>
 		</a>
-	}
-}
-
-templ Preview(c *ctx.Ctx, rec *models.CandidateRecord) {
-	@views.ShowModalLayout(c) {
-		@publicationviews.Preview(c, rec.Publication, actions(c, rec), downloadMainFileAction(c, rec))
 	}
 }

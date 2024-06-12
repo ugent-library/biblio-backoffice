@@ -16,7 +16,7 @@ func ConfirmDelete(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	dataset := ctx.GetDataset(r)
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   "Are you sure you want to delete this dataset?",
 		DeleteUrl:  c.PathTo("dataset_delete", "id", dataset.ID, "redirect-url", r.URL.Query().Get("redirect-url")),

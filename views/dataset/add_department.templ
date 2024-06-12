@@ -3,40 +3,37 @@ package dataset
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/views"
 )
 
 templ AddDepartment(c *ctx.Ctx, dataset *models.Dataset, hits []models.Completion) {
-	@views.ShowModalLayout(c) {
-		<div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h2 class="modal-title">Select departments</h2>
+	<div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Select departments</h2>
+			</div>
+			<div class="modal-body">
+				<label class="visually-hidden" for="department-q">Search</label>
+				<input
+					class="form-control"
+					type="text"
+					id="department-q"
+					name="q"
+					placeholder="Search..."
+					hx-get={ c.PathTo("dataset_suggest_departments", "id", dataset.ID).String() }
+					hx-trigger="keyup changed delay:500ms"
+					hx-target="#department-suggestions"
+				/>
+				<div id="department-suggestions">
+					@SuggestDepartments(c, dataset, hits)
 				</div>
-				<div class="modal-body">
-					<label class="visually-hidden" for="department-q">Search</label>
-					<input
-						class="form-control"
-						type="text"
-						id="department-q"
-						name="q"
-						placeholder="Search..."
-						hx-get={ c.PathTo("dataset_suggest_departments", "id", dataset.ID).String() }
-						hx-trigger="keyup changed delay:500ms"
-						hx-target="#department-suggestions"
-					/>
-					<div id="department-suggestions">
-						@SuggestDepartments(c, dataset, hits)
-					</div>
-				</div>
-				<div class="modal-footer">
-					<div class="bc-toolbar">
-						<div class="bc-toolbar-left">
-							<button class="btn btn-link modal-close" data-bs-dismiss="modal">Cancel</button>
-						</div>
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<button class="btn btn-link modal-close" data-bs-dismiss="modal">Cancel</button>
 					</div>
 				</div>
 			</div>
 		</div>
-	}
+	</div>
 }
