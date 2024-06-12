@@ -18,7 +18,7 @@ func ConfirmPublish(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	redirectUrl := r.URL.Query().Get("redirect-url")
 
-	dataset.ConfirmPublish(c, ctx.GetDataset(r), redirectUrl).Render(r.Context(), w)
+	views.ShowModal(dataset.ConfirmPublish(c, ctx.GetDataset(r), redirectUrl)).Render(r.Context(), w)
 }
 
 func Publish(w http.ResponseWriter, r *http.Request) {

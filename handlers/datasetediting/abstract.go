@@ -192,7 +192,7 @@ func ConfirmDeleteAbstract(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this abstract?",
 		DeleteUrl:  c.PathTo("dataset_delete_abstract", "id", d.ID, "abstract_id", b.AbstractID),

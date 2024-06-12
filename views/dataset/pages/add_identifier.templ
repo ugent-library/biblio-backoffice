@@ -94,7 +94,7 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 			</div>
 		</form>
 		if args.DuplicateDataset {
-			@addDuplicate(c, args)
+			@views.ShowModal(addDuplicate(c, args))
 		}
 		if len(args.Errors) > 0 {
 			@views.ShowModal(views.FormErrorsDialog("Unable to import this dataset due to the following errors", args.Errors))
@@ -103,50 +103,47 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 }
 
 templ addDuplicate(c *ctx.Ctx, args AddIdentifierArgs) {
-	<div id="modal-backdrop" class="d-block modal-backdrop fade show"></div>
-	<div class="d-block modal show" tabindex="-1" aria-modal="true" role="dialog">
-		<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h2 class="modal-title">Are you sure you want to import this dataset?</h2>
-				</div>
-				<div class="modal-body">
-					<p>Biblio contains another dataset with the same DOI:</p>
-					<ul class="list-group mt-6">
-						<li class="list-group-item">
-							<div class="d-flex w-100">
-								<div class="w-100">
-									<div class="d-flex align-items-start">
-										@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
+	<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="modal-title">Are you sure you want to import this dataset?</h2>
+			</div>
+			<div class="modal-body">
+				<p>Biblio contains another dataset with the same DOI:</p>
+				<ul class="list-group mt-6">
+					<li class="list-group-item">
+						<div class="d-flex w-100">
+							<div class="w-100">
+								<div class="d-flex align-items-start">
+									@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
+										Dataset: args.Dataset,
+										URL:     c.PathTo("dataset", "id", args.Dataset.ID),
+										Target:  "_blank",
+										Actions: datasetsummaryviews.DefaultActions(c, datasetsummaryviews.DefaultActionsArgs{
 											Dataset: args.Dataset,
-											URL:     c.PathTo("dataset", "id", args.Dataset.ID),
 											Target:  "_blank",
-											Actions: datasetsummaryviews.DefaultActions(c, datasetsummaryviews.DefaultActionsArgs{
-												Dataset: args.Dataset,
-												Target:  "_blank",
-											}),
-										})
-									</div>
+										}),
+									})
 								</div>
 							</div>
-						</li>
-					</ul>
-				</div>
-				<div class="modal-footer">
-					<div class="bc-toolbar">
-						<div class="bc-toolbar-left">
-							<button class="btn btn-link modal-close">Cancel</button>
 						</div>
-						<div class="bc-toolbar-right">
-							<form action={ templ.URL(c.PathTo("dataset_add_import").String()) } method="POST">
-								@views.CSRFTag(c)
-								<input type="hidden" name="source" value={ args.Source }/>
-								<input type="hidden" name="identifier" value={ args.Identifier }/>
-								<button type="submit" class="btn btn-danger">
-									Import Anyway
-								</button>
-							</form>
-						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<button class="btn btn-link modal-close">Cancel</button>
+					</div>
+					<div class="bc-toolbar-right">
+						<form action={ templ.URL(c.PathTo("dataset_add_import").String()) } method="POST">
+							@views.CSRFTag(c)
+							<input type="hidden" name="source" value={ args.Source }/>
+							<input type="hidden" name="identifier" value={ args.Identifier }/>
+							<button type="submit" class="btn btn-danger">
+								Import Anyway
+							</button>
+						</form>
 					</div>
 				</div>
 			</div>

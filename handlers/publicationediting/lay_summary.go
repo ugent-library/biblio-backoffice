@@ -175,7 +175,7 @@ func ConfirmDeleteLaySummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this lay summary?",
 		DeleteUrl:  c.PathTo("publication_delete_lay_summary", "id", p.ID, "lay_summary_id", b.LaySummaryID),

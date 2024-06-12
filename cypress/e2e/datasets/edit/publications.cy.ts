@@ -1,6 +1,6 @@
 import { getRandomText } from "support/util";
 
-describe("Editing publication datasets", () => {
+describe("Editing dataset publications", () => {
   beforeEach(() => {
     cy.loginAsResearcher();
   });

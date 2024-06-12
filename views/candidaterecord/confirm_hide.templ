@@ -3,39 +3,36 @@ package candidaterecordviews
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/views"
 )
 
 templ ConfirmHide(c *ctx.Ctx, rec *models.CandidateRecord) {
-	@views.ShowModalLayout(c) {
-		<div class="modal-dialog modal-dialog-centered" role="document">
-			<div class="modal-content">
-				<div class="modal-body">
-					<div class="c-blank-slate c-blank-slate-muted">
-						<div class="bc-avatar">
-							<i class="if if-alert"></i>
-						</div>
-						<h4>Are you sure you want to hide this suggestion?</h4>
-						<p>You cannot undo this action.</p>
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="c-blank-slate c-blank-slate-muted">
+					<div class="bc-avatar">
+						<i class="if if-alert"></i>
 					</div>
+					<h4>Are you sure you want to hide this suggestion?</h4>
+					<p>You cannot undo this action.</p>
 				</div>
-				<div class="modal-footer">
-					<div class="bc-toolbar">
-						<div class="bc-toolbar-left">
-							<div class="bc-toolbar-item">
-								<button class="btn btn-link modal-close">No, cancel</button>
-							</div>
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<div class="bc-toolbar-item">
+							<button class="btn btn-link modal-close">No, cancel</button>
 						</div>
-						<div class="bc-toolbar-right">
-							<button
-								class="btn btn-danger"
-								hx-put={ c.PathTo("reject_candidate_record", "id", rec.ID).String() }
-								hx-swap="none"
-							>Yes, hide suggestion</button>
-						</div>
+					</div>
+					<div class="bc-toolbar-right">
+						<button
+							class="btn btn-danger"
+							hx-put={ c.PathTo("reject_candidate_record", "id", rec.ID).String() }
+							hx-swap="none"
+						>Yes, hide suggestion</button>
 					</div>
 				</div>
 			</div>
 		</div>
-	}
+	</div>
 }

@@ -111,7 +111,7 @@ func ConfirmDeletePublication(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ConfirmDelete(views.ConfirmDeleteArgs{
+	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this publication from the dataset?",
 		DeleteUrl:  c.PathTo("dataset_delete_publication", "id", dataset.ID, "publication_id", b.PublicationID),

@@ -118,6 +118,8 @@ describe("Publication import", () => {
 
     // Actual test starts here
     cy.loginAsResearcher();
+
+    // First make and publish the first publication manually
     const title = getRandomText();
     cy.setUpPublication("Miscellaneous", { title, prepareForPublishing: true });
     cy.visitPublication();
@@ -142,24 +144,20 @@ describe("Publication import", () => {
     cy.get('input[name="identifier"]').type(DOI);
     cy.contains(".btn", "Add publication(s)").click();
 
-    // TODO: convert this to a regular dialog so we can use cy.ensureModal here
-    cy.get(".modal-dialog").within(() => {
-      cy.get(".modal-header").should(
-        "contain",
-        "Are you sure you want to import this publication?",
-      );
+    cy.ensureModal("Are you sure you want to import this publication?").within(
+      () => {
+        cy.get(".modal-body").should(
+          "contain.text",
+          "Biblio contains another publication with the same DOI:",
+        );
 
-      cy.get(".modal-body").should(
-        "contain.text",
-        "Biblio contains another publication with the same DOI:",
-      );
+        cy.get(".list-group-item").should("have.length", 1);
+        cy.get(".list-group-item-title").should("contain.text", title);
 
-      cy.get(".list-group-item").should("have.length", 1);
-      cy.get(".list-group-item-title").should("contain.text", title);
-
-      cy.contains(".modal-footer .btn", "Import anyway")
-        .should("be.visible")
-        .should("have.class", "btn-danger");
-    });
+        cy.contains(".modal-footer .btn", "Import anyway")
+          .should("be.visible")
+          .should("have.class", "btn-danger");
+      },
+    );
   });
 });
