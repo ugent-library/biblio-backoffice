@@ -4,9 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
-	"time"
-
 	"slices"
+	"time"
 
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/pagination"
@@ -171,6 +170,18 @@ func (d *Dataset) RemoveContributor(role string, i int) error {
 	d.SetContributors(role, append(cc[:i], cc[i+1:]...))
 
 	return nil
+}
+
+func (d *Dataset) GetUserContributorRoles(user *Person) string {
+	if user.IsContributor(d.Author) {
+		return "creator"
+	}
+
+	if d.Creator.ID == user.ID {
+		return "registrar"
+	}
+
+	return ""
 }
 
 func (d *Dataset) GetLink(id string) *DatasetLink {

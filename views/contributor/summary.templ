@@ -10,10 +10,11 @@ import (
 )
 
 type SummaryArgs struct {
-	Role         string
-	Contributors []*models.Contributor
-	URL          string
-	URLTarget    string
+	Role             string
+	Contributors     []*models.Contributor
+	URL              string
+	URLTarget        string
+	CurrentUserRoles string
 }
 
 templ Summary(c *ctx.Ctx, args SummaryArgs) {
@@ -30,43 +31,48 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 					<span>{ contrib.Name() }</span>
 				</div>
 			}
-			if args.URL != "" {
+			if len(args.Contributors) > 3 {
+				<div class="c-author">
+					if args.URL != "" {
+						<a
+							class="c-link c-link-muted"
+							href={ templ.URL(args.URL) }
+							if args.URLTarget != "" {
+								target={ args.URLTarget }
+							}
+						>
+							@moreContributors(args)
+						</a>
+					} else {
+						@moreContributors(args)
+					}
+				</div>
+			}
+		} else {
+			<div class="c-author">
 				<a
-					class="c-link c-link-muted"
+					class="c-link-muted"
 					href={ templ.URL(args.URL) }
 					if args.URLTarget != "" {
 						target={ args.URLTarget }
 					}
 				>
-					@moreContributors(args)
+					<i class="if if-edit if--small"></i>
+					<em>UGent { args.Role + "s" } missing</em>
 				</a>
-			} else {
-				@moreContributors(args)
-			}
-		} else {
-			<a
-				class="c-link-muted"
-				href={ templ.URL(args.URL) }
-				if args.URLTarget != "" {
-					target={ args.URLTarget }
-				}
-			>
-				<i class="if if-edit if--small"></i>
-				<em>UGent { args.Role + "s" } missing</em>
-			</a>
+			</div>
+		}
+		if args.CurrentUserRoles != "" {
+			<div class="c-author"><span class="badge rounded-pill badge-light">Your role: { args.CurrentUserRoles }</span></div>
 		}
 	</div>
 }
 
 templ moreContributors(args SummaryArgs) {
-	if len(args.Contributors) > 3 {
-		<div class="c-author">
-			{ fmt.Sprint(len(args.Contributors) - 3) } more
-			if len(args.Contributors) - 3 > 1 {
-				{ args.Role + "s" }
-			} else {
-				{ args.Role }
-			}
-		</div>
+	{ fmt.Sprint(len(args.Contributors) - 3) } more
+	if len(args.Contributors) - 3 > 1 {
+		{ args.Role + "s" }
+	} else {
+		{ args.Role }
 	}
 }

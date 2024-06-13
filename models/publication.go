@@ -4,10 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
-
-	"slices"
 
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/pagination"
@@ -429,6 +428,28 @@ func (p *Publication) RemoveContributor(role string, i int) error {
 	p.SetContributors(role, append(cc[:i], cc[i+1:]...))
 
 	return nil
+}
+
+func (p *Publication) GetUserContributorRoles(user *Person) string {
+	roles := make([]string, 0)
+
+	if user.IsContributor(p.Author) {
+		roles = append(roles, "author")
+	}
+
+	if user.IsContributor(p.Supervisor) {
+		roles = append(roles, "supervisor")
+	}
+
+	if len(roles) > 0 {
+		return strings.Join(roles, ", ")
+	}
+
+	if p.Creator.ID == user.ID {
+		return "registrar"
+	}
+
+	return ""
 }
 
 func (p *Publication) GetLink(id string) *PublicationLink {

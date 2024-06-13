@@ -150,10 +150,11 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								}
 							</ul>
 							@contributorviews.Summary(c, contributorviews.SummaryArgs{
-								Role:         "author",
-								Contributors: args.Dataset.Author,
-								URL:          views.URL(args.URL).SetQueryParam("show", "contributors").String(),
-								URLTarget:    args.Target,
+								Role:             "author",
+								Contributors:     args.Dataset.Author,
+								URL:              views.URL(args.URL).SetQueryParam("show", "contributors").String(),
+								URLTarget:        args.Target,
+								CurrentUserRoles: args.Dataset.GetUserContributorRoles(c.User),
 							})
 						</div>
 						<div class="collapsible-card-content collapse" data-collapsible-card-content>
