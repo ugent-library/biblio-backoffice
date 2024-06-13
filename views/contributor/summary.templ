@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
@@ -18,29 +19,29 @@ type SummaryArgs struct {
 templ Summary(c *ctx.Ctx, args SummaryArgs) {
 	<div class="c-author-list">
 		if len(args.Contributors) > 0 {
-			if len(args.Contributors) > 3 {
-				for _, contrib := range args.Contributors[:3] {
-					@summaryItem(c, args.Role, contrib)
-				}
+			for _, contrib := range lo.Slice(args.Contributors, 0, 3) {
 				<div class="c-author">
-					if args.URL != "" {
-						<a
-							class="c-link c-link-muted"
-							href={ templ.URL(args.URL) }
-							if args.URLTarget != "" {
-								target={ args.URLTarget }
-							}
-						>
-							@moreContributors(args)
-						</a>
-					} else {
-						@moreContributors(args)
+					if contrib.Person != nil {
+						<i class="if if-ghent-university" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ "UGent " + args.Role }></i>
 					}
+					if contrib.ORCID() != "" {
+						<i class="if if-orcid" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ cases.Title(language.English).String(args.Role) + " with ORCID" }></i>
+					}
+					<span>{ contrib.Name() }</span>
 				</div>
+			}
+			if args.URL != "" {
+				<a
+					class="c-link c-link-muted"
+					href={ templ.URL(args.URL) }
+					if args.URLTarget != "" {
+						target={ args.URLTarget }
+					}
+				>
+					@moreContributors(args)
+				</a>
 			} else {
-				for _, contrib := range args.Contributors {
-					@summaryItem(c, args.Role, contrib)
-				}
+				@moreContributors(args)
 			}
 		} else {
 			<a
@@ -57,23 +58,15 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 	</div>
 }
 
-templ summaryItem(c *ctx.Ctx, role string, contrib *models.Contributor) {
-	<div class="c-author">
-		if contrib.Person != nil {
-			<i class="if if-ghent-university" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ "UGent " + role }></i>
-		}
-		if contrib.ORCID() != "" {
-			<i class="if if-orcid" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ cases.Title(language.English).String(role) + " with ORCID" }></i>
-		}
-		<span>{ contrib.Name() }</span>
-	</div>
-}
-
 templ moreContributors(args SummaryArgs) {
-	{ fmt.Sprint(len(args.Contributors) - 3) } more
-	if len(args.Contributors) - 3 > 1 {
-		{ args.Role + "s" }
-	} else {
-		{ args.Role }
+	if len(args.Contributors) > 3 {
+		<div class="c-author">
+			{ fmt.Sprint(len(args.Contributors) - 3) } more
+			if len(args.Contributors) - 3 > 1 {
+				{ args.Role + "s" }
+			} else {
+				{ args.Role }
+			}
+		</div>
 	}
 }
