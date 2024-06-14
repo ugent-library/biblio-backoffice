@@ -676,7 +676,7 @@ func Query(c *ctx.Ctx, searchArgs *models.SearchArgs) templ.Component {
 				}
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"row\"><div class=\"col\"><div class=\"input-group flex-nowrap\"><label class=\"visually-hidden\" for=\"q\">Search</label> <input class=\"form-control\" type=\"text\" name=\"q\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"row\"><div class=\"col\"><div class=\"input-group flex-nowrap\"><label class=\"visually-hidden\" for=\"q\">Search</label> <input class=\"form-control\" type=\"text\" id=\"q\" name=\"q\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

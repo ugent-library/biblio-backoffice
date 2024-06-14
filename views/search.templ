@@ -243,7 +243,7 @@ templ Query(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 			<div class="col">
 				<div class="input-group flex-nowrap">
 					<label class="visually-hidden" for="q">Search</label>
-					<input class="form-control" type="text" name="q" value={ searchArgs.Query } placeholder="Search..." autocomplete="off"/>
+					<input class="form-control" type="text" id="q" name="q" value={ searchArgs.Query } placeholder="Search..." autocomplete="off"/>
 					<button type="submit" class="btn btn-outline-primary" type="button">
 						<i class="if if-search"></i>
 						<span class="btn-text">Search</span>
