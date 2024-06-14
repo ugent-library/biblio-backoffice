@@ -151,8 +151,8 @@ templ FacetSince(c *ctx.Ctx, fieldName string, title string, description string,
 				</div>
 			</div>
 			<div class="dropdown-menu__body">
-				<label class="col-form-label">{ description }</label>
-				<input class="form-control" type="text" name={ fmt.Sprintf("f[%s]", fieldName) } value={ searchArgs.FilterFor(fieldName) }/>
+				<label class="col-form-label" for={ fmt.Sprintf("f-%s", fieldName) }>{ description }</label>
+				<input class="form-control" type="text" id={ fmt.Sprintf("f-%s", fieldName) } name={ fmt.Sprintf("f[%s]", fieldName) } value={ searchArgs.FilterFor(fieldName) }/>
 				<small class="form-text text-muted">Type a date (YYYY-MM-DD), year (YYYY) or timing (today, yesterday).</small>
 			</div>
 			<div class="bc-navbar bc-navbar--large">
@@ -243,7 +243,7 @@ templ Query(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 			<div class="col">
 				<div class="input-group flex-nowrap">
 					<label class="visually-hidden" for="q">Search</label>
-					<input class="form-control" type="text" name="q" value={ searchArgs.Query } placeholder="Search..." autocomplete="off"/>
+					<input class="form-control" type="text" id="q" name="q" value={ searchArgs.Query } placeholder="Search..." autocomplete="off"/>
 					<button type="submit" class="btn btn-outline-primary" type="button">
 						<i class="if if-search"></i>
 						<span class="btn-text">Search</span>
