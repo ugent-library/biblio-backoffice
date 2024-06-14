@@ -62,30 +62,38 @@ function addContributor(
     consoleProps["Role"] = role;
   }
 
-  logCommand("add" + Cypress._.capitalize(contributorType), consoleProps, [
-    `${firstName} ${lastName} ${external ? "(external)" : ""}`.trim(),
+  const typeName = Cypress._.capitalize(contributorType);
+  logCommand(`add${typeName}`, consoleProps, [
+    `${firstName || "[missing]"} ${lastName || "[missing]"} ${external ? "(external)" : ""}`.trim(),
   ]);
 
   cy.updateFields(
     CONTRIBUTOR_MAP[contributorType],
-    () => {
-      cy.intercept("/+(publication|dataset)/*/contributors/*/suggestions?*").as(
-        "suggestContributor",
-      );
+    function () {
+      const pathname = `/+(publication|dataset)/*/contributors/${contributorType === "creator" ? "author" : contributorType}/suggestions`;
 
       if (firstName) {
+        cy.intercept(
+          { pathname, query: { first_name: firstName, last_name: "" } },
+          NO_LOG,
+        ).as(`suggest${typeName}1`);
+
         cy.setFieldByLabel("First name", firstName);
-        cy.wait("@suggestContributor", NO_LOG);
+        cy.wait(`@suggest${typeName}1`, NO_LOG);
       }
 
       if (lastName) {
+        cy.intercept(
+          { pathname, query: { first_name: firstName, last_name: lastName } },
+          NO_LOG,
+        ).as(`suggest${typeName}2`);
+
         cy.setFieldByLabel("Last name", lastName);
-        cy.wait("@suggestContributor", NO_LOG);
+        cy.wait(`@suggest${typeName}2`, NO_LOG);
       }
 
-      cy.contains(
-        ".btn",
-        `Add ${external ? "external " : ""}${contributorType}`,
+      cy.get(
+        `.btn:contains("Add ${external ? "external " : ""}${contributorType}")`,
         NO_LOG,
       ).click(NO_LOG);
     },
