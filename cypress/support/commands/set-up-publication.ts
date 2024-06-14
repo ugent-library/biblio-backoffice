@@ -84,25 +84,7 @@ export default function setUpPublication(
   );
 
   if (prepareForPublishing) {
-    cy.updateFields(
-      "Authors",
-      () => {
-        cy.intercept("/publication/*/contributors/author/suggestions?*").as(
-          "suggestAuthor",
-        );
-        cy.setFieldByLabel("First name", "John");
-        cy.wait("@suggestAuthor");
-        cy.setFieldByLabel("Last name", "Doe");
-        cy.wait("@suggestAuthor");
-
-        cy.intercept("/publication/*/contributors/author/confirm-create?*").as(
-          "createAuthor",
-        );
-        cy.contains(".btn", "Add author", NO_LOG).click(NO_LOG);
-        cy.wait("@createAuthor");
-      },
-      true,
-    );
+    cy.addAuthor("John", "Doe");
   }
 
   cy.contains(".btn", "Complete Description", NO_LOG).click(NO_LOG);
