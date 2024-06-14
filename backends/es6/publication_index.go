@@ -447,20 +447,15 @@ func buildPublicationUserQuery(args *models.SearchArgs) M {
 			"simple_query_string": M{
 				"query": args.Query,
 				"fields": []string{
-					"id^100",
-					"identifier^50",
-					"isxn^50",
 					"title^40",
-					"organization_id^50",
 					"contributor.phrase_ngram^0.05",
-					"contributor.ngram^0.01",
 					"all",
 				},
 				"lenient":                             true,
 				"analyze_wildcard":                    false,
 				"default_operator":                    "AND",
 				"minimum_should_match":                "100%",
-				"flags":                               "PHRASE",
+				"flags":                               "PHRASE|WHITESPACE",
 				"auto_generate_synonyms_phrase_query": true,
 			},
 		}

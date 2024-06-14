@@ -163,7 +163,8 @@
                     "type": "date"
                 },
                 "organization_id": {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "copy_to": "all"
                 },
                 "faculty_id": {
                     "type": "keyword",
@@ -173,17 +174,20 @@
                     "type": "boolean"
                 },
                 "id": {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "copy_to": "all"
                 },
                 "identifier": {
                     "type": "text",
-                    "analyzer": "keyword_lowercase"
+                    "analyzer": "keyword_lowercase",
+                    "copy_to": "all"
                 },
                 "status": {
                     "type": "keyword"
                 },
                 "title": {
                     "type": "text",
+                    "analyzer": "text_default",
                     "copy_to": "all"
                 },
                 "type": {
@@ -229,7 +233,8 @@
                 },
                 "isxn": {
                     "type": "text",
-                    "analyzer": "isxn"
+                    "analyzer": "isxn",
+                    "copy_to": "all"
                 },
                 "keyword": {
                     "type": "text",

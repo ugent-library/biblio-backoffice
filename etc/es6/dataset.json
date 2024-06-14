@@ -148,21 +148,24 @@
                     "type": "date"
                 },
                 "organization_id": {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "copy_to": "all"
                 },
                 "faculty_id": {
                     "type": "keyword",
                     "copy_to": "all"
                 },
                 "id": {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "copy_to": "all"
                 },
                 "identifier_type": {
                     "type": "keyword"
                 },
                 "identifier": {
                     "type": "text",
-                    "analyzer": "keyword_lowercase"
+                    "analyzer": "keyword_lowercase",
+                    "copy_to": "all"
                 },
                 "locked": {
                     "type": "boolean"
