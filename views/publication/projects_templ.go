@@ -200,7 +200,7 @@ func ProjectsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" target=\"blank\">Read more <i class=\"if if-external-link if--small\"></i></a></div></li></ul><ul class=\"c-meta-list mb-2\"><li class=\"c-meta-item\"><div class=\"pe-4 me-3 border-right\"><span>Project ID</span> <code class=\"c-code d-inline-block\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" target=\"blank\">Read more <i class=\"if if-external-link if--small\"></i></a></div></li></ul><ul class=\"c-meta-list mb-2\"><li class=\"c-meta-item gap-4\"><div><span>Project ID</span> <code class=\"c-code d-inline-block\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -218,29 +218,16 @@ func ProjectsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if rel.Project.IWETOID != "" {
-					var templ_7745c5c3_Var10 = []any{"pe-4", "me-3", templ.KV("border-right", rel.Project.EUProject != nil && rel.Project.EUProject.ID != "")}
-					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var10...)
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"ps-4 border-left\"><span>IWETO ID</span> <code class=\"c-code d-inline-block\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ.CSSClasses(templ_7745c5c3_Var10).String()))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><span>IWETO ID</span> <code class=\"c-code d-inline-block\">")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					var templ_7745c5c3_Var11 string
-					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(rel.Project.IWETOID)
+					var templ_7745c5c3_Var10 string
+					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(rel.Project.IWETOID)
 					if templ_7745c5c3_Err != nil {
 						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/projects.templ`, Line: 88, Col: 71}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -250,16 +237,16 @@ func ProjectsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					}
 				}
 				if rel.Project.EUProject != nil && rel.Project.EUProject.ID != "" {
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"me-3\"><span>CORDIS ID</span> <code class=\"c-code d-inline-block\">")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"ps-4 border-left\"><span>CORDIS ID</span> <code class=\"c-code d-inline-block\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var12 string
-					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(rel.Project.EUProject.ID)
+					var templ_7745c5c3_Var11 string
+					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(rel.Project.EUProject.ID)
 					if templ_7745c5c3_Err != nil {
 						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/projects.templ`, Line: 94, Col: 76}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
