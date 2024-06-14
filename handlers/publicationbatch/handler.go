@@ -43,6 +43,7 @@ LINES:
 		}
 
 		reader := csv.NewReader(strings.NewReader(line))
+		reader.TrimLeadingSpace = true
 		rec, err := reader.Read()
 
 		if err != nil {
