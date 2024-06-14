@@ -7,6 +7,9 @@ msgstr "All"
 msgid "publication.search.scopes.contributed"
 msgstr "My publications"
 
+msgid "publication.search.scopes.supervised"
+msgstr "Supervised by me"
+
 msgid "publication.search.scopes.created"
 msgstr "Registered by me"
 
@@ -2318,6 +2321,12 @@ msgstr "You have not registered any publications of your own"
 
 msgid "publication.search.empty.description.contributed"
 msgstr "Register your first publication"
+
+msgid "publication.search.empty.title.supervised"
+msgstr "You have are not supervising any dissertations"
+
+msgid "publication.search.empty.description.supervised"
+msgstr "Register a dissertation for which you are supervisor"
 
 msgid "publication.search.empty.title.created"
 msgstr "No registered publications yet"

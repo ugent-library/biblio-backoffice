@@ -44,6 +44,7 @@ type indexedPublication struct {
 	ReviewerTags            []string `json:"reviewer_tags,omitempty"`
 	SeriesTitle             string   `json:"series_title,omitempty"`
 	Status                  string   `json:"status,omitempty"`
+	SupervisorID            []string `json:"supervisor_id,omitempty"`
 	Title                   string   `json:"title,omitempty"`
 	Type                    string   `json:"type,omitempty"`
 	UserID                  string   `json:"user_id,omitempty"`
@@ -124,12 +125,15 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 
 	for _, supervisor := range p.Supervisor {
 		ip.Contributor = append(ip.Contributor, supervisor.Name())
+		if supervisor.PersonID != "" {
+			ip.SupervisorID = append(ip.SupervisorID, supervisor.PersonID)
+		}
 	}
+	ip.SupervisorID = lo.Uniq(ip.SupervisorID)
 
 	for _, editor := range p.Editor {
 		ip.Contributor = append(ip.Contributor, editor.Name())
 	}
-
 	ip.Contributor = lo.Uniq(ip.Contributor)
 
 	for _, file := range p.File {
