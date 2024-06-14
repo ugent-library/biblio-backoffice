@@ -78,19 +78,19 @@ templ ProjectsBody(c *ctx.Ctx, p *models.Publication) {
 											</li>
 										</ul>
 										<ul class="c-meta-list mb-2">
-											<li class="c-meta-item">
-												<div class="pe-4 me-3 border-right">
+											<li class="c-meta-item gap-4">
+												<div>
 													<span>Project ID</span>
 													<code class="c-code d-inline-block">{ rel.Project.ID }</code>
 												</div>
 												if rel.Project.IWETOID != "" {
-													<div class={ "pe-4", "me-3", templ.KV("border-right", rel.Project.EUProject != nil && rel.Project.EUProject.ID != "") }>
+													<div class="ps-4 border-left">
 														<span>IWETO ID</span>
 														<code class="c-code d-inline-block">{ rel.Project.IWETOID }</code>
 													</div>
 												}
 												if rel.Project.EUProject != nil && rel.Project.EUProject.ID != "" {
-													<div class="me-3">
+													<div class="ps-4 border-left">
 														<span>CORDIS ID</span>
 														<code class="c-code d-inline-block">{ rel.Project.EUProject.ID }</code>
 													</div>
