@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/mutate"
 	"github.com/ugent-library/biblio-backoffice/repositories"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
@@ -79,6 +80,8 @@ LINES:
 				done++
 			} else if errors.As(err, &argErr) {
 				errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s: %s", currentID, argErr.Msg))
+			} else if errors.Is(err, models.ErrNotFound) {
+				errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s: not found", currentID))
 			} else if len(mutations) == 1 {
 				c.Log.Error("could not process publication batch", "id", currentID, "error", err)
 				errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s at line %d", currentID, mutations[0].Line))
@@ -104,6 +107,8 @@ LINES:
 			done++
 		} else if errors.As(err, &argErr) {
 			errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s: %s", currentID, argErr.Msg))
+		} else if errors.Is(err, models.ErrNotFound) {
+			errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s: not found", currentID))
 		} else if len(mutations) == 1 {
 			c.Log.Error("could not process publication batch", "id", currentID, "error", err)
 			errorMsgs = append(errorMsgs, fmt.Sprintf("could not process publication %s at line %d", currentID, mutations[0].Line))
