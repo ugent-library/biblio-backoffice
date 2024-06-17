@@ -26,10 +26,32 @@ func datasetSearchExportURL(c *ctx.Ctx, searchArgs *models.SearchArgs) *url.URL 
 
 templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.FacetValues) {
 	@views.FacetLine() {
-		@views.Facet(c, "status", "Biblio status", "publication_statuses", "publication_statuses", facets["status"], searchArgs)
-		@views.Facet(c, "faculty_id", "Faculty", "organization", "organization", facets["faculty_id"], searchArgs)
-		@views.Facet(c, "locked", "Locked", "locked", "locked", facets["locked"], searchArgs)
-		@views.Facet(c, "has_message", "Message", "has_message", "has_message", facets["has_message"], searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "status",
+			Title:          "Biblio status",
+			LocPrefix:      "publication_statuses",
+			LocPrefixShort: "publication_statuses",
+			FacetValues:    facets["status"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "faculty_id",
+			Title:          "Faculty",
+			LocPrefix:      "organization",
+			LocPrefixShort: "organization",
+			FacetValues:    facets["faculty_id"]}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "locked",
+			Title:          "Locked",
+			LocPrefix:      "locked",
+			LocPrefixShort: "locked",
+			FacetValues:    facets["locked"]}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "has_message",
+			Title:          "Message",
+			LocPrefix:      "has_message",
+			LocPrefixShort: "has_message",
+			FacetValues:    facets["has_message"],
+		}, searchArgs)
 		@views.FacetSince(c, "created_since", "Created since", "Show records created since", searchArgs)
 		@views.FacetSince(c, "updated_since", "Updated since", "Show records updated since", searchArgs)
 	}
@@ -37,14 +59,44 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models
 
 templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.FacetValues) {
 	@views.FacetLine() {
-		@views.Facet(c, "status", "Biblio status", "publication_statuses", "publication_statuses", facets["status"], searchArgs)
-		@views.Facet(c, "faculty_id", "Faculty", "organization", "organization", facets["faculty_id"], searchArgs)
-		@views.Facet(c, "locked", "Locked", "locked", "locked", facets["locked"], searchArgs)
-		@views.Facet(c, "identifier_type", "Persistent identifier type", "identifier", "identifier_type", facets["identifier_type"], searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "status",
+			Title:          "Biblio status",
+			LocPrefix:      "publication_statuses",
+			LocPrefixShort: "publication_statuses",
+			FacetValues:    facets["status"]}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "faculty_id",
+			Title:          "Faculty",
+			LocPrefix:      "organization",
+			LocPrefixShort: "organization",
+			FacetValues:    facets["faculty_id"]}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "locked",
+			Title:          "Locked",
+			LocPrefix:      "locked",
+			LocPrefixShort: "locked",
+			FacetValues:    facets["locked"]}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "identifier_type",
+			Title:          "Persistent identifier type",
+			LocPrefix:      "identifier",
+			LocPrefixShort: "identifier_type",
+			FacetValues:    facets["identifier_type"]}, searchArgs)
 	}
 	@views.FacetLine() {
-		@views.Facet(c, "reviewer_tags", "Librarian tags", "", "", facets["reviewer_tags"], searchArgs)
-		@views.Facet(c, "has_message", "Message", "has_message", "has_message", facets["has_message"], searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "reviewer_tags",
+			Title:          "Librarian tags",
+			LocPrefix:      "",
+			LocPrefixShort: "",
+			FacetValues:    facets["reviewer_tags"]}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "has_message",
+			Title:          "Message",
+			LocPrefix:      "has_message",
+			LocPrefixShort: "has_message",
+			FacetValues:    facets["has_message"]}, searchArgs)
 		@views.FacetSince(c, "created_since", "Created since", "Show records created since", searchArgs)
 		@views.FacetSince(c, "updated_since", "Updated since", "Show records updated since", searchArgs)
 	}
