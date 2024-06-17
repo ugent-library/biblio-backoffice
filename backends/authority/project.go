@@ -235,6 +235,7 @@ func (c *Client) SuggestProjects(q string) ([]*models.Project, error) {
 				p.EUProject = &models.EUProject{}
 			}
 			p.EUProject.Acronym = v.(string)
+			p.Description = p.EUProject.Acronym
 		}
 		if v, ok := m["eu_framework_programme"]; ok {
 			if p.EUProject == nil {
