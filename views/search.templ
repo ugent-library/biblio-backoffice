@@ -42,6 +42,7 @@ type FacetArgs struct {
 	LocPrefix      string
 	LocPrefixShort string
 	FacetValues    models.FacetValues
+	HideSelectAll  bool
 }
 
 templ Facet(c *ctx.Ctx, args FacetArgs, searchArgs *models.SearchArgs) {
@@ -79,9 +80,11 @@ templ Facet(c *ctx.Ctx, args FacetArgs, searchArgs *models.SearchArgs) {
 					<div class="bc-toolbar-left">
 						<h4 class="text-nowrap">{ args.Title }</h4>
 					</div>
-					<div class="bc-toolbar-right">
-						<button type="button" class="btn btn-link form-check-all">Select all</button>
-					</div>
+					if !args.HideSelectAll {
+						<div class="bc-toolbar-right">
+							<button type="button" class="btn btn-link form-check-all">Select all</button>
+						</div>
+					}
 				</div>
 			</div>
 			<input type="hidden" name="q" value={ searchArgs.Query }/>

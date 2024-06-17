@@ -38,13 +38,15 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models
 			Title:          "Faculty",
 			LocPrefix:      "organization",
 			LocPrefixShort: "organization",
-			FacetValues:    facets["faculty_id"]}, searchArgs)
+			FacetValues:    facets["faculty_id"],
+		}, searchArgs)
 		@views.Facet(c, views.FacetArgs{
 			FieldName:      "locked",
 			Title:          "Locked",
 			LocPrefix:      "locked",
 			LocPrefixShort: "locked",
-			FacetValues:    facets["locked"]}, searchArgs)
+			FacetValues:    facets["locked"],
+		}, searchArgs)
 		@views.Facet(c, views.FacetArgs{
 			FieldName:      "has_message",
 			Title:          "Message",
@@ -64,25 +66,29 @@ templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[strin
 			Title:          "Biblio status",
 			LocPrefix:      "publication_statuses",
 			LocPrefixShort: "publication_statuses",
-			FacetValues:    facets["status"]}, searchArgs)
+			FacetValues:    facets["status"],
+		}, searchArgs)
 		@views.Facet(c, views.FacetArgs{
 			FieldName:      "faculty_id",
 			Title:          "Faculty",
 			LocPrefix:      "organization",
 			LocPrefixShort: "organization",
-			FacetValues:    facets["faculty_id"]}, searchArgs)
+			FacetValues:    facets["faculty_id"],
+		}, searchArgs)
 		@views.Facet(c, views.FacetArgs{
 			FieldName:      "locked",
 			Title:          "Locked",
 			LocPrefix:      "locked",
 			LocPrefixShort: "locked",
-			FacetValues:    facets["locked"]}, searchArgs)
+			FacetValues:    facets["locked"],
+		}, searchArgs)
 		@views.Facet(c, views.FacetArgs{
 			FieldName:      "identifier_type",
 			Title:          "Persistent identifier type",
 			LocPrefix:      "identifier",
 			LocPrefixShort: "identifier_type",
-			FacetValues:    facets["identifier_type"]}, searchArgs)
+			FacetValues:    facets["identifier_type"],
+		}, searchArgs)
 	}
 	@views.FacetLine() {
 		@views.Facet(c, views.FacetArgs{
@@ -90,13 +96,16 @@ templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[strin
 			Title:          "Librarian tags",
 			LocPrefix:      "",
 			LocPrefixShort: "",
-			FacetValues:    facets["reviewer_tags"]}, searchArgs)
+			FacetValues:    facets["reviewer_tags"],
+			HideSelectAll:  true,
+		}, searchArgs)
 		@views.Facet(c, views.FacetArgs{
 			FieldName:      "has_message",
 			Title:          "Message",
 			LocPrefix:      "has_message",
 			LocPrefixShort: "has_message",
-			FacetValues:    facets["has_message"]}, searchArgs)
+			FacetValues:    facets["has_message"],
+		}, searchArgs)
 		@views.FacetSince(c, "created_since", "Created since", "Show records created since", searchArgs)
 		@views.FacetSince(c, "updated_since", "Updated since", "Show records updated since", searchArgs)
 	}

@@ -148,6 +148,7 @@ templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[strin
 			LocPrefix:      "",
 			LocPrefixShort: "",
 			FacetValues:    facets["reviewer_tags"],
+			HideSelectAll:  true,
 		}, searchArgs)
 		@views.Facet(c, views.FacetArgs{
 			FieldName:      "has_message",
