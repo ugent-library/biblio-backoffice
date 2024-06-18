@@ -430,26 +430,12 @@ func (p *Publication) RemoveContributor(role string, i int) error {
 	return nil
 }
 
-func (p *Publication) GetUserContributorRoles(user *Person) string {
-	roles := make([]string, 0)
+func (p *Publication) HasContributor(role string, u *Person) bool {
+	cc := p.Contributors(role)
 
-	if user.IsContributor(p.Author) {
-		roles = append(roles, "author")
-	}
-
-	if user.IsContributor(p.Supervisor) {
-		roles = append(roles, "supervisor")
-	}
-
-	if len(roles) > 0 {
-		return strings.Join(roles, ", ")
-	}
-
-	if p.Creator.ID == user.ID {
-		return "registrar"
-	}
-
-	return ""
+	return slices.ContainsFunc(cc, func(c *Contributor) bool {
+		return c.PersonID == u.ID
+	})
 }
 
 func (p *Publication) GetLink(id string) *PublicationLink {

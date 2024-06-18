@@ -19,6 +19,18 @@ type SummaryArgs struct {
 	Links   templ.Component
 }
 
+func getUserContributorRoles(d *models.Dataset, user *models.Person) string {
+	if d.HasContributor("author", user) {
+		return "creator"
+	}
+
+	if d.Creator.ID == user.ID {
+		return "registrar"
+	}
+
+	return ""
+}
+
 templ Summary(c *ctx.Ctx, args SummaryArgs) {
 	<div class="w-100">
 		<div class="c-thumbnail-and-text align-items-start w-100">
@@ -154,7 +166,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								Contributors:     args.Dataset.Author,
 								URL:              views.URL(args.URL).SetQueryParam("show", "contributors").String(),
 								URLTarget:        args.Target,
-								CurrentUserRoles: args.Dataset.GetUserContributorRoles(c.User),
+								CurrentUserRoles: getUserContributorRoles(args.Dataset, c.User),
 							})
 						</div>
 						<div class="vstack gap-3">

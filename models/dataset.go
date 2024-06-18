@@ -172,16 +172,12 @@ func (d *Dataset) RemoveContributor(role string, i int) error {
 	return nil
 }
 
-func (d *Dataset) GetUserContributorRoles(user *Person) string {
-	if user.IsContributor(d.Author) {
-		return "creator"
-	}
+func (d *Dataset) HasContributor(role string, u *Person) bool {
+	cc := d.Contributors(role)
 
-	if d.Creator.ID == user.ID {
-		return "registrar"
-	}
-
-	return ""
+	return slices.ContainsFunc(cc, func(c *Contributor) bool {
+		return c.PersonID == u.ID
+	})
 }
 
 func (d *Dataset) GetLink(id string) *DatasetLink {

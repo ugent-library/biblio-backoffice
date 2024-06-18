@@ -1,7 +1,6 @@
 package models
 
 import (
-	"slices"
 	"time"
 )
 
@@ -219,10 +218,4 @@ func (u *Person) CanViewDashboard() bool {
 
 func (u *Person) CanChangeType(p *Publication) bool {
 	return u.CanEditPublication(p) && p.Status != "public"
-}
-
-func (p *Person) IsContributor(c []*Contributor) bool {
-	return slices.ContainsFunc(c, func(c *Contributor) bool {
-		return c.Person != nil && c.Person.ID == p.ID
-	})
 }

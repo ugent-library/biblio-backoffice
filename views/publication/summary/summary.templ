@@ -3,6 +3,8 @@ package publicationsummaryviews
 import (
 	"fmt"
 	"net/url"
+	"strings"
+
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -17,6 +19,28 @@ type SummaryArgs struct {
 	Actions     templ.Component
 	Footer      templ.Component
 	Links       templ.Component
+}
+
+func getUserContributorRoles(p *models.Publication, user *models.Person) string {
+	roles := make([]string, 0)
+
+	if p.HasContributor("author", user) {
+		roles = append(roles, "author")
+	}
+
+	if p.HasContributor("supervisor", user) {
+		roles = append(roles, "supervisor")
+	}
+
+	if len(roles) > 0 {
+		return strings.Join(roles, ", ")
+	}
+
+	if p.Creator.ID == user.ID {
+		return "registrar"
+	}
+
+	return ""
 }
 
 templ Summary(c *ctx.Ctx, args SummaryArgs) {
@@ -135,7 +159,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								Contributors:     args.Publication.Author,
 								URL:              views.URL(args.URL).SetQueryParam("show", "contributors").String(),
 								URLTarget:        args.Target,
-								CurrentUserRoles: args.Publication.GetUserContributorRoles(c.User),
+								CurrentUserRoles: getUserContributorRoles(args.Publication, c.User),
 							})
 						</div>
 						if args.Publication.VABBID != "" || args.Publication.Legacy || len(args.Publication.RelatedDataset) > 0 {
