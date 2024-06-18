@@ -763,6 +763,9 @@ msgstr "Conference date"
 msgid "builder.conference.start_date"
 msgstr "Conference start date"
 
+msgid "builder.keyword.help"
+msgstr "Type keywords and separate them by <code>TAB</code>, <code>;</code> or <code>ENTER</code>. A keyword is accepted when it turns blue. Duplicates are removed. <br> e.g. <code>DNA;Health Insurance&lt;ENTER&gt;</code>"
+
 msgid "builder.conference.start_date.help"
 msgstr "YYYY-MM-DD"
 
