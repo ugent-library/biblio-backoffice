@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	userScopes = []string{"all", "contributed", "created"}
+	userScopes = []string{"all", "contributed", "supervised", "created"}
 )
 
 func Search(w http.ResponseWriter, r *http.Request) {
@@ -48,8 +48,11 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	case "contributed":
 		searcher = searcher.WithScope("author_id", c.User.ID)
 		currentScope = "contributed"
+	case "supervised":
+		searcher = searcher.WithScope("supervisor_id", c.User.ID)
+		currentScope = "supervised"
 	case "all":
-		searcher = searcher.WithScope("creator_id|author_id", c.User.ID)
+		searcher = searcher.WithScope("creator_id|author_id|supervisor_id", c.User.ID)
 		currentScope = "all"
 	default:
 		c.HandleError(w, r, httperror.BadRequest.Wrap(fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))))

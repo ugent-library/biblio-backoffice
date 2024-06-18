@@ -60,16 +60,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
       true,
     );
 
-    cy.updateFields(
-      "Authors",
-      () => {
-        cy.setFieldByLabel("First name", "John");
-        cy.setFieldByLabel("Last name", "Doe");
-
-        cy.contains(".btn", "Add author").click();
-      },
-      true,
-    );
+    cy.addAuthor("John", "Doe");
 
     cy.contains(".btn", "Complete Description").click();
 
@@ -148,16 +139,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
       true,
     );
 
-    cy.updateFields(
-      "Creators",
-      () => {
-        cy.setFieldByLabel("First name", "John");
-        cy.setFieldByLabel("Last name", "Doe");
-
-        cy.contains(".btn", "Add creator").click();
-      },
-      true,
-    );
+    cy.addCreator("John", "Doe");
 
     cy.contains(".btn", "Complete Description").click();
 

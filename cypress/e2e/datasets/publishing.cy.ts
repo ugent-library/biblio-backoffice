@@ -114,22 +114,7 @@ describe("Publishing datasets", () => {
       cy.ensureModal("Confirm deletion").closeModal("Delete");
 
       // Add external author
-      cy.updateFields(
-        "Creators",
-        () => {
-          cy.intercept("/dataset/*/contributors/author/suggestions?*").as(
-            "suggestContributor",
-          );
-          cy.setFieldByLabel("First name", "John");
-          cy.wait("@suggestContributor");
-          cy.setFieldByLabel("Last name", "Doe");
-          cy.wait("@suggestContributor");
-          cy.contains(".btn", "Add external creator").click({
-            scrollBehavior: false,
-          });
-        },
-        true,
-      );
+      cy.addCreator("John", "Doe", true);
 
       cy.contains(".btn-success", "Republish to Biblio").click();
       cy.ensureModal("Are you sure?")

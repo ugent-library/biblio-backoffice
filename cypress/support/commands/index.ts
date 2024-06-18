@@ -15,6 +15,12 @@ import updateFields from "./update-fields";
 import setUpPublication from "./set-up-publication";
 import setUpDataset from "./set-up-dataset";
 import clocked from "./clocked";
+import {
+  addAuthor,
+  addCreator,
+  addEditor,
+  addSupervisor,
+} from "./add-contributor";
 
 // Child commands
 import finishLog from "./finish-log";
@@ -59,6 +65,11 @@ Cypress.Commands.addAll({
   setUpDataset,
 
   clocked,
+
+  addAuthor,
+  addEditor,
+  addSupervisor,
+  addCreator,
 });
 
 // Child commands
