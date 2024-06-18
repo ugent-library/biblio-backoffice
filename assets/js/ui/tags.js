@@ -62,9 +62,7 @@ export default function () {
         fillRealValues(
           realValues,
           inputName,
-          evt.detail.tagify.value.map(function (v) {
-            return v.value;
-          }),
+          evt.detail.tagify.value.map((v) => v.value),
         );
       });
 
