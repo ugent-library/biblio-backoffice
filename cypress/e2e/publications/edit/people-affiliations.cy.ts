@@ -313,9 +313,8 @@ describe("Editing publication people & affiliations", () => {
         "#departments-body tr",
         "Department of Art, music and theatre sciences",
       )
-        .find(".if-more")
+        .find(".if-delete")
         .click();
-      cy.contains(".dropdown-item", "Remove from publication").click();
 
       cy.ensureModal("Confirm deletion")
         .within(() => {

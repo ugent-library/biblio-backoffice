@@ -197,9 +197,8 @@ describe("Editing dataset people & affiliations", () => {
         "#departments-body tr",
         "Department of Art, music and theatre sciences",
       )
-        .find(".if-more")
+        .find(".if-delete")
         .click();
-      cy.contains(".dropdown-item", "Remove from dataset").click();
 
       cy.ensureModal("Confirm deletion")
         .within(() => {
