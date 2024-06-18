@@ -52,7 +52,7 @@ templ DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) {
 									</div>
 								</div>
 								<div class="bc-toolbar-right">
-									<a class="btn btn-outline-secondary" href={ templ.URL(c.PathTo("publications", "f[status]", "private").String()) }>
+									<a class="btn btn-outline-secondary" href={ templ.URL(c.PathTo("publications", "f[status]", "private", "f[locked]", "false").String()) }>
 										<span class="btn-text">Complete</span>
 									</a>
 								</div>
@@ -86,7 +86,7 @@ templ DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) {
 									</div>
 								</div>
 								<div class="bc-toolbar-right">
-									<a class="btn btn-outline-secondary" href={ templ.URL(c.PathTo("datasets", "f[status]", "private").String()) }>
+									<a class="btn btn-outline-secondary" href={ templ.URL(c.PathTo("datasets", "f[status]", "private", "f[locked]", "false").String()) }>
 										<span class="btn-text">Complete</span>
 									</a>
 								</div>
