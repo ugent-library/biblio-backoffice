@@ -29,7 +29,7 @@ func SummaryActions(c *ctx.Ctx, dataset *models.Dataset, url string) templ.Compo
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-button-toolbar\"><button class=\"btn btn-tertiary btn-lg-only-responsive pt-0\" data-collapsible-card-toggle><i class=\"if if-info-circle\"></i> <span class=\"btn-text d-md-none d-lg-inline-block\">More info</span> <span class=\"visually-hidden\">View more details</span></button><div class=\"dropdown\"><button class=\"btn btn-tertiary btn-lg-only-responsive pt-0\" type=\"button\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"><i class=\"if if-more\"></i> <span class=\"btn-text d-md-none d-lg-inline-block\">Actions</span> <span class=\"visually-hidden\">View more actions</span></button><div class=\"dropdown-menu me-3\"><a class=\"dropdown-item\" href=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-button-toolbar\"><div class=\"dropdown\"><button class=\"btn btn-tertiary btn-lg-only-responsive pt-0\" type=\"button\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"><i class=\"if if-more\"></i> <span class=\"btn-text d-md-none d-lg-inline-block\">Actions</span> <span class=\"visually-hidden\">View more actions</span></button><div class=\"dropdown-menu me-3\"><a class=\"dropdown-item\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
