@@ -36,16 +36,25 @@ func filterToLabels(c *ctx.Ctx, vals []string, locPrefix string) []string {
 	return labels
 }
 
-templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPrefixShort string, facetValues models.FacetValues, searchArgs *models.SearchArgs) {
+type FacetArgs struct {
+	FieldName      string
+	Title          string
+	LocPrefix      string
+	LocPrefixShort string
+	FacetValues    models.FacetValues
+	HideSelectAll  bool
+}
+
+templ Facet(c *ctx.Ctx, args FacetArgs, searchArgs *models.SearchArgs) {
 	<div
-		class={ "dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName)) }
-		data-facet-dropdown={ fieldName }
+		class={ "dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(args.FieldName)) }
+		data-facet-dropdown={ args.FieldName }
 	>
 		<a
-			if searchArgs.HasFilter(fieldName) {
+			if searchArgs.HasFilter(args.FieldName) {
 				class="badge bg-primary me-3"
 			} else {
-				if facetValues.HasMatches() {
+				if args.FacetValues.HasMatches() {
 					class="badge badge-default me-3"
 				} else {
 					class="badge badge-light me-3"
@@ -57,10 +66,10 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPre
 			aria-expanded="false"
 			role="button"
 		>
-			<span class="badge-text">{ title }</span>
-			if filters := searchArgs.FiltersFor(fieldName); len(filters) > 0 {
+			<span class="badge-text">{ args.Title }</span>
+			if filters := searchArgs.FiltersFor(args.FieldName); len(filters) > 0 {
 				<span class="badge-value ms-2">
-					@facetShortValue(filterToLabels(c, filters, locPrefixShort))
+					@facetShortValue(filterToLabels(c, filters, args.LocPrefixShort))
 				</span>
 			}
 			<i class="if if-caret-down"></i>
@@ -69,11 +78,13 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPre
 			<div class="bc-navbar bc-navbar--bordered-bottom">
 				<div class="bc-toolbar bc-toolbar--auto">
 					<div class="bc-toolbar-left">
-						<h4 class="text-nowrap">{ title }</h4>
+						<h4 class="text-nowrap">{ args.Title }</h4>
 					</div>
-					<div class="bc-toolbar-right">
-						<button type="button" class="btn btn-link form-check-all">Select all</button>
-					</div>
+					if !args.HideSelectAll {
+						<div class="bc-toolbar-right">
+							<button type="button" class="btn btn-link form-check-all">Select all</button>
+						</div>
+					}
 				</div>
 			</div>
 			<input type="hidden" name="q" value={ searchArgs.Query }/>
@@ -81,7 +92,7 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPre
 				<input type="hidden" name="sort" value={ sort }/>
 			}
 			for field, vals := range searchArgs.Filters {
-				if field != fieldName {
+				if field != args.FieldName {
 					for _, val := range vals {
 						<input type="hidden" name={ fmt.Sprintf("f[%s]", field) } value={ val }/>
 					}
@@ -89,23 +100,23 @@ templ Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPre
 			}
 			<div class="dropdown-menu__body border-bottom">
 				<div class="d-flex flex-column gap-4">
-					for i, f := range facetValues {
+					for i, f := range args.FacetValues {
 						<div class="form-check">
 							<input
 								class="form-check-input"
-								id={ fmt.Sprintf("filter-%s-%d", fieldName, i) }
+								id={ fmt.Sprintf("filter-%s-%d", args.FieldName, i) }
 								type="checkbox"
-								name={ fmt.Sprintf("f[%s]", fieldName) }
+								name={ fmt.Sprintf("f[%s]", args.FieldName) }
 								value={ f.Value }
-								if searchArgs.HasFilter(fieldName, f.Value) {
+								if searchArgs.HasFilter(args.FieldName, f.Value) {
 									checked
 								}
 							/>
-							<label class="form-check-label" for={ fmt.Sprintf("filter-%s-%d", fieldName, i) }>
-								if locPrefix == "" {
+							<label class="form-check-label" for={ fmt.Sprintf("filter-%s-%d", args.FieldName, i) }>
+								if args.LocPrefix == "" {
 									{ fmt.Sprintf("%s (%d)", f.Value, f.Count) }
 								} else {
-									{ fmt.Sprintf("%s (%d)", c.Loc.Get(locPrefix+"."+f.Value), f.Count) }
+									{ fmt.Sprintf("%s (%d)", c.Loc.Get(args.LocPrefix + "." + f.Value), f.Count) }
 								}
 							</label>
 						</div>
@@ -151,8 +162,8 @@ templ FacetSince(c *ctx.Ctx, fieldName string, title string, description string,
 				</div>
 			</div>
 			<div class="dropdown-menu__body">
-				<label class="col-form-label">{ description }</label>
-				<input class="form-control" type="text" name={ fmt.Sprintf("f[%s]", fieldName) } value={ searchArgs.FilterFor(fieldName) }/>
+				<label class="col-form-label" for={ fmt.Sprintf("f-%s", fieldName) }>{ description }</label>
+				<input class="form-control" type="text" id={ fmt.Sprintf("f-%s", fieldName) } name={ fmt.Sprintf("f[%s]", fieldName) } value={ searchArgs.FilterFor(fieldName) }/>
 				<small class="form-text text-muted">Type a date (YYYY-MM-DD), year (YYYY) or timing (today, yesterday).</small>
 			</div>
 			<div class="bc-navbar bc-navbar--large">
@@ -243,7 +254,7 @@ templ Query(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 			<div class="col">
 				<div class="input-group flex-nowrap">
 					<label class="visually-hidden" for="q">Search</label>
-					<input class="form-control" type="text" name="q" value={ searchArgs.Query } placeholder="Search..." autocomplete="off"/>
+					<input class="form-control" type="text" id="q" name="q" value={ searchArgs.Query } placeholder="Search..." autocomplete="off"/>
 					<button type="submit" class="btn btn-outline-primary" type="button">
 						<i class="if if-search"></i>
 						<span class="btn-text">Search</span>

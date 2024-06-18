@@ -157,7 +157,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				}
 			}
 		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-author\"><a class=\"c-link-muted\" href=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-author\"><i class=\"if if-user if--small if--muted me-2\"></i> <a class=\"c-link-muted\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -184,20 +184,20 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("><i class=\"if if-edit if--small\"></i> <em>UGent ")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("><i class=\"if if-edit if--small\"></i> <em>Add UGent ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(args.Role + "s")
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(args.Role)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contributor/summary.templ`, Line: 60, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contributor/summary.templ`, Line: 61, Col: 30}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" missing</em></a></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</em></a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -210,7 +210,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(args.CurrentUserRoles)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contributor/summary.templ`, Line: 65, Col: 104}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contributor/summary.templ`, Line: 66, Col: 104}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -248,7 +248,7 @@ func moreContributors(args SummaryArgs) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(len(args.Contributors) - 3))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contributor/summary.templ`, Line: 71, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contributor/summary.templ`, Line: 72, Col: 41}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -262,7 +262,7 @@ func moreContributors(args SummaryArgs) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(args.Role + "s")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contributor/summary.templ`, Line: 73, Col: 19}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contributor/summary.templ`, Line: 74, Col: 19}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -272,7 +272,7 @@ func moreContributors(args SummaryArgs) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(args.Role)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contributor/summary.templ`, Line: 75, Col: 13}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `contributor/summary.templ`, Line: 76, Col: 13}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {

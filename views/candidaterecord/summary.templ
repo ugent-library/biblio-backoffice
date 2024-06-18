@@ -43,13 +43,13 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 											<i class="if if-download if--small if--success"></i>
 											<span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
 										} else if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
-											<i class="if if-time if--small if--muted"></i>
+											<i class="if if-time if--small if--warning"></i>
 											<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
 										} else if mainFile.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
 											<i class="if if-ghent-university if--small if--primary"></i>
 											<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
 										} else if mainFile.AccessLevel == "info:eu-repo/semantics/closedAccess" {
-											<i class="if if-eye-off if--small if--muted"></i>
+											<i class="if if-forbid if--small if--danger"></i>
 											<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
 										}
 									</span>
@@ -87,14 +87,20 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 									<li class="c-meta-item">{ summaryPart }</li>
 								}
 							</ul>
-							@contributorviews.Summary(c, contributorviews.SummaryArgs{
-								Role:         "author",
-								Contributors: p.Author,
-							})
-							@contributorviews.Summary(c, contributorviews.SummaryArgs{
-								Role:         "supervisor",
-								Contributors: p.Supervisor,
-							})
+							<div class="d-inline-flex align-items-center flex-wrap">
+								<span class="badge rounded-pill badge-light me-4">Authors</span>
+								@contributorviews.Summary(c, contributorviews.SummaryArgs{
+									Role:         "author",
+									Contributors: p.Author,
+								})
+							</div>
+							<div class="d-inline-flex align-items-center flex-wrap">
+								<span class="badge rounded-pill badge-light me-4">Supervisors</span>
+								@contributorviews.Summary(c, contributorviews.SummaryArgs{
+									Role:         "supervisor",
+									Contributors: p.Supervisor,
+								})
+							</div>
 						</div>
 					</div>
 					<div class="c-button-toolbar flex-row-reverse flex-lg-row">

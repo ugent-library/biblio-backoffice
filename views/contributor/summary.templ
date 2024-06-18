@@ -50,6 +50,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 			}
 		} else {
 			<div class="c-author">
+				<i class="if if-user if--small if--muted me-2"></i>
 				<a
 					class="c-link-muted"
 					href={ templ.URL(args.URL) }
@@ -58,7 +59,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 					}
 				>
 					<i class="if if-edit if--small"></i>
-					<em>UGent { args.Role + "s" } missing</em>
+					<em>Add UGent { args.Role }</em>
 				</a>
 			</div>
 		}

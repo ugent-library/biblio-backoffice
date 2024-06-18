@@ -6,8 +6,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
-	"github.com/ugent-library/biblio-backoffice/views/relatedorganization"
 	"github.com/ugent-library/biblio-backoffice/views/contributor"
+	"github.com/ugent-library/biblio-backoffice/views/relatedorganization"
 )
 
 type SummaryArgs struct {
@@ -38,7 +38,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 			}
 			<div class="c-thumbnail-text">
 				<div class="hstack-md-responsive align-items-start gap-3 w-100" data-collapsible-card>
-					<div class="vstack gap-5">
+					<div class="vstack gap-4">
 						<div class="vstack gap-2">
 							<div class="d-inline-flex align-items-center flex-wrap">
 								@views.BadgeStatus(args.Publication.Status)
@@ -138,7 +138,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								CurrentUserRoles: args.Publication.GetUserContributorRoles(c.User),
 							})
 						</div>
-						<div class="collapsible-card-content collapse" data-collapsible-card-content>
+						if args.Publication.VABBID != "" || args.Publication.Legacy || len(args.Publication.RelatedDataset) > 0 {
 							<div class="vstack gap-3">
 								<div class="d-flex align-items-center">
 									<i class="if if-building if--small if--muted me-2"></i>
@@ -186,7 +186,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									}
 								</ul>
 							</div>
-						</div>
+						}
 						if args.Footer != nil {
 							@args.Footer
 						}

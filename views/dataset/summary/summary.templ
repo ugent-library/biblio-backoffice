@@ -5,9 +5,9 @@ import (
 	"net/url"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/contributor"
 	"github.com/ugent-library/biblio-backoffice/views/relatedorganization"
-	"github.com/ugent-library/biblio-backoffice/views"
 )
 
 type SummaryArgs struct {
@@ -38,7 +38,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 			}
 			<div class="c-thumbnail-text">
 				<div class="hstack-md-responsive align-items-start gap-3 w-100" data-collapsible-card>
-					<div class="vstack gap-5">
+					<div class="vstack gap-4">
 						<div class="vstack gap-2">
 							<div class="d-inline-flex align-items-center flex-wrap">
 								@views.BadgeStatus(args.Dataset.Status)
@@ -157,35 +157,33 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								CurrentUserRoles: args.Dataset.GetUserContributorRoles(c.User),
 							})
 						</div>
-						<div class="collapsible-card-content collapse" data-collapsible-card-content>
-							<div class="vstack gap-3">
-								<div class="d-flex align-items-center">
-									<i class="if if-building if--small if--muted me-2"></i>
-									if len(args.Dataset.RelatedOrganizations) > 0 {
-										@relatedorganizationviews.Summary(c, args.Dataset.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
-									} else {
-										<a
-											class="c-link-muted"
-											href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
-											if args.Target != "" {
-												target={ args.Target }
-											}
-										>
-											<i class="if if-edit if--small"></i>
-											<em>Add department</em>
-										</a>
-									}
-								</div>
-								<ul class="c-meta-list c-meta-list-inline">
-									if len(args.Dataset.RelatedPublication) > 0 {
-										<li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ fmt.Sprintf("%d related publications", len(args.Dataset.RelatedPublication)) }>
-											<i class="if if-database if--muted if--small"></i>
-											<span class="text-muted">{ fmt.Sprintf("%d", len(args.Dataset.RelatedPublication)) }</span>
-										</li>
-									}
-								</ul>
+						<div class="vstack gap-3">
+							<div class="d-flex align-items-center">
+								<i class="if if-building if--small if--muted me-2"></i>
+								if len(args.Dataset.RelatedOrganizations) > 0 {
+									@relatedorganizationviews.Summary(c, args.Dataset.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
+								} else {
+									<a
+										class="c-link-muted"
+										href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
+										if args.Target != "" {
+											target={ args.Target }
+										}
+									>
+										<i class="if if-edit if--small"></i>
+										<em>Add department</em>
+									</a>
+								}
 							</div>
 						</div>
+						<ul class="c-meta-list c-meta-list-inline">
+							if len(args.Dataset.RelatedPublication) > 0 {
+								<li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ fmt.Sprintf("%d related publications", len(args.Dataset.RelatedPublication)) }>
+									<i class="if if-database if--muted if--small"></i>
+									<span class="text-muted">{ fmt.Sprintf("%d", len(args.Dataset.RelatedPublication)) }</span>
+								</li>
+							}
+						</ul>
 						if args.Footer != nil {
 							@args.Footer
 						}

@@ -148,9 +148,22 @@ templ ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, posit
 			}
 			<div class="bc-avatar-text">
 				{ contributor.Name() }
-				if orcid := contributor.ORCID(); orcid != "" {
-					<span class="text-muted c-body-small ms-4"><i class="if if-orcid if--small text-success"></i> { orcid }</span>
-				}
+				<ul class="c-meta-list c-meta-list-horizontal">
+					if contributor.Person != nil && len(contributor.Person.UGentID) > 0 {
+						for _, ugentID := range contributor.Person.UGentID {
+							<li class="c-meta-item text-nowrap">
+								<i class="if if-ghent-university if--small text-primary"></i>
+								<small>{ ugentID }</small>
+							</li>
+						}
+					}
+					if orcid := contributor.ORCID(); orcid != "" {
+						<li class="c-meta-item text-nowrap">
+							<i class="if if-orcid if--small text-success"></i>
+							<small>{ orcid }</small>
+						</li>
+					}
+				</ul>
 			</div>
 		</div>
 	</td>
@@ -230,28 +243,14 @@ templ DepartmentsBody(c *ctx.Ctx, dataset *models.Dataset) {
 							<td class="pe-6">
 								if c.User.CanEditDataset(dataset) {
 									<div class="c-button-toolbar">
-										<div class="dropdown">
-											<button
-												class="btn btn-link btn-icon-only btn-link-muted"
-												type="button"
-												data-bs-toggle="dropdown"
-												aria-haspopup="true"
-												aria-expanded="false"
-											>
-												<i class="if if-more"></i>
-											</button>
-											<div class="dropdown-menu">
-												<button
-													class="dropdown-item"
-													type="button"
-													hx-get={ c.PathTo("dataset_confirm_delete_department", "id", dataset.ID, "snapshot_id", dataset.SnapshotID, "department_id", rel.OrganizationID).String() }
-													hx-target="#modals"
-												>
-													<i class="if if-delete"></i>
-													<span>Remove from dataset</span>
-												</button>
-											</div>
-										</div>
+										<button
+											type="button"
+											class="btn btn-default"
+											hx-get={ c.PathTo("dataset_confirm_delete_department", "id", dataset.ID, "snapshot_id", dataset.SnapshotID, "department_id", rel.OrganizationID).String() }
+											hx-target="#modals"
+										>
+											<i class="if if-delete"></i>
+										</button>
 									</div>
 								}
 							</td>

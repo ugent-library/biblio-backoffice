@@ -79,7 +79,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-thumbnail-text\"><div class=\"hstack-md-responsive align-items-start gap-3 w-100\" data-collapsible-card><div class=\"vstack gap-5\"><div class=\"vstack gap-2\"><div class=\"d-inline-flex align-items-center flex-wrap\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-thumbnail-text\"><div class=\"hstack-md-responsive align-items-start gap-3 w-100\" data-collapsible-card><div class=\"vstack gap-4\"><div class=\"vstack gap-2\"><div class=\"d-inline-flex align-items-center flex-wrap\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -493,7 +493,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"collapsible-card-content collapse\" data-collapsible-card-content><div class=\"vstack gap-3\"><div class=\"d-flex align-items-center\"><i class=\"if if-building if--small if--muted me-2\"></i> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"vstack gap-3\"><div class=\"d-flex align-items-center\"><i class=\"if if-building if--small if--muted me-2\"></i> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -535,7 +535,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><ul class=\"c-meta-list c-meta-list-inline\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><ul class=\"c-meta-list c-meta-list-inline\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -555,7 +555,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(args.Dataset.RelatedPublication)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/summary/summary.templ`, Line: 182, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/summary/summary.templ`, Line: 182, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -566,7 +566,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -583,7 +583,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(views.CreatedBy(c, args.Dataset.DateCreated, args.Dataset.Creator))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/summary/summary.templ`, Line: 194, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/summary/summary.templ`, Line: 192, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -596,7 +596,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(views.UpdatedBy(c, args.Dataset.DateUpdated, args.Dataset.User, args.Dataset.LastUser))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/summary/summary.templ`, Line: 197, Col: 97}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/summary/summary.templ`, Line: 195, Col: 97}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
@@ -617,7 +617,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(args.Dataset.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/summary/summary.templ`, Line: 206, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/summary/summary.templ`, Line: 204, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {

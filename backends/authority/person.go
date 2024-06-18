@@ -50,6 +50,10 @@ func (c *Client) SeedPerson(data []byte) error {
 	id := doc["ids"].([]any)[0].(string)
 	active := doc["active"].(bool)
 	doc["_id"] = id
+	if _, ok := doc["orcid"]; ok {
+		doc["orcid_id"] = doc["orcid"]
+		delete(doc, "orcid")
+	}
 	if active {
 		doc["active"] = 1
 	} else {

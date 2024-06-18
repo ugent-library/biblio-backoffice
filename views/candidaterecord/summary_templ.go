@@ -129,7 +129,7 @@ func Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) templ.Componen
 					return templ_7745c5c3_Err
 				}
 			} else if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-time if--small if--muted\"></i> <span class=\"c-subline text-muted\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-time if--small if--warning\"></i> <span class=\"c-subline text-muted\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -165,7 +165,7 @@ func Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) templ.Componen
 					return templ_7745c5c3_Err
 				}
 			} else if mainFile.AccessLevel == "info:eu-repo/semantics/closedAccess" {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-eye-off if--small if--muted\"></i> <span class=\"c-subline text-muted\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-forbid if--small if--danger\"></i> <span class=\"c-subline text-muted\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -302,7 +302,7 @@ func Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) templ.Componen
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul><div class=\"d-inline-flex align-items-center flex-wrap\"><span class=\"badge rounded-pill badge-light me-4\">Authors</span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -313,6 +313,10 @@ func Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) templ.Componen
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"d-inline-flex align-items-center flex-wrap\"><span class=\"badge rounded-pill badge-light me-4\">Supervisors</span>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = contributorviews.Summary(c, contributorviews.SummaryArgs{
 			Role:         "supervisor",
 			Contributors: p.Supervisor,
@@ -320,7 +324,7 @@ func Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) templ.Componen
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"c-button-toolbar flex-row-reverse flex-lg-row\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div><div class=\"c-button-toolbar flex-row-reverse flex-lg-row\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

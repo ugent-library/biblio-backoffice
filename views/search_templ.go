@@ -46,7 +46,16 @@ func filterToLabels(c *ctx.Ctx, vals []string, locPrefix string) []string {
 	return labels
 }
 
-func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPrefixShort string, facetValues models.FacetValues, searchArgs *models.SearchArgs) templ.Component {
+type FacetArgs struct {
+	FieldName      string
+	Title          string
+	LocPrefix      string
+	LocPrefixShort string
+	FacetValues    models.FacetValues
+	HideSelectAll  bool
+}
+
+func Facet(c *ctx.Ctx, args FacetArgs, searchArgs *models.SearchArgs) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -59,7 +68,7 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var2 = []any{"dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(fieldName))}
+		var templ_7745c5c3_Var2 = []any{"dropdown", templ.KV("toggle-on", searchArgs.IsCollapsedFacet(args.FieldName))}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -76,7 +85,7 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fieldName))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(args.FieldName))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -84,13 +93,13 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if searchArgs.HasFilter(fieldName) {
+		if searchArgs.HasFilter(args.FieldName) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" class=\"badge bg-primary me-3\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			if facetValues.HasMatches() {
+			if args.FacetValues.HasMatches() {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" class=\"badge badge-default me-3\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -107,9 +116,9 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(title)
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(args.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 59, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 68, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -119,12 +128,12 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if filters := searchArgs.FiltersFor(fieldName); len(filters) > 0 {
+		if filters := searchArgs.FiltersFor(args.FieldName); len(filters) > 0 {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"badge-value ms-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = facetShortValue(filterToLabels(c, filters, locPrefixShort)).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = facetShortValue(filterToLabels(c, filters, args.LocPrefixShort)).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -147,15 +156,25 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(title)
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(args.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 71, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 80, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4></div><div class=\"bc-toolbar-right\"><button type=\"button\" class=\"btn btn-link form-check-all\">Select all</button></div></div></div><input type=\"hidden\" name=\"q\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !args.HideSelectAll {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar-right\"><button type=\"button\" class=\"btn btn-link form-check-all\">Select all</button></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><input type=\"hidden\" name=\"q\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -182,7 +201,7 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 			}
 		}
 		for field, vals := range searchArgs.Filters {
-			if field != fieldName {
+			if field != args.FieldName {
 				for _, val := range vals {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"")
 					if templ_7745c5c3_Err != nil {
@@ -211,12 +230,12 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for i, f := range facetValues {
+		for i, f := range args.FacetValues {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"form-check\"><input class=\"form-check-input\" id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("filter-%s-%d", fieldName, i)))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("filter-%s-%d", args.FieldName, i)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -224,7 +243,7 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("f[%s]", fieldName)))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("f[%s]", args.FieldName)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -240,7 +259,7 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if searchArgs.HasFilter(fieldName, f.Value) {
+			if searchArgs.HasFilter(args.FieldName, f.Value) {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" checked")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -250,7 +269,7 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("filter-%s-%d", fieldName, i)))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("filter-%s-%d", args.FieldName, i)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -258,11 +277,11 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if locPrefix == "" {
+			if args.LocPrefix == "" {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s (%d)", f.Value, f.Count))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 105, Col: 51}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 116, Col: 51}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -270,9 +289,9 @@ func Facet(c *ctx.Ctx, fieldName string, title string, locPrefix string, locPref
 				}
 			} else {
 				var templ_7745c5c3_Var7 string
-				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s (%d)", c.Loc.Get(locPrefix+"."+f.Value), f.Count))
+				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s (%d)", c.Loc.Get(args.LocPrefix+"."+f.Value), f.Count))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 107, Col: 76}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 118, Col: 85}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -351,7 +370,7 @@ func FacetSince(c *ctx.Ctx, fieldName string, title string, description string, 
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 138, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 149, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -369,7 +388,7 @@ func FacetSince(c *ctx.Ctx, fieldName string, title string, description string, 
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(filter)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 140, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 151, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -396,26 +415,42 @@ func FacetSince(c *ctx.Ctx, fieldName string, title string, description string, 
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 148, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 159, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4></div></div></div><div class=\"dropdown-menu__body\"><label class=\"col-form-label\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4></div></div></div><div class=\"dropdown-menu__body\"><label class=\"col-form-label\" for=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("f-%s", fieldName)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 153, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 164, Col: 86}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</label> <input class=\"form-control\" type=\"text\" name=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</label> <input class=\"form-control\" type=\"text\" id=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("f-%s", fieldName)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" name=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -676,7 +711,7 @@ func Query(c *ctx.Ctx, searchArgs *models.SearchArgs) templ.Component {
 				}
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"row\"><div class=\"col\"><div class=\"input-group flex-nowrap\"><label class=\"visually-hidden\" for=\"q\">Search</label> <input class=\"form-control\" type=\"text\" name=\"q\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"row\"><div class=\"col\"><div class=\"input-group flex-nowrap\"><label class=\"visually-hidden\" for=\"q\">Search</label> <input class=\"form-control\" type=\"text\" id=\"q\" name=\"q\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -714,7 +749,7 @@ func Query(c *ctx.Ctx, searchArgs *models.SearchArgs) templ.Component {
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_sorts." + sort))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 263, Col: 48}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `search.templ`, Line: 274, Col: 48}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
