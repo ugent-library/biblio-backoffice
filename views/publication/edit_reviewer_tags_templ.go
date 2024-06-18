@@ -62,6 +62,7 @@ func EditReviewerTagsDialog(c *ctx.Ctx, args EditReviewerTagsDialogArgs) templ.C
 				Name:  "reviewer_tags",
 				Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/message"),
 				Theme: form.ThemeVertical,
+				Help:  c.Loc.Get("builder.keyword.help"),
 			},
 			Values: args.Publication.ReviewerTags,
 		}).Render(ctx, templ_7745c5c3_Buffer)
