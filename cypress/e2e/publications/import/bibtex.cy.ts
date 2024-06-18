@@ -21,7 +21,7 @@ describe("Publication import", () => {
     cy.contains("Import via BibTeX file").click();
     cy.contains(".btn", "Add publication(s)").click();
 
-    // Upload WoS file
+    // Upload BibTeX file
     cy.get(".c-file-upload").should(
       "contain.text",
       "Drag and drop your .bib file or",

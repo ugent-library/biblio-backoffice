@@ -62,23 +62,8 @@ describe("Editing publication people & affiliations", () => {
       cy.ensureModal("Are you sure?").closeModal("Publish");
       cy.ensureToast("Publication was successfully published.").closeToast();
 
-      cy.updateFields(
-        "Authors",
-        () => {
-          cy.intercept("/publication/*/contributors/author/suggestions?*").as(
-            "suggestContributor",
-          );
-
-          cy.setFieldByLabel("First name", "Jane");
-          cy.wait("@suggestContributor");
-          cy.setFieldByLabel("Last name", "Doe");
-          cy.wait("@suggestContributor");
-          cy.contains(".btn", "Add external author").click({
-            scrollBehavior: false,
-          });
-        },
-        true,
-      );
+      // Add other external author first
+      cy.addAuthor("Jane", "Doe", true);
 
       cy.contains("#authors tr", "John Doe").find(".btn .if-delete").click();
       cy.ensureModal("Confirm deletion").closeModal("Delete");

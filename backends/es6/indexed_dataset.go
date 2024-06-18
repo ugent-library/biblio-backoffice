@@ -3,7 +3,6 @@ package es6
 import (
 	"slices"
 
-	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
@@ -78,15 +77,15 @@ func NewIndexedDataset(d *models.Dataset) *indexedDataset {
 
 	for _, author := range d.Author {
 		id.Contributor = append(id.Contributor, author.Name())
-		if author.PersonID != "" {
+		if author.PersonID != "" && !slices.Contains(id.AuthorID, author.PersonID) {
 			id.AuthorID = append(id.AuthorID, author.PersonID)
 		}
 	}
 	for _, contributor := range d.Contributor {
-		id.Contributor = append(id.Contributor, contributor.Name())
+		if !slices.Contains(id.Contributor, contributor.Name()) {
+			id.Contributor = append(id.Contributor, contributor.Name())
+		}
 	}
-	id.AuthorID = lo.Uniq(id.AuthorID)
-	id.Contributor = lo.Uniq(id.Contributor)
 
 	return id
 }

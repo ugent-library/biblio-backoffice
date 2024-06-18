@@ -263,6 +263,9 @@
                 "conference_name": {
                     "type": "text",
                     "copy_to": "all"
+                },
+                "supervisor_id": {
+                    "type": "keyword"
                 }
             }
         }
