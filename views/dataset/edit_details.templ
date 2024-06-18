@@ -132,6 +132,7 @@ templ EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, erro
 								Label: c.Loc.Get("builder.keyword"),
 								Cols:  9,
 								Error: localize.ValidationErrorAt(c.Loc, errors, "/keyword"),
+								Help:  c.Loc.Get("builder.keyword.help"),
 							},
 							Values: dataset.Keyword,
 						})

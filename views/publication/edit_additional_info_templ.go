@@ -73,6 +73,7 @@ func EditAdditionalInfoDialog(c *ctx.Ctx, p *models.Publication, conflict bool, 
 					Name:  "keyword",
 					Cols:  9,
 					Error: localize.ValidationErrorAt(c.Loc, errors, "/keyword"),
+					Help:  c.Loc.Get("builder.keyword.help"),
 				},
 				Values: p.Keyword,
 			}).Render(ctx, templ_7745c5c3_Buffer)

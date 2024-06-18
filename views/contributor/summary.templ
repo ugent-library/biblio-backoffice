@@ -40,10 +40,13 @@ templ Summary(c *ctx.Ctx,  role string, contribs []*models.Contributor, url stri
 			}
 		</div>
 	} else {
-		<a href={ templ.URL(url) } class="c-link-muted">
-			<i class="if if-edit if--small"></i>
-			<em>UGent { role + "s" } missing</em>
-		</a>
+		<div class="d-flex align-items-center">
+			<i class="if if-user if--small if--muted me-2"></i>
+			<a href={ templ.URL(url) } class="c-link-muted">
+				<i class="if if-edit if--small"></i>
+				<em>Add UGent { role }</em>
+			</a>
+		</div>
 	}
 }
 

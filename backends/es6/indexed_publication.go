@@ -5,7 +5,6 @@ import (
 
 	"slices"
 
-	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/models"
 	internal_time "github.com/ugent-library/biblio-backoffice/time"
@@ -44,6 +43,7 @@ type indexedPublication struct {
 	ReviewerTags            []string `json:"reviewer_tags,omitempty"`
 	SeriesTitle             string   `json:"series_title,omitempty"`
 	Status                  string   `json:"status,omitempty"`
+	SupervisorID            []string `json:"supervisor_id,omitempty"`
 	Title                   string   `json:"title,omitempty"`
 	Type                    string   `json:"type,omitempty"`
 	UserID                  string   `json:"user_id,omitempty"`
@@ -116,26 +116,29 @@ func NewIndexedPublication(p *models.Publication) *indexedPublication {
 
 	for _, author := range p.Author {
 		ip.Contributor = append(ip.Contributor, author.Name())
-		if author.PersonID != "" {
+		if author.PersonID != "" && !slices.Contains(ip.AuthorID, author.PersonID) {
 			ip.AuthorID = append(ip.AuthorID, author.PersonID)
 		}
 	}
-	ip.AuthorID = lo.Uniq(ip.AuthorID)
 
 	for _, supervisor := range p.Supervisor {
 		ip.Contributor = append(ip.Contributor, supervisor.Name())
+		if supervisor.PersonID != "" && !slices.Contains(ip.SupervisorID, supervisor.PersonID) {
+			ip.SupervisorID = append(ip.SupervisorID, supervisor.PersonID)
+		}
 	}
 
 	for _, editor := range p.Editor {
-		ip.Contributor = append(ip.Contributor, editor.Name())
+		if !slices.Contains(ip.Contributor, editor.Name()) {
+			ip.Contributor = append(ip.Contributor, editor.Name())
+		}
 	}
-
-	ip.Contributor = lo.Uniq(ip.Contributor)
 
 	for _, file := range p.File {
-		ip.FileRelation = append(ip.FileRelation, file.Relation)
+		if !slices.Contains(ip.FileRelation, file.Relation) {
+			ip.FileRelation = append(ip.FileRelation, file.Relation)
+		}
 	}
-	ip.FileRelation = lo.Uniq(ip.FileRelation)
 
 	if p.DOI != "" {
 		ip.Identifier = append(ip.Identifier, p.DOI)

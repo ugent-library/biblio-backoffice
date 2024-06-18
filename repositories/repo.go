@@ -289,7 +289,7 @@ func (s *Repo) MutatePublication(id string, u *models.Person, muts ...Mutation) 
 
 	p, err := s.GetPublication(id)
 	if err != nil {
-		return fmt.Errorf("repo.MutatePublication %s: %w", p.ID, err)
+		return fmt.Errorf("repo.MutatePublication %s: %w", id, err)
 	}
 
 	for _, mut := range muts {

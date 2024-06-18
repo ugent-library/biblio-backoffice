@@ -61,23 +61,8 @@ describe("Editing dataset people & affiliations", () => {
       cy.ensureModal("Are you sure?").closeModal("Publish");
       cy.ensureToast("Dataset was successfully published.").closeToast();
 
-      cy.updateFields(
-        "Creators",
-        () => {
-          cy.intercept("/dataset/*/contributors/author/suggestions?*").as(
-            "suggestContributor",
-          );
-
-          cy.setFieldByLabel("First name", "Jane");
-          cy.wait("@suggestContributor");
-          cy.setFieldByLabel("Last name", "Doe");
-          cy.wait("@suggestContributor");
-          cy.contains(".btn", "Add external creator").click({
-            scrollBehavior: false,
-          });
-        },
-        true,
-      );
+      // Add other external creator first
+      cy.addCreator("Jane", "Doe", true);
 
       cy.contains("#authors tr", "John Doe").find(".btn .if-delete").click();
       cy.ensureModal("Confirm deletion").closeModal("Delete");
@@ -212,9 +197,8 @@ describe("Editing dataset people & affiliations", () => {
         "#departments-body tr",
         "Department of Art, music and theatre sciences",
       )
-        .find(".if-more")
+        .find(".if-delete")
         .click();
-      cy.contains(".dropdown-item", "Remove from dataset").click();
 
       cy.ensureModal("Confirm deletion")
         .within(() => {

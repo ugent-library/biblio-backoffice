@@ -5,33 +5,9 @@ describe("Issue #1140: External contributor info is empty in the suggest box", (
     cy.loginAsResearcher();
 
     cy.setUpPublication("Book");
-
     cy.visitPublication();
 
-    cy.updateFields(
-      "Authors",
-      () => {
-        cy.intercept({
-          pathname: "/publication/*/contributors/author/suggestions",
-          query: {
-            first_name: "Jane",
-            last_name: "Doe",
-          },
-        }).as("suggestions");
-
-        cy.setFieldByLabel("First name", "Jane");
-        cy.setFieldByLabel("Last name", "Doe");
-
-        cy.wait("@suggestions");
-
-        cy.contains("#person-suggestions .list-group-item", "Jane Doe")
-          .contains(".btn", "Add external author")
-          .click();
-
-        cy.setFieldByLabel("Roles", "Validation");
-      },
-      true,
-    );
+    cy.addAuthor( "Jane", "Doe", true, "Validation");
 
     cy.contains("table#contributors-author-table tr", "Jane Doe")
       .find(".if.if-edit")
