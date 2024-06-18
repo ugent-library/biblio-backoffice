@@ -30,7 +30,10 @@ describe("Editing dataset description", () => {
         testFocusForLabel("Publisher", 'input[type=text][name="publisher"]');
 
         testFocusForLabel("Data format", 'input[type=text][name="format"]');
-        // Keywords field: tagify component doesn't support focussing by label
+        testFocusForLabel(
+          "Keywords",
+          ".tags:has(textarea#keyword) tags span.tagify__input[contenteditable]",
+        );
 
         testFocusForLabel("License", 'select[name="license"]');
         testFocusForLabel(

@@ -29,9 +29,9 @@ export default function () {
   };
 
   htmx.onLoad((rootEl) => {
-    rootEl.querySelectorAll(".tags").forEach((tag) => {
-      const realValues = tag.querySelector(".tags-real-values");
-      const widgetValues = tag.querySelector(".tags-widget-values");
+    rootEl.querySelectorAll(".tags").forEach((tags) => {
+      const realValues = tags.querySelector(".tags-real-values");
+      const widgetValues = tags.querySelector(".tags-widget-values");
       const { inputName } = widgetValues.dataset;
 
       // parse json, and fill tags-real-values
@@ -67,6 +67,20 @@ export default function () {
           }),
         );
       });
+
+      // handle label focus
+      const { originalInput, input } = tagify.DOM;
+      if (originalInput && originalInput.id && input) {
+        const label = document.querySelector(
+          `label[for="${originalInput.id}"]`,
+        );
+        if (label) {
+          label.addEventListener("click", () => {
+            // for some reason focus is lost again immediatly if you don't set it with timeout
+            window.setTimeout(() => input.focus(), 0);
+          });
+        }
+      }
     });
   });
 }

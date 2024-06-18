@@ -15,10 +15,7 @@ describe("Issue #1617: Librarian tags field does not work when you hit save befo
       cy.updateFields(
         "Additional information",
         () => {
-          cy.getLabel("Keywords")
-            .next()
-            .find("tags span[contenteditable]")
-            .type("Keyword 1{enter}Keyword 2", { delay: 10 });
+          cy.setFieldByLabel("Keywords", "Keyword 1{enter}Keyword 2");
         },
         true,
       );
@@ -34,10 +31,7 @@ describe("Issue #1617: Librarian tags field does not work when you hit save befo
       cy.updateFields(
         "Librarian tags",
         () => {
-          cy.getLabel("Librarian tags")
-            .next()
-            .find("tags span[contenteditable]")
-            .type("Tag 1{enter}Tag 2;Tag 3", { delay: 10 });
+          cy.setFieldByLabel("Librarian tags", "Tag 1{enter}Tag 2;Tag 3");
         },
         true,
       );
@@ -60,10 +54,7 @@ describe("Issue #1617: Librarian tags field does not work when you hit save befo
       cy.updateFields(
         "Dataset details",
         () => {
-          cy.getLabel("Keywords")
-            .next()
-            .find("tags span[contenteditable]")
-            .type("Keyword 1{enter}Keyword 2", { delay: 10 });
+          cy.setFieldByLabel("Keywords", "Keyword 1{enter}Keyword 2");
         },
         true,
       );
@@ -79,10 +70,7 @@ describe("Issue #1617: Librarian tags field does not work when you hit save befo
       cy.updateFields(
         "Librarian tags",
         () => {
-          cy.getLabel("Librarian tags")
-            .next()
-            .find("tags span[contenteditable]")
-            .type("Tag 1{enter}Tag 2;Tag 3", { delay: 10 });
+          cy.setFieldByLabel("Librarian tags", "Tag 1{enter}Tag 2;Tag 3");
         },
         true,
       );
