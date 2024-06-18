@@ -53,7 +53,13 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = views.Facet(c, "status", "Biblio status", "publication_statuses", "publication_statuses", facets["status"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "status",
+				Title:          "Biblio status",
+				LocPrefix:      "publication_statuses",
+				LocPrefixShort: "publication_statuses",
+				FacetValues:    facets["status"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -61,7 +67,13 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "classification", "Classification", "publication_classifications", "", facets["classification"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "classification",
+				Title:          "Classification",
+				LocPrefix:      "publication_classifications",
+				LocPrefixShort: "",
+				FacetValues:    facets["classification"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -69,7 +81,13 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "faculty_id", "Faculty", "organization", "organization", facets["faculty_id"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "faculty_id",
+				Title:          "Faculty",
+				LocPrefix:      "organization",
+				LocPrefixShort: "organization",
+				FacetValues:    facets["faculty_id"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -77,7 +95,13 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "year", "Publication year", "", "", facets["year"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "year",
+				Title:          "Publication year",
+				LocPrefix:      "",
+				LocPrefixShort: "",
+				FacetValues:    facets["year"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -85,7 +109,13 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "type", "Publication type", "publication_types", "publication_types", facets["type"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "type",
+				Title:          "Publication type",
+				LocPrefix:      "publication_types",
+				LocPrefixShort: "publication_types",
+				FacetValues:    facets["type"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -104,7 +134,13 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = views.Facet(c, "has_message", "Message", "has_message", "has_message", facets["has_message"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "has_message",
+				Title:          "Message",
+				LocPrefix:      "has_message",
+				LocPrefixShort: "has_message",
+				FacetValues:    facets["has_message"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -112,7 +148,13 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "locked", "Locked", "locked", "locked", facets["locked"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "locked",
+				Title:          "Locked",
+				LocPrefix:      "locked",
+				LocPrefixShort: "locked",
+				FacetValues:    facets["locked"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -120,7 +162,13 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "has_files", "File", "has_files", "has_files", facets["has_files"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "has_files",
+				Title:          "File",
+				LocPrefix:      "has_files",
+				LocPrefixShort: "has_files",
+				FacetValues:    facets["has_files"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -128,7 +176,13 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "vabb_type", "VABB type", "", "", facets["vabb_type"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "vabb_type",
+				Title:          "VABB type",
+				LocPrefix:      "",
+				LocPrefixShort: "",
+				FacetValues:    facets["vabb_type"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -183,7 +237,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = views.Facet(c, "status", "Biblio status", "publication_statuses", "publication_statuses", facets["status"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "status",
+				Title:          "Biblio status",
+				LocPrefix:      "publication_statuses",
+				LocPrefixShort: "publication_statuses",
+				FacetValues:    facets["status"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -191,7 +251,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "classification", "Classification", "publication_classifications", "", facets["classification"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "classification",
+				Title:          "Classification",
+				LocPrefix:      "publication_classifications",
+				LocPrefixShort: "",
+				FacetValues:    facets["classification"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -199,7 +265,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "faculty_id", "Faculty", "organization", "organization", facets["faculty_id"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "faculty_id",
+				Title:          "Faculty",
+				LocPrefix:      "organization",
+				LocPrefixShort: "organization",
+				FacetValues:    facets["faculty_id"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -207,7 +279,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "year", "Publication year", "", "", facets["year"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "year",
+				Title:          "Publication year",
+				LocPrefix:      "",
+				LocPrefixShort: "",
+				FacetValues:    facets["year"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -215,7 +293,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "type", "Publication type", "publication_types", "publication_types", facets["type"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "type",
+				Title:          "Publication type",
+				LocPrefix:      "publication_types",
+				LocPrefixShort: "publication_types",
+				FacetValues:    facets["type"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -234,7 +318,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = views.Facet(c, "publication_status", "Publication status", "publication_publishing_statuses", "publication_publishing_statuses", facets["publication_status"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "publication_status",
+				Title:          "Publication status",
+				LocPrefix:      "publication_publishing_statuses",
+				LocPrefixShort: "publication_publishing_statuses",
+				FacetValues:    facets["publication_status"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -242,7 +332,14 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "reviewer_tags", "Librarian tags", "", "", facets["reviewer_tags"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "reviewer_tags",
+				Title:          "Librarian tags",
+				LocPrefix:      "",
+				LocPrefixShort: "",
+				FacetValues:    facets["reviewer_tags"],
+				HideSelectAll:  true,
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -250,7 +347,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "has_message", "Message", "has_message", "has_message", facets["has_message"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "has_message",
+				Title:          "Message",
+				LocPrefix:      "has_message",
+				LocPrefixShort: "has_message",
+				FacetValues:    facets["has_message"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -258,7 +361,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "locked", "Locked", "locked", "locked", facets["locked"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "locked",
+				Title:          "Locked",
+				LocPrefix:      "locked",
+				LocPrefixShort: "locked",
+				FacetValues:    facets["locked"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -266,7 +375,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "extern", "UGent", "extern", "extern", facets["extern"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "extern",
+				Title:          "UGent",
+				LocPrefix:      "extern",
+				LocPrefixShort: "extern",
+				FacetValues:    facets["extern"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -285,7 +400,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 				templ_7745c5c3_Buffer = templ.GetBuffer()
 				defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 			}
-			templ_7745c5c3_Err = views.Facet(c, "wos_type", "WOS type", "", "", facets["wos_type"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "wos_type",
+				Title:          "WOS type",
+				LocPrefix:      "",
+				LocPrefixShort: "",
+				FacetValues:    facets["wos_type"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -293,7 +414,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "vabb_type", "VABB type", "", "", facets["vabb_type"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "vabb_type",
+				Title:          "VABB type",
+				LocPrefix:      "",
+				LocPrefixShort: "",
+				FacetValues:    facets["vabb_type"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -301,7 +428,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "has_files", "File", "has_files", "has_files", facets["has_files"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "has_files",
+				Title:          "File",
+				LocPrefix:      "has_files",
+				LocPrefixShort: "has_files",
+				FacetValues:    facets["has_files"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -309,7 +442,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "file_relation", "File type", "publication_file_relations", "publication_file_relations", facets["file_relation"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "file_relation",
+				Title:          "File type",
+				LocPrefix:      "publication_file_relations",
+				LocPrefixShort: "publication_file_relations",
+				FacetValues:    facets["file_relation"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -333,7 +472,13 @@ func CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.Facet(c, "legacy", "Legacy", "legacy", "legacy", facets["legacy"], searchArgs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = views.Facet(c, views.FacetArgs{
+				FieldName:      "legacy",
+				Title:          "Legacy",
+				LocPrefix:      "legacy",
+				LocPrefixShort: "legacy",
+				FacetValues:    facets["legacy"],
+			}, searchArgs).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -402,7 +547,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("export_to.xlsx"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 97, Col: 47}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 242, Col: 47}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -456,7 +601,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.search.scopes." + scope))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 115, Col: 57}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 260, Col: 57}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
@@ -521,7 +666,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, args.Hits.Pagination))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 142, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 287, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -564,7 +709,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.search.empty.title." + args.CurrentScope))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 164, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 309, Col: 75}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -577,7 +722,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication.search.empty.description." + args.CurrentScope))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 167, Col: 81}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 312, Col: 81}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -626,7 +771,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, args.Hits.Pagination))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 201, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search.templ`, Line: 346, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {

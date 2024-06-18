@@ -26,17 +26,71 @@ func publicationSearchExportURL(c *ctx.Ctx, searchArgs *models.SearchArgs) *url.
 
 templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.FacetValues) {
 	@views.FacetLine() {
-		@views.Facet(c, "status", "Biblio status", "publication_statuses", "publication_statuses", facets["status"], searchArgs)
-		@views.Facet(c, "classification", "Classification", "publication_classifications", "", facets["classification"], searchArgs)
-		@views.Facet(c, "faculty_id", "Faculty", "organization", "organization", facets["faculty_id"], searchArgs)
-		@views.Facet(c, "year", "Publication year", "", "", facets["year"], searchArgs)
-		@views.Facet(c, "type", "Publication type", "publication_types", "publication_types", facets["type"], searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "status",
+			Title:          "Biblio status",
+			LocPrefix:      "publication_statuses",
+			LocPrefixShort: "publication_statuses",
+			FacetValues:    facets["status"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "classification",
+			Title:          "Classification",
+			LocPrefix:      "publication_classifications",
+			LocPrefixShort: "",
+			FacetValues:    facets["classification"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "faculty_id",
+			Title:          "Faculty",
+			LocPrefix:      "organization",
+			LocPrefixShort: "organization",
+			FacetValues:    facets["faculty_id"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "year",
+			Title:          "Publication year",
+			LocPrefix:      "",
+			LocPrefixShort: "",
+			FacetValues:    facets["year"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "type",
+			Title:          "Publication type",
+			LocPrefix:      "publication_types",
+			LocPrefixShort: "publication_types",
+			FacetValues:    facets["type"],
+		}, searchArgs)
 	}
 	@views.FacetLine() {
-		@views.Facet(c, "has_message", "Message", "has_message", "has_message", facets["has_message"], searchArgs)
-		@views.Facet(c, "locked", "Locked", "locked", "locked", facets["locked"], searchArgs)
-		@views.Facet(c, "has_files", "File", "has_files", "has_files", facets["has_files"], searchArgs)
-		@views.Facet(c, "vabb_type", "VABB type", "", "", facets["vabb_type"], searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "has_message",
+			Title:          "Message",
+			LocPrefix:      "has_message",
+			LocPrefixShort: "has_message",
+			FacetValues:    facets["has_message"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "locked",
+			Title:          "Locked",
+			LocPrefix:      "locked",
+			LocPrefixShort: "locked",
+			FacetValues:    facets["locked"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "has_files",
+			Title:          "File",
+			LocPrefix:      "has_files",
+			LocPrefixShort: "has_files",
+			FacetValues:    facets["has_files"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "vabb_type",
+			Title:          "VABB type",
+			LocPrefix:      "",
+			LocPrefixShort: "",
+			FacetValues:    facets["vabb_type"],
+		}, searchArgs)
 		@views.FacetSince(c, "created_since", "Created since", "Show records created since", searchArgs)
 		@views.FacetSince(c, "updated_since", "Updated since", "Show records updated since", searchArgs)
 	}
@@ -44,27 +98,118 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models
 
 templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.FacetValues) {
 	@views.FacetLine() {
-		@views.Facet(c, "status", "Biblio status", "publication_statuses", "publication_statuses", facets["status"], searchArgs)
-		@views.Facet(c, "classification", "Classification", "publication_classifications", "", facets["classification"], searchArgs)
-		@views.Facet(c, "faculty_id", "Faculty", "organization", "organization", facets["faculty_id"], searchArgs)
-		@views.Facet(c, "year", "Publication year", "", "", facets["year"], searchArgs)
-		@views.Facet(c, "type", "Publication type", "publication_types", "publication_types", facets["type"], searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "status",
+			Title:          "Biblio status",
+			LocPrefix:      "publication_statuses",
+			LocPrefixShort: "publication_statuses",
+			FacetValues:    facets["status"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "classification",
+			Title:          "Classification",
+			LocPrefix:      "publication_classifications",
+			LocPrefixShort: "",
+			FacetValues:    facets["classification"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "faculty_id",
+			Title:          "Faculty",
+			LocPrefix:      "organization",
+			LocPrefixShort: "organization",
+			FacetValues:    facets["faculty_id"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "year",
+			Title:          "Publication year",
+			LocPrefix:      "",
+			LocPrefixShort: "",
+			FacetValues:    facets["year"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "type",
+			Title:          "Publication type",
+			LocPrefix:      "publication_types",
+			LocPrefixShort: "publication_types",
+			FacetValues:    facets["type"],
+		}, searchArgs)
 	}
 	@views.FacetLine() {
-		@views.Facet(c, "publication_status", "Publication status", "publication_publishing_statuses", "publication_publishing_statuses", facets["publication_status"], searchArgs)
-		@views.Facet(c, "reviewer_tags", "Librarian tags", "", "", facets["reviewer_tags"], searchArgs)
-		@views.Facet(c, "has_message", "Message", "has_message", "has_message", facets["has_message"], searchArgs)
-		@views.Facet(c, "locked", "Locked", "locked", "locked", facets["locked"], searchArgs)
-		@views.Facet(c, "extern", "UGent", "extern", "extern", facets["extern"], searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "publication_status",
+			Title:          "Publication status",
+			LocPrefix:      "publication_publishing_statuses",
+			LocPrefixShort: "publication_publishing_statuses",
+			FacetValues:    facets["publication_status"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "reviewer_tags",
+			Title:          "Librarian tags",
+			LocPrefix:      "",
+			LocPrefixShort: "",
+			FacetValues:    facets["reviewer_tags"],
+			HideSelectAll:  true,
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "has_message",
+			Title:          "Message",
+			LocPrefix:      "has_message",
+			LocPrefixShort: "has_message",
+			FacetValues:    facets["has_message"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "locked",
+			Title:          "Locked",
+			LocPrefix:      "locked",
+			LocPrefixShort: "locked",
+			FacetValues:    facets["locked"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "extern",
+			Title:          "UGent",
+			LocPrefix:      "extern",
+			LocPrefixShort: "extern",
+			FacetValues:    facets["extern"],
+		}, searchArgs)
 	}
 	@views.FacetLine() {
-		@views.Facet(c, "wos_type", "WOS type", "", "", facets["wos_type"], searchArgs)
-		@views.Facet(c, "vabb_type", "VABB type", "", "", facets["vabb_type"], searchArgs)
-		@views.Facet(c, "has_files", "File", "has_files", "has_files", facets["has_files"], searchArgs)
-		@views.Facet(c, "file_relation", "File type", "publication_file_relations", "publication_file_relations", facets["file_relation"], searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "wos_type",
+			Title:          "WOS type",
+			LocPrefix:      "",
+			LocPrefixShort: "",
+			FacetValues:    facets["wos_type"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "vabb_type",
+			Title:          "VABB type",
+			LocPrefix:      "",
+			LocPrefixShort: "",
+			FacetValues:    facets["vabb_type"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "has_files",
+			Title:          "File",
+			LocPrefix:      "has_files",
+			LocPrefixShort: "has_files",
+			FacetValues:    facets["has_files"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "file_relation",
+			Title:          "File type",
+			LocPrefix:      "publication_file_relations",
+			LocPrefixShort: "publication_file_relations",
+			FacetValues:    facets["file_relation"],
+		}, searchArgs)
 		@views.FacetSince(c, "created_since", "Created since", "Show records created since", searchArgs)
 		@views.FacetSince(c, "updated_since", "Updated since", "Show records updated since", searchArgs)
-		@views.Facet(c, "legacy", "Legacy", "legacy", "legacy", facets["legacy"], searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "legacy",
+			Title:          "Legacy",
+			LocPrefix:      "legacy",
+			LocPrefixShort: "legacy",
+			FacetValues:    facets["legacy"],
+		}, searchArgs)
 	}
 }
 
