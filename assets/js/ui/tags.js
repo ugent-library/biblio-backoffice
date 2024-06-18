@@ -3,7 +3,6 @@ import Tagify from "@yaireo/tagify"; // see https://github.com/yairEO/tagify
 
 export default function () {
   /*
-   *
    * Expected html layout:
    *
    * <div class="tags">
@@ -18,61 +17,56 @@ export default function () {
    * and should therefore not be sent to the server
    * */
 
-  let fillRealValues = function (element, name, values) {
+  const fillRealValues = function (element, name, values) {
     element.innerHTML = "";
     for (let i = 0; i < values.length; i++) {
-      let input = document.createElement("input");
+      const input = document.createElement("input");
       input.type = "hidden";
-      input.name = name + "[" + i + "]";
+      input.name = `${name}[${i}]`;
       input.value = values[i];
       element.appendChild(input);
     }
   };
 
-  let configureTags = function (element) {
-    let realValues = element.querySelector(".tags-real-values");
-    let widgetValues = element.querySelector(".tags-widget-values");
-    let inputName = widgetValues.dataset.inputName;
+  htmx.onLoad((rootEl) => {
+    rootEl.querySelectorAll(".tags").forEach((tag) => {
+      const realValues = tag.querySelector(".tags-real-values");
+      const widgetValues = tag.querySelector(".tags-widget-values");
+      const { inputName } = widgetValues.dataset;
 
-    // parse json, and fill tags-real-values
-    {
-      let val = widgetValues.value;
-      try {
-        val = JSON.parse(val);
-        if (val instanceof Array) {
-          fillRealValues(realValues, inputName, val);
-        }
-      } catch (err) {}
-    }
+      // parse json, and fill tags-real-values
+      {
+        let val = widgetValues.value;
+        try {
+          val = JSON.parse(val);
+          if (Array.isArray(val)) {
+            fillRealValues(realValues, inputName, val);
+          }
+        } catch (err) {}
+      }
 
-    //load and configure tagify
-    let t = new Tagify(widgetValues, {
-      delimiters: ";|\n|\r",
-      duplicates: false,
-      pasteAsTags: true, //automatically converted pasted text into tags (using delimiters)
-      // we have no dropdown, but setting "caseSensitive" is used by tagify for duplicate check
-      dropdown: {
-        enabled: false,
-        caseSensitive: true,
-      },
+      // load and configure tagify
+      const tagify = new Tagify(widgetValues, {
+        delimiters: ";|\n|\r",
+        duplicates: false,
+        pasteAsTags: true,
+
+        // we have no dropdown, but setting "caseSensitive" is used by Tagify for duplicate check
+        dropdown: {
+          enabled: false,
+          caseSensitive: true,
+        },
+      });
+
+      tagify.on("change", function (evt) {
+        fillRealValues(
+          realValues,
+          inputName,
+          evt.detail.tagify.value.map(function (v) {
+            return v.value;
+          }),
+        );
+      });
     });
-    t.on("change", function (evt) {
-      fillRealValues(
-        realValues,
-        inputName,
-        evt.detail.tagify.value.map(function (v) {
-          return v.value;
-        }),
-      );
-    });
-  };
-
-  let loadTagify = function (rootEl) {
-    let allTags = rootEl.querySelectorAll(".tags");
-    for (let i = 0; i < allTags.length; i++) {
-      configureTags(allTags[i]);
-    }
-  };
-
-  htmx.onLoad(loadTagify);
+  });
 }
