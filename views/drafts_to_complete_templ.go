@@ -78,7 +78,7 @@ func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var4 templ.SafeURL = templ.URL(c.PathTo("publications", "f[status]", "private").String())
+				var templ_7745c5c3_Var4 templ.SafeURL = templ.URL(c.PathTo("publications", "f[status]", "private", "f[locked]", "false").String())
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -111,7 +111,7 @@ func DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var6 templ.SafeURL = templ.URL(c.PathTo("datasets", "f[status]", "private").String())
+				var templ_7745c5c3_Var6 templ.SafeURL = templ.URL(c.PathTo("datasets", "f[status]", "private", "f[locked]", "false").String())
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var6)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
