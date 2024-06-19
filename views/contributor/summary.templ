@@ -2,62 +2,78 @@ package contributorviews
 
 import (
 	"fmt"
-	"strings"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
 
-templ Summary(c *ctx.Ctx,  role string, contribs []*models.Contributor, url string) {
-	if len(contribs) > 0 {
-		<div class="c-author-list">
-			if len(contribs) > 3 {
-				for _, contrib := range contribs[:3] {
-					@summaryItem(c, role, contrib)
-				}
-				<div class="c-author">
-					if url != "" {
-						<a class="c-link c-link-muted" href={ templ.URL(url) }>
-							{ fmt.Sprint(len(contribs) - 3) } more
-							if len(contribs) - 3 > 1 {
-								{ role + "s" }
-							} else {
-								{ role }
-							}
-						</a>
-					} else {
-						{ fmt.Sprint(len(contribs) - 3) } more
-						if len(contribs) - 3 > 1 {
-							{ role + "s" }
-						} else {
-							{ role }
-						}
-					}
-				</div>
-			} else {
-				for _, contrib := range contribs {
-					@summaryItem(c, role, contrib)
-				}
-			}
-		</div>
-	} else {
-		<div class="d-flex align-items-center">
-			<i class="if if-user if--small if--muted me-2"></i>
-			<a href={ templ.URL(url) } class="c-link-muted">
-				<i class="if if-edit if--small"></i>
-				<em>Add UGent { role }</em>
-			</a>
-		</div>
-	}
+type SummaryArgs struct {
+	Role             string
+	Contributors     []*models.Contributor
+	URL              string
+	URLTarget        string
+	CurrentUserRoles string
 }
 
-templ summaryItem(c *ctx.Ctx, role string, contrib *models.Contributor) {
-	<div class="c-author">
-		if contrib.Person != nil {
-			<i class="if if-ghent-university" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ "UGent " + role }></i>
+templ Summary(c *ctx.Ctx, args SummaryArgs) {
+	<div class="c-author-list">
+		if len(args.Contributors) > 0 {
+			for _, contrib := range lo.Slice(args.Contributors, 0, 3) {
+				<div class="c-author">
+					if contrib.Person != nil {
+						<i class="if if-ghent-university" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ "UGent " + args.Role }></i>
+					}
+					if contrib.ORCID() != "" {
+						<i class="if if-orcid" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ cases.Title(language.English).String(args.Role) + " with ORCID" }></i>
+					}
+					<span>{ contrib.Name() }</span>
+				</div>
+			}
+			if len(args.Contributors) > 3 {
+				<div class="c-author">
+					if args.URL != "" {
+						<a
+							class="c-link c-link-muted"
+							href={ templ.URL(args.URL) }
+							if args.URLTarget != "" {
+								target={ args.URLTarget }
+							}
+						>
+							@moreContributors(args)
+						</a>
+					} else {
+						@moreContributors(args)
+					}
+				</div>
+			}
+		} else {
+			<div class="c-author">
+				<i class="if if-user if--small if--muted me-2"></i>
+				<a
+					class="c-link-muted"
+					href={ templ.URL(args.URL) }
+					if args.URLTarget != "" {
+						target={ args.URLTarget }
+					}
+				>
+					<i class="if if-edit if--small"></i>
+					<em>Add UGent { args.Role }</em>
+				</a>
+			</div>
 		}
-		if contrib.ORCID() != "" {
-			<i class="if if-orcid" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ strings.Title(role) + " with ORCID" }></i>
+		if args.CurrentUserRoles != "" {
+			<div class="c-author"><span class="badge rounded-pill badge-light">Your role: { args.CurrentUserRoles }</span></div>
 		}
-		<span>{ contrib.Name() }</span>
 	</div>
+}
+
+templ moreContributors(args SummaryArgs) {
+	{ fmt.Sprint(len(args.Contributors) - 3) } more
+	if len(args.Contributors) - 3 > 1 {
+		{ args.Role + "s" }
+	} else {
+		{ args.Role }
+	}
 }

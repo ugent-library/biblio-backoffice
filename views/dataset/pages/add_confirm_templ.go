@@ -73,7 +73,9 @@ func AddConfirm(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			templ_7745c5c3_Err = datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
 				Dataset: dataset,
 				URL:     c.PathTo("dataset", "id", dataset.ID),
-				Actions: datasetsummaryviews.DefaultActions(c, dataset),
+				Actions: datasetsummaryviews.DefaultActions(c, datasetsummaryviews.DefaultActionsArgs{
+					Dataset: dataset,
+				}),
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -103,7 +105,7 @@ func AddConfirm(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.subnav.contributors"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_confirm.templ`, Line: 92, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_confirm.templ`, Line: 93, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {

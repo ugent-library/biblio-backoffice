@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-
 	"slices"
 
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
