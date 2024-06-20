@@ -118,7 +118,11 @@ templ addDuplicate(c *ctx.Ctx, args AddIdentifierArgs) {
 									@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
 										Dataset: args.Dataset,
 										URL:     c.PathTo("dataset", "id", args.Dataset.ID),
-										Actions: datasetsummaryviews.DefaultActions(c, args.Dataset),
+										Target:  "_blank",
+										Actions: datasetsummaryviews.DefaultActions(c, datasetsummaryviews.DefaultActionsArgs{
+											Dataset: args.Dataset,
+											Target:  "_blank",
+										}),
 									})
 								</div>
 							</div>

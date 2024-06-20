@@ -5,17 +5,30 @@ import (
 	"net/url"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/contributor"
 	"github.com/ugent-library/biblio-backoffice/views/relatedorganization"
-	"github.com/ugent-library/biblio-backoffice/views"
 )
 
 type SummaryArgs struct {
 	Dataset *models.Dataset
 	URL     *url.URL
+	Target  string
 	Actions templ.Component
 	Footer  templ.Component
 	Links   templ.Component
+}
+
+func getUserContributorRoles(d *models.Dataset, user *models.Person) string {
+	if d.HasContributor("author", user) {
+		return "creator"
+	}
+
+	if d.Creator.ID == user.ID {
+		return "registrar"
+	}
+
+	return ""
 }
 
 templ Summary(c *ctx.Ctx, args SummaryArgs) {
@@ -23,7 +36,12 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 		<div class="c-thumbnail-and-text align-items-start w-100">
 			if c.UserRole == "curator" {
 				<div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-md-small c-thumbnail-lg-large d-none d-lg-block">
-					<a href={ templ.URL(args.URL.String()) }>
+					<a
+						href={ templ.URL(args.URL.String()) }
+						if args.Target != "" {
+							target={ args.Target }
+						}
+					>
 						<div class="c-thumbnail-inner">
 							<i class="if if-article"></i>
 						</div>
@@ -43,7 +61,13 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									if args.Dataset.License != "" {
 										<span class="c-subline text-truncate ps-2">{ args.Dataset.License }</span>
 									} else {
-										<a href={ views.URL(args.URL).SetQueryParam("show", "description").SafeURL() } class="c-link-muted">
+										<a
+											class="c-link-muted"
+											href={ views.URL(args.URL).SetQueryParam("show", "description").SafeURL() }
+											if args.Target != "" {
+												target={ args.Target }
+											}
+										>
 											<i class="if if-edit if--small"></i>
 											<em>Add license</em>
 										</a>
@@ -73,7 +97,13 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 											{ c.Loc.Get("dataset_access_levels." + args.Dataset.AccessLevel) }
 										</span>
 									} else {
-										<a href={ views.URL(args.URL).SetQueryParam("show", "description").SafeURL() } class="c-link-muted">
+										<a
+											class="c-link-muted"
+											href={ views.URL(args.URL).SetQueryParam("show", "description").SafeURL() }
+											if args.Target != "" {
+												target={ args.Target }
+											}
+										>
 											<i class="if if-edit if--small"></i>
 											<em>Add document access level</em>
 										</a>
@@ -100,7 +130,12 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 										Untitled record
 									}
 								} else {
-									<a href={ templ.URL(args.URL.String()) }>
+									<a
+										href={ templ.URL(args.URL.String()) }
+										if args.Target != "" {
+											target={ args.Target }
+										}
+									>
 										<span class="list-group-item-title">
 											if args.Dataset.Title != "" {
 												{ args.Dataset.Title }
@@ -126,23 +161,27 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									<li class="c-meta-item">{ args.Dataset.Format[0] }</li>
 								}
 							</ul>
-							if len(args.Dataset.Author) > 0 {
-								@contributorviews.Summary(c, "author", args.Dataset.Author, views.URL(args.URL).SetQueryParam("show", "contributors").String())
-							} else {
-								<div class="d-flex align-items-center">
-									<i class="if if-user if--small if--muted me-2"></i>
-									<a href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() } class="c-link-muted">
-										<i class="if if-edit if--small"></i>
-										<em>Add UGent author</em>
-									</a>
-								</div>
-							}
+							@contributorviews.Summary(c, contributorviews.SummaryArgs{
+								Role:             "author",
+								Contributors:     args.Dataset.Author,
+								URL:              views.URL(args.URL).SetQueryParam("show", "contributors").String(),
+								URLTarget:        args.Target,
+								CurrentUserRoles: getUserContributorRoles(args.Dataset, c.User),
+							})
+						</div>
+						<div class="vstack gap-3">
 							<div class="d-flex align-items-center">
 								<i class="if if-building if--small if--muted me-2"></i>
 								if len(args.Dataset.RelatedOrganizations) > 0 {
 									@relatedorganizationviews.Summary(c, args.Dataset.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
 								} else {
-									<a href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() } class="c-link-muted">
+									<a
+										class="c-link-muted"
+										href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
+										if args.Target != "" {
+											target={ args.Target }
+										}
+									>
 										<i class="if if-edit if--small"></i>
 										<em>Add department</em>
 									</a>

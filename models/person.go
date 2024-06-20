@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Affiliation struct {
 	OrganizationID string        `json:"organization_id"`

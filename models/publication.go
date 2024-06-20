@@ -4,10 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
-
-	"slices"
 
 	"github.com/oklog/ulid/v2"
 	"github.com/ugent-library/biblio-backoffice/pagination"
@@ -429,6 +428,14 @@ func (p *Publication) RemoveContributor(role string, i int) error {
 	p.SetContributors(role, append(cc[:i], cc[i+1:]...))
 
 	return nil
+}
+
+func (p *Publication) HasContributor(role string, u *Person) bool {
+	cc := p.Contributors(role)
+
+	return slices.ContainsFunc(cc, func(c *Contributor) bool {
+		return c.PersonID == u.ID
+	})
 }
 
 func (p *Publication) GetLink(id string) *PublicationLink {
