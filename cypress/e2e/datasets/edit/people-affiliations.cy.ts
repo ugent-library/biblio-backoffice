@@ -137,6 +137,17 @@ describe("Editing dataset people & affiliations", () => {
         testFocusForLabel("First name", 'input[name="first_name"]', true);
         testFocusForLabel("Last name", 'input[name="last_name"]');
       });
+
+      cy.addCreator("Jane", "Dow", true);
+
+      cy.contains("#contributors-author-body table tbody tr", "Jane Dow")
+        .find(".if-edit")
+        .click();
+
+      cy.ensureModal("Edit or change creator").within(() => {
+        testFocusForLabel("First name", 'input[name="first_name"]', true);
+        testFocusForLabel("Last name", 'input[name="last_name"]');
+      });
     });
   });
 

@@ -134,16 +134,29 @@ describe("Editing publication people & affiliations", () => {
       cy.setUpPublication();
       cy.visitPublication();
 
-      cy.updateFields("Authors", () => {
+      cy.updateFields(
+        "Authors",
+        () => {
+          testFocusForLabel("First name", 'input[name="first_name"]', true);
+          testFocusForLabel("Last name", 'input[name="last_name"]');
+
+          cy.setFieldByLabel("First name", "John");
+          cy.setFieldByLabel("Last name", "Doe");
+
+          cy.contains(".btn", "Add author").click();
+
+          testFocusForLabel("Roles", 'select[name="credit_role"]');
+        },
+        true,
+      );
+
+      cy.contains("#contributors-author-body table tbody tr", "John Doe")
+        .find(".if-edit")
+        .click();
+
+      cy.ensureModal("Edit or change author").within(() => {
         testFocusForLabel("First name", 'input[name="first_name"]', true);
         testFocusForLabel("Last name", 'input[name="last_name"]');
-
-        cy.setFieldByLabel("First name", "John");
-        cy.setFieldByLabel("Last name", "Doe");
-
-        cy.contains(".btn", "Add author").click();
-
-        testFocusForLabel("Roles", 'select[name="credit_role"]');
       });
     });
   });
@@ -195,6 +208,17 @@ describe("Editing publication people & affiliations", () => {
       cy.visitPublication();
 
       cy.updateFields("Editors", () => {
+        testFocusForLabel("First name", 'input[name="first_name"]', true);
+        testFocusForLabel("Last name", 'input[name="last_name"]');
+      });
+
+      cy.addEditor("Jane", "Dow", true);
+
+      cy.contains("#contributors-editor-body table tbody tr", "Jane Dow")
+        .find(".if-edit")
+        .click();
+
+      cy.ensureModal("Edit or change editor").within(() => {
         testFocusForLabel("First name", 'input[name="first_name"]', true);
         testFocusForLabel("Last name", 'input[name="last_name"]');
       });
@@ -250,6 +274,17 @@ describe("Editing publication people & affiliations", () => {
       cy.visitPublication();
 
       cy.updateFields("Supervisors", () => {
+        testFocusForLabel("First name", 'input[name="first_name"]', true);
+        testFocusForLabel("Last name", 'input[name="last_name"]');
+      });
+
+      cy.addSupervisor("Jane", "Dow", true);
+
+      cy.contains("#contributors-supervisor-body table tbody tr", "Jane Dow")
+        .find(".if-edit")
+        .click();
+
+      cy.ensureModal("Edit or change supervisor").within(() => {
         testFocusForLabel("First name", 'input[name="first_name"]', true);
         testFocusForLabel("Last name", 'input[name="last_name"]');
       });
