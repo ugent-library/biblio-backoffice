@@ -992,10 +992,10 @@ describe("Editing publication description", () => {
             .find("select")
             .select("Social Sciences");
 
-          cy.getLabel("Keywords")
-            .next()
-            .find("tags span[contenteditable]")
-            .type("these{enter}are{enter}the{enter}keywords", { delay: 10 });
+          cy.setFieldByLabel(
+            "Keywords",
+            "these{enter}are{enter}the{enter}keywords",
+          );
 
           cy.setFieldByLabel(
             "Additional information",
@@ -1058,7 +1058,10 @@ describe("Editing publication description", () => {
     it("should have clickable labels in the Additional info dialog", () => {
       cy.updateFields("Additional information", () => {
         testFocusForLabel("Research field", 'select[name="research_field"]');
-        // Keywords field: tagify component doesn't support focussing by label
+        testFocusForLabel(
+          "Keywords",
+          ".tags:has(textarea#keyword) tags span.tagify__input[contenteditable]",
+        );
         testFocusForLabel(
           "Additional information",
           'textarea[name="additional_info"]',

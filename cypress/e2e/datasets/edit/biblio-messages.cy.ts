@@ -61,13 +61,10 @@ describe("Editing dataset Biblio messages", () => {
 
       cy.ensureModal(/^Edit Librarian tags/)
         .within(() => {
-          cy.getLabel("Librarian tags")
-            .next()
-            .find("tags span[contenteditable]")
-            .type(
-              "initial tag 1{enter}initial tag 2{enter}initial tag 3{enter}",
-              { delay: 10 },
-            );
+          cy.setFieldByLabel(
+            "Librarian tags",
+            "initial tag 1{enter}initial tag 2{enter}initial tag 3{enter}",
+          );
 
           // Give Tagify a bit of time to process this
           cy.wait(50);
@@ -87,15 +84,11 @@ describe("Editing dataset Biblio messages", () => {
 
       cy.ensureModal(/^Edit Librarian tags/)
         .within(() => {
-          cy.getLabel("Librarian tags")
-            .next()
-            .find("tags span[contenteditable]")
-            .as("tags")
-            .type("updated tag 4{enter}");
+          cy.setFieldByLabel("Librarian tags", "updated tag 4{enter}");
 
           cy.contains("tags tag", "initial tag 2").find("x").click();
 
-          cy.get("@tags").type("updated tag 5{enter}");
+          cy.setFieldByLabel("Librarian tags", "updated tag 5{enter}");
 
           // Give Tagify a bit of time to process this
           cy.wait(50);
@@ -111,6 +104,15 @@ describe("Editing dataset Biblio messages", () => {
           "updated tag 4",
           "updated tag 5",
         ]);
+    });
+
+    it("should have clickable labels in the edit librarian tags dialog", () => {
+      cy.updateFields("Librarian tags", () => {
+        testFocusForLabel(
+          "Librarian tags",
+          ".tags:has(textarea#reviewer_tags) tags span.tagify__input[contenteditable]",
+        );
+      });
     });
 
     it("should be possible to add and edit librarian notes", () => {

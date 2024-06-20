@@ -29,6 +29,19 @@ export default function setField(
       field.select(value, { log: false });
       break;
 
+    case "SPAN":
+      field.then((f) => {
+        // Tagify components
+        if (f.hasClass("tagify__input")) {
+          field.type(value, { delay: 10, log: false });
+        } else {
+          throw new Error(
+            `Field of type '${subject.prop("tagName")}' is not supported.`,
+          );
+        }
+      });
+      break;
+
     default:
       throw new Error(
         `Field of type '${subject.prop("tagName")}' is not supported.`,
