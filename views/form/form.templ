@@ -25,15 +25,16 @@ templ Errors(errors []string) {
 }
 
 type FieldArgs struct {
-	Label    string
-	Name     string
-	Readonly bool
-	Tooltip  string
-	Required bool
-	Error    string
-	Cols     int
-	Help     string
-	Theme    Theme
+	Label     string
+	Name      string
+	Readonly  bool
+	Tooltip   string
+	Required  bool
+	Error     string
+	Cols      int
+	Help      string
+	Theme     Theme
+	AutoFocus bool
 }
 
 templ fieldTooltip(args FieldArgs) {
@@ -146,6 +147,7 @@ templ TextArea(args TextAreaArgs) {
 			name={ args.Name }
 			readonly?={ args.Readonly }
 			rows={ fmt.Sprint(args.Rows) }
+			autofocus?={ args.AutoFocus }
 		>{ args.Value }</textarea>
 	}
 }
@@ -464,7 +466,12 @@ templ Tags(args TagsArgs) {
 	@Field(args.FieldArgs, args.Name) {
 		<div class="tags">
 			<span class="tags-real-values d-none"></span>
-			<textarea id={ args.Name } class="form-control tags-widget-values tagify-custom" data-input-name={ args.Name }>{ args.jsonValue() }</textarea>
+			<textarea
+				id={ args.Name }
+				class="form-control tags-widget-values tagify-custom"
+				autofocus?={ args.AutoFocus }
+				data-input-name={ args.Name }
+			>{ args.jsonValue() }</textarea>
 		</div>
 	}
 }

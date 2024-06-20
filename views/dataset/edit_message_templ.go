@@ -58,10 +58,11 @@ func EditMessageDialog(c *ctx.Ctx, args EditMessageDialogArgs) templ.Component {
 		}
 		templ_7745c5c3_Err = form.TextArea(form.TextAreaArgs{
 			FieldArgs: form.FieldArgs{
-				Label: c.Loc.Get("builder.message"),
-				Name:  "message",
-				Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/message"),
-				Theme: form.ThemeVertical,
+				Label:     c.Loc.Get("builder.message"),
+				Name:      "message",
+				Error:     localize.ValidationErrorAt(c.Loc, args.Errors, "/message"),
+				Theme:     form.ThemeVertical,
+				AutoFocus: true,
 			},
 			Value: args.Dataset.Message,
 			Rows:  4,

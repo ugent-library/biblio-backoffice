@@ -58,10 +58,11 @@ func EditReviewerNoteDialog(c *ctx.Ctx, args EditReviewerNoteDialogArgs) templ.C
 		}
 		templ_7745c5c3_Err = form.TextArea(form.TextAreaArgs{
 			FieldArgs: form.FieldArgs{
-				Label: c.Loc.Get("builder.reviewer_note"),
-				Name:  "reviewer_note",
-				Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/reviewer_note"),
-				Theme: form.ThemeVertical,
+				Label:     c.Loc.Get("builder.reviewer_note"),
+				Name:      "reviewer_note",
+				Error:     localize.ValidationErrorAt(c.Loc, args.Errors, "/reviewer_note"),
+				Theme:     form.ThemeVertical,
+				AutoFocus: true,
 			},
 			Value: args.Publication.ReviewerNote,
 			Rows:  4,
