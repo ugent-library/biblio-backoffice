@@ -76,26 +76,33 @@ function addContributor(
         cy.intercept(
           { pathname, query: { first_name: firstName, last_name: "" } },
           NO_LOG,
-        ).as(`suggest${typeName}1`);
+        ).as(`suggest${typeName}`);
 
         cy.setFieldByLabel("First name", firstName);
-        cy.wait(`@suggest${typeName}1`, NO_LOG);
+        cy.wait(`@suggest${typeName}`, NO_LOG);
       }
 
       if (lastName) {
+        // Redefine intercept, now including last name
         cy.intercept(
           { pathname, query: { first_name: firstName, last_name: lastName } },
           NO_LOG,
-        ).as(`suggest${typeName}2`);
+        ).as(`suggest${typeName}`);
 
         cy.setFieldByLabel("Last name", lastName);
-        cy.wait(`@suggest${typeName}2`, NO_LOG);
+        cy.wait(`@suggest${typeName}`, NO_LOG);
       }
 
+      cy.intercept(
+        `/+(publication|dataset)/*/contributors/${contributorType === "creator" ? "author" : contributorType}/confirm-create*`,
+        NO_LOG,
+      ).as(`confirmCreate${typeName}`);
       cy.get(
         `.btn:contains("Add ${external ? "external " : ""}${contributorType}")`,
         NO_LOG,
       ).click(NO_LOG);
+
+      cy.wait(`@confirmCreate${typeName}`, NO_LOG);
     },
     true,
   );
