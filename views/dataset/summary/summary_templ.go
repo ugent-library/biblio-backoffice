@@ -34,7 +34,7 @@ func getUserContributorRoles(d *models.Dataset, user *models.Person) string {
 		return "creator"
 	}
 
-	if d.Creator.ID == user.ID {
+	if d.CreatorID == user.ID {
 		return "registrar"
 	}
 

@@ -46,7 +46,7 @@ func getUserContributorRoles(p *models.Publication, user *models.Person) string 
 		return strings.Join(roles, ", ")
 	}
 
-	if p.Creator.ID == user.ID {
+	if p.CreatorID == user.ID {
 		return "registrar"
 	}
 

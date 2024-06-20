@@ -138,7 +138,7 @@ func Register(c Config) {
 			ContentSecurityPolicy: (&cspbuilder.Builder{
 				Directives: map[string][]string{
 					cspbuilder.DefaultSrc: {"'self'"},
-					cspbuilder.ScriptSrc:  {"'self'", "$NONCE", "'unsafe-inline'", "blob:"},
+					cspbuilder.ScriptSrc:  {"'self'", "$NONCE"},
 					// TODO: htmx injects style
 					cspbuilder.StyleSrc: {"'self'", "'unsafe-inline'"},
 					cspbuilder.ImgSrc:   {"'self'", "data:"},
