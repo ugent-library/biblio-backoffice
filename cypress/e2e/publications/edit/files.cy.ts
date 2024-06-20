@@ -191,7 +191,7 @@ describe("Editing publication files", () => {
 
       cy.wait("@refreshForm");
 
-      testFocusForLabel("Document type", 'select[name="relation"]');
+      testFocusForLabel("Document type", 'select[name="relation"]', true);
       testFocusForLabel(
         "Publication version",
         'select[name="publication_version"]',

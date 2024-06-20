@@ -108,7 +108,7 @@ describe("Editing publication description", () => {
       cy.visitPublication();
 
       cy.updateFields("Publication details", () => {
-        testFocusForLabel("Publication type", 'select[name="type"]');
+        testFocusForLabel("Publication type", 'select[name="type"]', true);
         testFocusForLabel(
           "Article type",
           'select[name="journal_article_type"]',
@@ -182,7 +182,7 @@ describe("Editing publication description", () => {
       cy.visitPublication();
 
       cy.updateFields("Publication details", () => {
-        testFocusForLabel("Publication type", 'select[name="type"]');
+        testFocusForLabel("Publication type", 'select[name="type"]', true);
         testFocusForLabel("DOI", 'input[type=text][name="doi"]');
 
         testFocusForLabel("Title", 'input[type=text][name="title"]');
@@ -238,7 +238,7 @@ describe("Editing publication description", () => {
       cy.visitPublication();
 
       cy.updateFields("Publication details", () => {
-        testFocusForLabel("Publication type", 'select[name="type"]');
+        testFocusForLabel("Publication type", 'select[name="type"]', true);
         testFocusForLabel("DOI", 'input[type=text][name="doi"]');
 
         testFocusForLabel("Title", 'input[type=text][name="title"]');
@@ -291,7 +291,7 @@ describe("Editing publication description", () => {
       cy.visitPublication();
 
       cy.updateFields("Publication details", () => {
-        testFocusForLabel("Publication type", 'select[name="type"]');
+        testFocusForLabel("Publication type", 'select[name="type"]', true);
         testFocusForLabel("Conference type", 'select[name="conference_type"]');
         testFocusForLabel("DOI", 'input[type=text][name="doi"]');
 
@@ -363,7 +363,7 @@ describe("Editing publication description", () => {
       cy.visitPublication();
 
       cy.updateFields("Publication details", () => {
-        testFocusForLabel("Publication type", 'select[name="type"]');
+        testFocusForLabel("Publication type", 'select[name="type"]', true);
         testFocusForLabel("DOI", 'input[type=text][name="doi"]');
 
         testFocusForLabel("Title", 'input[type=text][name="title"]');
@@ -424,7 +424,7 @@ describe("Editing publication description", () => {
       cy.visitPublication();
 
       cy.updateFields("Publication details", () => {
-        testFocusForLabel("Publication type", 'select[name="type"]');
+        testFocusForLabel("Publication type", 'select[name="type"]', true);
         testFocusForLabel(
           "Miscellaneous type",
           'select[name="miscellaneous_type"]',
@@ -506,7 +506,7 @@ describe("Editing publication description", () => {
       cy.visitPublication();
 
       cy.updateFields("Publication details", () => {
-        testFocusForLabel("Publication type", 'select[name="type"]');
+        testFocusForLabel("Publication type", 'select[name="type"]', true);
         testFocusForLabel("DOI", 'input[type=text][name="doi"]');
 
         testFocusForLabel("Title", 'input[type=text][name="title"]');
@@ -578,7 +578,7 @@ describe("Editing publication description", () => {
           "suggestProject",
         );
 
-        cy.getLabel("Search project").next("input").type("001D07903");
+        cy.setFieldByLabel("Search project", "001D07903");
         cy.wait("@suggestProject");
 
         cy.contains(".list-group-item", "001D07903")
@@ -604,6 +604,16 @@ describe("Editing publication description", () => {
       cy.ensureNoModal();
 
       cy.get("#projects-body").should("contain", "No projects");
+    });
+
+    it("should have clickable labels in the project dialog", () => {
+      cy.contains(".card", "Project").contains(".btn", "Add project").click();
+
+      cy.ensureModal("Select projects").within(() => {
+        cy.get("#project-q").should("be.focused");
+
+        testFocusForLabel("Search project", "#project-q");
+      });
     });
   });
 
@@ -703,7 +713,7 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Abstract dialog", () => {
       cy.updateFields("Abstract", () => {
-        testFocusForLabel("Abstract", 'textarea[name="text"]');
+        testFocusForLabel("Abstract", 'textarea[name="text"]', true);
         testFocusForLabel("Language", 'select[name="lang"]');
       });
     });
@@ -782,7 +792,7 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Link dialog", () => {
       cy.updateFields("Link", () => {
-        testFocusForLabel("URL", 'input[type=text][name="url"]');
+        testFocusForLabel("URL", 'input[type=text][name="url"]', true);
         testFocusForLabel("Relation", 'select[name="relation"]');
         testFocusForLabel(
           "Description",
@@ -890,7 +900,7 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Lay summary dialog", () => {
       cy.updateFields("Lay summary", () => {
-        testFocusForLabel("Lay summary", 'textarea[name="text"]');
+        testFocusForLabel("Lay summary", 'textarea[name="text"]', true);
         testFocusForLabel("Language", 'select[name="lang"]');
       });
     });
@@ -953,7 +963,7 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Conference details dialog", () => {
       cy.updateFields("Conference details", () => {
-        testFocusForLabel("Conference", 'input[type=text][name="name"]');
+        testFocusForLabel("Conference", 'input[type=text][name="name"]', true);
         testFocusForLabel(
           "Conference location",
           'input[type=text][name="location"]',
@@ -1057,7 +1067,11 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Additional info dialog", () => {
       cy.updateFields("Additional information", () => {
-        testFocusForLabel("Research field", 'select[name="research_field"]');
+        testFocusForLabel(
+          "Research field",
+          'select[name="research_field"]',
+          true,
+        );
         testFocusForLabel(
           "Keywords",
           ".tags:has(textarea#keyword) tags span.tagify__input[contenteditable]",

@@ -159,7 +159,7 @@ describe("Editing dataset people & affiliations", () => {
           "suggestDepartment",
         );
 
-        cy.getLabel("Search").next("input").type("LW17");
+        cy.getLabel("Search").next("input").should("be.focused").type("LW17");
         cy.wait("@suggestDepartment");
 
         cy.contains(".list-group-item", "Department ID: LW17")
@@ -177,7 +177,7 @@ describe("Editing dataset people & affiliations", () => {
       cy.get("#departments").contains(".btn", "Add department").click();
 
       cy.ensureModal("Select departments").within(() => {
-        cy.getLabel("Search").next("input").type("DI62");
+        cy.getLabel("Search").next("input").should("be.focused").type("DI62");
         cy.wait("@suggestDepartment");
 
         cy.contains(".list-group-item", "Department ID: DI62")
