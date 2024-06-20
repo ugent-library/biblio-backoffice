@@ -36,6 +36,7 @@ templ EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFil
 							class={ "form-select", "form-control", templ.KV("is-invalid", errors != nil && errors.Get(fmt.Sprintf("/file/%d/relation", idx)) != nil) }
 							name="relation"
 							id="relation"
+							autofocus
 							hx-get={ c.PathTo("publication_edit_file_refresh_form", "id", p.ID, "file_id", f.ID).String() }
 							hx-swap="none"
 							hx-include=".file-attributes"

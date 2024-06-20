@@ -188,7 +188,6 @@ describe("Editing publication files", () => {
       cy.intercept("/publication/*/files/*/refresh-form*").as("refreshForm");
 
       cy.getLabel(/Embargoed access/).click();
-
       cy.wait("@refreshForm");
 
       testFocusForLabel("Document type", 'select[name="relation"]', true);
@@ -196,6 +195,7 @@ describe("Editing publication files", () => {
         "Publication version",
         'select[name="publication_version"]',
       );
+
       testFocusForLabel(
         "Access level during embargo",
         'select[name="access_level_during_embargo"]',
