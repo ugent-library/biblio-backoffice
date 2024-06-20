@@ -71,6 +71,7 @@ func AddContributor(c *ctx.Ctx, args AddContributorArgs) templ.Component {
 			Label:      "First name",
 			Value:      args.Contributor.FirstName(),
 			SuggestURL: c.PathTo("dataset_add_contributor_suggest", "id", args.Dataset.ID, "role", args.Role).String(),
+			AutoFocus:  true,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
