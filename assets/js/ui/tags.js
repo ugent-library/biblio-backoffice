@@ -49,7 +49,7 @@ export default function () {
       const tagify = new Tagify(widgetValues, {
         delimiters: ";|\n|\r",
         duplicates: false,
-        pasteAsTags: true,
+        pasteAsTags: true, //automatically converted pasted text into tags (using delimiters)
 
         // we have no dropdown, but setting "caseSensitive" is used by Tagify for duplicate check
         dropdown: {
