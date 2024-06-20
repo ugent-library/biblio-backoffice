@@ -23,6 +23,7 @@ templ AddDataset(c *ctx.Ctx, publication *models.Publication, hits *models.Datas
 					id="publication-q"
 					name="q"
 					placeholder="Search..."
+					autofocus
 					hx-get={ c.PathTo("publication_suggest_datasets", "id", publication.ID).String() }
 					hx-trigger="keyup changed delay:500ms"
 					hx-target="#dataset-suggestions"
