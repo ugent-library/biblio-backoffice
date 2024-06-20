@@ -44,11 +44,12 @@ templ EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, erro
 					<li class="list-group-item">
 						@form.Text(form.TextArgs{
 							FieldArgs: form.FieldArgs{
-								Name:     "title",
-								Label:    c.Loc.Get("builder.title"),
-								Cols:     9,
-								Error:    localize.ValidationErrorAt(c.Loc, errors, "/title"),
-								Required: true,
+								Name:      "title",
+								Label:     c.Loc.Get("builder.title"),
+								Cols:      9,
+								Error:     localize.ValidationErrorAt(c.Loc, errors, "/title"),
+								Required:  true,
+								AutoFocus: true,
 							},
 							Value: dataset.Title,
 						})

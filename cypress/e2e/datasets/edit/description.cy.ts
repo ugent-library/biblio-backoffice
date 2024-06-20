@@ -90,7 +90,7 @@ describe("Editing dataset description", () => {
       cy.ensureModal("Select projects").within(() => {
         cy.get("#project-q").should("be.focused");
 
-        testFocusForLabel("Search project", "#project-q");
+        testFocusForLabel("Search project", "#project-q", true);
       });
     });
   });
