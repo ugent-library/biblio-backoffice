@@ -22,16 +22,22 @@ export default function triggerHtmx<T = unknown>(
 
   const hxHeaders = JSON.parse(subject.attr(`hx-headers`) ?? "null");
 
-  logCommand("triggerHtmx", { method, url, "hx-headers": hxHeaders }, method);
+  const log = logCommand(
+    "triggerHtmx",
+    { method, url, "hx-headers": hxHeaders },
+    method,
+  );
 
-  return cy.request<T>({
-    url,
-    method: METHODS[method],
-    headers: {
-      ...hxHeaders,
-      "X-CSRF-Token": this.CSRFToken,
-    },
-  });
+  return cy
+    .htmxRequest<T>({
+      url,
+      method: METHODS[method],
+      headers: {
+        ...hxHeaders,
+      },
+      ...NO_LOG,
+    })
+    .finishLog(log);
 }
 
 declare global {

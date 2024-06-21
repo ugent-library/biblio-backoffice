@@ -104,6 +104,7 @@ describe("The home page", () => {
 
     cy.switchMode("Librarian");
 
+    cy.visit("/");
     cy.get(".c-sidebar button.dropdown-toggle")
       .find(".if-book")
       .should("be.visible");
@@ -125,6 +126,7 @@ describe("The home page", () => {
 
     cy.switchMode("Researcher");
 
+    cy.visit("/");
     cy.get(".c-sidebar button.dropdown-toggle")
       .find(".if-briefcase")
       .should("be.visible");
@@ -155,7 +157,11 @@ describe("The home page", () => {
     );
     cy.intercept({ method: "PUT", pathname: "/role/user" }).as("role-user");
 
-    cy.switchMode("Librarian");
+    cy.contains(".c-sidebar > .dropdown > button", "Researcher")
+      .click()
+      .next(".dropdown-menu")
+      .contains(".dropdown-item", "Librarian")
+      .click();
 
     cy.wait("@role-curator")
       .its("response.headers[set-cookie]")
@@ -165,7 +171,11 @@ describe("The home page", () => {
         ).to.have.length(1);
       });
 
-    cy.switchMode("Researcher");
+    cy.contains(".c-sidebar > .dropdown > button", "Librarian")
+      .click()
+      .next(".dropdown-menu")
+      .contains(".dropdown-item", "Researcher")
+      .click();
 
     cy.wait("@role-user")
       .its("response.headers[set-cookie]")

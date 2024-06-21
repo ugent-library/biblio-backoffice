@@ -21,6 +21,7 @@ import {
   addEditor,
   addSupervisor,
 } from "./add-contributor";
+import htmxRequest from "./htmx-request";
 
 // Child commands
 import finishLog from "./finish-log";
@@ -70,6 +71,8 @@ Cypress.Commands.addAll({
   addEditor,
   addSupervisor,
   addCreator,
+
+  htmxRequest,
 });
 
 // Child commands
