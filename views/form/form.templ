@@ -406,6 +406,7 @@ templ SelectRepeat(args SelectRepeatArgs) {
 					class={ "form-select", "form-control", templ.KV("is-invalid", args.Error != "") }
 					name={ args.Name }
 					id={ fmt.Sprintf("%s-%d", args.Name, len(args.Values)) }
+					autofocus?={ args.AutoFocus }
 					data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
 				>
 					if args.EmptyOption {

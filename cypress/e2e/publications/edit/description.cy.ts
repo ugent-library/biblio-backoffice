@@ -612,7 +612,7 @@ describe("Editing publication description", () => {
       cy.ensureModal("Select projects").within(() => {
         cy.get("#project-q").should("be.focused");
 
-        testFocusForLabel("Search project", "#project-q");
+        testFocusForLabel("Search project", "#project-q", true);
       });
     });
   });
@@ -1066,20 +1066,36 @@ describe("Editing publication description", () => {
     });
 
     it("should have clickable labels in the Additional info dialog", () => {
+      cy.updateFields(
+        "Additional information",
+        () => {
+          cy.focused().should("have.attr", "id", "research_field-0");
+
+          testFocusForLabel(
+            "Research field",
+            'select[name="research_field"]',
+            true,
+          );
+          testFocusForLabel(
+            "Keywords",
+            ".tags:has(textarea#keyword) tags span.tagify__input[contenteditable]",
+          );
+          testFocusForLabel(
+            "Additional information",
+            'textarea[name="additional_info"]',
+          );
+
+          cy.setFieldByLabel("Research field", "General Works");
+        },
+        true,
+      );
+
       cy.updateFields("Additional information", () => {
-        testFocusForLabel(
-          "Research field",
-          'select[name="research_field"]',
-          true,
-        );
-        testFocusForLabel(
-          "Keywords",
-          ".tags:has(textarea#keyword) tags span.tagify__input[contenteditable]",
-        );
-        testFocusForLabel(
-          "Additional information",
-          'textarea[name="additional_info"]',
-        );
+        // The last field (first empty) from the multi field should be focused now
+        cy.focused().should("have.attr", "id", "research_field-1");
+
+        cy.get("#research_field-1").should("be.focused");
+        cy.get("#research_field-0").should("not.be.focused");
       });
     });
   });
