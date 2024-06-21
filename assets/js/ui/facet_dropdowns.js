@@ -11,7 +11,7 @@ export default function () {
       });
 
       dropdown.addEventListener("shown.bs.dropdown", function () {
-        // Auto-focus first input field if, it exists
+        // Auto-focus first input field if it exists
         form.querySelector("input[type=text]")?.focus();
       });
 
