@@ -27,3 +27,38 @@ export function testFocusForLabel(
 
   cy.get("@theField").should("be.focused");
 }
+
+export function getCSRFToken() {
+  return cy.state("ctx").CSRFToken;
+}
+
+export function extractHtmxJsonAttribute<T extends object>(
+  response: Cypress.Response<string>,
+  selector: string,
+  hxAttributeName: `hx-${string}`,
+): T {
+  const $partial = Cypress.$(response.body);
+  const $node = $partial.find(selector);
+
+  const json = decodeEntities($node.attr(hxAttributeName));
+
+  return JSON.parse(json) as T;
+}
+
+export function extractSnapshotId(response: Cypress.Response<string>): string {
+  const hxHeaders = extractHtmxJsonAttribute<{ "If-Match": string }>(
+    response,
+    ".btn:Contains('Save'):not(:contains('Save and add next'))",
+    "hx-headers",
+  );
+
+  return hxHeaders["If-Match"];
+}
+
+function decodeEntities(encodedString) {
+  var textArea = document.createElement("textarea");
+
+  textArea.innerHTML = encodedString;
+
+  return textArea.value;
+}

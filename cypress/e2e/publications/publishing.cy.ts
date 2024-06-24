@@ -109,7 +109,7 @@ describe("Publishing publications", () => {
       cy.ensureModal("Confirm deletion").closeModal("Delete");
 
       // Add external author
-      cy.addAuthor("John", "Doe", true);
+      cy.addAuthor("John", "Doe", { external: true });
 
       cy.contains(".btn-success", "Republish to Biblio").click();
       cy.ensureModal("Are you sure?")

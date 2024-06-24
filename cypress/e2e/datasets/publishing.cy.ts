@@ -114,7 +114,7 @@ describe("Publishing datasets", () => {
       cy.ensureModal("Confirm deletion").closeModal("Delete");
 
       // Add external author
-      cy.addCreator("John", "Doe", true);
+      cy.addCreator("John", "Doe", { external: true });
 
       cy.contains(".btn-success", "Republish to Biblio").click();
       cy.ensureModal("Are you sure?")

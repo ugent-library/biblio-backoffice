@@ -12,7 +12,7 @@ beforeEach(() => {
     if (metaTag.length > 0) {
       // Cannot easily store aliased value from an event handler so we keep it on the test context
       const ctx = cy.state("ctx");
-      ctx["CSRFToken"] = metaTag.prop("content");
+      ctx.CSRFToken = metaTag.prop("content");
     }
   });
 

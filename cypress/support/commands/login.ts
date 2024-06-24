@@ -11,6 +11,9 @@ export default function login(username, password): void {
 
   logCommand("login", { username }, username);
 
+  // First clear the current CSRF token
+  cy.state("ctx").CSRFToken = "";
+
   cy.session(
     username,
     () => {

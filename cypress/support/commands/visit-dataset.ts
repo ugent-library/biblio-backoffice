@@ -1,11 +1,11 @@
 import { logCommand, updateLogMessage, updateConsoleProps } from "./helpers";
 
 export default function visitDataset(
-  bilbioIdAlias: Cypress.Alias = "@biblioId",
+  biblioIdAlias: Cypress.Alias = "@biblioId",
 ): void {
-  const log = logCommand("visitDataset", { "Biblio ID alias": bilbioIdAlias });
+  const log = logCommand("visitDataset", { "Biblio ID alias": biblioIdAlias });
 
-  cy.get(bilbioIdAlias, { log: false }).then((biblioId) => {
+  cy.get(biblioIdAlias, { log: false }).then((biblioId) => {
     updateLogMessage(log, biblioId);
     updateConsoleProps(log, (cp) => (cp["Biblio ID"] = biblioId));
 
@@ -20,7 +20,7 @@ export default function visitDataset(
 declare global {
   namespace Cypress {
     interface Chainable {
-      visitDataset(bilbioIdAlias?: Alias): Chainable<void>;
+      visitDataset(biblioIdAlias?: Alias): Chainable<void>;
     }
   }
 }

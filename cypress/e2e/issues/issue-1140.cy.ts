@@ -7,7 +7,9 @@ describe("Issue #1140: External contributor info is empty in the suggest box", (
     cy.setUpPublication("Book");
     cy.visitPublication();
 
-    cy.addAuthor( "Jane", "Doe", true, "Validation");
+    cy.addAuthor("Jane", "Doe", { external: true });
+
+    cy.contains(".nav-item", "People & Affiliations").click();
 
     cy.contains("table#contributors-author-table tr", "Jane Doe")
       .find(".if.if-edit")

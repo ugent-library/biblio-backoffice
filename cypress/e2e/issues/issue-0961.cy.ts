@@ -105,58 +105,54 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
         cy.switchMode("Librarian");
       });
 
-      it(
-        "should show collapsible facet filters for publications",
-        { scrollBehavior: false },
-        () => {
-          cy.visit("/publication");
+      it("should show collapsible facet filters for publications", () => {
+        cy.visit("/publication");
 
-          cy.get(".toggle-zone").should("be.visible");
-          cy.get("#show-all-facet-filters-toggle").should("be.visible");
+        cy.get(".toggle-zone").should("be.visible");
+        cy.get("#show-all-facet-filters-toggle").should("be.visible");
 
-          cy.contains(".bc-toolbar", "Reset filters")
-            .find(".bc-toolbar-left .bc-toolbar-item .badge-list")
-            .find(".dropdown .badge")
-            .as("facets");
+        cy.contains(".bc-toolbar", "Reset filters")
+          .find(".bc-toolbar-left .bc-toolbar-item .badge-list")
+          .find(".dropdown .badge")
+          .as("facets");
 
-          assertAssetsAreCollapsed();
-          cy.get("@facets").filter(":visible").should("have.length", 10);
+        assertAssetsAreCollapsed();
+        cy.get("@facets").filter(":visible").should("have.length", 10);
 
-          cy.contains(".btn", "Show all filters").click();
-          assertAssetsAreExpanded();
-          cy.get("@facets").filter(":visible").should("have.length", 17);
+        cy.contains(".btn", "Show all filters").click();
+        assertAssetsAreExpanded();
+        cy.get("@facets").filter(":visible").should("have.length", 17);
 
-          cy.contains(".btn", "Show less filters").click();
-          assertAssetsAreCollapsed();
-          cy.get("@facets").filter(":visible").should("have.length", 10);
+        cy.contains(".btn", "Show less filters").click();
+        assertAssetsAreCollapsed();
+        cy.get("@facets").filter(":visible").should("have.length", 10);
 
-          listAllFacetsByFacetLine().should("eql", [
-            [
-              "Biblio status",
-              "Classification",
-              "Faculty",
-              "Publication year",
-              "Publication type",
-            ],
-            [
-              "Publication status",
-              "Librarian tags",
-              "Message",
-              "Locked",
-              "UGent",
-            ],
-            [
-              "WOS type",
-              "VABB type",
-              "File",
-              "File type",
-              "Created since",
-              "Updated since",
-              "Legacy",
-            ],
-          ]);
-        },
-      );
+        listAllFacetsByFacetLine().should("eql", [
+          [
+            "Biblio status",
+            "Classification",
+            "Faculty",
+            "Publication year",
+            "Publication type",
+          ],
+          [
+            "Publication status",
+            "Librarian tags",
+            "Message",
+            "Locked",
+            "UGent",
+          ],
+          [
+            "WOS type",
+            "VABB type",
+            "File",
+            "File type",
+            "Created since",
+            "Updated since",
+            "Legacy",
+          ],
+        ]);
+      });
 
       it("should not collapse the third line if one of its filters is active", () => {
         cy.visit("/publication");

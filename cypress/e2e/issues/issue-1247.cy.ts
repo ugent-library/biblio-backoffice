@@ -60,6 +60,8 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
       true,
     );
 
+    extractBiblioIdEarly();
+
     cy.addAuthor("John", "Doe");
 
     cy.contains(".btn", "Complete Description").click();
@@ -68,8 +70,6 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
       "match",
       new RegExp("/publication/\\w+/add/confirm"),
     );
-
-    cy.extractBiblioId();
 
     assertUserMenuWorks();
 
@@ -139,6 +139,8 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
       true,
     );
 
+    extractBiblioIdEarly();
+
     cy.addCreator("John", "Doe");
 
     cy.contains(".btn", "Complete Description").click();
@@ -147,8 +149,6 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
       "match",
       new RegExp("/dataset/\\w+/add/confirm"),
     );
-
-    cy.extractBiblioId();
 
     assertUserMenuWorks();
 
@@ -194,5 +194,18 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
     cy.get("@userName").click();
 
     cy.get("@userMenu").should("not.be.visible");
+  }
+
+  function extractBiblioIdEarly() {
+    cy.get("#show-content")
+      .attr("hx-get")
+      .then((hxGet) => {
+        const { biblioId } = hxGet.match(
+          /^\/(publication|dataset)\/(?<biblioId>\w+)\/description$/,
+        ).groups;
+
+        return biblioId;
+      })
+      .as("biblioId", { type: "static" });
   }
 });

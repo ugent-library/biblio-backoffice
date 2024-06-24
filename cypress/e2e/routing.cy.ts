@@ -1,3 +1,5 @@
+import { getCSRFToken } from "support/util";
+
 describe("Authorization", () => {
   it("should not be possible to edit or delete publications from another user", () => {
     cy.loginAsLibrarian();
@@ -298,7 +300,7 @@ describe("Authorization", () => {
             url,
             method,
             headers: {
-              "X-CSRF-Token": this.CSRFToken,
+              "X-CSRF-Token": getCSRFToken(),
             },
             followRedirect: false,
             failOnStatusCode: false,

@@ -11,32 +11,64 @@ describe("Editing publication people & affiliations", () => {
       cy.visitPublication();
 
       cy.contains(".nav-link", "People & Affiliations").click();
-
       cy.get("#authors .card-body").should(
         "contain",
         "Add at least one UGent author.",
       );
 
-      cy.updateFields(
-        "Authors",
-        () => {
-          cy.intercept("/publication/*/contributors/author/suggestions?*").as(
-            "suggestContributor",
-          );
-
-          cy.setFieldByLabel("First name", "Jane");
-          cy.wait("@suggestContributor");
-          cy.setFieldByLabel("Last name", "Doe");
-          cy.wait("@suggestContributor");
-
-          cy.contains(".btn", "Add external author").click({
-            scrollBehavior: false,
-          });
-        },
-        true,
+      cy.intercept("/publication/*/contributors/author/suggestions*").as(
+        "suggest",
+      );
+      cy.intercept("/publication/*/contributors/author/confirm-create*").as(
+        "confirmCreate",
       );
 
-      cy.contains("#authors tr", "Jane Doe").find(".btn .if-delete").click();
+      cy.contains(".btn", "Add author").click();
+
+      cy.ensureModal("Add author").within(() => {
+        cy.setFieldByLabel("First name", "Jame");
+        cy.wait("@suggest");
+        cy.setFieldByLabel("Last name", "Dow");
+        cy.wait("@suggest");
+
+        cy.contains(".btn", "Add external author").click();
+        cy.wait("@confirmCreate");
+
+        // Made an error, let's go back
+        cy.contains("Review author information").should("be.visible");
+        cy.contains("Jame Dow").should("be.visible");
+
+        cy.contains(".btn", "Back to search").click();
+
+        cy.setFieldByLabel("First name", "Jane");
+        cy.wait("@suggest");
+
+        cy.contains(".btn", "Add external author").click();
+        cy.wait("@confirmCreate");
+
+        cy.contains("Review author information").should("be.visible");
+        cy.contains("Jane Dow").should("be.visible");
+
+        cy.contains(".btn", "Save and add next").click();
+      });
+
+      cy.ensureModal("Add author").within(() => {
+        cy.setFieldByLabel("First name", "John");
+        cy.wait("@suggest");
+        cy.setFieldByLabel("Last name", "Doe");
+        cy.wait("@suggest");
+
+        cy.contains(".btn", "Add author").click();
+        cy.wait("@confirmCreate");
+
+        cy.contains(".btn", /^Save$/).click();
+      });
+
+      cy.get("#authors tbody tr")
+        .should("have.length", 2)
+        .contains("tr", "Jane Dow")
+        .find(".btn .if-delete")
+        .click();
 
       cy.ensureModal("Confirm deletion")
         .within(() => {
@@ -47,7 +79,23 @@ describe("Editing publication people & affiliations", () => {
         .closeModal("Delete");
       cy.ensureNoModal();
 
-      cy.contains("#authors", "Jane Doe").should("not.exist");
+      cy.get("#authors tbody tr")
+        .should("have.length", 1)
+        .contains("tr", "John Doe")
+        .find(".btn .if-delete")
+        .click();
+
+      cy.ensureModal("Confirm deletion")
+        .within(() => {
+          cy.contains("Are you sure you want to remove this author?").should(
+            "be.visible",
+          );
+        })
+        .closeModal("Delete");
+      cy.ensureNoModal();
+
+      cy.contains("#authors", "Jane Dow").should("not.exist");
+      cy.contains("#authors", "John Doe").should("not.exist");
       cy.get("#authors .card-body").should(
         "contain",
         "Add at least one UGent author.",
@@ -63,8 +111,9 @@ describe("Editing publication people & affiliations", () => {
       cy.ensureToast("Publication was successfully published.").closeToast();
 
       // Add other external author first
-      cy.addAuthor("Jane", "Doe", true);
+      cy.addAuthor("Jane", "Doe", { external: true });
 
+      cy.contains(".nav-item", "People & Affiliations").click();
       cy.contains("#authors tr", "John Doe").find(".btn .if-delete").click();
       cy.ensureModal("Confirm deletion").closeModal("Delete");
 
@@ -159,17 +208,17 @@ describe("Editing publication people & affiliations", () => {
       cy.updateFields(
         "Editors",
         () => {
-          cy.intercept("/publication/*/contributors/editor/suggestions?*").as(
-            "suggestContributor",
+          cy.intercept("/publication/*/contributors/editor/suggestions*").as(
+            "suggest",
           );
 
           cy.setFieldByLabel("First name", "Jane");
-          cy.wait("@suggestContributor");
+          cy.wait("@suggest");
           cy.setFieldByLabel("Last name", "Doe");
-          cy.wait("@suggestContributor");
+          cy.wait("@suggest");
 
           cy.contains(".btn", "Add external editor").click({
-            scrollBehavior: false,
+            scrollBehavior: "nearest",
           });
         },
         true,
@@ -214,16 +263,14 @@ describe("Editing publication people & affiliations", () => {
         () => {
           cy.intercept(
             "/publication/*/contributors/supervisor/suggestions?*",
-          ).as("suggestContributor");
+          ).as("suggest");
 
           cy.setFieldByLabel("First name", "Jane");
-          cy.wait("@suggestContributor");
+          cy.wait("@suggest");
           cy.setFieldByLabel("Last name", "Doe");
-          cy.wait("@suggestContributor");
+          cy.wait("@suggest");
 
-          cy.contains(".btn", "Add external supervisor").click({
-            scrollBehavior: false,
-          });
+          cy.contains(".btn", "Add external supervisor").click();
         },
         true,
       );

@@ -4,8 +4,17 @@ declare global {
   namespace Cypress {
     type Alias = `@${string}`;
 
+    type State = {
+      ctx: Mocha.Context & Ctx;
+      current: Command;
+    };
+
+    type Ctx = {
+      CSRFToken?: string;
+    };
+
     interface cy {
-      state<T = unknown>(state: string): T;
+      state<S extends keyof State>(key: S): State[S];
     }
   }
 }
