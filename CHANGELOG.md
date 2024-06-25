@@ -10,8 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Removed Laravel Mix and added [esbuild](https://esbuild.github.io/) for asset bundling
+- Add Plato import view for librarians
+- Replaced templating with Templ
+- Align how you can add tags and keywords to records, by using the Tagify plugin
+- Show which role users have for each record: registrator, author, editor, supervisor
+- Show supervised records for supervisors and add a tab as well
+- Add more information to the search overview for researchers and librarians
+- Show more information for authors and editors
+- Add more information when linking projects
 
 ### Fixed
+
+- Various tiny UI, UX, icon and copy fixes
+- Remove select all for librarian tags that results into an error
 
 ## [v1.0.55] - 2024-05-03
 
