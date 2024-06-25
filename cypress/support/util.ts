@@ -1,3 +1,5 @@
+const NO_LOG = { log: false };
+
 export function getRandomText() {
   return crypto.randomUUID().replace(/-/g, "").toUpperCase();
 }
@@ -10,7 +12,7 @@ export function testFocusForLabel(
   cy.getLabel(labelText)
     .as("theLabel")
     .should("have.length", 1)
-    .parent({ log: false })
+    .parent(NO_LOG)
     .find(fieldSelector)
     .should("have.length", 1)
     .first({ log: false })
@@ -61,4 +63,39 @@ function decodeEntities(encodedString) {
   textArea.innerHTML = encodedString;
 
   return textArea.value;
+}
+
+export function waitForIndex(
+  scope: "publication" | "dataset",
+  biblioId: string,
+) {
+  let count = 0;
+
+  const doCheckIndex = () => {
+    count++;
+
+    const url = new URL(
+      `/biblio_${scope}s/_search`,
+      Cypress.env("ELASTICSEARCH_ORIGIN"),
+    ).toString();
+
+    cy.request({
+      url,
+      qs: {
+        size: 0,
+        q: `_id:${biblioId}`,
+      },
+      ...NO_LOG,
+    }).then((r) => {
+      if (r.body.hits.total < 1) {
+        if (count < 20) {
+          cy.wait(100, NO_LOG).then(doCheckIndex);
+        } else {
+          throw new Error("Timed out waiting for index to be ready");
+        }
+      }
+    });
+  };
+
+  doCheckIndex();
 }

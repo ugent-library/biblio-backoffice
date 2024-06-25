@@ -1,3 +1,4 @@
+import { extractCSRFTokenFromResponse } from "support/e2e";
 import { getCSRFToken } from "support/util";
 
 const NO_LOG = { log: false };
@@ -7,10 +8,10 @@ export default function htmxRequest<T>(
 ): Cypress.Chainable<Cypress.Response<T>> {
   if (!getCSRFToken()) {
     // Load home page once, this will capture the CSRF token
-    cy.visit("/", NO_LOG);
+    cy.request("/", NO_LOG).then(extractCSRFTokenFromResponse);
   }
 
-  // cy.then is necessary in case CSRFToken was only just loaded during cy.visit("/")
+  // cy.then is necessary in case CSRFToken was only just loaded during cy.request("/")
   return cy
     .then(() => doRequest<T>(options, false))
     .then((response) => {
@@ -27,10 +28,13 @@ export default function htmxRequest<T>(
 
       if (
         typeof response.body === "string" &&
-        response.body.includes("Forbidden - CSRF token invalid")
+        response.body.includes("Forbidden - CSRF token") // ... invalid | ... not found
       ) {
         // Load home page to get fresh CSRFToken and try again
-        return cy.visit("/", NO_LOG).then(() => doRequest<T>(options, true));
+        return cy
+          .request("/", NO_LOG)
+          .then(extractCSRFTokenFromResponse)
+          .then(() => doRequest<T>(options, true));
       }
 
       throw Error(
@@ -53,7 +57,12 @@ function doRequest<T>(
   }
 
   if (!clonedOptions.headers["X-CSRF-Token"]) {
-    clonedOptions.headers["X-CSRF-Token"] = getCSRFToken();
+    const csrfToken = getCSRFToken();
+    if (!csrfToken) {
+      throw new Error("CSRF token has not been set");
+    }
+
+    clonedOptions.headers["X-CSRF-Token"] = csrfToken;
   }
 
   if (typeof clonedOptions.log === "undefined") {
@@ -69,8 +78,8 @@ declare global {
     interface Chainable {
       /**
        * cy.htmxRequest() is a convenience command that will deal with the CSRF token for making requests in several ways:
-       * - If the CSRF token is not yet available, it will be loaded first via cy.visit("/")
-       * - If the CSRF token appears to be invalid (), it will be refreshed (also via cy.visit("/"))
+       * - If the CSRF token is not yet available, it will be loaded first via cy.request("/")
+       * - If the CSRF token appears to be invalid (), it will be refreshed (also via cy.request("/"))
        */
       htmxRequest<T>(options: Partial<RequestOptions>): Chainable<Response<T>>;
     }

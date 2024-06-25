@@ -64,7 +64,10 @@ describe("Issue #1370: Make created, edited and system update timestamp more inf
   describe("for datasets", () => {
     before(() => {
       cy.loginAsResearcher();
-      cy.setUpDataset({ title: `Dataset ${RANDOM_TEXT}` });
+      cy.setUpDataset({
+        title: `Dataset ${RANDOM_TEXT}`,
+        shouldWaitForIndex: true,
+      });
 
       cy.loginAsLibrarian();
       cy.visitDataset();
@@ -75,9 +78,6 @@ describe("Issue #1370: Make created, edited and system update timestamp more inf
         },
         true,
       );
-
-      // Give elastic some extra time to index
-      cy.wait(1000);
     });
 
     beforeEach(() => {

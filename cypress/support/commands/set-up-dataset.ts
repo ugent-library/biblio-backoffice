@@ -1,18 +1,20 @@
-import { extractSnapshotId } from "support/util";
-import { logCommand } from "./helpers";
+import { waitForIndex, extractSnapshotId } from "support/util";
+import { logCommand, updateConsoleProps } from "./helpers";
 
 type SetUpDatasetOptions = {
   prepareForPublishing?: boolean;
   title?: string;
   biblioIDAlias?: string;
+  shouldWaitForIndex?: boolean;
 };
 
 export default function setUpDataset({
   prepareForPublishing = false,
   title = "The dataset title",
   biblioIDAlias = "biblioId",
+  shouldWaitForIndex = false,
 }: SetUpDatasetOptions = {}): void {
-  logCommand("setUpDataset", {
+  const log = logCommand("setUpDataset", {
     "Prepare for publishing": prepareForPublishing,
     title,
     "Biblio ID alias": biblioIDAlias,
@@ -27,6 +29,8 @@ export default function setUpDataset({
     .then(extractBiblioId)
     .as(biblioIDAlias, { type: "static" })
     .then((biblioId) => {
+      updateConsoleProps(log, (cp) => (cp["Biblio ID"] = biblioId));
+
       // Load the edit form to retrieve the snapshot ID
       cy.htmxRequest<string>({
         url: `/dataset/${biblioId}/details/edit`,
@@ -58,11 +62,15 @@ export default function setUpDataset({
             body,
           });
         });
-    });
 
-  if (prepareForPublishing) {
-    cy.addCreator("John", "Doe");
-  }
+      if (prepareForPublishing) {
+        cy.addCreator("John", "Doe");
+      }
+
+      if (waitForIndex) {
+        waitForIndex("dataset", biblioId);
+      }
+    });
 }
 
 function extractBiblioId(response: Cypress.Response<string>) {

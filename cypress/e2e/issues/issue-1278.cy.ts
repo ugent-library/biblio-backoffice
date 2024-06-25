@@ -75,7 +75,7 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
 
   describe("for datasets", () => {
     it("should display my role when I'm a creator", () => {
-      cy.setUpDataset();
+      cy.setUpDataset({ shouldWaitForIndex: true });
       verifyMyRoles("dataset", "registrar");
 
       // Add myself as creator
@@ -89,7 +89,7 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
     });
 
     it("should display my role when I'm only a registrar", () => {
-      cy.setUpDataset();
+      cy.setUpDataset({ shouldWaitForIndex: true });
       verifyMyRoles("dataset", "registrar");
 
       // Add other creator

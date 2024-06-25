@@ -57,7 +57,7 @@ type PostBody = (
 };
 
 function addContributor(
-  pubType: "publication" | "dataset",
+  scope: "publication" | "dataset",
   contributorType: ContributorType,
   firstName: string,
   lastName: string,
@@ -89,7 +89,7 @@ function addContributor(
       // For UGent contributors, we need the person ID from the suggestions API
       postBody = cy
         .htmxRequest<string>({
-          url: `/${pubType}/${biblioId}/contributors/${contributorType}/suggestions`,
+          url: `/${scope}/${biblioId}/contributors/${contributorType}/suggestions`,
           qs,
         })
         .then(extractHxValues);
@@ -100,7 +100,7 @@ function addContributor(
     postBody.then((postBody) => {
       // First GET the .../confirm-create route to extract the snapshot ID for the POST in the next step
       cy.htmxRequest({
-        url: `/${pubType}/${biblioId}/contributors/${contributorType}/confirm-create`,
+        url: `/${scope}/${biblioId}/contributors/${contributorType}/confirm-create`,
         qs: postBody,
       })
         .then(extractSnapshotId)
@@ -112,7 +112,7 @@ function addContributor(
 
           cy.htmxRequest({
             method: "POST",
-            url: `/${pubType}/${biblioId}/contributors/${contributorType}`,
+            url: `/${scope}/${biblioId}/contributors/${contributorType}`,
             headers: {
               "If-Match": snapshotId,
             },
