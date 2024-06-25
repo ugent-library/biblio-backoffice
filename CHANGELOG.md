@@ -10,11 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Removed Laravel Mix and added [esbuild](https://esbuild.github.io/) for asset bundling
-- Add Plato import view for librarians
-- Replaced templating with Templ
-- Align how you can add tags and keywords to records, by using the Tagify plugin
-- Show which role users have for each record: registrator, author, editor, supervisor
-- Show supervised records for supervisors and add a tab as well
+- Add [Plato import view for librarians](https://github.com/ugent-library/biblio-backoffice/issues/1231)
+- Replaced templating with [Templ](https://templ.guide)
+- Align how you can add tags and keywords to records, by using the [Tagify](https://github.com/yairEO/tagify) plugin
+- Show which [role users have for each record](https://github.com/ugent-library/biblio-backoffice/issues/1278): registrator, author, editor, supervisor
+- Show [supervised records for supervisors and add a tab as well](https://github.com/ugent-library/biblio-backoffice/issues/408)
 - Add more information to the search overview for researchers and librarians
 - Show more information for authors and editors
 - Add more information when linking projects
