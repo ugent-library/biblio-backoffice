@@ -7,7 +7,7 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
 
   describe("for publications", () => {
     it("should display my role when I'm an author", () => {
-      cy.setUpPublication();
+      cy.setUpPublication(undefined, { shouldWaitForIndex: true });
       verifyMyRoles("publication", "registrar");
 
       // Add myself as author
@@ -21,7 +21,7 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
     });
 
     it("should display my role when I'm a supervisor", () => {
-      cy.setUpPublication("Dissertation");
+      cy.setUpPublication("Dissertation", { shouldWaitForIndex: true });
       verifyMyRoles("publication", "registrar");
 
       // Add myself as supervisor
@@ -35,7 +35,7 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
     });
 
     it("should display my roles when I'm both an author and a supervisor", () => {
-      cy.setUpPublication("Dissertation");
+      cy.setUpPublication("Dissertation", { shouldWaitForIndex: true });
       verifyMyRoles("publication", "registrar");
 
       // Add myself as supervisor
@@ -54,7 +54,7 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
     });
 
     it("should display my role when I'm only a registrar", function () {
-      cy.setUpPublication();
+      cy.setUpPublication(undefined, { shouldWaitForIndex: true });
       verifyMyRoles("publication", "registrar");
 
       // Add other author

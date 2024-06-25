@@ -3,9 +3,9 @@ import { getCSRFToken } from "support/util";
 
 const NO_LOG = { log: false };
 
-export default function htmxRequest<T>(
+export default function htmxRequest(
   options: Partial<Cypress.RequestOptions>,
-): Cypress.Chainable<Cypress.Response<T>> {
+): Cypress.Chainable<Cypress.Response<string>> {
   if (!getCSRFToken()) {
     // Load home page once, this will capture the CSRF token
     cy.request("/", NO_LOG).then(extractCSRFTokenFromResponse);
@@ -13,7 +13,7 @@ export default function htmxRequest<T>(
 
   // cy.then is necessary in case CSRFToken was only just loaded during cy.request("/")
   return cy
-    .then(() => doRequest<T>(options, false))
+    .then(() => doRequest(options, false))
     .then((response) => {
       if (response.isOkStatusCode) {
         const $partial = Cypress.$(response.body);
@@ -32,9 +32,9 @@ export default function htmxRequest<T>(
       ) {
         // Load home page to get fresh CSRFToken and try again
         return cy
-          .request("/", NO_LOG)
+          .request<string>("/", NO_LOG)
           .then(extractCSRFTokenFromResponse)
-          .then(() => doRequest<T>(options, true));
+          .then(() => doRequest(options, true));
       }
 
       throw Error(
@@ -43,7 +43,7 @@ export default function htmxRequest<T>(
     });
 }
 
-function doRequest<T>(
+function doRequest(
   options: Partial<Cypress.RequestOptions>,
   failOnStatusCode: boolean,
 ) {
@@ -70,7 +70,7 @@ function doRequest<T>(
     clonedOptions.log = NO_LOG.log;
   }
 
-  return cy.request<T>(clonedOptions);
+  return cy.request<string>(clonedOptions);
 }
 
 declare global {
@@ -81,7 +81,9 @@ declare global {
        * - If the CSRF token is not yet available, it will be loaded first via cy.request("/")
        * - If the CSRF token appears to be invalid (), it will be refreshed (also via cy.request("/"))
        */
-      htmxRequest<T>(options: Partial<RequestOptions>): Chainable<Response<T>>;
+      htmxRequest(
+        options: Partial<RequestOptions>,
+      ): Chainable<Response<string>>;
     }
   }
 }

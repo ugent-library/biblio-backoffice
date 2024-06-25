@@ -9,6 +9,7 @@ describe("The publication search (for researchers)", () => {
     cy.setUpPublication("Dissertation", {
       biblioIDAlias: "dissertation1",
       title: `Dissertation 1 ${randomTitleSuffix}`,
+      shouldWaitForIndex: true,
     });
     cy.visitPublication("@dissertation1");
     cy.addAuthor("Biblio", "Librarian", { biblioIdAlias: "@dissertation1" });
@@ -20,6 +21,7 @@ describe("The publication search (for researchers)", () => {
     cy.setUpPublication("Book", {
       biblioIDAlias: "book",
       title: `Book ${randomTitleSuffix}`,
+      shouldWaitForIndex: true,
     });
     cy.visitPublication("@book");
     cy.addAuthor("John", "Doe", { biblioIdAlias: "@book" });
@@ -28,6 +30,7 @@ describe("The publication search (for researchers)", () => {
     cy.setUpPublication("Dissertation", {
       biblioIDAlias: "dissertation2",
       title: `Dissertation 2 ${randomTitleSuffix}`,
+      shouldWaitForIndex: true,
     });
     cy.visitPublication("@dissertation2");
     cy.addAuthor("Biblio", "Researcher", { biblioIdAlias: "@dissertation2" });
@@ -38,6 +41,7 @@ describe("The publication search (for researchers)", () => {
     cy.setUpPublication("Dissertation", {
       biblioIDAlias: "dissertation3",
       title: `Dissertation 3 ${randomTitleSuffix}`,
+      shouldWaitForIndex: true,
     });
     cy.visitPublication("@dissertation3");
     cy.addAuthor("Biblio", "Librarian", { biblioIdAlias: "@dissertation3" });

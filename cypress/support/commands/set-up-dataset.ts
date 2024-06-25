@@ -18,9 +18,10 @@ export default function setUpDataset({
     "Prepare for publishing": prepareForPublishing,
     title,
     "Biblio ID alias": biblioIDAlias,
+    "Should wait for index": shouldWaitForIndex,
   });
 
-  cy.htmxRequest<string>({
+  cy.htmxRequest({
     method: "POST",
     url: "/add-dataset",
     form: true,
@@ -32,7 +33,7 @@ export default function setUpDataset({
       updateConsoleProps(log, (cp) => (cp["Biblio ID"] = biblioId));
 
       // Load the edit form to retrieve the snapshot ID
-      cy.htmxRequest<string>({
+      cy.htmxRequest({
         url: `/dataset/${biblioId}/details/edit`,
       })
         .then(extractSnapshotId)

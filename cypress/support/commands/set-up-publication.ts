@@ -1,20 +1,25 @@
-import { logCommand } from "./helpers";
+import { extractSnapshotId, waitForIndex } from "support/util";
+import { logCommand, updateConsoleProps } from "./helpers";
 
-export type PublicationType =
-  | "Journal Article"
-  | "Book Chapter"
-  | "Book"
-  | "Conference contribution"
-  | "Dissertation"
-  | "Miscellaneous"
-  | "Issue";
+const publicationTypes = {
+  "Journal Article": "journal_article",
+  "Book Chapter": "book_chapter",
+  Book: "book",
+  "Conference contribution": "conference",
+  Dissertation: "dissertation",
+  Miscellaneous: "miscellaneous",
+  "Book (editor)": "book_editor",
+  "Issue (editor)": "issue_editor",
+} as const;
 
-const NO_LOG = { log: false };
+type PublicationTypes = typeof publicationTypes;
+export type PublicationType = keyof PublicationTypes;
 
 type SetUpPublicationOptions = {
   prepareForPublishing?: boolean;
   title?: string;
   biblioIDAlias?: string;
+  shouldWaitForIndex?: boolean;
 };
 
 export default function setUpPublication(
@@ -25,69 +30,76 @@ export default function setUpPublication(
     prepareForPublishing = false,
     title = `The ${publicationType} title`,
     biblioIDAlias = "biblioId",
+    shouldWaitForIndex = false,
   } = options;
 
-  logCommand(
+  const log = logCommand(
     "setUpPublication",
     {
       "Publication type": publicationType,
       "Prepare for publishing": prepareForPublishing,
       title,
       "Biblio ID alias": biblioIDAlias,
+      "Should wait for index": shouldWaitForIndex,
     },
     publicationType,
   );
 
-  cy.visit("/add-publication", NO_LOG);
+  cy.htmxRequest({
+    method: "POST",
+    url: "/add-publication/import/single/confirm",
+    form: true,
+    body: { publication_type: publicationTypes[publicationType] },
+  })
+    .then(extractBiblioId)
+    .as(biblioIDAlias, { type: "static" })
+    .then((biblioId) => {
+      updateConsoleProps(log, (cp) => (cp["Biblio ID"] = biblioId));
 
-  cy.contains("Enter a publication manually", NO_LOG)
-    .find(":radio", NO_LOG)
-    .click(NO_LOG);
-  cy.contains(".btn", "Add publication(s)", NO_LOG).click(NO_LOG);
+      // Load the edit form to retrieve the snapshot ID
+      cy.htmxRequest({
+        url: `/publication/${biblioId}/details/edit`,
+      })
+        .then(extractSnapshotId)
+        .then((snapshotId) => {
+          // Then update details
 
-  cy.intercept("/publication/*/description*").as("completeDescription");
+          const body = {
+            title,
+            classification: "U",
+          };
 
-  cy.contains(new RegExp(`^${publicationType}$`), NO_LOG).click(NO_LOG);
-  cy.contains(".btn", "Add publication(s)", NO_LOG).click(NO_LOG);
+          if (prepareForPublishing) {
+            body["year"] = new Date().getFullYear().toString();
+          }
 
-  // Extract biblioId at this point
-  cy.get("#show-content", NO_LOG)
-    .attr("hx-get")
-    .then((hxGet) => {
-      const biblioId = hxGet.match(
-        /\/publication\/(?<biblioId>.*)\/description/,
-      )?.groups["biblioId"];
-
-      if (!biblioId) {
-        throw new Error("Could not extract biblioId.");
-      }
-
-      return biblioId;
-    })
-    .as(biblioIDAlias, { type: "static" });
-
-  cy.wait("@completeDescription", NO_LOG);
-
-  cy.updateFields(
-    "Publication details",
-    () => {
-      cy.setFieldByLabel("Title", `${title} [CYPRESSTEST]`);
+          cy.htmxRequest({
+            method: "PUT",
+            url: `/publication/${biblioId}/details`,
+            headers: {
+              "If-Match": snapshotId,
+            },
+            form: true,
+            body,
+          });
+        });
 
       if (prepareForPublishing) {
-        cy.setFieldByLabel(
-          "Publication year",
-          new Date().getFullYear().toString(),
-        );
+        cy.addAuthor("John", "Doe");
       }
-    },
-    true,
-  );
 
-  if (prepareForPublishing) {
-    cy.addAuthor("John", "Doe");
-  }
+      if (shouldWaitForIndex) {
+        waitForIndex("publication", biblioId);
+      }
+    });
+}
 
-  cy.contains(".btn", "Complete Description", NO_LOG).click(NO_LOG);
+function extractBiblioId(response: Cypress.Response<string>) {
+  const { biblioId } = response.body.match(
+    /href="\/publication\/(?<biblioId>[A-Z0-9]+)\/add\/confirm"/,
+  ).groups;
+
+  return biblioId;
 }
 
 declare global {

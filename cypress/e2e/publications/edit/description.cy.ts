@@ -501,7 +501,7 @@ describe("Editing publication description", () => {
     });
 
     it("should have clickable labels in the Issue editor form", () => {
-      cy.setUpPublication("Issue");
+      cy.setUpPublication("Issue (editor)");
 
       cy.visitPublication();
 

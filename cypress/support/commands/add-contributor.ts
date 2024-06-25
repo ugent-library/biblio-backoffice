@@ -88,7 +88,7 @@ function addContributor(
     if (!external) {
       // For UGent contributors, we need the person ID from the suggestions API
       postBody = cy
-        .htmxRequest<string>({
+        .htmxRequest({
           url: `/${scope}/${biblioId}/contributors/${contributorType}/suggestions`,
           qs,
         })
