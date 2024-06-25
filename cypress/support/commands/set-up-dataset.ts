@@ -67,7 +67,7 @@ export default function setUpDataset({
         cy.addCreator("John", "Doe");
       }
 
-      if (waitForIndex) {
+      if (shouldWaitForIndex) {
         waitForIndex("dataset", biblioId);
       }
     });
