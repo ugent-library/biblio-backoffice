@@ -15,14 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Align how you can add tags and keywords to records, by using the [Tagify](https://github.com/yairEO/tagify) plugin
 - Show which [role users have for each record](https://github.com/ugent-library/biblio-backoffice/issues/1278): registrator, author, editor, supervisor
 - Show [supervised records for supervisors and add a tab as well](https://github.com/ugent-library/biblio-backoffice/issues/408)
-- Add more information to the search overview for researchers and librarians
+- Add more information to the search overview for researchers and librarians and add a handy copy button for the Biblio ID
+- More informative time stamps
+- Make links clickable in Biblio messages
 - Show more information for authors and editors
-- Add more information when linking projects
+- Enhance linking projects information to records
+- Add another sorting option
+- Make filters more visually manageable
 
 ### Fixed
 
 - Various tiny UI, UX, icon and copy fixes
 - Remove select all for librarian tags that results into an error
+- Fix Zenodo import
 
 ## [v1.0.55] - 2024-05-03
 
