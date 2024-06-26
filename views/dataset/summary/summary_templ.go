@@ -496,7 +496,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = contributorviews.Summary(c, contributorviews.SummaryArgs{
-			Role:             "author",
+			Role:             "creator",
 			Contributors:     args.Dataset.Author,
 			URL:              views.URL(args.URL).SetQueryParam("show", "contributors").String(),
 			URLTarget:        args.Target,

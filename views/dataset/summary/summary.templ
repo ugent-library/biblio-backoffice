@@ -162,7 +162,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								}
 							</ul>
 							@contributorviews.Summary(c, contributorviews.SummaryArgs{
-								Role:             "author",
+								Role:             "creator",
 								Contributors:     args.Dataset.Author,
 								URL:              views.URL(args.URL).SetQueryParam("show", "contributors").String(),
 								URLTarget:        args.Target,
