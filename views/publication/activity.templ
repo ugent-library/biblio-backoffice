@@ -116,7 +116,9 @@ templ ReviewerNoteBody(c *ctx.Ctx, p *models.Publication) {
 
 templ MessageBody(c *ctx.Ctx, p *models.Publication) {
 	<div class="card-body">
-		<p class="pb-3">{ views.Linkify(p.Message) }</p>
+		<p class="pb-3">
+			@templ.Raw(views.Linkify(p.Message))
+		</p>
 		<p class="text-muted">Have any questions or changes to report? Mail to <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.</p>
 	</div>
 }

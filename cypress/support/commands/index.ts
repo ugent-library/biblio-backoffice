@@ -25,13 +25,13 @@ import htmxRequest from "./htmx-request";
 
 // Child commands
 import finishLog from "./finish-log";
-import closeToast from "./close-toast";
 import setField from "./set-field";
 import triggerHtmx from "./trigger-htmx";
 
 // Dual commands
 import extractBiblioId from "./extract-biblio-id";
 import closeModal from "./close-modal";
+import closeToast from "./close-toast";
 
 // Parent commands
 Cypress.Commands.addAll({
@@ -81,8 +81,6 @@ Cypress.Commands.addAll(
   {
     finishLog,
 
-    closeToast,
-
     setField,
 
     triggerHtmx,
@@ -98,5 +96,7 @@ Cypress.Commands.addAll(
     extractBiblioId,
 
     closeModal,
+
+    closeToast,
   },
 );

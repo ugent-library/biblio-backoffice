@@ -5,6 +5,10 @@ export default function closeToast(
 ): Cypress.Chainable<JQuery<HTMLElement>> {
   logCommand("closeToast", { subject });
 
+  if (!subject) {
+    subject = Cypress.$(".toast");
+  }
+
   if (!subject.is(".toast")) {
     throw new Error("Command subject is not a toast.");
   }
