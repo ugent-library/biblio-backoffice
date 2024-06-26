@@ -461,7 +461,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		} else if getUserContributorRoles(args.Publication, c.User) != "" {
+		} else if getUserContributorRoles(args.Publication, c.User) != "" && c.UserRole != "curator" {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex align-items-center\"><i class=\"if if-user if--small if--muted me-2\"></i><ul class=\"c-meta-list c-meta-list-inline\"><li class=\"c-meta-item\"><span class=\"badge badge-light\">Your role: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
