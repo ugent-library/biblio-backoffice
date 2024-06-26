@@ -63,7 +63,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 				</a>
 			</div>
 		}
-		if args.CurrentUserRoles != "" {
+		if args.CurrentUserRoles != "" && c.UserRole != "curator" {
 			<div class="c-author"><span class="badge badge-light">Your role: { args.CurrentUserRoles }</span></div>
 		}
 	</div>

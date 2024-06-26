@@ -202,7 +202,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		if args.CurrentUserRoles != "" {
+		if args.CurrentUserRoles != "" && c.UserRole != "curator" {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-author\"><span class=\"badge badge-light\">Your role: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
