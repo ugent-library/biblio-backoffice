@@ -34,46 +34,33 @@ func SuggestDepartments(c *ctx.Ctx, dataset *models.Dataset, hits []models.Compl
 			return templ_7745c5c3_Err
 		}
 		for _, hit := range hits {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item\"><div class=\"d-flex w-100\"><div class=\"w-100\"><div class=\"d-flex align-items-start\"><div class=\"list-group-item-content\"><div class=\"list-group-item-text\"><h4 class=\"c-h4\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item\"><div class=\"list-group-item-inner\"><div class=\"list-group-item-main\"><div class=\"d-flex align-items-top\"><div class=\"mx-3\"><div class=\"mb-3\"><h3>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(hit.Heading)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/suggest_departments.templ`, Line: 17, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/suggest_departments.templ`, Line: 17, Col: 26}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div class=\"c-body-small text-muted\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3></div><div class=\"mb-3\"><ul class=\"c-meta-list c-meta-list-horizontal\"><li class=\"c-meta-item gap-4\"><div><span>Department ID</span> <code class=\"c-code d-inline-block\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(hit.Description)
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(hit.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/suggest_departments.templ`, Line: 18, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/suggest_departments.templ`, Line: 24, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"text-muted c-body-small\">Department ID: ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(hit.ID)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/suggest_departments.templ`, Line: 19, Col: 69}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"list-group-item-meta mt-2\"><div class=\"list-group-item-meta-left\"></div><div class=\"list-group-item-meta-right\"><button class=\"btn btn-primary\" hx-post=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</code></div></li></ul></div></div></div></div><div class=\"c-button-toolbar\"><button class=\"btn btn-primary\" hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -97,7 +84,7 @@ func SuggestDepartments(c *ctx.Ctx, dataset *models.Dataset, hits []models.Compl
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\">Add department</button></div></div></div></div></div></div></li>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\">Add department</button></div></div></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
