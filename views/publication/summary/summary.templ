@@ -32,6 +32,10 @@ func getUserContributorRoles(p *models.Publication, user *models.Person) string 
 		roles = append(roles, "supervisor")
 	}
 
+	if p.HasContributor("editor", user) {
+		roles = append(roles, "editor")
+	}
+
 	if len(roles) > 0 {
 		return strings.Join(roles, ", ")
 	}
@@ -154,13 +158,26 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									<li class="c-meta-item">{ summaryPart }</li>
 								}
 							</ul>
-							@contributorviews.Summary(c, contributorviews.SummaryArgs{
-								Role:             "author",
-								Contributors:     args.Publication.Author,
-								URL:              views.URL(args.URL).SetQueryParam("show", "contributors").String(),
-								URLTarget:        args.Target,
-								CurrentUserRoles: getUserContributorRoles(args.Publication, c.User),
-							})
+
+							if (args.Publication.Type != "issue_editor") && (args.Publication.Type != "book_editor") {
+								@contributorviews.Summary(c, contributorviews.SummaryArgs{
+									Role:             "author",
+									Contributors:     args.Publication.Author,
+									URL:              views.URL(args.URL).SetQueryParam("show", "contributors").String(),
+									URLTarget:        args.Target,
+									CurrentUserRoles: getUserContributorRoles(args.Publication, c.User),
+								})
+							} else if getUserContributorRoles(args.Publication, c.User) != "" {
+								<div class="d-flex align-items-center">
+									<i class="if if-user if--small if--muted me-2"></i>
+									<ul class="c-meta-list c-meta-list-inline">
+										<li class="c-meta-item">
+											<span class="badge badge-light">Your role: { getUserContributorRoles(args.Publication, c.User)}</span>
+										</li>
+									</ul>
+								</div>
+							}
+
 						</div>
 						<div class="vstack gap-3">
 							<div class="d-flex align-items-center">
@@ -170,8 +187,8 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									@relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
 								} else {
 									<a
-										href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
 										class="c-link-muted"
+										href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
 										if args.Target != "" {
 											target={ args.Target }
 										}

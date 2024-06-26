@@ -16,11 +16,10 @@ templ SummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
 				<span class="visually-hidden">View more actions</span>
 			</button>
 			<div class="dropdown-menu me-3">
-				<a class="dropdown-item" href={ templ.URL(pubURL.String()) }>
+				<a class="dropdown-item border-bottom" href={ templ.URL(pubURL.String()) }>
 					<i class="if if-eye"></i>
 					<span>View publication</span>
 				</a>
-				<div class="dropdown-divider"></div>
 				if pub.Status == "public" {
 					<a class="dropdown-item" href={ templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, pub.ID)) } target="_blank">
 						<i class="if if-book"></i>
@@ -59,9 +58,8 @@ templ SummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
 					}
 				}
 				if c.User.CanDeletePublication(pub) {
-					<div class="dropdown-divider"></div>
 					<button
-						class="dropdown-item"
+						class="dropdown-item border-top"
 						hx-get={ views.URL(c.PathTo("publication_confirm_delete", "id", pub.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).String() }
 						hx-target="#modals"
 					>

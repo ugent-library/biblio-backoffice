@@ -15,11 +15,10 @@ templ SummaryActions(c *ctx.Ctx, dataset *models.Dataset, url string) {
 				<span class="visually-hidden">View more actions</span>
 			</button>
 			<div class="dropdown-menu me-3">
-				<a class="dropdown-item" href={ templ.URL(url) }>
+				<a class="dropdown-item border-bottom" href={ templ.URL(url) }>
 					<i class="if if-eye"></i>
 					<span>View dataset</span>
 				</a>
-				<div class="dropdown-divider"></div>
 				if dataset.Status == "public" {
 					<a class="dropdown-item" href={ templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, dataset.ID)) } target="_blank">
 						<i class="if if-book"></i>
@@ -33,9 +32,8 @@ templ SummaryActions(c *ctx.Ctx, dataset *models.Dataset, url string) {
 					</a>
 				}
 				if c.User.CanDeleteDataset(dataset) {
-					<div class="dropdown-divider"></div>
 					<button
-						class="dropdown-item"
+						class="dropdown-item border-top"
 						hx-get={ views.URL(c.PathTo("dataset_confirm_delete", "id", dataset.ID)).AddQueryParam("redirect-url", c.CurrentURL.String()).String() }
 						hx-target="#modals"
 					>
