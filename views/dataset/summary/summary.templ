@@ -188,14 +188,14 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								}
 							</div>
 						</div>
-						<ul class="c-meta-list c-meta-list-inline">
-							if len(args.Dataset.RelatedPublication) > 0 {
+						if len(args.Dataset.RelatedPublication) > 0 {
+							<ul class="c-meta-list c-meta-list-inline">
 								<li class="c-meta-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title={ fmt.Sprintf("%d related publications", len(args.Dataset.RelatedPublication)) }>
 									<i class="if if-database if--muted if--small"></i>
 									<span class="text-muted">{ fmt.Sprintf("%d", len(args.Dataset.RelatedPublication)) }</span>
 								</li>
-							}
-						</ul>
+							</ul>
+						}
 						if args.Footer != nil {
 							@args.Footer
 						}
