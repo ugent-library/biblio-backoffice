@@ -11,7 +11,6 @@ describe("The publication search (for researchers)", () => {
       title: `Dissertation 1 ${randomTitleSuffix}`,
       shouldWaitForIndex: true,
     });
-    cy.visitPublication("@dissertation1");
     cy.addAuthor("Biblio", "Librarian", { biblioIdAlias: "@dissertation1" });
     cy.addSupervisor("Biblio", "Researcher", {
       biblioIdAlias: "@dissertation1",
@@ -23,7 +22,6 @@ describe("The publication search (for researchers)", () => {
       title: `Book ${randomTitleSuffix}`,
       shouldWaitForIndex: true,
     });
-    cy.visitPublication("@book");
     cy.addAuthor("John", "Doe", { biblioIdAlias: "@book" });
     cy.addEditor("Biblio", "Researcher", { biblioIdAlias: "@book" });
 
@@ -32,7 +30,6 @@ describe("The publication search (for researchers)", () => {
       title: `Dissertation 2 ${randomTitleSuffix}`,
       shouldWaitForIndex: true,
     });
-    cy.visitPublication("@dissertation2");
     cy.addAuthor("Biblio", "Researcher", { biblioIdAlias: "@dissertation2" });
     cy.addSupervisor("Biblio", "Librarian", {
       biblioIdAlias: "@dissertation2",
@@ -43,11 +40,13 @@ describe("The publication search (for researchers)", () => {
       title: `Dissertation 3 ${randomTitleSuffix}`,
       shouldWaitForIndex: true,
     });
-    cy.visitPublication("@dissertation3");
     cy.addAuthor("Biblio", "Librarian", { biblioIdAlias: "@dissertation3" });
     cy.addSupervisor("Biblio", "Researcher", {
       biblioIdAlias: "@dissertation3",
     });
+
+    // Extra time for ES to index this
+    cy.wait(1000);
 
     // Actual test
     cy.then(function () {

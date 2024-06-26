@@ -27,7 +27,6 @@ export default function ensureToast(
       return toast;
     })
     .should("be.visible")
-
     .within({ log: false }, () => {})
     .finishLog(log);
 }
