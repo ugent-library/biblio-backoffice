@@ -47,10 +47,13 @@ export function extractHtmxJsonAttribute<T extends object>(
   return JSON.parse(json) as T;
 }
 
-export function extractSnapshotId(response: Cypress.Response<string>): string {
+export function extractSnapshotId(
+  response: Cypress.Response<string>,
+  selector = ".btn:Contains('Save'):not(:contains('Save and add next'))",
+): string {
   const hxHeaders = extractHtmxJsonAttribute<{ "If-Match": string }>(
     response,
-    ".btn:Contains('Save'):not(:contains('Save and add next'))",
+    selector,
     "hx-headers",
   );
 
