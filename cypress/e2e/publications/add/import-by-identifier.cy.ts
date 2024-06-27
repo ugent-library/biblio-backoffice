@@ -121,19 +121,14 @@ describe("Publication import", () => {
 
     // First make and publish the first publication manually
     const title = getRandomText();
-    cy.setUpPublication("Miscellaneous", { title, prepareForPublishing: true });
-    cy.visitPublication();
+    cy.setUpPublication("Miscellaneous", {
+      title,
+      otherFields: { doi: DOI },
+      publish: true,
+    });
 
-    cy.updateFields(
-      "Publication details",
-      () => {
-        cy.setFieldByLabel("DOI", DOI);
-      },
-      true,
-    );
-
-    cy.contains(".btn", "Publish to Biblio").click();
-    cy.ensureModal("Are you sure?").closeModal("Publish");
+    // Some extra time for the dataset to be indexed
+    cy.wait(1000);
 
     // Make the second publication
     cy.visit("/add-publication");

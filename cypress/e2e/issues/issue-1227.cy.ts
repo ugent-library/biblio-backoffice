@@ -8,17 +8,14 @@ describe("Issue #1127: Cannot search any longer on book title, journal title, sh
   it("should be possible to search by publisher", () => {
     const randomText = getRandomText();
 
-    cy.setUpPublication("Miscellaneous");
-
-    cy.visitPublication();
-
-    cy.updateFields(
-      "Publication details",
-      () => {
-        cy.setFieldByLabel("Publisher", `Alternative title: ${randomText}`);
+    cy.setUpPublication("Miscellaneous", {
+      otherFields: {
+        publisher: `Publisher: ${randomText}`,
       },
-      true,
-    );
+      shouldWaitForIndex: true,
+    });
+
+    cy.wait(1000);
 
     cy.visit("/publication");
 
@@ -29,27 +26,17 @@ describe("Issue #1127: Cannot search any longer on book title, journal title, sh
     const randomText1 = getRandomText();
     const randomText2 = getRandomText();
 
-    cy.setUpPublication("Miscellaneous");
-
-    cy.visitPublication();
-
-    cy.updateFields(
-      "Publication details",
-      () => {
-        cy.setFieldByLabel(
-          "Alternative title",
+    cy.setUpPublication("Miscellaneous", {
+      otherFields: {
+        alternative_title: [
           `Alternative title: ${randomText1}`,
-        )
-          .closest(".form-value")
-          .contains(".btn", "Add")
-          .click()
-          .closest(".form-value")
-          .next(".form-value")
-          .find("input")
-          .type(`Alternative title: ${randomText2}`);
+          `Alternative title: ${randomText2}`,
+        ],
       },
-      true,
-    );
+      shouldWaitForIndex: true,
+    });
+
+    cy.wait(1000);
 
     cy.visit("/publication");
 
@@ -60,7 +47,9 @@ describe("Issue #1127: Cannot search any longer on book title, journal title, sh
   it("should be possible to search by conference title", () => {
     const randomText = getRandomText();
 
-    cy.setUpPublication("Conference contribution");
+    cy.setUpPublication("Conference contribution", {
+      shouldWaitForIndex: true,
+    });
 
     cy.visitPublication();
 
@@ -72,6 +61,8 @@ describe("Issue #1127: Cannot search any longer on book title, journal title, sh
       true,
     );
 
+    cy.wait(1000);
+
     cy.visit("/publication");
 
     cy.search(randomText).should("eq", 1);
@@ -80,17 +71,14 @@ describe("Issue #1127: Cannot search any longer on book title, journal title, sh
   it("should be possible to search by journal title", () => {
     const randomText = getRandomText();
 
-    cy.setUpPublication("Journal Article");
-
-    cy.visitPublication();
-
-    cy.updateFields(
-      "Publication details",
-      () => {
-        cy.setFieldByLabel("Journal title", `The journal name: ${randomText}`);
+    cy.setUpPublication("Journal Article", {
+      otherFields: {
+        publication: `The journal title: ${randomText}`,
       },
-      true,
-    );
+      shouldWaitForIndex: true,
+    });
+
+    cy.wait(1000);
 
     cy.visit("/publication");
 
@@ -100,20 +88,14 @@ describe("Issue #1127: Cannot search any longer on book title, journal title, sh
   it("should be possible to search by short journal title", () => {
     const randomText = getRandomText();
 
-    cy.setUpPublication("Journal Article");
-
-    cy.visitPublication();
-
-    cy.updateFields(
-      "Publication details",
-      () => {
-        cy.setFieldByLabel(
-          "Short journal title",
-          `The short journal name: ${randomText}`,
-        );
+    cy.setUpPublication("Journal Article", {
+      otherFields: {
+        publication_abbreviation: `The short journal title: ${randomText}`,
       },
-      true,
-    );
+      shouldWaitForIndex: true,
+    });
+
+    cy.wait(1000);
 
     cy.visit("/publication");
 
@@ -123,17 +105,14 @@ describe("Issue #1127: Cannot search any longer on book title, journal title, sh
   it("should be possible to search by book title", () => {
     const randomText = getRandomText();
 
-    cy.setUpPublication("Book Chapter");
-
-    cy.visitPublication();
-
-    cy.updateFields(
-      "Publication details",
-      () => {
-        cy.setFieldByLabel("Book title", `The book title: ${randomText}`);
+    cy.setUpPublication("Book Chapter", {
+      otherFields: {
+        publication: `The book title: ${randomText}`,
       },
-      true,
-    );
+      shouldWaitForIndex: true,
+    });
+
+    cy.wait(1000);
 
     cy.visit("/publication");
 

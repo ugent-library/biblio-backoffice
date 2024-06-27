@@ -117,19 +117,17 @@ describe("Dataset import", () => {
 
     // First make and publish the first dataset manually
     const title = getRandomText();
-    cy.setUpDataset({ title, prepareForPublishing: true });
-    cy.visitDataset();
-
-    cy.updateFields(
-      "Dataset details",
-      () => {
-        cy.setFieldByLabel("Identifier", DOI);
+    cy.setUpDataset({
+      title,
+      otherFields: {
+        identifier_type: "DOI",
+        identifier: DOI,
       },
-      true,
-    );
+      publish: true,
+    });
 
-    cy.contains(".btn", "Publish to Biblio").click();
-    cy.ensureModal("Are you sure?").closeModal("Publish");
+    // Some extra time for the dataset to be indexed
+    cy.wait(1000);
 
     // Make the second dataset (via DOI import)
     cy.visit("/add-dataset");
