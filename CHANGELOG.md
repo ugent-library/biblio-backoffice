@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+## [v1.0.56] - 2024-06-27
+
+### Added
+
 - Removed Laravel Mix and added [esbuild](https://esbuild.github.io/) for asset bundling
 - Add [Plato import view for librarians](https://github.com/ugent-library/biblio-backoffice/issues/1231)
 - Replaced templating with [Templ](https://templ.guide)
@@ -588,7 +594,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.55...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.56...HEAD
+[v1.0.56]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.55...v1.0.56
 [v1.0.55]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.54...v1.0.55
 [v1.0.54]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.53...v1.0.54
 [v1.0.53]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.52...v1.0.53
