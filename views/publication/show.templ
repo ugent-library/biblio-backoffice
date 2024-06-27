@@ -11,34 +11,65 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bg-white">
 				<div id="summary">
-					<div class="vstack gap-2 mx-6 py-4">
+					<div class="vstack gap-1 mx-6 py-4">
 						<div class="bc-toolbar bc-toolbar-md-responsive flex-column-reverse flex-md-row w-100 h-auto">
 							<div class="bc-toolbar-left">
 								<div class="d-inline-flex align-items-center flex-wrap">
-									<div class="bc-toolbar-item">
-										@views.BadgeStatus(p.Status)
-									</div>
-									if p.PublicationStatus != "" {
-										<div class="bc-toolbar-item">
-											<p class="c-subline text-nowrap pe-5 border-end">{ c.Loc.Get("publication_publishing_statuses." + p.PublicationStatus) }</p>
-										</div>
-									}
+									@views.BadgeStatus(p.Status)
 									if p.Locked {
-										<div class="bc-toolbar-item" data-bs-toggle="tooltip" data-bs-title="Locked for editing" data-bs-placement="bottom">
-											<span class="c-subline text-nowrap pe-5 border-end">
-												<i class="if if-lock if--small if--muted"></i>
-												<span class="text-muted c-body-small ms-2">Locked</span>
-											</span>
-										</div>
+										<span class="c-subline text-nowrap me-3 pe-3 border-end" data-bs-toggle="tooltip" data-bs-title="Locked for editing" data-bs-placement="bottom">
+											<i class="if if-lock if--small if--muted"></i>
+											<span class="text-muted c-body-small ms-2">Locked</span>
+										</span>
 									}
-									<div class="bc-toolbar-item">
-										<span class="c-subline text-nowrap">
-											{ c.Loc.Get("publication_types." + p.Type) }
-											if p.Classification != "" {
-												{ p.Classification }
+									<span class="c-subline text-nowrap me-3 pe-3 border-end">
+										{ c.Loc.Get("publication_types." + p.Type) }
+										if p.Classification != "" {
+											{ p.Classification }
+										}
+									</span>
+									// if p.PublicationStatus != "" {
+									// 	<span class="c-subline text-nowrap me-3 pe-3 border-end">{ c.Loc.Get("publication_publishing_statuses." + p.PublicationStatus) }</span>
+									// }
+									if mainFile := p.MainFile(); mainFile != nil {
+										<span class={ "c-subline", "me-3", "pe-3", templ.KV("border-end", mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }>
+											if mainFile.AccessLevel == "info:eu-repo/semantics/openAccess" {
+												<i class="if if-download if--small if--success"></i>
+												<span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+											} else if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+												<i class="if if-time if--small if--muted"></i>
+												<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+											} else if mainFile.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
+												<i class="if if-ghent-university if--small if--primary"></i>
+												<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
+											} else if mainFile.AccessLevel == "info:eu-repo/semantics/closedAccess" {
+												<i class="if if-eye-off if--small if--muted"></i>
+												<span class="c-subline text-muted">{ c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel) }</span>
 											}
 										</span>
-									</div>
+										if mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+											<span class="c-subline me-3 pe-3 border-end">
+												if mainFile.AccessLevelDuringEmbargo == "info:eu-repo/semantics/closedAccess" {
+													<i class="if if-eye-off if--small if--muted"></i>
+												} else {
+													<i class="if if-ghent-university if--small if--primary"></i>
+												}
+												<span class="c-subline text-truncate">{ c.Loc.Get("publication_file_access_levels_during_embargo." + mainFile.AccessLevelDuringEmbargo) }</span>
+											</span>
+											<span class="c-subline me-3 pe-3">
+												if mainFile.AccessLevelAfterEmbargo == "info:eu-repo/semantics/openAccess" {
+													<i class="if if-download if--small if--success"></i>
+												} else {
+													<i class="if if-ghent-university if--small if--primary"></i>
+												}
+												{ c.Loc.Get("publication_file_access_levels_after_embargo." + mainFile.AccessLevelAfterEmbargo) } from { mainFile.EmbargoDate }
+											</span>
+										}
+									} else if !p.Extern {
+										<span class="c-subline me-3 pe-3">
+											<em>Add document type: full text</em>
+										</span>
+									}
 								</div>
 							</div>
 							<div class="bc-toolbar-right mb-3">
@@ -129,19 +160,32 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 							if p.Title != "" {
 								{ p.Title }
 							} else {
-								<em class="fw-light">Untitled record</em>
+								<em>Untitled record</em>
 							}
-							<span>.&nbsp;</span>
+							<span>.</span>
 							if p.Publisher !="" {
-								{ p.Publisher }
-							} else {
-								<em class="fw-light">Publisher missing</em>
+								{ p.Publisher },&nbsp;
 							}
-							<span>,&nbsp;</span>
+							if p.Publication != "" {
+								{ p.Publication },&nbsp;
+							}
+							if p.Volume != "" {
+								vol. { p.Volume },&nbsp;
+							}
+							if p.Issue != "" {
+								no. { p.Issue },&nbsp;
+							}
+							if p.PageFirst != "" || p.PageLast != "" {
+								if p.PageFirst != "" {
+									pp. { p.PageFirst }
+								}
+								<span>-</span>
+								if p.PageLast != "" {
+									{ p.PageLast }
+								},&nbsp;
+							}
 							if p.Year !="" {
-								{ p.Year }
-							} else {
-								<em class="fw-light">Year missing</em>
+								{ p.Year }.
 							}
 						</h4>
 						<div class="bc-toolbar bc-toolbar-lg-responsive h-auto">
