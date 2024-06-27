@@ -28,6 +28,7 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 											{ p.Classification }
 										}
 									</span>
+									// TODO: figure out whether this is still needed
 									// if p.PublicationStatus != "" {
 									// 	<span class="c-subline text-nowrap me-3 pe-3 border-end">{ c.Loc.Get("publication_publishing_statuses." + p.PublicationStatus) }</span>
 									// }
@@ -157,14 +158,21 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 							</div>
 						</div>
 						<h4 class="w-100">
-							if p.Title != "" {
-								{ p.Title }
+
+							if (p.Type == "issue_editor") || (p.Type == "book_editor") {
+								if p.Editor != nil {
+									TODO: Add editor names + et. al,&nbsp;
+								}
 							} else {
-								<em>Untitled record</em>
+								if p.Author != nil {
+									TODO: Add author names + et. al,&nbsp;
+								}
 							}
-							<span>.</span>
-							if p.Publisher !="" {
-								{ p.Publisher },&nbsp;
+
+							if p.Title != "" {
+								"{ p.Title }."&nbsp;
+							} else {
+								"<em class="text-muted">Untitled record.</em>"&nbsp;
 							}
 							if p.Publication != "" {
 								{ p.Publication },&nbsp;
@@ -183,6 +191,9 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 								if p.PageLast != "" {
 									{ p.PageLast }
 								},&nbsp;
+							}
+							if p.Publisher !="" {
+								{ p.Publisher },&nbsp;
 							}
 							if p.Year !="" {
 								{ p.Year }.
