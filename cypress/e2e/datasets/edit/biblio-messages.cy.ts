@@ -1,4 +1,4 @@
-import { testFocusForLabel } from "support/util";
+import { testFocusForForm } from "support/util";
 
 describe("Editing dataset Biblio messages", () => {
   describe("as researcher", () => {
@@ -41,7 +41,9 @@ describe("Editing dataset Biblio messages", () => {
 
     it("should have clickable labels in the edit Biblio message dialog", () => {
       cy.updateFields("Messages from and for Biblio team", () => {
-        testFocusForLabel("Message", 'textarea[name="message"]');
+        testFocusForForm({
+          "textarea[name=message]": "Message",
+        });
       });
     });
   });
@@ -108,9 +110,13 @@ describe("Editing dataset Biblio messages", () => {
 
     it("should have clickable labels in the edit librarian tags dialog", () => {
       cy.updateFields("Librarian tags", () => {
-        testFocusForLabel(
-          "Librarian tags",
-          ".tags:has(textarea#reviewer_tags) tags span.tagify__input[contenteditable]",
+        testFocusForForm(
+          {
+            ".tags:has(textarea#reviewer_tags) tags span.tagify__input[contenteditable]":
+              "Librarian tags",
+          },
+          undefined,
+          ["textarea[data-input-name=reviewer_tags]"],
         );
       });
     });
@@ -141,7 +147,9 @@ describe("Editing dataset Biblio messages", () => {
 
     it("should have clickable labels in the edit librarian note dialog", () => {
       cy.updateFields("Librarian note", () => {
-        testFocusForLabel("Librarian note", 'textarea[name="reviewer_note"]');
+        testFocusForForm({
+          "textarea[name=reviewer_note]": "Librarian note",
+        });
       });
     });
   });

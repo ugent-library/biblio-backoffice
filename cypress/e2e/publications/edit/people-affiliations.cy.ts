@@ -1,4 +1,4 @@
-import { testFocusForLabel } from "support/util";
+import { testFocusForForm } from "support/util";
 
 describe("Editing publication people & affiliations", () => {
   beforeEach(() => {
@@ -184,15 +184,22 @@ describe("Editing publication people & affiliations", () => {
       cy.visitPublication();
 
       cy.updateFields("Authors", () => {
-        testFocusForLabel("First name", 'input[name="first_name"]', true);
-        testFocusForLabel("Last name", 'input[name="last_name"]');
+        testFocusForForm(
+          {
+            "input[name=first_name]": "First name",
+            "input[name=last_name]": "Last name",
+          },
+          "First name",
+        );
 
         cy.setFieldByLabel("First name", "John");
         cy.setFieldByLabel("Last name", "Doe");
 
         cy.contains(".btn", "Add author").click();
 
-        testFocusForLabel("Roles", 'select[name="credit_role"]');
+        testFocusForForm({
+          "select[name=credit_role]": "Roles",
+        });
       });
     });
   });
@@ -244,8 +251,13 @@ describe("Editing publication people & affiliations", () => {
       cy.visitPublication();
 
       cy.updateFields("Editors", () => {
-        testFocusForLabel("First name", 'input[name="first_name"]', true);
-        testFocusForLabel("Last name", 'input[name="last_name"]');
+        testFocusForForm(
+          {
+            "input[name=first_name]": "First name",
+            "input[name=last_name]": "Last name",
+          },
+          "First name",
+        );
       });
     });
   });
@@ -297,8 +309,13 @@ describe("Editing publication people & affiliations", () => {
       cy.visitPublication();
 
       cy.updateFields("Supervisors", () => {
-        testFocusForLabel("First name", 'input[name="first_name"]', true);
-        testFocusForLabel("Last name", 'input[name="last_name"]');
+        testFocusForForm(
+          {
+            "input[name=first_name]": "First name",
+            "input[name=last_name]": "Last name",
+          },
+          "First name",
+        );
       });
     });
   });

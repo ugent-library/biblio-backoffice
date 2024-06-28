@@ -1,4 +1,4 @@
-import { testFocusForLabel } from "support/util";
+import { testFocusForForm } from "support/util";
 
 describe("Editing dataset people & affiliations", () => {
   beforeEach(() => {
@@ -182,8 +182,13 @@ describe("Editing dataset people & affiliations", () => {
       cy.visitDataset();
 
       cy.updateFields("Creators", () => {
-        testFocusForLabel("First name", 'input[name="first_name"]', true);
-        testFocusForLabel("Last name", 'input[name="last_name"]');
+        testFocusForForm(
+          {
+            "input[type=text][name=first_name]": "First name",
+            "input[type=text][name=last_name]": "Last name",
+          },
+          "First name",
+        );
       });
     });
   });

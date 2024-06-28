@@ -33,7 +33,7 @@ describe("Dataset import", () => {
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(3).should("not.have.class", "c-stepper__step--active");
 
-    cy.get('input[name="identifier"]').type("10.6084/M9.FIGSHARE.22067864.V1");
+    cy.get("input[name=identifier]").type("10.6084/M9.FIGSHARE.22067864.V1");
     cy.contains(".btn", "Add dataset").click();
 
     // Step 2
@@ -135,7 +135,7 @@ describe("Dataset import", () => {
     cy.contains("Register your dataset via a DOI").click();
     cy.contains(".btn", "Add dataset").click();
 
-    cy.get('input[name="identifier"]').type(DOI);
+    cy.get("input[name=identifier]").type(DOI);
     cy.contains(".btn", "Add dataset").click();
 
     cy.ensureModal("Are you sure you want to import this dataset?").within(
