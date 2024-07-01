@@ -11,10 +11,10 @@ const METHODS = {
 
 type HtmxMethod = keyof typeof METHODS;
 
-export default function triggerHtmx<T = unknown>(
+export default function triggerHtmx(
   subject: JQuery<HTMLElement>,
   method: HtmxMethod,
-): Cypress.Chainable<Cypress.Response<T>> {
+): Cypress.Chainable<Cypress.Response<string>> {
   const url = subject.attr(method);
   if (!url) {
     throw new Error(`Could not find '${method}' attribute on subject`);
@@ -22,22 +22,28 @@ export default function triggerHtmx<T = unknown>(
 
   const hxHeaders = JSON.parse(subject.attr(`hx-headers`) ?? "null");
 
-  logCommand("triggerHtmx", { method, url, "hx-headers": hxHeaders }, method);
+  const log = logCommand(
+    "triggerHtmx",
+    { method, url, "hx-headers": hxHeaders },
+    method,
+  );
 
-  return cy.request<T>({
-    url,
-    method: METHODS[method],
-    headers: {
-      ...hxHeaders,
-      "X-CSRF-Token": this.CSRFToken,
-    },
-  });
+  return cy
+    .htmxRequest({
+      url,
+      method: METHODS[method],
+      headers: {
+        ...hxHeaders,
+      },
+      ...NO_LOG,
+    })
+    .finishLog(log);
 }
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      triggerHtmx<T = unknown>(method: HtmxMethod): Chainable<Response<T>>;
+      triggerHtmx(method: HtmxMethod): Chainable<Response<string>>;
     }
   }
 }

@@ -1,29 +1,142 @@
+const NO_LOG = { log: false };
+
 export function getRandomText() {
   return crypto.randomUUID().replace(/-/g, "").toUpperCase();
 }
 
+export function testFocusForForm(
+  form: Record<string, string | RegExp>,
+  autoFocusLabel?: string,
+  ignoredFields: string[] = [],
+) {
+  cy.get<HTMLFormElement>(
+    "input:not([type=hidden], [type=submit], [type=reset], [type=button], [type=image]), textarea, select",
+    NO_LOG,
+  ).then((allFormFields) => {
+    ignoredFields.forEach((f) => (allFormFields = allFormFields.not(f)));
+
+    for (const selector of Object.keys(form)) {
+      testFocusForLabel(
+        form[selector],
+        selector,
+        autoFocusLabel === form[selector],
+      );
+
+      allFormFields = allFormFields.not(selector);
+    }
+
+    expect(allFormFields.length).to.eq(
+      0,
+      "Not all fields were checked: " +
+        allFormFields
+          .get()
+          .map((f) => `${f.tagName.toLowerCase()}[name=${f.name}]`)
+          .join(", "),
+    );
+  });
+}
+
 export function testFocusForLabel(
-  labelText: string,
+  labelText: string | RegExp,
   fieldSelector: string,
   autoFocus = false,
 ) {
   cy.getLabel(labelText)
     .as("theLabel")
-    .should("have.length", 1)
-    .parent({ log: false })
-    .find(fieldSelector)
-    .should("have.length", 1)
-    .first({ log: false })
+    .then(($label) => {
+      if ($label.length !== 1) {
+        expect($label).to.have.lengthOf(1);
+      }
+    })
+    .parent(NO_LOG)
+    .find(fieldSelector, NO_LOG)
+    .then(($field) => {
+      if ($field.length !== 1) {
+        expect($field).to.have.lengthOf(1);
+      }
+    })
+    .first(NO_LOG)
     .as("theField")
     .should(autoFocus ? "be.focused" : "not.be.focused");
 
   if (autoFocus) {
-    cy.focused().blur();
-
-    cy.get("@theField").should("not.be.focused");
+    cy.focused(NO_LOG).blur();
+    cy.get("@theField", NO_LOG).should("not.be.focused");
   }
 
-  cy.get("@theLabel").click();
+  cy.get("@theLabel", NO_LOG).click();
+  cy.get("@theField", NO_LOG).should("be.focused");
+}
 
-  cy.get("@theField").should("be.focused");
+export function getCSRFToken() {
+  return cy.state("ctx").CSRFToken;
+}
+
+export function extractHtmxJsonAttribute<T extends object>(
+  response: Cypress.Response<string>,
+  selector: string,
+  hxAttributeName: `hx-${string}`,
+): T {
+  const $partial = Cypress.$(response.body);
+  const $node = $partial.find(selector);
+
+  const json = decodeEntities($node.attr(hxAttributeName));
+
+  return JSON.parse(json) as T;
+}
+
+export function extractSnapshotId(
+  response: Cypress.Response<string>,
+  selector = ".btn:Contains('Save'):not(:contains('Save and add next'))",
+): string {
+  const hxHeaders = extractHtmxJsonAttribute<{ "If-Match": string }>(
+    response,
+    selector,
+    "hx-headers",
+  );
+
+  return hxHeaders["If-Match"];
+}
+
+function decodeEntities(encodedString) {
+  var textArea = document.createElement("textarea");
+
+  textArea.innerHTML = encodedString;
+
+  return textArea.value;
+}
+
+export function waitForIndex(
+  scope: "publication" | "dataset",
+  biblioId: string,
+) {
+  let count = 0;
+
+  const doCheckIndex = () => {
+    count++;
+
+    const url = new URL(
+      `/biblio_${scope}s/_search`,
+      Cypress.env("ELASTICSEARCH_ORIGIN"),
+    ).toString();
+
+    cy.request({
+      url,
+      qs: {
+        size: 0,
+        q: `_id:${biblioId}`,
+      },
+      ...NO_LOG,
+    }).then((r) => {
+      if (r.body.hits.total < 1) {
+        if (count < 20) {
+          cy.wait(100, NO_LOG).then(doCheckIndex);
+        } else {
+          throw new Error("Timed out waiting for index to be ready");
+        }
+      }
+    });
+  };
+
+  doCheckIndex();
 }

@@ -1,5 +1,5 @@
 import * as dayjs from "dayjs";
-import { testFocusForLabel } from "support/util";
+import { testFocusForForm } from "support/util";
 
 describe("Editing publication files", () => {
   beforeEach(() => {
@@ -185,29 +185,38 @@ describe("Editing publication files", () => {
     );
 
     cy.ensureModal("Document details for file empty-pdf.pdf").within(() => {
-      cy.intercept("/publication/*/files/*/refresh-form*").as("refreshForm");
-
+      cy.intercept({
+        url: "/publication/*/files/*/refresh-form*",
+        times: 1,
+      }).as("refreshForm");
       cy.getLabel(/Embargoed access/).click();
       cy.wait("@refreshForm");
 
-      testFocusForLabel("Document type", 'select[name="relation"]', true);
-      testFocusForLabel(
-        "Publication version",
-        'select[name="publication_version"]',
-      );
+      // Now stub the refresh form route so nothing gets updated during focus test
+      cy.intercept("/publication/*/files/*/refresh-form*", "");
 
-      testFocusForLabel(
-        "Access level during embargo",
-        'select[name="access_level_during_embargo"]',
-      );
-      testFocusForLabel(
-        "Access level after embargo",
-        'select[name="access_level_after_embargo"]',
-      );
-      testFocusForLabel("Embargo end", 'input[type=date][name="embargo_date"]');
-      testFocusForLabel(
-        "License granted by the rights holder",
-        'select[name="license"]',
+      testFocusForForm(
+        {
+          "select[name=relation]": "Document type",
+          "select[name=publication_version]": "Publication version",
+
+          "input[type=radio][name=access_level][value='info:eu-repo/semantics/openAccess']":
+            /Public access - Open access/,
+          "input[type=radio][name=access_level][value='info:eu-repo/semantics/restrictedAccess']":
+            /UGent access - Local access/,
+          "input[type=radio][name=access_level][value='info:eu-repo/semantics/embargoedAccess']":
+            /Embargoed access/,
+          "input[type=radio][name=access_level][value='info:eu-repo/semantics/closedAccess']":
+            /Private access - Closed access/,
+
+          "select[name=access_level_during_embargo]":
+            "Access level during embargo",
+          "select[name=access_level_after_embargo]":
+            "Access level after embargo",
+          "input[type=date][name=embargo_date]": "Embargo end",
+          "select[name=license]": "License granted by the rights holder",
+        },
+        "Document type",
       );
     });
   });

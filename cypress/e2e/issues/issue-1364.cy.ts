@@ -1,41 +1,32 @@
 // https://github.com/ugent-library/biblio-backoffice/issues/1364
 
+import { getRandomText } from "support/util";
+
 describe('Issue #1364: Add "Updated (oldest first)" to sorting options', () => {
-  const randomTitle = crypto.randomUUID();
+  const randomTitle = getRandomText();
 
   before(() => {
     cy.loginAsResearcher();
 
+    // Create 3 datasets and publications
     for (let i = 1; i <= 3; i++) {
       cy.setUpPublication("Miscellaneous", {
         title: `Title ${i} ${randomTitle}`,
+        otherFields: {
+          year: (new Date().getFullYear() - 10 + i).toString(),
+        },
+        biblioIDAlias: `publication_${i}`,
+        shouldWaitForIndex: true,
       });
-      cy.extractBiblioId(`publication_${i}`);
-      cy.visitPublication(`@publication_${i}`);
-      cy.updateFields(
-        "Publication details",
-        () => {
-          cy.setFieldByLabel(
-            "Publication year",
-            (new Date().getFullYear() - 10 + i).toString(),
-          );
-        },
-        true,
-      );
 
-      cy.setUpDataset({ title: `Title ${i} ${randomTitle}` });
-      cy.extractBiblioId(`dataset_${i}`);
-      cy.visitDataset(`@dataset_${i}`);
-      cy.updateFields(
-        "Dataset details",
-        () => {
-          cy.setFieldByLabel(
-            "Publication year",
-            (new Date().getFullYear() - 10 + i).toString(),
-          );
+      cy.setUpDataset({
+        title: `Title ${i} ${randomTitle}`,
+        otherFields: {
+          year: (new Date().getFullYear() - 10 + i).toString(),
         },
-        true,
-      );
+        biblioIDAlias: `dataset_${i}`,
+        shouldWaitForIndex: true,
+      });
     }
 
     // Update 2nd publication/dataset again to give it a newer updated date

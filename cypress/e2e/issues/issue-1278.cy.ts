@@ -7,20 +7,12 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
 
   describe("for publications", () => {
     it("should display my role when I'm an author", () => {
-      cy.setUpPublication();
+      cy.setUpPublication(undefined, { shouldWaitForIndex: true });
       verifyMyRoles("publication", "registrar");
 
       // Add myself as author
       cy.visitPublication();
-      cy.updateFields(
-        "Authors",
-        () => {
-          cy.setFieldByLabel("First name", "Biblio");
-          cy.setFieldByLabel("Last name", "Researcher");
-          cy.contains(".btn", "Add author").click();
-        },
-        true,
-      );
+      cy.addAuthor("Biblio", "Researcher");
       verifyMyRoles("publication", "author");
 
       cy.loginAsLibrarian();
@@ -29,20 +21,12 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
     });
 
     it("should display my role when I'm a supervisor", () => {
-      cy.setUpPublication("Dissertation");
+      cy.setUpPublication("Dissertation", { shouldWaitForIndex: true });
       verifyMyRoles("publication", "registrar");
 
       // Add myself as supervisor
       cy.visitPublication();
-      cy.updateFields(
-        "Supervisors",
-        () => {
-          cy.setFieldByLabel("First name", "Biblio");
-          cy.setFieldByLabel("Last name", "Researcher");
-          cy.contains(".btn", "Add supervisor").click();
-        },
-        true,
-      );
+      cy.addSupervisor("Biblio", "Researcher");
       verifyMyRoles("publication", "supervisor");
 
       cy.loginAsLibrarian();
@@ -51,33 +35,17 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
     });
 
     it("should display my roles when I'm both an author and a supervisor", () => {
-      cy.setUpPublication("Dissertation");
+      cy.setUpPublication("Dissertation", { shouldWaitForIndex: true });
       verifyMyRoles("publication", "registrar");
 
       // Add myself as supervisor
       cy.visitPublication();
-      cy.updateFields(
-        "Supervisors",
-        () => {
-          cy.setFieldByLabel("First name", "Biblio");
-          cy.setFieldByLabel("Last name", "Researcher");
-          cy.contains(".btn", "Add supervisor").click();
-        },
-        true,
-      );
+      cy.addSupervisor("Biblio", "Researcher");
       verifyMyRoles("publication", "supervisor");
 
       // Add myself as author
       cy.visitPublication();
-      cy.updateFields(
-        "Authors",
-        () => {
-          cy.setFieldByLabel("First name", "Biblio");
-          cy.setFieldByLabel("Last name", "Researcher");
-          cy.contains(".btn", "Add author").click();
-        },
-        true,
-      );
+      cy.addAuthor("Biblio", "Researcher");
       verifyMyRoles("publication", "author", "supervisor");
 
       cy.loginAsLibrarian();
@@ -86,33 +54,17 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
     });
 
     it("should display my role when I'm only a registrar", function () {
-      cy.setUpPublication();
+      cy.setUpPublication(undefined, { shouldWaitForIndex: true });
       verifyMyRoles("publication", "registrar");
 
       // Add other author
       cy.visitPublication();
-      cy.updateFields(
-        "Authors",
-        () => {
-          cy.setFieldByLabel("First name", "John");
-          cy.setFieldByLabel("Last name", "Doe");
-          cy.contains(".btn", "Add author").click();
-        },
-        true,
-      );
+      cy.addAuthor("John", "Doe");
       verifyMyRoles("publication", "registrar");
 
       // Add myself as editor
       cy.visitPublication();
-      cy.updateFields(
-        "Editors",
-        () => {
-          cy.setFieldByLabel("First name", "Biblio");
-          cy.setFieldByLabel("Last name", "Researcher");
-          cy.contains(".btn", "Add editor").click();
-        },
-        true,
-      );
+      cy.addEditor("Biblio", "Researcher");
       verifyMyRoles("publication", "registrar");
 
       cy.loginAsLibrarian();
@@ -123,20 +75,12 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
 
   describe("for datasets", () => {
     it("should display my role when I'm a creator", () => {
-      cy.setUpDataset();
+      cy.setUpDataset({ shouldWaitForIndex: true });
       verifyMyRoles("dataset", "registrar");
 
       // Add myself as creator
       cy.visitDataset();
-      cy.updateFields(
-        "Creators",
-        () => {
-          cy.setFieldByLabel("First name", "Biblio");
-          cy.setFieldByLabel("Last name", "Researcher");
-          cy.contains(".btn", "Add creator").click();
-        },
-        true,
-      );
+      cy.addCreator("Biblio", "Researcher");
       verifyMyRoles("dataset", "creator");
 
       cy.loginAsLibrarian();
@@ -145,20 +89,12 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
     });
 
     it("should display my role when I'm only a registrar", () => {
-      cy.setUpDataset();
+      cy.setUpDataset({ shouldWaitForIndex: true });
       verifyMyRoles("dataset", "registrar");
 
       // Add other creator
       cy.visitDataset();
-      cy.updateFields(
-        "Creators",
-        () => {
-          cy.setFieldByLabel("First name", "John");
-          cy.setFieldByLabel("Last name", "Doe");
-          cy.contains(".btn", "Add creator").click();
-        },
-        true,
-      );
+      cy.addCreator("John", "Doe");
       verifyMyRoles("dataset", "registrar");
 
       cy.loginAsLibrarian();

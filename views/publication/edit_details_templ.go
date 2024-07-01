@@ -238,7 +238,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 		} else {
 			templ_7745c5c3_Err = display.Field(display.FieldArgs{
 				Label:   c.Loc.Get("builder.classification"),
-				Value:   c.Loc.Get("publication_classifications." + p.Type),
+				Value:   c.Loc.Get("publication_classifications." + p.Classification),
 				Tooltip: c.Loc.Get("tooltip.publication.classification"),
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {

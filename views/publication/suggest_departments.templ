@@ -10,29 +10,34 @@ templ SuggestDepartments(c *ctx.Ctx, publication *models.Publication, hits []mod
 	<ul class="list-group mt-6">
 		for _, hit := range hits {
 			<li class="list-group-item">
-				<div class="d-flex w-100">
-					<div class="w-100">
-						<div class="d-flex align-items-start">
-							<div class="list-group-item-content">
-								<div class="list-group-item-text">
-									<h4 class="c-h4">{ hit.Heading }</h4>
-									<div class="c-body-small text-muted">{ hit.Description }</div>
-									<div class="text-muted c-body-small">Department ID: { hit.ID }</div>
+				<div class="list-group-item-inner">
+					<div class="list-group-item-main">
+						<div class="d-flex align-items-top">
+							<div class="mx-3">
+								<div class="mb-3">
+									<h3>{ hit.Heading }</h3>
 								</div>
-								<div class="list-group-item-meta mt-2">
-									<div class="list-group-item-meta-left"></div>
-									<div class="list-group-item-meta-right">
-										<button
-											class="btn btn-primary"
-											hx-post={ c.PathTo("publication_create_department", "id", publication.ID).String() }
-											hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
-											hx-vals={ fmt.Sprintf(`{"department_id": "%s"}`, hit.ID) }
-											hx-swap="none"
-										>Add department</button>
-									</div>
+								<div class="mb-3">
+									<ul class="c-meta-list c-meta-list-horizontal">
+										<li class="c-meta-item gap-4">
+											<div>
+												<span>Department ID</span>
+												<code class="c-code d-inline-block">{ hit.ID }</code>
+											</div>
+										</li>
+									</ul>
 								</div>
 							</div>
 						</div>
+					</div>
+					<div class="c-button-toolbar">
+						<button
+							class="btn btn-primary"
+							hx-post={ c.PathTo("publication_create_department", "id", publication.ID).String() }
+							hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, publication.SnapshotID) }
+							hx-vals={ fmt.Sprintf(`{"department_id": "%s"}`, hit.ID) }
+							hx-swap="none"
+						>Add department</button>
 					</div>
 				</div>
 			</li>

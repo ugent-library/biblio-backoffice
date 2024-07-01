@@ -32,11 +32,15 @@ func getUserContributorRoles(p *models.Publication, user *models.Person) string 
 		roles = append(roles, "supervisor")
 	}
 
+	if p.HasContributor("editor", user) {
+		roles = append(roles, "editor")
+	}
+
 	if len(roles) > 0 {
 		return strings.Join(roles, ", ")
 	}
 
-	if p.Creator.ID == user.ID {
+	if p.CreatorID == user.ID {
 		return "registrar"
 	}
 
@@ -154,34 +158,49 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									<li class="c-meta-item">{ summaryPart }</li>
 								}
 							</ul>
-							@contributorviews.Summary(c, contributorviews.SummaryArgs{
-								Role:             "author",
-								Contributors:     args.Publication.Author,
-								URL:              views.URL(args.URL).SetQueryParam("show", "contributors").String(),
-								URLTarget:        args.Target,
-								CurrentUserRoles: getUserContributorRoles(args.Publication, c.User),
-							})
-						</div>
-						if args.Publication.VABBID != "" || args.Publication.Legacy || len(args.Publication.RelatedDataset) > 0 {
-							<div class="vstack gap-3">
+
+							if (args.Publication.Type != "issue_editor") && (args.Publication.Type != "book_editor") {
+								@contributorviews.Summary(c, contributorviews.SummaryArgs{
+									Role:             "author",
+									Contributors:     args.Publication.Author,
+									URL:              views.URL(args.URL).SetQueryParam("show", "contributors").String(),
+									URLTarget:        args.Target,
+									CurrentUserRoles: getUserContributorRoles(args.Publication, c.User),
+								})
+							} else if getUserContributorRoles(args.Publication, c.User) != "" && c.UserRole != "curator" {
 								<div class="d-flex align-items-center">
-									<i class="if if-building if--small if--muted me-2"></i>
-									if len(args.Publication.RelatedOrganizations) > 0 {
-										// TODO: pass on args.Target
-										@relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
-									} else {
-										<a
-											href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
-											class="c-link-muted"
-											if args.Target != "" {
-												target={ args.Target }
-											}
-										>
-											<i class="if if-edit if--small"></i>
-											<em>Add department</em>
-										</a>
-									}
+									<i class="if if-user if--small if--muted me-2"></i>
+									<ul class="c-meta-list c-meta-list-inline">
+										<li class="c-meta-item">
+											<span class="badge badge-light">Your role: { getUserContributorRoles(args.Publication, c.User)}</span>
+										</li>
+									</ul>
 								</div>
+							}
+
+						</div>
+						<div class="vstack gap-3">
+							<div class="d-flex align-items-center">
+								<i class="if if-building if--small if--muted me-2"></i>
+								if len(args.Publication.RelatedOrganizations) > 0 {
+									// TODO: pass on args.Target
+									@relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
+								} else {
+									<a
+										class="c-link-muted"
+										href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
+										if args.Target != "" {
+											target={ args.Target }
+										}
+									>
+										<i class="if if-edit if--small"></i>
+										<em>Add department</em>
+									</a>
+								}
+							</div>
+						</div>
+						if args.Publication.VABB() != "" || args.Publication.Legacy || len(args.Publication.RelatedDataset) > 0 {
+							<div class="vstack gap-3">
 								<ul class="c-meta-list c-meta-list-inline">
 									if vabb := args.Publication.VABB(); vabb != "" {
 										if c.User.CanCurate() {

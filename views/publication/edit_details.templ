@@ -121,7 +121,7 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 						} else {
 							@display.Field(display.FieldArgs{
 								Label:   c.Loc.Get("builder.classification"),
-								Value:   c.Loc.Get("publication_classifications." + p.Type),
+								Value:   c.Loc.Get("publication_classifications." + p.Classification),
 								Tooltip: c.Loc.Get("tooltip.publication.classification"),
 							})
 						}

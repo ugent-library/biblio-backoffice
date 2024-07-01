@@ -9,35 +9,44 @@ describe("The publication search (for researchers)", () => {
     cy.setUpPublication("Dissertation", {
       biblioIDAlias: "dissertation1",
       title: `Dissertation 1 ${randomTitleSuffix}`,
+      shouldWaitForIndex: true,
     });
-    cy.visitPublication("@dissertation1");
-    cy.addAuthor("Biblio", "Librarian");
-    cy.addSupervisor("Biblio", "Researcher");
+    cy.addAuthor("Biblio", "Librarian", { biblioIdAlias: "@dissertation1" });
+    cy.addSupervisor("Biblio", "Researcher", {
+      biblioIdAlias: "@dissertation1",
+    });
 
     cy.loginAsResearcher();
     cy.setUpPublication("Book", {
       biblioIDAlias: "book",
       title: `Book ${randomTitleSuffix}`,
+      shouldWaitForIndex: true,
     });
-    cy.visitPublication("@book");
-    cy.addAuthor("John", "Doe");
-    cy.addEditor("Biblio", "Researcher");
+    cy.addAuthor("John", "Doe", { biblioIdAlias: "@book" });
+    cy.addEditor("Biblio", "Researcher", { biblioIdAlias: "@book" });
 
     cy.setUpPublication("Dissertation", {
       biblioIDAlias: "dissertation2",
       title: `Dissertation 2 ${randomTitleSuffix}`,
+      shouldWaitForIndex: true,
     });
-    cy.visitPublication("@dissertation2");
-    cy.addAuthor("Biblio", "Researcher");
-    cy.addSupervisor("Biblio", "Librarian");
+    cy.addAuthor("Biblio", "Researcher", { biblioIdAlias: "@dissertation2" });
+    cy.addSupervisor("Biblio", "Librarian", {
+      biblioIdAlias: "@dissertation2",
+    });
 
     cy.setUpPublication("Dissertation", {
       biblioIDAlias: "dissertation3",
       title: `Dissertation 3 ${randomTitleSuffix}`,
+      shouldWaitForIndex: true,
     });
-    cy.visitPublication("@dissertation3");
-    cy.addAuthor("Biblio", "Librarian");
-    cy.addSupervisor("Biblio", "Researcher");
+    cy.addAuthor("Biblio", "Librarian", { biblioIdAlias: "@dissertation3" });
+    cy.addSupervisor("Biblio", "Researcher", {
+      biblioIdAlias: "@dissertation3",
+    });
+
+    // Extra time for ES to index this
+    cy.wait(1000);
 
     // Actual test
     cy.then(function () {

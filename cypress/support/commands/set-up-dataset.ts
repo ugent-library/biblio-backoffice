@@ -1,89 +1,118 @@
-import { logCommand } from "./helpers";
-
-const NO_LOG = { log: false };
+import { waitForIndex, extractSnapshotId } from "support/util";
+import { logCommand, updateConsoleProps } from "./helpers";
 
 type SetUpDatasetOptions = {
-  prepareForPublishing?: boolean;
   title?: string;
+  otherFields?: Record<string, unknown>;
   biblioIDAlias?: string;
+  prepareForPublishing?: boolean;
+  publish?: boolean;
+  shouldWaitForIndex?: boolean;
 };
 
 export default function setUpDataset({
-  prepareForPublishing = false,
   title = "The dataset title",
+  otherFields = {},
   biblioIDAlias = "biblioId",
+  prepareForPublishing = false,
+  publish = false,
+  shouldWaitForIndex = false,
 }: SetUpDatasetOptions = {}): void {
-  logCommand("setUpDataset", {
-    "Prepare for publishing": prepareForPublishing,
+  const log = logCommand("setUpDataset", {
     title,
+    "Other fields": otherFields,
     "Biblio ID alias": biblioIDAlias,
+    "Prepare for publishing": prepareForPublishing,
+    Publish: publish,
+    "Should wait for index": shouldWaitForIndex,
   });
 
-  cy.visit("/add-dataset", NO_LOG);
+  cy.htmxRequest({
+    method: "POST",
+    url: "/add-dataset",
+    form: true,
+    body: { method: "manual" },
+  })
+    .then(extractBiblioId)
+    .as(biblioIDAlias, { type: "static" })
+    .then((biblioId) => {
+      updateConsoleProps(log, (cp) => (cp["Biblio ID"] = biblioId));
 
-  cy.intercept("/dataset/*/description*").as("completeDescription");
+      // Load the edit form to retrieve the snapshot ID
+      cy.htmxRequest({
+        url: `/dataset/${biblioId}/details/edit`,
+      })
+        .then(extractSnapshotId)
+        .then((snapshotId) => {
+          // Then update details
+          const body = {
+            title: `${title} [CYPRESSTEST]`,
+            identifier_type: "DOI",
+            identifier: "10.7202/1041023ar",
+          };
 
-  cy.contains("Register a dataset manually", NO_LOG)
-    .find(":radio", NO_LOG)
-    .click(NO_LOG);
-  cy.contains(".btn", "Add dataset", NO_LOG).click(NO_LOG);
+          if (prepareForPublishing || publish) {
+            body["year"] = new Date().getFullYear().toString();
+            body["publisher"] = "UGent";
+            body["format"] = ["text/csv"];
+            body["license"] = "CC0-1.0";
+            body["access_level"] = "info:eu-repo/semantics/openAccess";
+          }
 
-  // Extract biblioId at this point
-  cy.get("#show-content", NO_LOG)
-    .attr("hx-get")
-    .then((hxGet) => {
-      const biblioId = hxGet.match(/\/dataset\/(?<biblioId>.*)\/description/)
-        ?.groups["biblioId"];
+          Object.assign(body, otherFields);
 
-      if (!biblioId) {
-        throw new Error("Could not extract biblioId.");
+          cy.htmxRequest({
+            method: "PUT",
+            url: `/dataset/${biblioId}/details`,
+            headers: {
+              "If-Match": snapshotId,
+            },
+            form: true,
+            body,
+          });
+        });
+
+      if (prepareForPublishing || publish) {
+        cy.addCreator("John", "Doe");
       }
 
-      return biblioId;
-    })
-    .as(biblioIDAlias, { type: "static" });
-
-  cy.wait("@completeDescription", NO_LOG);
-
-  cy.updateFields(
-    "Dataset details",
-    () => {
-      cy.setFieldByLabel("Title", `${title} [CYPRESSTEST]`);
-
-      cy.setFieldByLabel("Persistent identifier type", "DOI");
-      cy.setFieldByLabel("Identifier", "10.5072/test/t");
-
-      if (prepareForPublishing) {
-        cy.setFieldByLabel("Publisher", "UGent");
-        cy.setFieldByLabel(
-          "Publication year",
-          new Date().getFullYear().toString(),
-        );
-
-        cy.intercept("PUT", "/dataset/*/details/edit/refresh").as(
-          "refreshForm",
-        );
-
-        cy.setFieldByLabel("Data format", "text/csv")
-          .next(".autocomplete-hits", NO_LOG)
-          .contains(".badge", "text/csv", NO_LOG)
-          .click(NO_LOG);
-
-        cy.setFieldByLabel("License", "CC0 (1.0)");
-        cy.wait("@refreshForm", NO_LOG);
-
-        cy.setFieldByLabel("Access level", "Open access");
-        cy.wait("@refreshForm", NO_LOG);
+      if (publish) {
+        publishDataset(biblioId);
       }
-    },
-    true,
-  );
 
-  if (prepareForPublishing) {
-    cy.addCreator("John", "Doe");
-  }
+      if (shouldWaitForIndex) {
+        waitForIndex("dataset", biblioId);
+      }
+    });
+}
 
-  cy.contains(".btn", "Complete Description", NO_LOG).click(NO_LOG);
+function publishDataset(biblioId: string) {
+  cy.htmxRequest({
+    url: `/dataset/${biblioId}/add/confirm`,
+  })
+    .then((r) =>
+      extractSnapshotId(
+        r,
+        `button[hx-post="/dataset/${biblioId}/add/publish"]:contains("Publish to Biblio")`,
+      ),
+    )
+    .then((snapshotId) => {
+      cy.htmxRequest({
+        method: "POST",
+        url: `/dataset/${biblioId}/add/publish`,
+        headers: {
+          "If-Match": snapshotId,
+        },
+      });
+    });
+}
+
+function extractBiblioId(response: Cypress.Response<string>) {
+  const { biblioId } = response.body.match(
+    /href="\/dataset\/(?<biblioId>[A-Z0-9]+)\/add\/confirm"/,
+  ).groups;
+
+  return biblioId;
 }
 
 declare global {

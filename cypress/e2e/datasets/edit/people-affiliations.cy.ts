@@ -1,4 +1,4 @@
-import { testFocusForLabel } from "support/util";
+import { testFocusForForm } from "support/util";
 
 describe("Editing dataset people & affiliations", () => {
   beforeEach(() => {
@@ -16,26 +16,57 @@ describe("Editing dataset people & affiliations", () => {
         "Add at least one UGent creator.",
       );
 
-      cy.updateFields(
-        "Creators",
-        () => {
-          cy.intercept("/dataset/*/contributors/author/suggestions?*").as(
-            "suggestContributor",
-          );
-
-          cy.setFieldByLabel("First name", "Jane");
-          cy.wait("@suggestContributor");
-          cy.setFieldByLabel("Last name", "Doe");
-          cy.wait("@suggestContributor");
-
-          cy.contains(".btn", "Add external creator").click({
-            scrollBehavior: false,
-          });
-        },
-        true,
+      cy.intercept("/dataset/*/contributors/author/suggestions*").as("suggest");
+      cy.intercept("/dataset/*/contributors/author/confirm-create*").as(
+        "confirmCreate",
       );
 
-      cy.contains("#authors tr", "Jane Doe").find(".btn .if-delete").click();
+      cy.contains(".btn", "Add creator").click();
+
+      cy.ensureModal("Add creator").within(() => {
+        cy.setFieldByLabel("First name", "Jame");
+        cy.wait("@suggest");
+        cy.setFieldByLabel("Last name", "Dow");
+        cy.wait("@suggest");
+
+        cy.contains(".btn", "Add external creator").click();
+        cy.wait("@confirmCreate");
+
+        // Made an error, let's go back
+        cy.contains("Review creator information").should("be.visible");
+        cy.contains("Jame Dow").should("be.visible");
+
+        cy.contains(".btn", "Back to search").click();
+
+        cy.setFieldByLabel("First name", "Jane");
+        cy.wait("@suggest");
+
+        cy.contains(".btn", "Add external creator").click();
+        cy.wait("@confirmCreate");
+
+        cy.contains("Review creator information").should("be.visible");
+        cy.contains("Jane Dow").should("be.visible");
+
+        cy.contains(".btn", "Save and add next").click();
+      });
+
+      cy.ensureModal("Add creator").within(() => {
+        cy.setFieldByLabel("First name", "John");
+        cy.wait("@suggest");
+        cy.setFieldByLabel("Last name", "Doe");
+        cy.wait("@suggest");
+
+        cy.contains(".btn", "Add creator").click();
+        cy.wait("@confirmCreate");
+
+        cy.contains(".btn", /^Save$/).click();
+      });
+
+      cy.get("#authors tbody tr")
+        .should("have.length", 2)
+        .contains("tr", "Jane Dow")
+        .find(".btn .if-delete")
+        .click();
 
       cy.ensureModal("Confirm deletion")
         .within(() => {
@@ -46,7 +77,23 @@ describe("Editing dataset people & affiliations", () => {
         .closeModal("Delete");
       cy.ensureNoModal();
 
-      cy.contains("#authors", "Jane Doe").should("not.exist");
+      cy.get("#authors tbody tr")
+        .should("have.length", 1)
+        .contains("tr", "John Doe")
+        .find(".btn .if-delete")
+        .click();
+
+      cy.ensureModal("Confirm deletion")
+        .within(() => {
+          cy.contains("Are you sure you want to remove this creator?").should(
+            "be.visible",
+          );
+        })
+        .closeModal("Delete");
+      cy.ensureNoModal();
+
+      cy.contains("#authors", "Jane Dow").should("not.exist");
+      cy.contains("#authors", "John Doe").should("not.exist");
       cy.get("#authors .card-body").should(
         "contain",
         "Add at least one UGent creator.",
@@ -62,8 +109,9 @@ describe("Editing dataset people & affiliations", () => {
       cy.ensureToast("Dataset was successfully published.").closeToast();
 
       // Add other external creator first
-      cy.addCreator("Jane", "Doe", true);
+      cy.addCreator("Jane", "Doe", { external: true });
 
+      cy.contains(".nav-item", "People & Affiliations").click();
       cy.contains("#authors tr", "John Doe").find(".btn .if-delete").click();
       cy.ensureModal("Confirm deletion").closeModal("Delete");
 
@@ -133,20 +181,36 @@ describe("Editing dataset people & affiliations", () => {
       cy.setUpDataset();
       cy.visitDataset();
 
-      cy.updateFields("Creators", () => {
-        testFocusForLabel("First name", 'input[name="first_name"]', true);
-        testFocusForLabel("Last name", 'input[name="last_name"]');
-      });
+      cy.updateFields(
+        "Creators",
+        () => {
+          testFocusForForm(
+            {
+              "input[type=text][name=first_name]": "First name",
+              "input[type=text][name=last_name]": "Last name",
+            },
+            "First name",
+          );
 
-      cy.addCreator("Jane", "Dow", true);
+          cy.setFieldByLabel("First name", "Jane");
+          cy.setFieldByLabel("Last name", "Dow");
+          cy.contains(".btn", "Add external creator").click();
+        },
+        true,
+      );
 
       cy.contains("#contributors-author-body table tbody tr", "Jane Dow")
         .find(".if-edit")
         .click();
 
       cy.ensureModal("Edit or change creator").within(() => {
-        testFocusForLabel("First name", 'input[name="first_name"]', true);
-        testFocusForLabel("Last name", 'input[name="last_name"]');
+        testFocusForForm(
+          {
+            "input[type=text][name=first_name]": "First name",
+            "input[type=text][name=last_name]": "Last name",
+          },
+          "First name",
+        );
       });
     });
   });
@@ -173,7 +237,7 @@ describe("Editing dataset people & affiliations", () => {
         cy.getLabel("Search").next("input").should("be.focused").type("LW17");
         cy.wait("@suggestDepartment");
 
-        cy.contains(".list-group-item", "Department ID: LW17")
+        cy.contains(".list-group-item", "Department ID LW17")
           .contains(".btn", "Add department")
           .click();
       });
@@ -191,7 +255,7 @@ describe("Editing dataset people & affiliations", () => {
         cy.getLabel("Search").next("input").should("be.focused").type("DI62");
         cy.wait("@suggestDepartment");
 
-        cy.contains(".list-group-item", "Department ID: DI62")
+        cy.contains(".list-group-item", "Department ID DI62")
           .contains(".btn", "Add department")
           .click();
       });

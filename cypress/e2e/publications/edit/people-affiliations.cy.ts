@@ -1,8 +1,15 @@
-import { testFocusForLabel } from "support/util";
+import { testFocusForForm } from "support/util";
 
 describe("Editing publication people & affiliations", () => {
   beforeEach(() => {
     cy.loginAsResearcher();
+
+    cy.intercept("/publication/*/contributors/author/suggestions*").as(
+      "suggest",
+    );
+    cy.intercept("/publication/*/contributors/author/confirm-create*").as(
+      "confirmCreate",
+    );
   });
 
   describe("Authors", () => {
@@ -11,32 +18,57 @@ describe("Editing publication people & affiliations", () => {
       cy.visitPublication();
 
       cy.contains(".nav-link", "People & Affiliations").click();
-
       cy.get("#authors .card-body").should(
         "contain",
         "Add at least one UGent author.",
       );
 
-      cy.updateFields(
-        "Authors",
-        () => {
-          cy.intercept("/publication/*/contributors/author/suggestions?*").as(
-            "suggestContributor",
-          );
+      cy.contains(".btn", "Add author").click();
 
-          cy.setFieldByLabel("First name", "Jane");
-          cy.wait("@suggestContributor");
-          cy.setFieldByLabel("Last name", "Doe");
-          cy.wait("@suggestContributor");
+      cy.ensureModal("Add author").within(() => {
+        cy.setFieldByLabel("First name", "Jame");
+        cy.wait("@suggest");
+        cy.setFieldByLabel("Last name", "Dow");
+        cy.wait("@suggest");
 
-          cy.contains(".btn", "Add external author").click({
-            scrollBehavior: false,
-          });
-        },
-        true,
-      );
+        cy.contains(".btn", "Add external author").click();
+        cy.wait("@confirmCreate");
 
-      cy.contains("#authors tr", "Jane Doe").find(".btn .if-delete").click();
+        // Made an error, let's go back
+        cy.contains("Review author information").should("be.visible");
+        cy.contains("Jame Dow").should("be.visible");
+
+        cy.contains(".btn", "Back to search").click();
+
+        cy.setFieldByLabel("First name", "Jane");
+        cy.wait("@suggest");
+
+        cy.contains(".btn", "Add external author").click();
+        cy.wait("@confirmCreate");
+
+        cy.contains("Review author information").should("be.visible");
+        cy.contains("Jane Dow").should("be.visible");
+
+        cy.contains(".btn", "Save and add next").click();
+      });
+
+      cy.ensureModal("Add author").within(() => {
+        cy.setFieldByLabel("First name", "John");
+        cy.wait("@suggest");
+        cy.setFieldByLabel("Last name", "Doe");
+        cy.wait("@suggest");
+
+        cy.contains(".btn", "Add author").click();
+        cy.wait("@confirmCreate");
+
+        cy.contains(".btn", /^Save$/).click();
+      });
+
+      cy.get("#authors tbody tr")
+        .should("have.length", 2)
+        .contains("tr", "Jane Dow")
+        .find(".btn .if-delete")
+        .click();
 
       cy.ensureModal("Confirm deletion")
         .within(() => {
@@ -47,7 +79,23 @@ describe("Editing publication people & affiliations", () => {
         .closeModal("Delete");
       cy.ensureNoModal();
 
-      cy.contains("#authors", "Jane Doe").should("not.exist");
+      cy.get("#authors tbody tr")
+        .should("have.length", 1)
+        .contains("tr", "John Doe")
+        .find(".btn .if-delete")
+        .click();
+
+      cy.ensureModal("Confirm deletion")
+        .within(() => {
+          cy.contains("Are you sure you want to remove this author?").should(
+            "be.visible",
+          );
+        })
+        .closeModal("Delete");
+      cy.ensureNoModal();
+
+      cy.contains("#authors", "Jane Dow").should("not.exist");
+      cy.contains("#authors", "John Doe").should("not.exist");
       cy.get("#authors .card-body").should(
         "contain",
         "Add at least one UGent author.",
@@ -63,8 +111,9 @@ describe("Editing publication people & affiliations", () => {
       cy.ensureToast("Publication was successfully published.").closeToast();
 
       // Add other external author first
-      cy.addAuthor("Jane", "Doe", true);
+      cy.addAuthor("Jane", "Doe", { external: true });
 
+      cy.contains(".nav-item", "People & Affiliations").click();
       cy.contains("#authors tr", "John Doe").find(".btn .if-delete").click();
       cy.ensureModal("Confirm deletion").closeModal("Delete");
 
@@ -134,29 +183,27 @@ describe("Editing publication people & affiliations", () => {
       cy.setUpPublication();
       cy.visitPublication();
 
-      cy.updateFields(
-        "Authors",
-        () => {
-          testFocusForLabel("First name", 'input[name="first_name"]', true);
-          testFocusForLabel("Last name", 'input[name="last_name"]');
+      cy.updateFields("Authors", () => {
+        testFocusForForm(
+          {
+            "input[name=first_name]": "First name",
+            "input[name=last_name]": "Last name",
+          },
+          "First name",
+        );
 
-          cy.setFieldByLabel("First name", "John");
-          cy.setFieldByLabel("Last name", "Doe");
+        cy.setFieldByLabel("First name", "John");
+        cy.setFieldByLabel("Last name", "Doe");
+        cy.wait("@suggest");
+        cy.contains(".btn", "Add author").click();
+        cy.wait("@confirmCreate");
 
-          cy.contains(".btn", "Add author").click();
-
-          testFocusForLabel("Roles", 'select[name="credit_role"]');
-        },
-        true,
-      );
-
-      cy.contains("#contributors-author-body table tbody tr", "John Doe")
-        .find(".if-edit")
-        .click();
-
-      cy.ensureModal("Edit or change author").within(() => {
-        testFocusForLabel("First name", 'input[name="first_name"]', true);
-        testFocusForLabel("Last name", 'input[name="last_name"]');
+        testFocusForForm(
+          {
+            "select[name=credit_role]": "Roles",
+          },
+          "Roles",
+        );
       });
     });
   });
@@ -172,17 +219,17 @@ describe("Editing publication people & affiliations", () => {
       cy.updateFields(
         "Editors",
         () => {
-          cy.intercept("/publication/*/contributors/editor/suggestions?*").as(
-            "suggestContributor",
+          cy.intercept("/publication/*/contributors/editor/suggestions*").as(
+            "suggest",
           );
 
           cy.setFieldByLabel("First name", "Jane");
-          cy.wait("@suggestContributor");
+          cy.wait("@suggest");
           cy.setFieldByLabel("Last name", "Doe");
-          cy.wait("@suggestContributor");
+          cy.wait("@suggest");
 
           cy.contains(".btn", "Add external editor").click({
-            scrollBehavior: false,
+            scrollBehavior: "nearest",
           });
         },
         true,
@@ -207,20 +254,36 @@ describe("Editing publication people & affiliations", () => {
       cy.setUpPublication();
       cy.visitPublication();
 
-      cy.updateFields("Editors", () => {
-        testFocusForLabel("First name", 'input[name="first_name"]', true);
-        testFocusForLabel("Last name", 'input[name="last_name"]');
-      });
+      cy.updateFields(
+        "Editors",
+        () => {
+          testFocusForForm(
+            {
+              "input[name=first_name]": "First name",
+              "input[name=last_name]": "Last name",
+            },
+            "First name",
+          );
 
-      cy.addEditor("Jane", "Dow", true);
+          cy.setFieldByLabel("First name", "Jane");
+          cy.setFieldByLabel("Last name", "Dow");
+          cy.contains(".btn", "Add external editor").click();
+        },
+        true,
+      );
 
       cy.contains("#contributors-editor-body table tbody tr", "Jane Dow")
         .find(".if-edit")
         .click();
 
       cy.ensureModal("Edit or change editor").within(() => {
-        testFocusForLabel("First name", 'input[name="first_name"]', true);
-        testFocusForLabel("Last name", 'input[name="last_name"]');
+        testFocusForForm(
+          {
+            "input[name=first_name]": "First name",
+            "input[name=last_name]": "Last name",
+          },
+          "First name",
+        );
       });
     });
   });
@@ -238,16 +301,14 @@ describe("Editing publication people & affiliations", () => {
         () => {
           cy.intercept(
             "/publication/*/contributors/supervisor/suggestions?*",
-          ).as("suggestContributor");
+          ).as("suggest");
 
           cy.setFieldByLabel("First name", "Jane");
-          cy.wait("@suggestContributor");
+          cy.wait("@suggest");
           cy.setFieldByLabel("Last name", "Doe");
-          cy.wait("@suggestContributor");
+          cy.wait("@suggest");
 
-          cy.contains(".btn", "Add external supervisor").click({
-            scrollBehavior: false,
-          });
+          cy.contains(".btn", "Add external supervisor").click();
         },
         true,
       );
@@ -273,20 +334,36 @@ describe("Editing publication people & affiliations", () => {
       cy.setUpPublication("Dissertation");
       cy.visitPublication();
 
-      cy.updateFields("Supervisors", () => {
-        testFocusForLabel("First name", 'input[name="first_name"]', true);
-        testFocusForLabel("Last name", 'input[name="last_name"]');
-      });
+      cy.updateFields(
+        "Supervisors",
+        () => {
+          testFocusForForm(
+            {
+              "input[name=first_name]": "First name",
+              "input[name=last_name]": "Last name",
+            },
+            "First name",
+          );
 
-      cy.addSupervisor("Jane", "Dow", true);
+          cy.setFieldByLabel("First name", "Jane");
+          cy.setFieldByLabel("Last name", "Dow");
+          cy.contains(".btn", "Add external supervisor").click();
+        },
+        true,
+      );
 
       cy.contains("#contributors-supervisor-body table tbody tr", "Jane Dow")
         .find(".if-edit")
         .click();
 
       cy.ensureModal("Edit or change supervisor").within(() => {
-        testFocusForLabel("First name", 'input[name="first_name"]', true);
-        testFocusForLabel("Last name", 'input[name="last_name"]');
+        testFocusForForm(
+          {
+            "input[name=first_name]": "First name",
+            "input[name=last_name]": "Last name",
+          },
+          "First name",
+        );
       });
     });
   });
@@ -313,7 +390,7 @@ describe("Editing publication people & affiliations", () => {
         cy.getLabel("Search").next("input").should("be.focused").type("LW17");
         cy.wait("@suggestDepartment");
 
-        cy.contains(".list-group-item", "Department ID: LW17")
+        cy.contains(".list-group-item", "Department ID LW17")
           .contains(".btn", "Add department")
           .click();
       });
@@ -331,7 +408,7 @@ describe("Editing publication people & affiliations", () => {
         cy.getLabel("Search").next("input").should("be.focused").type("DI62");
         cy.wait("@suggestDepartment");
 
-        cy.contains(".list-group-item", "Department ID: DI62")
+        cy.contains(".list-group-item", "Department ID DI62")
           .contains(".btn", "Add department")
           .click();
       });

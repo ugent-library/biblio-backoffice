@@ -1,4 +1,4 @@
-import { testFocusForLabel } from "support/util";
+import { testFocusForForm } from "support/util";
 
 describe("Editing dataset description", () => {
   beforeEach(() => {
@@ -18,31 +18,26 @@ describe("Editing dataset description", () => {
         cy.setFieldByLabel("License", "The license is not listed here");
         cy.wait("@refreshForm");
 
-        // Test starts here
-        testFocusForLabel("Title", 'input[type=text][name="title"]', true);
-        testFocusForLabel(
-          "Persistent identifier type",
-          'select[name="identifier_type"]',
-        );
-        testFocusForLabel("Identifier", 'input[type=text][name="identifier"]');
+        const form = {
+          "input[type=text][name=title]": "Title",
+          "select[name=identifier_type]": "Persistent identifier type",
+          "input[type=text][name=identifier]": "Identifier",
 
-        testFocusForLabel("Languages", 'select[name="language"]');
-        testFocusForLabel("Publication year", 'input[type=text][name="year"]');
-        testFocusForLabel("Publisher", 'input[type=text][name="publisher"]');
+          "select[name=language]": "Languages",
+          "input[type=text][name=year]": "Publication year",
+          "input[type=text][name=publisher]": "Publisher",
 
-        testFocusForLabel("Data format", 'input[type=text][name="format"]');
-        testFocusForLabel(
-          "Keywords",
-          ".tags:has(textarea#keyword) tags span.tagify__input[contenteditable]",
-        );
+          "input[type=text][name=format]": "Data format",
+          ".tags:has(textarea#keyword) tags span.tagify__input[contenteditable]":
+            "Keywords",
 
-        testFocusForLabel("License", 'select[name="license"]');
-        testFocusForLabel(
-          "Other license",
-          'input[type=text][name="other_license"]',
-        );
+          "select[name=license]": "License",
+          "input[type=text][name=other_license]": "Other license",
 
-        testFocusForLabel("Access level", 'select[name="access_level"]');
+          "select[name=access_level]": "Access level",
+        };
+
+        testFocusForForm(form, "Title", ["textarea[data-input-name=keyword]"]);
       });
     });
   });
@@ -90,7 +85,12 @@ describe("Editing dataset description", () => {
       cy.ensureModal("Select projects").within(() => {
         cy.get("#project-q").should("be.focused");
 
-        testFocusForLabel("Search project", "#project-q", true);
+        testFocusForForm(
+          {
+            "#project-q": "Search project",
+          },
+          "Search project",
+        );
       });
     });
   });
@@ -233,8 +233,13 @@ describe("Editing dataset description", () => {
 
     it("should have clickable labels in the Abstract dialog", () => {
       cy.updateFields("Abstract", () => {
-        testFocusForLabel("Abstract", 'textarea[name="text"]', true);
-        testFocusForLabel("Language", 'select[name="lang"]');
+        testFocusForForm(
+          {
+            "textarea[name=text]": "Abstract",
+            "select[name=lang]": "Language",
+          },
+          "Abstract",
+        );
       });
     });
   });
@@ -307,11 +312,13 @@ describe("Editing dataset description", () => {
 
     it("should have clickable labels in the Link dialog", () => {
       cy.updateFields("Link", () => {
-        testFocusForLabel("URL", 'input[type=text][name="url"]', true);
-        testFocusForLabel("Relation", 'select[name="relation"]');
-        testFocusForLabel(
-          "Description",
-          'input[type=text][name="description"]',
+        testFocusForForm(
+          {
+            "input[type=text][name=url]": "URL",
+            "select[name=relation]": "Relation",
+            "input[type=text][name=description]": "Description",
+          },
+          "URL",
         );
       });
     });
