@@ -42,7 +42,7 @@ templ Batch(c *ctx.Ctx) {
 templ BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) {
 	<div class="mb-6">
 		<div class="row mb-6">
-			<label class="col-lg-3 col-xl-2 col-form-label">Operations</label>
+			<label for="mutations" class="col-lg-3 col-xl-2 col-form-label">Operations</label>
 			<div class="col-lg-7 col-xl-7">
 				if done > 0 {
 					<div class="alert alert-success mb-6">
@@ -53,7 +53,7 @@ templ BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) {
 					</div>
 				}
 				@form.Errors(errors)
-				<textarea class="form-control" name="mutations" rows="8" spellcheck="false">{ formValue }</textarea>
+				<textarea class="form-control" id="mutations" name="mutations" rows="8" spellcheck="false" autofocus>{ formValue }</textarea>
 				<p class="small form-text text-muted mb-2">
 					One operation per line, e.g. <code>1234,add_keyword,dna,"double helix"</code> or <code>1234,remove_keyword,dna</code>.
 				</p>

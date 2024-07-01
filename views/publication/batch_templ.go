@@ -77,7 +77,7 @@ func BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) templ.Co
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"mb-6\"><div class=\"row mb-6\"><label class=\"col-lg-3 col-xl-2 col-form-label\">Operations</label><div class=\"col-lg-7 col-xl-7\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"mb-6\"><div class=\"row mb-6\"><label for=\"mutations\" class=\"col-lg-3 col-xl-2 col-form-label\">Operations</label><div class=\"col-lg-7 col-xl-7\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -104,14 +104,14 @@ func BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<textarea class=\"form-control\" name=\"mutations\" rows=\"8\" spellcheck=\"false\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<textarea class=\"form-control\" id=\"mutations\" name=\"mutations\" rows=\"8\" spellcheck=\"false\" autofocus>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(formValue)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/batch.templ`, Line: 55, Col: 91}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/batch.templ`, Line: 55, Col: 116}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
