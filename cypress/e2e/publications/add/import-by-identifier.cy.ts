@@ -32,8 +32,8 @@ describe("Publication import", () => {
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(3).should("not.have.class", "c-stepper__step--active");
 
-    cy.get('select[name="source"]').should("have.value", "crossref"); // crossref = DOI
-    cy.get('input[name="identifier"]').type("10.1016/j.ese.2024.100396");
+    cy.get("select[name=source]").should("have.value", "crossref"); // crossref = DOI
+    cy.get("input[name=identifier]").type("10.1016/j.ese.2024.100396");
     cy.contains(".btn", "Add publication(s)").click();
 
     // Step 2
@@ -121,19 +121,14 @@ describe("Publication import", () => {
 
     // First make and publish the first publication manually
     const title = getRandomText();
-    cy.setUpPublication("Miscellaneous", { title, prepareForPublishing: true });
-    cy.visitPublication();
+    cy.setUpPublication("Miscellaneous", {
+      title,
+      otherFields: { doi: DOI },
+      publish: true,
+    });
 
-    cy.updateFields(
-      "Publication details",
-      () => {
-        cy.setFieldByLabel("DOI", DOI);
-      },
-      true,
-    );
-
-    cy.contains(".btn", "Publish to Biblio").click();
-    cy.ensureModal("Are you sure?").closeModal("Publish");
+    // Some extra time for the dataset to be indexed
+    cy.wait(1000);
 
     // Make the second publication
     cy.visit("/add-publication");
@@ -141,7 +136,7 @@ describe("Publication import", () => {
     cy.contains("Import your publication via an identifier").click();
     cy.contains(".btn", "Add publication(s)").click();
 
-    cy.get('input[name="identifier"]').type(DOI);
+    cy.get("input[name=identifier]").type(DOI);
     cy.contains(".btn", "Add publication(s)").click();
 
     cy.ensureModal("Are you sure you want to import this publication?").within(

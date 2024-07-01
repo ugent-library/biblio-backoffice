@@ -59,6 +59,7 @@ func CreateLink(w http.ResponseWriter, r *http.Request) {
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		views.ReplaceModal(publicationviews.EditLinkDialog(c, p, link, idx, false, validationErrs.(*okay.Errors), true)).Render(r.Context(), w)
+		return
 	}
 
 	err := c.Repo.UpdatePublication(r.Header.Get("If-Match"), p, c.User)

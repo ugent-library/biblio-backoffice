@@ -20,7 +20,15 @@ export default function htmxRequest(
         const $alert = $partial.find(".alert-danger");
 
         if ($alert.length) {
-          throw new Error($alert.text());
+          throw new Error(
+            `Error during backend request: ${options.method || "GET"} ${options.url}` +
+              "\n\n" +
+              $alert
+                .find("li")
+                .map((_, li) => `- ${li.textContent}`)
+                .get()
+                .join("\n"),
+          );
         }
 
         return cy.wrap(response, NO_LOG);

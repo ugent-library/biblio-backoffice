@@ -8,17 +8,19 @@ const publicationTypes = {
   "Conference contribution": "conference",
   Dissertation: "dissertation",
   Miscellaneous: "miscellaneous",
-  "Book (editor)": "book_editor",
-  "Issue (editor)": "issue_editor",
+  "Book editor": "book_editor",
+  "Issue editor": "issue_editor",
 } as const;
 
 type PublicationTypes = typeof publicationTypes;
 export type PublicationType = keyof PublicationTypes;
 
 type SetUpPublicationOptions = {
-  prepareForPublishing?: boolean;
   title?: string;
+  otherFields?: Record<string, unknown>;
   biblioIDAlias?: string;
+  prepareForPublishing?: boolean;
+  publish?: boolean;
   shouldWaitForIndex?: boolean;
 };
 
@@ -27,19 +29,22 @@ export default function setUpPublication(
   options: SetUpPublicationOptions = {},
 ): void {
   const {
-    prepareForPublishing = false,
     title = `The ${publicationType} title`,
+    otherFields = {},
     biblioIDAlias = "biblioId",
+    prepareForPublishing = false,
+    publish = false,
     shouldWaitForIndex = false,
   } = options;
 
   const log = logCommand(
     "setUpPublication",
     {
-      "Publication type": publicationType,
-      "Prepare for publishing": prepareForPublishing,
       title,
+      "Other fields": otherFields,
       "Biblio ID alias": biblioIDAlias,
+      "Prepare for publishing": prepareForPublishing,
+      Publish: publish,
       "Should wait for index": shouldWaitForIndex,
     },
     publicationType,
@@ -69,9 +74,11 @@ export default function setUpPublication(
             classification: "U",
           };
 
-          if (prepareForPublishing) {
+          if (prepareForPublishing || publish) {
             body["year"] = new Date().getFullYear().toString();
           }
+
+          Object.assign(body, otherFields);
 
           cy.htmxRequest({
             method: "PUT",
@@ -84,13 +91,38 @@ export default function setUpPublication(
           });
         });
 
-      if (prepareForPublishing) {
+      if (prepareForPublishing || publish) {
         cy.addAuthor("John", "Doe");
+      }
+
+      if (publish) {
+        publishPublication(biblioId);
       }
 
       if (shouldWaitForIndex) {
         waitForIndex("publication", biblioId);
       }
+    });
+}
+
+function publishPublication(biblioId: string) {
+  cy.htmxRequest({
+    url: `/publication/${biblioId}/add/confirm`,
+  })
+    .then((r) =>
+      extractSnapshotId(
+        r,
+        `button[hx-post="/publication/${biblioId}/add/publish"]:contains("Publish to Biblio")`,
+      ),
+    )
+    .then((snapshotId) => {
+      cy.htmxRequest({
+        method: "POST",
+        url: `/publication/${biblioId}/add/publish`,
+        headers: {
+          "If-Match": snapshotId,
+        },
+      });
     });
 }
 

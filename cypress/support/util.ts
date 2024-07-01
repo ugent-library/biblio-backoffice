@@ -4,30 +4,68 @@ export function getRandomText() {
   return crypto.randomUUID().replace(/-/g, "").toUpperCase();
 }
 
+export function testFocusForForm(
+  form: Record<string, string | RegExp>,
+  autoFocusLabel?: string,
+  ignoredFields: string[] = [],
+) {
+  cy.get<HTMLFormElement>(
+    "input:not([type=hidden], [type=submit], [type=reset], [type=button], [type=image]), textarea, select",
+    NO_LOG,
+  ).then((allFormFields) => {
+    ignoredFields.forEach((f) => (allFormFields = allFormFields.not(f)));
+
+    for (const selector of Object.keys(form)) {
+      testFocusForLabel(
+        form[selector],
+        selector,
+        autoFocusLabel === form[selector],
+      );
+
+      allFormFields = allFormFields.not(selector);
+    }
+
+    expect(allFormFields.length).to.eq(
+      0,
+      "Not all fields were checked: " +
+        allFormFields
+          .get()
+          .map((f) => `${f.tagName.toLowerCase()}[name=${f.name}]`)
+          .join(", "),
+    );
+  });
+}
+
 export function testFocusForLabel(
-  labelText: string,
+  labelText: string | RegExp,
   fieldSelector: string,
   autoFocus = false,
 ) {
   cy.getLabel(labelText)
     .as("theLabel")
-    .should("have.length", 1)
+    .then(($label) => {
+      if ($label.length !== 1) {
+        expect($label).to.have.lengthOf(1);
+      }
+    })
     .parent(NO_LOG)
-    .find(fieldSelector)
-    .should("have.length", 1)
-    .first({ log: false })
+    .find(fieldSelector, NO_LOG)
+    .then(($field) => {
+      if ($field.length !== 1) {
+        expect($field).to.have.lengthOf(1);
+      }
+    })
+    .first(NO_LOG)
     .as("theField")
     .should(autoFocus ? "be.focused" : "not.be.focused");
 
   if (autoFocus) {
-    cy.focused().blur();
-
-    cy.get("@theField").should("not.be.focused");
+    cy.focused(NO_LOG).blur();
+    cy.get("@theField", NO_LOG).should("not.be.focused");
   }
 
-  cy.get("@theLabel").click();
-
-  cy.get("@theField").should("be.focused");
+  cy.get("@theLabel", NO_LOG).click();
+  cy.get("@theField", NO_LOG).should("be.focused");
 }
 
 export function getCSRFToken() {
@@ -47,10 +85,13 @@ export function extractHtmxJsonAttribute<T extends object>(
   return JSON.parse(json) as T;
 }
 
-export function extractSnapshotId(response: Cypress.Response<string>): string {
+export function extractSnapshotId(
+  response: Cypress.Response<string>,
+  selector = ".btn:Contains('Save'):not(:contains('Save and add next'))",
+): string {
   const hxHeaders = extractHtmxJsonAttribute<{ "If-Match": string }>(
     response,
-    ".btn:Contains('Save'):not(:contains('Save and add next'))",
+    selector,
     "hx-headers",
   );
 
