@@ -17,6 +17,7 @@ templ AddImpersonation(c *ctx.Ctx) {
 						Name:       "first_name",
 						Label:      "First name",
 						SuggestURL: c.PathTo("suggest_impersonations").String(),
+						AutoFocus:  true,
 					})
 					@contributorviews.FormFieldContributorSuggest(c, contributorviews.FormFieldContributorSuggestArgs{
 						Name:       "last_name",

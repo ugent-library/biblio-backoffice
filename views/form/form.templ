@@ -25,15 +25,16 @@ templ Errors(errors []string) {
 }
 
 type FieldArgs struct {
-	Label    string
-	Name     string
-	Readonly bool
-	Tooltip  string
-	Required bool
-	Error    string
-	Cols     int
-	Help     string
-	Theme    Theme
+	Label     string
+	Name      string
+	Readonly  bool
+	Tooltip   string
+	Required  bool
+	Error     string
+	Cols      int
+	Help      string
+	Theme     Theme
+	AutoFocus bool
 }
 
 templ fieldTooltip(args FieldArgs) {
@@ -128,6 +129,7 @@ templ Text(args TextArgs) {
 			type="text"
 			value={ args.Value }
 			readonly?={ args.Readonly }
+			autofocus?={ args.AutoFocus }
 		/>
 	}
 }
@@ -146,6 +148,7 @@ templ TextArea(args TextAreaArgs) {
 			name={ args.Name }
 			readonly?={ args.Readonly }
 			rows={ fmt.Sprint(args.Rows) }
+			autofocus?={ args.AutoFocus }
 		>{ args.Value }</textarea>
 	}
 }
@@ -403,6 +406,7 @@ templ SelectRepeat(args SelectRepeatArgs) {
 					class={ "form-select", "form-control", templ.KV("is-invalid", args.Error != "") }
 					name={ args.Name }
 					id={ fmt.Sprintf("%s-%d", args.Name, len(args.Values)) }
+					autofocus?={ args.AutoFocus }
 					data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
 				>
 					if args.EmptyOption {
@@ -464,7 +468,12 @@ templ Tags(args TagsArgs) {
 	@Field(args.FieldArgs, args.Name) {
 		<div class="tags">
 			<span class="tags-real-values d-none"></span>
-			<textarea id={ args.Name } class="form-control tags-widget-values tagify-custom" data-input-name={ args.Name }>{ args.jsonValue() }</textarea>
+			<textarea
+				id={ args.Name }
+				class="form-control tags-widget-values tagify-custom"
+				autofocus?={ args.AutoFocus }
+				data-input-name={ args.Name }
+			>{ args.jsonValue() }</textarea>
 		</div>
 	}
 }

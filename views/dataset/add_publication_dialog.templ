@@ -23,6 +23,7 @@ templ AddPublicationDialog(c *ctx.Ctx, dataset *models.Dataset, publicationHits 
 					id="publication-q"
 					name="q"
 					placeholder="Search..."
+					autofocus
 					hx-get={ c.PathTo("dataset_suggest_publications", "id", dataset.ID).String() }
 					hx-trigger="keyup changed delay:500ms"
 					hx-target="#publication-suggestions"

@@ -59,12 +59,13 @@ func EditLinkDialog(c *ctx.Ctx, p *models.Publication, link *models.PublicationL
 		}
 		templ_7745c5c3_Err = form.Text(form.TextArgs{
 			FieldArgs: form.FieldArgs{
-				Label:    c.Loc.Get("builder.link.url"),
-				Name:     "url",
-				Cols:     12,
-				Error:    localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/url", idx)),
-				Required: true,
-				Theme:    form.ThemeVertical,
+				Label:     c.Loc.Get("builder.link.url"),
+				Name:      "url",
+				Cols:      12,
+				Error:     localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/url", idx)),
+				Required:  true,
+				Theme:     form.ThemeVertical,
+				AutoFocus: true,
 			},
 			Value: link.URL,
 		}).Render(ctx, templ_7745c5c3_Buffer)

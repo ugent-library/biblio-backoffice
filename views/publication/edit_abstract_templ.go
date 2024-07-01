@@ -63,10 +63,11 @@ func EditAbstractDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Text
 		}
 		templ_7745c5c3_Err = form.TextArea(form.TextAreaArgs{
 			FieldArgs: form.FieldArgs{
-				Label: c.Loc.Get("builder.abstract.text"),
-				Name:  "text",
-				Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/abstract/%d/text", idx)),
-				Theme: form.ThemeVertical,
+				Label:     c.Loc.Get("builder.abstract.text"),
+				Name:      "text",
+				Error:     localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/abstract/%d/text", idx)),
+				Theme:     form.ThemeVertical,
+				AutoFocus: true,
 			},
 			Value: abstract.Text,
 			Rows:  6,

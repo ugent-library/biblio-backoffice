@@ -83,7 +83,7 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" name=\"relation\" id=\"relation\" hx-get=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" name=\"relation\" id=\"relation\" autofocus hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -121,7 +121,7 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_file.templ`, Line: 45, Col: 79}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_file.templ`, Line: 46, Col: 79}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -184,7 +184,7 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("builder.file.access_level"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_file.templ`, Line: 79, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_file.templ`, Line: 80, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -265,7 +265,7 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_file.templ`, Line: 124, Col: 42}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_file.templ`, Line: 125, Col: 42}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -283,7 +283,7 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_file.templ`, Line: 136, Col: 42}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_file.templ`, Line: 137, Col: 42}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -301,7 +301,7 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_file.templ`, Line: 142, Col: 42}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_file.templ`, Line: 143, Col: 42}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -319,7 +319,7 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_file.templ`, Line: 148, Col: 42}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_file.templ`, Line: 149, Col: 42}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {

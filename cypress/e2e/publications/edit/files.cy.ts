@@ -216,8 +216,7 @@ describe("Editing publication files", () => {
           "input[type=date][name=embargo_date]": "Embargo end",
           "select[name=license]": "License granted by the rights holder",
         },
-        // undefined,
-        // ["input[type=radio][name=access_level]"],
+        "Document type",
       );
     });
   });

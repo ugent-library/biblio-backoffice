@@ -8,6 +8,7 @@ describe('Issue #1364: Add "Updated (oldest first)" to sorting options', () => {
   before(() => {
     cy.loginAsResearcher();
 
+    // Create 3 datasets and publications
     for (let i = 1; i <= 3; i++) {
       cy.setUpPublication("Miscellaneous", {
         title: `Title ${i} ${randomTitle}`,

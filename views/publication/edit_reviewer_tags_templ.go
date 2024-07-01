@@ -58,11 +58,12 @@ func EditReviewerTagsDialog(c *ctx.Ctx, args EditReviewerTagsDialogArgs) templ.C
 		}
 		templ_7745c5c3_Err = form.Tags(form.TagsArgs{
 			FieldArgs: form.FieldArgs{
-				Label: c.Loc.Get("builder.reviewer_tags"),
-				Name:  "reviewer_tags",
-				Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/message"),
-				Theme: form.ThemeVertical,
-				Help:  c.Loc.Get("builder.keyword.help"),
+				Label:     c.Loc.Get("builder.reviewer_tags"),
+				Name:      "reviewer_tags",
+				Error:     localize.ValidationErrorAt(c.Loc, args.Errors, "/message"),
+				Theme:     form.ThemeVertical,
+				Help:      c.Loc.Get("builder.keyword.help"),
+				AutoFocus: true,
 			},
 			Values: args.Publication.ReviewerTags,
 		}).Render(ctx, templ_7745c5c3_Buffer)

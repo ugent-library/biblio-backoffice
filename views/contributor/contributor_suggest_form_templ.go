@@ -20,6 +20,7 @@ type FormFieldContributorSuggestArgs struct {
 	Label      string
 	Value      string
 	SuggestURL string
+	AutoFocus  bool
 }
 
 func FormFieldContributorSuggest(c *ctx.Ctx, args FormFieldContributorSuggestArgs) templ.Component {
@@ -65,7 +66,17 @@ func FormFieldContributorSuggest(c *ctx.Ctx, args FormFieldContributorSuggestArg
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"form-control form-control-auto-focus\" hx-get=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"form-control\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if args.AutoFocus {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" autofocus")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

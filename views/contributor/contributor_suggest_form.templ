@@ -10,6 +10,7 @@ type FormFieldContributorSuggestArgs struct {
 	Label      string
 	Value      string
 	SuggestURL string
+	AutoFocus  bool
 }
 
 templ FormFieldContributorSuggest(c *ctx.Ctx, args FormFieldContributorSuggestArgs) {
@@ -23,7 +24,8 @@ templ FormFieldContributorSuggest(c *ctx.Ctx, args FormFieldContributorSuggestAr
 			name={ args.Name }
 			type="text"
 			value={ args.Value }
-			class="form-control form-control-auto-focus"
+			class="form-control"
+			autofocus?={ args.AutoFocus }
 			hx-get={ args.SuggestURL }
 			hx-include='.person-attributes input[name="first_name"], .person-attributes input[name="last_name"]'
 			hx-trigger="keyup changed delay:350ms, search"

@@ -63,10 +63,11 @@ func EditLaySummaryDialog(c *ctx.Ctx, p *models.Publication, laySummary *models.
 		}
 		templ_7745c5c3_Err = form.TextArea(form.TextAreaArgs{
 			FieldArgs: form.FieldArgs{
-				Label: c.Loc.Get("builder.lay_summary.text"),
-				Name:  "text",
-				Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/lay_summary/%d/text", idx)),
-				Theme: form.ThemeVertical,
+				Label:     c.Loc.Get("builder.lay_summary.text"),
+				Name:      "text",
+				Error:     localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/lay_summary/%d/text", idx)),
+				Theme:     form.ThemeVertical,
+				AutoFocus: true,
 			},
 			Value: laySummary.Text,
 			Rows:  6,

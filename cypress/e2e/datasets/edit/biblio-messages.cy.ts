@@ -41,9 +41,12 @@ describe("Editing dataset Biblio messages", () => {
 
     it("should have clickable labels in the edit Biblio message dialog", () => {
       cy.updateFields("Messages from and for Biblio team", () => {
-        testFocusForForm({
-          "textarea[name=message]": "Message",
-        });
+        testFocusForForm(
+          {
+            "textarea[name=message]": "Message",
+          },
+          "Message",
+        );
       });
     });
   });
@@ -115,7 +118,7 @@ describe("Editing dataset Biblio messages", () => {
             ".tags:has(textarea#reviewer_tags) tags span.tagify__input[contenteditable]":
               "Librarian tags",
           },
-          undefined,
+          "Librarian tags",
           ["textarea[data-input-name=reviewer_tags]"],
         );
       });
@@ -147,9 +150,12 @@ describe("Editing dataset Biblio messages", () => {
 
     it("should have clickable labels in the edit librarian note dialog", () => {
       cy.updateFields("Librarian note", () => {
-        testFocusForForm({
-          "textarea[name=reviewer_note]": "Librarian note",
-        });
+        testFocusForForm(
+          {
+            "textarea[name=reviewer_note]": "Librarian note",
+          },
+          "Librarian note",
+        );
       });
     });
   });

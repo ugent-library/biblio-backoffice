@@ -19,6 +19,7 @@ templ AddDepartment(c *ctx.Ctx, publication *models.Publication, hits []models.C
 					id="department-q"
 					name="q"
 					placeholder="Search..."
+					autofocus
 					hx-get={ c.PathTo("publication_suggest_departments", "id", publication.ID).String() }
 					hx-trigger="keyup changed delay:500ms"
 					hx-target="#department-suggestions"

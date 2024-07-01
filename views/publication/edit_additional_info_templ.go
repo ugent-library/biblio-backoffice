@@ -53,10 +53,11 @@ func EditAdditionalInfoDialog(c *ctx.Ctx, p *models.Publication, conflict bool, 
 		if p.UsesResearchField() {
 			templ_7745c5c3_Err = form.SelectRepeat(form.SelectRepeatArgs{
 				FieldArgs: form.FieldArgs{
-					Label: c.Loc.Get("builder.research_field"),
-					Name:  "research_field",
-					Cols:  9,
-					Error: localize.ValidationErrorAt(c.Loc, errors, "/research_field"),
+					Label:     c.Loc.Get("builder.research_field"),
+					Name:      "research_field",
+					Cols:      9,
+					Error:     localize.ValidationErrorAt(c.Loc, errors, "/research_field"),
+					AutoFocus: true,
 				},
 				Values:      p.ResearchField,
 				EmptyOption: true,

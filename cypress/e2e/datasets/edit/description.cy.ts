@@ -11,11 +11,11 @@ describe("Editing dataset description", () => {
   describe("Dataset details", () => {
     it("should have clickable labels in the dataset form", () => {
       cy.updateFields("Dataset details", () => {
+        // Also display the "Other license" field
         cy.intercept("PUT", "/dataset/*/details/edit/refresh*").as(
           "refreshForm",
         );
         cy.setFieldByLabel("License", "The license is not listed here");
-
         cy.wait("@refreshForm");
 
         const form = {
@@ -37,9 +37,7 @@ describe("Editing dataset description", () => {
           "select[name=access_level]": "Access level",
         };
 
-        testFocusForForm(form, undefined, [
-          "textarea[data-input-name=keyword]",
-        ]);
+        testFocusForForm(form, "Title", ["textarea[data-input-name=keyword]"]);
       });
     });
   });
@@ -53,7 +51,7 @@ describe("Editing dataset description", () => {
       cy.ensureModal("Select projects").within(() => {
         cy.intercept("/dataset/*/projects/suggestions?*").as("suggestProject");
 
-        cy.getLabel("Search project").next("input").type("001D07903");
+        cy.setFieldByLabel("Search project", "001D07903");
         cy.wait("@suggestProject");
 
         cy.contains(".list-group-item", "001D07903")
@@ -79,6 +77,21 @@ describe("Editing dataset description", () => {
       cy.ensureNoModal();
 
       cy.get("#projects-body").should("contain", "No projects");
+    });
+
+    it("should have clickable labels in the project dialog", () => {
+      cy.contains(".card", "Project").contains(".btn", "Add project").click();
+
+      cy.ensureModal("Select projects").within(() => {
+        cy.get("#project-q").should("be.focused");
+
+        testFocusForForm(
+          {
+            "#project-q": "Search project",
+          },
+          "Search project",
+        );
+      });
     });
   });
 
@@ -220,10 +233,13 @@ describe("Editing dataset description", () => {
 
     it("should have clickable labels in the Abstract dialog", () => {
       cy.updateFields("Abstract", () => {
-        testFocusForForm({
-          "textarea[name=text]": "Abstract",
-          "select[name=lang]": "Language",
-        });
+        testFocusForForm(
+          {
+            "textarea[name=text]": "Abstract",
+            "select[name=lang]": "Language",
+          },
+          "Abstract",
+        );
       });
     });
   });
@@ -296,11 +312,14 @@ describe("Editing dataset description", () => {
 
     it("should have clickable labels in the Link dialog", () => {
       cy.updateFields("Link", () => {
-        testFocusForForm({
-          "input[type=text][name=url]": "URL",
-          "select[name=relation]": "Relation",
-          "input[type=text][name=description]": "Description",
-        });
+        testFocusForForm(
+          {
+            "input[type=text][name=url]": "URL",
+            "select[name=relation]": "Relation",
+            "input[type=text][name=description]": "Description",
+          },
+          "URL",
+        );
       });
     });
   });

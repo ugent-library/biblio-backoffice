@@ -181,7 +181,29 @@ describe("Editing dataset people & affiliations", () => {
       cy.setUpDataset();
       cy.visitDataset();
 
-      cy.updateFields("Creators", () => {
+      cy.updateFields(
+        "Creators",
+        () => {
+          testFocusForForm(
+            {
+              "input[type=text][name=first_name]": "First name",
+              "input[type=text][name=last_name]": "Last name",
+            },
+            "First name",
+          );
+
+          cy.setFieldByLabel("First name", "Jane");
+          cy.setFieldByLabel("Last name", "Dow");
+          cy.contains(".btn", "Add external creator").click();
+        },
+        true,
+      );
+
+      cy.contains("#contributors-author-body table tbody tr", "Jane Dow")
+        .find(".if-edit")
+        .click();
+
+      cy.ensureModal("Edit or change creator").within(() => {
         testFocusForForm(
           {
             "input[type=text][name=first_name]": "First name",
@@ -212,7 +234,7 @@ describe("Editing dataset people & affiliations", () => {
           "suggestDepartment",
         );
 
-        cy.getLabel("Search").next("input").type("LW17");
+        cy.getLabel("Search").next("input").should("be.focused").type("LW17");
         cy.wait("@suggestDepartment");
 
         cy.contains(".list-group-item", "Department ID LW17")
@@ -230,7 +252,7 @@ describe("Editing dataset people & affiliations", () => {
       cy.get("#departments").contains(".btn", "Add department").click();
 
       cy.ensureModal("Select departments").within(() => {
-        cy.getLabel("Search").next("input").type("DI62");
+        cy.getLabel("Search").next("input").should("be.focused").type("DI62");
         cy.wait("@suggestDepartment");
 
         cy.contains(".list-group-item", "Department ID DI62")

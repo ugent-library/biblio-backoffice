@@ -69,11 +69,12 @@ func EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, error
 		}
 		templ_7745c5c3_Err = form.Text(form.TextArgs{
 			FieldArgs: form.FieldArgs{
-				Name:     "title",
-				Label:    c.Loc.Get("builder.title"),
-				Cols:     9,
-				Error:    localize.ValidationErrorAt(c.Loc, errors, "/title"),
-				Required: true,
+				Name:      "title",
+				Label:     c.Loc.Get("builder.title"),
+				Cols:      9,
+				Error:     localize.ValidationErrorAt(c.Loc, errors, "/title"),
+				Required:  true,
+				AutoFocus: true,
 			},
 			Value: dataset.Title,
 		}).Render(ctx, templ_7745c5c3_Buffer)
@@ -250,7 +251,7 @@ func EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, error
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/edit_details.templ`, Line: 158, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/edit_details.templ`, Line: 159, Col: 85}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -358,7 +359,7 @@ func EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, error
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/edit_details.templ`, Line: 195, Col: 89}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/edit_details.templ`, Line: 196, Col: 89}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {

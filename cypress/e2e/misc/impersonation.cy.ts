@@ -1,7 +1,5 @@
-// https://github.com/ugent-library/biblio-backoffice/issues/1309
-
-describe('Issue #1309: Cannot return to profile after using "view as"', () => {
-  it("should be possible for a researcher to return to their own profile when viewing as another user", () => {
+describe("User impersonation", () => {
+  it("should be possible for a librarian to use the app as another user and to return to their own profile afterwards", () => {
     const LIBRARIAN_NAME = Cypress.env("LIBRARIAN_NAME");
 
     cy.loginAsLibrarian();
@@ -13,6 +11,8 @@ describe('Issue #1309: Cannot return to profile after using "view as"', () => {
     cy.contains("View as").click();
 
     cy.ensureModal("View as other user").within(() => {
+      cy.get("input[name=first_name]").should("be.focused");
+
       cy.setFieldByLabel("First name", "John");
       cy.setFieldByLabel("Last name", "Doe");
 

@@ -75,6 +75,7 @@ func EditContributor(c *ctx.Ctx, args EditContributorArgs) templ.Component {
 			Label:      "First name",
 			Value:      args.Contributor.FirstName(),
 			SuggestURL: c.PathTo("publication_edit_contributor_suggest", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String(),
+			AutoFocus:  true,
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
