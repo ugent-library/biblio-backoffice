@@ -32,8 +32,8 @@ describe("Publication import", () => {
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(3).should("not.have.class", "c-stepper__step--active");
 
-    cy.get('select[name="source"]').should("have.value", "crossref"); // crossref = DOI
-    cy.get('input[name="identifier"]').type("10.1016/j.ese.2024.100396");
+    cy.get("select[name=source]").should("have.value", "crossref"); // crossref = DOI
+    cy.get("input[name=identifier]").type("10.1016/j.ese.2024.100396");
     cy.contains(".btn", "Add publication(s)").click();
 
     // Step 2
@@ -136,7 +136,7 @@ describe("Publication import", () => {
     cy.contains("Import your publication via an identifier").click();
     cy.contains(".btn", "Add publication(s)").click();
 
-    cy.get('input[name="identifier"]').type(DOI);
+    cy.get("input[name=identifier]").type(DOI);
     cy.contains(".btn", "Add publication(s)").click();
 
     cy.ensureModal("Are you sure you want to import this publication?").within(

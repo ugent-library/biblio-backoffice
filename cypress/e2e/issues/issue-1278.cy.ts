@@ -20,6 +20,20 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       verifyMyRoles("publication");
     });
 
+    it("should display my role when I'm an editor", () => {
+      cy.setUpPublication(undefined, { shouldWaitForIndex: true });
+      verifyMyRoles("publication", "registrar");
+
+      // Add myself as editor
+      cy.visitPublication();
+      cy.addEditor("Biblio", "Researcher");
+      verifyMyRoles("publication", "editor");
+
+      cy.loginAsLibrarian();
+      cy.switchMode("Librarian");
+      verifyMyRoles("publication");
+    });
+
     it("should display my role when I'm a supervisor", () => {
       cy.setUpPublication("Dissertation", { shouldWaitForIndex: true });
       verifyMyRoles("publication", "registrar");
@@ -28,6 +42,25 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       cy.visitPublication();
       cy.addSupervisor("Biblio", "Researcher");
       verifyMyRoles("publication", "supervisor");
+
+      cy.loginAsLibrarian();
+      cy.switchMode("Librarian");
+      verifyMyRoles("publication");
+    });
+
+    it("should display my roles when I'm both an author and an editor", () => {
+      cy.setUpPublication("Journal Article", { shouldWaitForIndex: true });
+      verifyMyRoles("publication", "registrar");
+
+      // Add myself as editor
+      cy.visitPublication();
+      cy.addEditor("Biblio", "Researcher");
+      verifyMyRoles("publication", "editor");
+
+      // Add myself as author
+      cy.visitPublication();
+      cy.addAuthor("Biblio", "Researcher");
+      verifyMyRoles("publication", "author", "editor");
 
       cy.loginAsLibrarian();
       cy.switchMode("Librarian");
@@ -60,11 +93,6 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       // Add other author
       cy.visitPublication();
       cy.addAuthor("John", "Doe");
-      verifyMyRoles("publication", "registrar");
-
-      // Add myself as editor
-      cy.visitPublication();
-      cy.addEditor("Biblio", "Researcher");
       verifyMyRoles("publication", "registrar");
 
       cy.loginAsLibrarian();
@@ -103,7 +131,7 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
     });
   });
 
-  type UserRole = "author" | "supervisor" | "creator" | "registrar";
+  type UserRole = "author" | "editor" | "supervisor" | "creator" | "registrar";
 
   function verifyMyRoles(
     scope: "publication" | "dataset",

@@ -8,8 +8,8 @@ const publicationTypes = {
   "Conference contribution": "conference",
   Dissertation: "dissertation",
   Miscellaneous: "miscellaneous",
-  "Book (editor)": "book_editor",
-  "Issue (editor)": "issue_editor",
+  "Book editor": "book_editor",
+  "Issue editor": "issue_editor",
 } as const;
 
 type PublicationTypes = typeof publicationTypes;
