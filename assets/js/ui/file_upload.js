@@ -56,7 +56,7 @@ export default function () {
           );
 
           req.addEventListener("readystatechange", (e) => {
-            if (req.readyState !== 4) return;
+            if (req.readyState !== XMLHttpRequest.DONE) return;
 
             hideFormUpload(form);
 

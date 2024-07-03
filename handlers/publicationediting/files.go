@@ -107,7 +107,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ShowModal(publicationviews.EditFileDialog(c, p, pubFile, p.FileIndex(pubFile.ID), false, nil)).Render(r.Context(), w)
+	views.ShowModal(publicationviews.EditFileDialog(c, p, pubFile, p.FileIndex(pubFile.ID), false, nil, true)).Render(r.Context(), w)
 }
 
 func EditFile(w http.ResponseWriter, r *http.Request) {
@@ -133,7 +133,7 @@ func EditFile(w http.ResponseWriter, r *http.Request) {
 		file.Relation = "main_file"
 	}
 
-	views.ShowModal(publicationviews.EditFileDialog(c, p, file, p.FileIndex(file.ID), false, nil)).Render(r.Context(), w)
+	views.ShowModal(publicationviews.EditFileDialog(c, p, file, p.FileIndex(file.ID), false, nil, true)).Render(r.Context(), w)
 }
 
 func RefreshEditFileForm(w http.ResponseWriter, r *http.Request) {
@@ -159,7 +159,7 @@ func RefreshEditFileForm(w http.ResponseWriter, r *http.Request) {
 			PublicationVersion:       b.PublicationVersion,
 			Relation:                 b.Relation,
 		}
-		views.ReplaceModal(publicationviews.EditFileDialog(c, p, file, -1, true, nil)).Render(r.Context(), w)
+		views.ReplaceModal(publicationviews.EditFileDialog(c, p, file, -1, true, nil, false)).Render(r.Context(), w)
 		return
 	}
 
@@ -184,7 +184,7 @@ func RefreshEditFileForm(w http.ResponseWriter, r *http.Request) {
 
 	p.SetFile(file)
 
-	views.ReplaceModal(publicationviews.EditFileDialog(c, p, file, p.FileIndex(file.ID), false, nil)).Render(r.Context(), w)
+	views.ReplaceModal(publicationviews.EditFileDialog(c, p, file, p.FileIndex(file.ID), false, nil, false)).Render(r.Context(), w)
 }
 
 func UpdateFile(w http.ResponseWriter, r *http.Request) {
@@ -211,7 +211,7 @@ func UpdateFile(w http.ResponseWriter, r *http.Request) {
 			PublicationVersion:       b.PublicationVersion,
 			Relation:                 b.Relation,
 		}
-		views.ReplaceModal(publicationviews.EditFileDialog(c, p, file, -1, false, nil)).Render(r.Context(), w)
+		views.ReplaceModal(publicationviews.EditFileDialog(c, p, file, -1, false, nil, false)).Render(r.Context(), w)
 		return
 	}
 
@@ -236,7 +236,7 @@ func UpdateFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if validationErrs != nil {
-		views.ReplaceModal(publicationviews.EditFileDialog(c, p, file, p.FileIndex(file.ID), false, validationErrs.(*okay.Errors))).Render(r.Context(), w)
+		views.ReplaceModal(publicationviews.EditFileDialog(c, p, file, p.FileIndex(file.ID), false, validationErrs.(*okay.Errors), false)).Render(r.Context(), w)
 		return
 	}
 
@@ -244,7 +244,7 @@ func UpdateFile(w http.ResponseWriter, r *http.Request) {
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
-		views.ReplaceModal(publicationviews.EditFileDialog(c, p, file, p.FileIndex(file.ID), true, nil)).Render(r.Context(), w)
+		views.ReplaceModal(publicationviews.EditFileDialog(c, p, file, p.FileIndex(file.ID), true, nil, false)).Render(r.Context(), w)
 		return
 	}
 

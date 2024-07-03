@@ -20,7 +20,7 @@ import (
 	"time"
 )
 
-func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile, idx int, conflict bool, errors *okay.Errors) templ.Component {
+func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile, idx int, conflict bool, errors *okay.Errors, setAutofocus bool) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -83,7 +83,17 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" name=\"relation\" id=\"relation\" autofocus hx-get=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" name=\"relation\" id=\"relation\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if setAutofocus {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" autofocus")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
