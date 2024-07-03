@@ -26,7 +26,7 @@ func nextDay() time.Time {
 	return time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Add(24 * time.Hour)
 }
 
-templ EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, errors *okay.Errors) {
+templ EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, errors *okay.Errors, setAutofocus bool) {
 	<div class="modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -49,7 +49,7 @@ templ EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, erro
 								Cols:      9,
 								Error:     localize.ValidationErrorAt(c.Loc, errors, "/title"),
 								Required:  true,
-								AutoFocus: true,
+								AutoFocus: setAutofocus,
 							},
 							Value: dataset.Title,
 						})

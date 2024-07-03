@@ -36,7 +36,7 @@ func nextDay() time.Time {
 	return time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Add(24 * time.Hour)
 }
 
-func EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, errors *okay.Errors) templ.Component {
+func EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, errors *okay.Errors, setAutofocus bool) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -74,7 +74,7 @@ func EditDetailsDialog(c *ctx.Ctx, dataset *models.Dataset, conflict bool, error
 				Cols:      9,
 				Error:     localize.ValidationErrorAt(c.Loc, errors, "/title"),
 				Required:  true,
-				AutoFocus: true,
+				AutoFocus: setAutofocus,
 			},
 			Value: dataset.Title,
 		}).Render(ctx, templ_7745c5c3_Buffer)

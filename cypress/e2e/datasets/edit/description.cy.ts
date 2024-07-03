@@ -11,6 +11,28 @@ describe("Editing dataset description", () => {
   describe("Dataset details", () => {
     it("should have clickable labels in the dataset form", () => {
       cy.updateFields("Dataset details", () => {
+        testFocusForForm(
+          {
+            "input[type=text][name=title]": "Title",
+            "select[name=identifier_type]": "Persistent identifier type",
+            "input[type=text][name=identifier]": "Identifier",
+
+            "select[name=language]": "Languages",
+            "input[type=text][name=year]": "Publication year",
+            "input[type=text][name=publisher]": "Publisher",
+
+            "input[type=text][name=format]": "Data format",
+            ".tags:has(textarea#keyword) tags span.tagify__input[contenteditable]":
+              "Keywords",
+
+            "select[name=license]": "License",
+
+            "select[name=access_level]": "Access level",
+          },
+          "Title",
+          ["textarea[data-input-name=keyword]"],
+        );
+
         // Also display the "Other license" field
         cy.intercept("PUT", "/dataset/*/details/edit/refresh*").as(
           "refreshForm",
@@ -18,26 +40,64 @@ describe("Editing dataset description", () => {
         cy.setFieldByLabel("License", "The license is not listed here");
         cy.wait("@refreshForm");
 
-        const form = {
-          "input[type=text][name=title]": "Title",
-          "select[name=identifier_type]": "Persistent identifier type",
-          "input[type=text][name=identifier]": "Identifier",
+        testFocusForForm(
+          {
+            "input[type=text][name=title]": "Title",
+            "select[name=identifier_type]": "Persistent identifier type",
+            "input[type=text][name=identifier]": "Identifier",
 
-          "select[name=language]": "Languages",
-          "input[type=text][name=year]": "Publication year",
-          "input[type=text][name=publisher]": "Publisher",
+            "select[name=language]": "Languages",
+            "input[type=text][name=year]": "Publication year",
+            "input[type=text][name=publisher]": "Publisher",
 
-          "input[type=text][name=format]": "Data format",
-          ".tags:has(textarea#keyword) tags span.tagify__input[contenteditable]":
-            "Keywords",
+            "input[type=text][name=format]": "Data format",
+            ".tags:has(textarea#keyword) tags span.tagify__input[contenteditable]":
+              "Keywords",
 
-          "select[name=license]": "License",
-          "input[type=text][name=other_license]": "Other license",
+            "select[name=license]": "License",
+            "input[type=text][name=other_license]": "Other license",
 
-          "select[name=access_level]": "Access level",
-        };
+            "select[name=access_level]": "Access level",
+          },
+          undefined,
+          ["textarea[data-input-name=keyword]"],
+        );
+      });
+    });
 
-        testFocusForForm(form, "Title", ["textarea[data-input-name=keyword]"]);
+    it("should not set autofocus when popup is refreshed", () => {
+      cy.updateFields("Dataset details", () => {
+        cy.focused().should("have.attr", "id", "title");
+
+        cy.intercept("/dataset/*/details/edit/refresh*", (req) => {
+          req.on("response", (res) => {
+            // Pre-check of assertion so command log doesn't get bloated with massive HTML blocks
+            if (
+              typeof res.body === "string" &&
+              res.body.includes("autofocus")
+            ) {
+              expect(res.body).to.not.contain("autofocus");
+            }
+          });
+        }).as("refreshForm");
+
+        cy.setFieldByLabel("License", "The license is not listed here");
+        cy.wait("@refreshForm");
+        cy.focused().should("have.attr", "id", "license");
+
+        cy.setFieldByLabel("Access level", "Restricted access");
+        cy.wait("@refreshForm");
+        cy.focused().should("have.attr", "id", "access_level");
+
+        cy.get("@refreshForm.all").should("have.length", 2);
+
+        cy.setFieldByLabel("Publication year", "ABCD");
+        cy.contains(".btn", "Save").click();
+        cy.contains(
+          ".alert-danger",
+          "Publication year is an invalid value",
+        ).should("be.visible");
+        cy.focused().should("have.length", 0);
       });
     });
   });
