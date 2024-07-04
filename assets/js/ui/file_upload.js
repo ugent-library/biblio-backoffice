@@ -61,8 +61,7 @@ export default function () {
 
             // file created
             if (req.status == 200 || req.status == 201) {
-              target.innerHTML = req.responseText;
-              htmx.process(target);
+              htmx.swap(target, req.responseText, { swapStyle: "innerHTML" });
             }
             // file too large (server side check)
             else if (req.status == 413) {
