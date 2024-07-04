@@ -1,4 +1,5 @@
-import htmx from "htmx.org";
+import htmx from "htmx.org/dist/htmx.esm.js";
+
 import { initCallback } from "bootstrap.native";
 import csrf from "./ui/csrf.js";
 import checkbox from "./ui/checkbox.js";
@@ -25,7 +26,7 @@ htmx.onLoad(initCallback);
 
 // load htmx extensions
 window.htmx = htmx;
-require("htmx.org/dist/ext/remove-me.js");
+require("htmx-ext-remove-me");
 
 // initialize everything
 document.addEventListener("DOMContentLoaded", function () {

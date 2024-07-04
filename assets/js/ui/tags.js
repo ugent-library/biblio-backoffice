@@ -1,4 +1,4 @@
-import htmx from "htmx.org";
+import htmx from "htmx.org/dist/htmx.esm.js";
 import Tagify from "@yaireo/tagify"; // see https://github.com/yairEO/tagify
 
 export default function () {

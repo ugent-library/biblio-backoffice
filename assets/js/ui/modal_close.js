@@ -1,4 +1,4 @@
-import htmx from "htmx.org";
+import htmx from "htmx.org/dist/htmx.esm.js";
 
 // Set an event handler on any buttons that have the 'modal-close' class.
 // This ensures that any and all modals can be closed via 'close', 'cancel', etc. buttons.
