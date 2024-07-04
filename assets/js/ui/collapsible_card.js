@@ -2,7 +2,7 @@
 //     Collapsible card content
 //    ========================================================================== */
 
-import htmx from "htmx.org";
+import htmx from "htmx.org/dist/htmx.esm.js";
 
 export default function () {
   let toggler = function (evt) {
