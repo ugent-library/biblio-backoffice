@@ -10,7 +10,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views/form"
 )
 
-templ EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile, idx int, conflict bool, errors *okay.Errors) {
+templ EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile, idx int, conflict bool, errors *okay.Errors, setAutofocus bool) {
 	<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
 		<div class="modal-content">
 			<div class="modal-header h-auto py-5">
@@ -36,6 +36,7 @@ templ EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFil
 							class={ "form-select", "form-control", templ.KV("is-invalid", errors != nil && errors.Get(fmt.Sprintf("/file/%d/relation", idx)) != nil) }
 							name="relation"
 							id="relation"
+							autofocus?={ setAutofocus }
 							hx-get={ c.PathTo("publication_edit_file_refresh_form", "id", p.ID, "file_id", f.ID).String() }
 							hx-swap="none"
 							hx-include=".file-attributes"

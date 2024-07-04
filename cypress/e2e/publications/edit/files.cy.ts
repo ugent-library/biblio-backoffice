@@ -7,11 +7,11 @@ describe("Editing publication files", () => {
 
     cy.setUpPublication();
     cy.visitPublication();
+
+    cy.contains(".nav-link", "Full text & Files").click();
   });
 
   it("should be possible to add, edit and delete files", () => {
-    cy.contains(".nav-link", "Full text & Files").click();
-
     cy.get("#files-body").should("contain", "No files");
 
     cy.get("input[name=file]").selectFile("cypress/fixtures/empty-pdf.pdf");
@@ -130,8 +130,6 @@ describe("Editing publication files", () => {
   });
 
   it("should display the upload date and embargo date in the correct format", () => {
-    cy.contains("Full text & Files").click();
-
     cy.get("input[type=file][name=file]").selectFile(
       "cypress/fixtures/empty-pdf.pdf",
     );
@@ -177,24 +175,64 @@ describe("Editing publication files", () => {
       .should("match", /^Uploaded \d{4}-\d{2}-\d{2} at \d{2}:\d{2}$/);
   });
 
-  it("should have clickable labels in the file upload form", () => {
-    cy.contains(".nav-tabs .nav-item", "Full text & Files").click();
-
+  it("should have clickable labels in the add/edit file upload form", () => {
     cy.get("input[type=file][name=file]").selectFile(
       "cypress/fixtures/empty-pdf.pdf",
     );
 
     cy.ensureModal("Document details for file empty-pdf.pdf").within(() => {
-      cy.intercept({
-        url: "/publication/*/files/*/refresh-form*",
-        times: 1,
-      }).as("refreshForm");
-      cy.getLabel(/Embargoed access/).click();
-      cy.wait("@refreshForm");
-
-      // Now stub the refresh form route so nothing gets updated during focus test
+      // First stub the refresh so nothing changes when clicking the access level radio button labels
       cy.intercept("/publication/*/files/*/refresh-form*", "");
 
+      testFocusForForm({
+        "select[name=relation]": "Document type",
+        "select[name=publication_version]": "Publication version",
+
+        "input[type=radio][name=access_level][value='info:eu-repo/semantics/openAccess']":
+          /Public access - Open access/,
+        "input[type=radio][name=access_level][value='info:eu-repo/semantics/restrictedAccess']":
+          /UGent access - Local access/,
+        "input[type=radio][name=access_level][value='info:eu-repo/semantics/embargoedAccess']":
+          /Embargoed access/,
+        "input[type=radio][name=access_level][value='info:eu-repo/semantics/closedAccess']":
+          /Private access - Closed access/,
+
+        "select[name=license]": "License granted by the rights holder",
+      });
+
+      // Now activate the access level radio buttons again, so we can load the embargoed access specific fields
+      cy.intercept("/publication/*/files/*/refresh-form*", (req) =>
+        req.continue(),
+      );
+
+      // This enables the embargo fields
+      cy.getLabel(/Embargoed access/).click();
+
+      cy.setFieldByLabel(
+        "Access level during embargo",
+        "Private access - Closed access",
+      );
+      cy.setFieldByLabel(
+        "Access level after embargo",
+        "Public access - Open access",
+      );
+      cy.setFieldByLabel(
+        "Embargo end",
+        dayjs().add(5, "days").format("YYYY-MM-DD"),
+      );
+
+      cy.contains(".btn", "Save").click();
+    });
+
+    cy.ensureNoModal();
+
+    cy.contains(".list-group-item", "empty-pdf.pdf").find(".if-edit").click();
+
+    cy.ensureModal("Document details for file empty-pdf.pdf").within(() => {
+      // Stub the refresh again so nothing changes when clicking the access level radio button labels
+      cy.intercept("/publication/*/files/*/refresh-form*", "");
+
+      // Test form again with embargo fields
       testFocusForForm(
         {
           "select[name=relation]": "Document type",
@@ -214,11 +252,53 @@ describe("Editing publication files", () => {
           "select[name=access_level_after_embargo]":
             "Access level after embargo",
           "input[type=date][name=embargo_date]": "Embargo end",
+
           "select[name=license]": "License granted by the rights holder",
         },
-        // undefined,
-        // ["input[type=radio][name=access_level]"],
+        "Document type",
       );
+    });
+  });
+
+  it("should not set autofocus when popup is refreshed", () => {
+    cy.get("input[type=file][name=file]").selectFile(
+      "cypress/fixtures/empty-pdf.pdf",
+    );
+
+    cy.ensureModal("Document details for file empty-pdf.pdf").within(() => {
+      // TODO: should be fixed with HTMX v2
+      // cy.focused().should("have.attr", "id", "relation");
+
+      cy.intercept("/publication/*/files/*/refresh-form*", (req) => {
+        req.on("response", (res) => {
+          // Pre-check of assertion so command log doesn't get bloated with massive HTML blocks
+          if (typeof res.body === "string" && res.body.includes("autofocus")) {
+            expect(res.body).to.not.contain("autofocus");
+          }
+        });
+      }).as("refreshForm");
+
+      cy.contains("label", "Embargoed access").click();
+      cy.wait("@refreshForm");
+      cy.focused().should(
+        "have.attr",
+        "id",
+        "access-level-info:eu-repo/semantics/embargoedAccess",
+      );
+
+      cy.setFieldByLabel("Document type", "Data fact sheet");
+      cy.wait("@refreshForm");
+      cy.focused().should("have.attr", "id", "relation");
+
+      cy.contains("label", "Public access - Open access").click();
+      cy.wait("@refreshForm");
+      cy.focused().should(
+        "have.attr",
+        "id",
+        "access-level-info:eu-repo/semantics/openAccess",
+      );
+
+      cy.get("@refreshForm.all").should("have.length", 3);
     });
   });
 });

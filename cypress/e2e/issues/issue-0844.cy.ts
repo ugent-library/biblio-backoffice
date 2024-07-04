@@ -1,5 +1,7 @@
 // https://github.com/ugent-library/biblio-backoffice/issues/0844
 
+import { testFocusForLabel } from "support/util";
+
 describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when clicking next to dialogue box', () => {
   const DUMMY_WINDOW_PROPERTY = "DUMMY_WINDOW_PROPERTY";
 
@@ -210,6 +212,32 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
           });
         });
       });
+
+    it("should have clickable labels in the created/updated since facet filters", () => {
+      cy.contains(".dropdown", "Created since")
+        .click()
+        .find(".dropdown-menu")
+        .should("be.visible")
+        .within(() => {
+          testFocusForLabel(
+            "Show records created since",
+            'input[name="f[created_since]"]',
+            true,
+          );
+        });
+
+      cy.contains(".dropdown", "Updated since")
+        .click()
+        .find(".dropdown-menu")
+        .should("be.visible")
+        .within(() => {
+          testFocusForLabel(
+            "Show records updated since",
+            'input[name="f[updated_since]"]',
+            true,
+          );
+        });
+    });
   }
 
   function executeTest(facet: string, triggerFacetFilterCallback: () => void) {

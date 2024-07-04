@@ -27,10 +27,11 @@ templ EditConferenceDialog(c *ctx.Ctx, p *models.Publication, conflict bool, err
 					<li class="list-group-item">
 						@form.Text(form.TextArgs{
 							FieldArgs: form.FieldArgs{
-								Label: c.Loc.Get("builder.conference.name"),
-								Name:  "name",
-								Cols:  9,
-								Error: localize.ValidationErrorAt(c.Loc, errors, "/conference_name"),
+								Label:     c.Loc.Get("builder.conference.name"),
+								Name:      "name",
+								Cols:      9,
+								Error:     localize.ValidationErrorAt(c.Loc, errors, "/conference_name"),
+								AutoFocus: true,
 							},
 							Value: p.ConferenceName,
 						})

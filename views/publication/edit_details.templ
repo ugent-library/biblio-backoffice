@@ -38,6 +38,7 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 									class={ "form-select", "form-control", templ.KV("is-invalid", errors != nil && errors.Get("/type") != nil) }
 									name="type"
 									id="type"
+									autofocus
 									hx-get={ c.PathTo("publication_confirm_update_type", "id", p.ID).String() }
 									hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
 									hx-target="#modals"

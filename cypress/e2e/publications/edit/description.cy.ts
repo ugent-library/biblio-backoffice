@@ -149,7 +149,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=esci_id]": "ESCI ID",
         };
 
-        testFocusForForm(form);
+        testFocusForForm(form, "Publication type");
       });
     });
 
@@ -193,7 +193,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=eisbn]": "E-ISBN",
         };
 
-        testFocusForForm(form);
+        testFocusForForm(form, "Publication type");
       });
     });
 
@@ -234,7 +234,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=eisbn]": "E-ISBN",
         };
 
-        testFocusForForm(form);
+        testFocusForForm(form, "Publication type");
       });
     });
 
@@ -283,7 +283,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=eisbn]": "E-ISBN",
         };
 
-        testFocusForForm(form);
+        testFocusForForm(form, "Publication type");
       });
     });
 
@@ -326,7 +326,9 @@ describe("Editing publication description", () => {
           "input[type=text][name=eisbn]": "E-ISBN",
         };
 
-        testFocusForForm(form, undefined, [
+        // TODO: fix for radio button fields
+
+        testFocusForForm(form, "Publication type", [
           "input[type=radio][name=has_confidential_data]",
           "input[type=radio][name=has_patent_application]",
           "input[type=radio][name=has_publications_planned]",
@@ -385,7 +387,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=esci_id]": "ESCI ID",
         };
 
-        testFocusForForm(form);
+        testFocusForForm(form, "Publication type");
       });
     });
 
@@ -426,7 +428,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=eisbn]": "E-ISBN",
         };
 
-        testFocusForForm(form);
+        testFocusForForm(form, "Publication type");
       });
     });
 
@@ -471,7 +473,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=eisbn]": "E-ISBN",
         };
 
-        testFocusForForm(form);
+        testFocusForForm(form, "Publication type");
       });
     });
   });
@@ -492,7 +494,7 @@ describe("Editing publication description", () => {
           "suggestProject",
         );
 
-        cy.getLabel("Search project").next("input").type("001D07903");
+        cy.setFieldByLabel("Search project", "001D07903");
         cy.wait("@suggestProject");
 
         cy.contains(".list-group-item", "001D07903")
@@ -518,6 +520,21 @@ describe("Editing publication description", () => {
       cy.ensureNoModal();
 
       cy.get("#projects-body").should("contain", "No projects");
+    });
+
+    it("should have clickable labels in the project dialog", () => {
+      cy.contains(".card", "Project").contains(".btn", "Add project").click();
+
+      cy.ensureModal("Select projects").within(() => {
+        cy.get("#project-q").should("be.focused");
+
+        testFocusForForm(
+          {
+            "#project-q": "Search project",
+          },
+          "Search project",
+        );
+      });
     });
   });
 
@@ -617,10 +634,13 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Abstract dialog", () => {
       cy.updateFields("Abstract", () => {
-        testFocusForForm({
-          "textarea[name=text]": "Abstract",
-          "select[name=lang]": "Language",
-        });
+        testFocusForForm(
+          {
+            "textarea[name=text]": "Abstract",
+            "select[name=lang]": "Language",
+          },
+          "Abstract",
+        );
       });
     });
   });
@@ -698,11 +718,14 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Link dialog", () => {
       cy.updateFields("Link", () => {
-        testFocusForForm({
-          "input[type=text][name=url]": "URL",
-          "select[name=relation]": "Relation",
-          "input[type=text][name=description]": "Description",
-        });
+        testFocusForForm(
+          {
+            "input[type=text][name=url]": "URL",
+            "select[name=relation]": "Relation",
+            "input[type=text][name=description]": "Description",
+          },
+          "URL",
+        );
       });
     });
   });
@@ -805,10 +828,13 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Lay summary dialog", () => {
       cy.updateFields("Lay summary", () => {
-        testFocusForForm({
-          "textarea[name=text]": "Lay summary",
-          "select[name=lang]": "Language",
-        });
+        testFocusForForm(
+          {
+            "textarea[name=text]": "Lay summary",
+            "select[name=lang]": "Language",
+          },
+          "Lay summary",
+        );
       });
     });
   });
@@ -870,13 +896,16 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Conference details dialog", () => {
       cy.updateFields("Conference details", () => {
-        testFocusForForm({
-          "input[type=text][name=name]": "Conference",
-          "input[type=text][name=location]": "Conference location",
-          "input[type=text][name=organizer]": "Conference organiser",
-          "input[type=text][name=start_date]": "Conference start date",
-          "input[type=text][name=end_date]": "Conference end date",
-        });
+        testFocusForForm(
+          {
+            "input[type=text][name=name]": "Conference",
+            "input[type=text][name=location]": "Conference location",
+            "input[type=text][name=organizer]": "Conference organiser",
+            "input[type=text][name=start_date]": "Conference start date",
+            "input[type=text][name=end_date]": "Conference end date",
+          },
+          "Conference details",
+        );
       });
     });
   });
@@ -964,6 +993,8 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Additional info dialog", () => {
       cy.updateFields("Additional information", () => {
+        cy.focused().should("have.attr", "id", "research_field-0");
+
         testFocusForForm(
           {
             "select[name=research_field]": "Research field",
@@ -971,9 +1002,11 @@ describe("Editing publication description", () => {
             ".tags:has(textarea#keyword) tags span.tagify__input[contenteditable]":
               "Keywords",
           },
-          undefined,
+          "Research field",
           ["textarea[data-input-name=keyword]"],
         );
+
+        cy.setFieldByLabel("Research field", "General Works");
       });
     });
   });

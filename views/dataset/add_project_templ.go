@@ -28,7 +28,7 @@ func AddProject(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Project) tem
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Select projects</h2></div><div class=\"p-6 border-bottom\"><label class=\"form-label\" for=\"project-q\">Search project</label> <input class=\"form-control mb-4\" type=\"text\" id=\"project-q\" name=\"q\" placeholder=\"Search on title or project identifier...\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Select projects</h2></div><div class=\"p-6 border-bottom\"><label class=\"form-label\" for=\"project-q\">Search project</label> <input class=\"form-control mb-4\" type=\"text\" id=\"project-q\" name=\"q\" placeholder=\"Search on title or project identifier...\" autofocus hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

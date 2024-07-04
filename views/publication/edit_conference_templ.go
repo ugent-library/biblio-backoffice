@@ -52,10 +52,11 @@ func EditConferenceDialog(c *ctx.Ctx, p *models.Publication, conflict bool, erro
 		}
 		templ_7745c5c3_Err = form.Text(form.TextArgs{
 			FieldArgs: form.FieldArgs{
-				Label: c.Loc.Get("builder.conference.name"),
-				Name:  "name",
-				Cols:  9,
-				Error: localize.ValidationErrorAt(c.Loc, errors, "/conference_name"),
+				Label:     c.Loc.Get("builder.conference.name"),
+				Name:      "name",
+				Cols:      9,
+				Error:     localize.ValidationErrorAt(c.Loc, errors, "/conference_name"),
+				AutoFocus: true,
 			},
 			Value: p.ConferenceName,
 		}).Render(ctx, templ_7745c5c3_Buffer)

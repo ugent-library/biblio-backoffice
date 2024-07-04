@@ -19,6 +19,7 @@ templ AddDepartment(c *ctx.Ctx, dataset *models.Dataset, hits []models.Completio
 					id="department-q"
 					name="q"
 					placeholder="Search..."
+					autofocus
 					hx-get={ c.PathTo("dataset_suggest_departments", "id", dataset.ID).String() }
 					hx-trigger="keyup changed delay:500ms"
 					hx-target="#department-suggestions"
