@@ -1,4 +1,4 @@
-import htmx from "htmx.org";
+import htmx from "htmx.org/dist/htmx.esm.js";
 import modalError from "./modal_error.js";
 
 export default function () {
@@ -11,9 +11,9 @@ export default function () {
           if (!files.length) return;
 
           const file = files[0];
-          let form = input.closest("form");
-          let target = document.querySelector(form.dataset.target);
-          let headers = JSON.parse(form.dataset.headers);
+          const form = input.closest("form");
+          const target = document.querySelector(form.dataset.target);
+          const headers = JSON.parse(form.dataset.headers);
           const maxSize = parseInt(input.dataset.maxSize);
           const maxSizeError = input.dataset.maxSizeError;
 
@@ -34,17 +34,16 @@ export default function () {
           let req = new XMLHttpRequest();
 
           // request aborted by user
-          /*
-        req.addEventListener(
-          "abort",
-          (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            modalError(input.dataset.uploadMsgFileAborted);
-            hideFormUpload(form);
-          },
-          false
-        );*/
+          // req.addEventListener(
+          //   "abort",
+          //   (e) => {
+          //     e.preventDefault();
+          //     e.stopPropagation();
+          //     modalError(input.dataset.uploadMsgFileAborted);
+          //     hideFormUpload(form);
+          //   },
+          //   false,
+          // );
 
           req.upload.addEventListener(
             "progress",
