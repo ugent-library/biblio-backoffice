@@ -904,7 +904,7 @@ describe("Editing publication description", () => {
             "input[type=text][name=start_date]": "Conference start date",
             "input[type=text][name=end_date]": "Conference end date",
           },
-          "Conference details",
+          "Conference",
         );
       });
     });
