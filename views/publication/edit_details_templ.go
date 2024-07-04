@@ -223,14 +223,14 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 		if c.User.CanCurate() {
 			templ_7745c5c3_Err = form.Select(form.SelectArgs{
 				FieldArgs: form.FieldArgs{
-					Label: c.Loc.Get("builder.classification"),
-					Name:  "classification",
-					Cols:  3,
-					Error: localize.ValidationErrorAt(c.Loc, errors, "/classification"),
+					Label:    c.Loc.Get("builder.classification"),
+					Name:     "classification",
+					Cols:     3,
+					Error:    localize.ValidationErrorAt(c.Loc, errors, "/classification"),
+					Required: true,
 				},
-				Value:       p.Classification,
-				EmptyOption: true,
-				Options:     localize.ClassificationSelectOptions(c.Loc, p.ClassificationChoices()),
+				Value:   p.Classification,
+				Options: localize.ClassificationSelectOptions(c.Loc, p.ClassificationChoices()),
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
