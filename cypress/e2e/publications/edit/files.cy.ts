@@ -184,21 +184,24 @@ describe("Editing publication files", () => {
       // First stub the refresh so nothing changes when clicking the access level radio button labels
       cy.intercept("/publication/*/files/*/refresh-form*", "");
 
-      testFocusForForm({
-        "select[name=relation]": "Document type",
-        "select[name=publication_version]": "Publication version",
+      testFocusForForm(
+        {
+          "select[name=relation]": "Document type",
+          "select[name=publication_version]": "Publication version",
 
-        "input[type=radio][name=access_level][value='info:eu-repo/semantics/openAccess']":
-          /Public access - Open access/,
-        "input[type=radio][name=access_level][value='info:eu-repo/semantics/restrictedAccess']":
-          /UGent access - Local access/,
-        "input[type=radio][name=access_level][value='info:eu-repo/semantics/embargoedAccess']":
-          /Embargoed access/,
-        "input[type=radio][name=access_level][value='info:eu-repo/semantics/closedAccess']":
-          /Private access - Closed access/,
+          "input[type=radio][name=access_level][value='info:eu-repo/semantics/openAccess']":
+            /Public access - Open access/,
+          "input[type=radio][name=access_level][value='info:eu-repo/semantics/restrictedAccess']":
+            /UGent access - Local access/,
+          "input[type=radio][name=access_level][value='info:eu-repo/semantics/embargoedAccess']":
+            /Embargoed access/,
+          "input[type=radio][name=access_level][value='info:eu-repo/semantics/closedAccess']":
+            /Private access - Closed access/,
 
-        "select[name=license]": "License granted by the rights holder",
-      });
+          "select[name=license]": "License granted by the rights holder",
+        },
+        "Document type",
+      );
 
       // Now activate the access level radio buttons again, so we can load the embargoed access specific fields
       cy.intercept("/publication/*/files/*/refresh-form*", (req) =>
@@ -266,8 +269,7 @@ describe("Editing publication files", () => {
     );
 
     cy.ensureModal("Document details for file empty-pdf.pdf").within(() => {
-      // TODO: should be fixed with HTMX v2
-      // cy.focused().should("have.attr", "id", "relation");
+      cy.focused().should("have.attr", "id", "relation");
 
       cy.intercept("/publication/*/files/*/refresh-form*", (req) => {
         req.on("response", (res) => {
