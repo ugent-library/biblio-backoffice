@@ -57,6 +57,10 @@ func EditLinkDialog(c *ctx.Ctx, p *models.Publication, link *models.PublicationL
 				return templ_7745c5c3_Err
 			}
 		}
+		templ_7745c5c3_Err = form.Errors(localize.ValidationErrors(c.Loc, errors)).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = form.Text(form.TextArgs{
 			FieldArgs: form.FieldArgs{
 				Label:    c.Loc.Get("builder.link.url"),

@@ -28,6 +28,7 @@ templ EditLinkDialog(c *ctx.Ctx, p *models.Publication, link *models.Publication
 						The publication you are editing has been changed by someone else. Please copy your edits, then close this form.
 					</div>
 				}
+				@form.Errors(localize.ValidationErrors(c.Loc, errors))
 				@form.Text(form.TextArgs{
 					FieldArgs: form.FieldArgs{
 						Label:    c.Loc.Get("builder.link.url"),
