@@ -1,5 +1,5 @@
 describe("Publication import", () => {
-  it("should be a possible to import publications from Web of Science and save as draft", () => {
+  it("should be possible to import publications from Web of Science and save as draft", () => {
     cy.loginAsResearcher();
 
     cy.visit("/");
@@ -68,7 +68,7 @@ describe("Publication import", () => {
     cy.location("pathname").should("eq", "/publication");
   });
 
-  it("should be a possible to import publications from Web of Science and publish", () => {
+  it("should be possible to import publications from Web of Science and publish", () => {
     cy.loginAsResearcher();
 
     cy.visit("/");
