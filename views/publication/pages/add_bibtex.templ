@@ -26,38 +26,35 @@ templ AddBibTeX(c *ctx.Ctx, step int) {
 			<div class="p-6 u-scroll-wrapper__body">
 				<div class="card mb-6">
 					<div class="card-header">
-						<div class="collapse-trigger" data-bs-toggle="collapse" data-bs-target="#importFromBibTex" aria-expanded="true" aria-controls="collapse1"></div>
 						<div class="bc-toolbar">
 							<div class="bc-toolbar-left">Import via BibTeX file</div>
 						</div>
 					</div>
-					<div class="collapsed" id="importFromBibTex">
-						<div class="card-body">
-							<form
-								class="form-change-submit"
-								action={ templ.URL(c.PathTo("publication_add_multiple_import").String()) }
-								method="POST"
-								enctype="multipart/form-data"
-							>
-								@views.CSRFTag(c)
-								<input type="hidden" name="source" value="bibtex"/>
-								<div class="c-file-upload">
-									<input type="file" name="file" aria-label="Upload .bib file" aria-details="file_help"/>
-									<div class="c-file-upload__content">
-										<p>Drag and drop your .bib file or</p>
-										<button class="btn btn-outline-primary mt-4">
-											Upload .bib file
-											<div class="spinner-border ms-4">
-												<span class="visually-hidden"></span>
-											</div>
-										</button>
-									</div>
+					<div class="card-body">
+						<form
+							class="form-change-submit"
+							action={ templ.URL(c.PathTo("publication_add_multiple_import").String()) }
+							method="POST"
+							enctype="multipart/form-data"
+						>
+							@views.CSRFTag(c)
+							<input type="hidden" name="source" value="bibtex"/>
+							<div class="c-file-upload">
+								<input type="file" name="file" aria-label="Upload .bib file" aria-details="file_help"/>
+								<div class="c-file-upload__content">
+									<p>Drag and drop your .bib file or</p>
+									<button class="btn btn-outline-primary mt-4">
+										Upload .bib file
+										<div class="spinner-border ms-4">
+											<span class="visually-hidden"></span>
+										</div>
+									</button>
 								</div>
-								<small id="file_help" class="form-text text-muted my-3">
-									@templ.Raw(c.Loc.Get("publication.multiple_import.bibtex.file.help"))
-								</small>
-							</form>
-						</div>
+							</div>
+							<small id="file_help" class="form-text text-muted my-3">
+								@templ.Raw(c.Loc.Get("publication.multiple_import.bibtex.file.help"))
+							</small>
+						</form>
 					</div>
 				</div>
 			</div>
