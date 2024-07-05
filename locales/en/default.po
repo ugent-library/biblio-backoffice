@@ -1861,6 +1861,21 @@ msgstr "Not a valid DOI"
 msgid "publication.single_import.import_by_id.import_failed"
 msgstr "Sorry, something went wrong. Could not import the publication"
 
+msgid "publication.single_import.import_by_id.file.help"
+msgstr "<a href=\"https://onderzoektips.ugent.be/en/tips/00002065/#Step2:ImportusinganID\" target=\"_blank\">Identifier import instructions</a>"
+
+msgid "publication.multiple_import.wos.file.help"
+msgstr "<a href=\"https://onderzoektips.ugent.be/en/tips/00002067/\" target=\"_blank\">Web of Science import instructions</a>"
+
+msgid "publication.multiple_import.bibtex.file.help"
+msgstr "<a href=\"https://onderzoektips.ugent.be/en/tips/00002068/\" target=\"_blank\">BibTeX import instructions</a>"
+
+msgid "dataset.single_import.import_by_id.identifier.placeholder"
+msgstr "e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K"
+
+msgid "dataset.single_import.import_by_id.identifier.help"
+msgstr "If you do not have a DOI (Digital Object Identifier), select the manual registration method in the previous step."
+
 msgid "dataset.single_import.import_by_id.id_not_found"
 msgstr "Unable to find this DOI in DataCite"
 
@@ -2198,6 +2213,9 @@ msgstr "Publication has been modified by another user. Please reload the page."
 msgid "publication.file_upload_error"
 msgstr "File upload failed."
 
+msgid "publication.file.help"
+msgstr "<a href=\"https://onderzoektips.ugent.be/en/tips/00002066\" target=\"_blank\">Which document format or version should I use?</a>"
+
 msgid "builder.file.title"
 msgstr "Title"
 
@@ -2207,17 +2225,26 @@ msgstr "Document type"
 msgid "builder.file.publication_version"
 msgstr "Publication version"
 
+msgid "builder.file.publication_version.help"
+msgstr "Upload the <a href=\"https://onderzoektips.ugent.be/en/tips/00002096\" target=\"_blank\">author accepted manuscript</a> for journal articles not published in open access to enable their public dissemination."
+
 msgid "builder.file.access_level"
 msgstr "Access level"
+
+msgid "builder.file.access_level_during_embargo"
+msgstr "Access level&nbsp;<strong>during</strong>&nbsp;embargo"
+
+msgid "builder.file.access_level_after_embargo"
+msgstr "Access level&nbsp;<strong>after</strong>&nbsp;embargo"
+
+msgid "builder.file.access_level_after_embargo.help"
+msgstr "Open access is recommended for author accepted manuscripts (AAM) of journal articles, and if legally possible for other cases."
 
 msgid "builder.file.embargo_date"
 msgstr "Embargo end"
 
-msgid "builder.file.access_level_during_embargo"
-msgstr "Access level <strong>during</strong> embargo"
-
-msgid "builder.file.access_level_after_embargo"
-msgstr "Access level <strong>after</strong> embargo period"
+msgid "builder.file.embargo_date.help"
+msgstr "More information about <a href=\"https://onderzoektips.ugent.be/en/tips/00002097\" target=\"_blank\">embargo periods</a>."
 
 msgid "builder.file.license"
 msgstr "License granted by the rights holder"
@@ -2387,3 +2414,15 @@ msgstr "PubMed ID"
 
 msgid "identifier.WebOfScience"
 msgstr "Web of Science ID"
+
+msgid "facets.facet_since.help"
+msgstr "Type a date (YYYY-MM-DD), year (YYYY) or timing (today, yesterday)."
+
+msgid "publication.batch.mutations.help"
+msgstr ""
+"<p class=\"small form-text text-muted mb-2\">"
+"    One operation per line, e.g. <code>1234,add_keyword,dna,\"double helix\"</code> or <code>1234,remove_keyword,dna</code>."
+"</p>"
+"<p class=\"small form-text text-muted\">"
+"    Find <a class=\"link-dark\" href=\"https://booktower.gitbook.io/product-docs/producten-en-diensten/biblio-academische-bibliografie-en-repository/handleidingen/batch-operaties#voorbeelden-batch-operaties\" target=\"_blank\">more batch operations</a>, or <a href=\"https://booktower.gitbook.io/product-docs/producten-en-diensten/biblio-academische-bibliografie-en-repository/handleidingen/batch-operaties#maak-het-jezelf-gemakkelijk\" target=\"_blank\">download the excel sheet</a> to make it easy."
+"</p>"

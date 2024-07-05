@@ -74,7 +74,28 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K\"></div></div></div><p class=\"form-text text-muted small mt-3\">If you do not have a DOI (Digital Object Identifier), select the manual registration method in the previous step.</p></div></div><div class=\"card mb-6\"><div class=\"card-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><h5 class=\"h6\">Tips for depositing and registering your data</h5></div></div></div></div><div class=\"card-body\"><ol><li class=\"mb-2\" id=\"notInExternalRepo\"><a href=\"https://onderzoektips.ugent.be/en/tips/00002071/\" target=\"_blank\">Share your data in a repository</a> <em>before</em> registering it in Biblio.<br><span class=\"text-muted\">This step will provide you with an identifier.</span></li><li class=\"mb-2\">Get more information about <a href=\"https://onderzoektips.ugent.be/en/tips/00002054/\" target=\"_blank\">dataset registration in Biblio</a>.</li><li class=\"mb-2\"><a href=\"https://onderzoektips.ugent.be/en/tips/00002055/\" target=\"_blank\">Follow a simple illustrated guide to register your dataset in Biblio</a>.</li></ol></div></div></div></div></form>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(c.Loc.Get("dataset.single_import.import_by_id.identifier.placeholder")))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div></div><p class=\"form-text text-muted small mt-3\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.single_import.import_by_id.identifier.help"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_identifier.templ`, Line: 67, Col: 115}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div><div class=\"card mb-6\"><div class=\"card-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><h5 class=\"h6\">Tips for depositing and registering your data</h5></div></div></div></div><div class=\"card-body\"><ol><li class=\"mb-2\" id=\"notInExternalRepo\"><a href=\"https://onderzoektips.ugent.be/en/tips/00002071/\" target=\"_blank\">Share your data in a repository</a> <em>before</em> registering it in Biblio.<br><span class=\"text-muted\">This step will provide you with an identifier.</span></li><li class=\"mb-2\">Get more information about <a href=\"https://onderzoektips.ugent.be/en/tips/00002054/\" target=\"_blank\">dataset registration in Biblio</a>.</li><li class=\"mb-2\"><a href=\"https://onderzoektips.ugent.be/en/tips/00002055/\" target=\"_blank\">Follow a simple illustrated guide to register your dataset in Biblio</a>.</li></ol></div></div></div></div></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -118,9 +139,9 @@ func addDuplicate(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var4 == nil {
-			templ_7745c5c3_Var4 = templ.NopComponent
+		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var5 == nil {
+			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Are you sure you want to import this dataset?</h2></div><div class=\"modal-body\"><p>Biblio contains another dataset with the same DOI:</p><ul class=\"list-group mt-6\"><li class=\"list-group-item\"><div class=\"d-flex w-100\"><div class=\"w-100\"><div class=\"d-flex align-items-start\">")
@@ -143,8 +164,8 @@ func addDuplicate(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var5 templ.SafeURL = templ.URL(c.PathTo("dataset_add_import").String())
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var5)))
+		var templ_7745c5c3_Var6 templ.SafeURL = templ.URL(c.PathTo("dataset_add_import").String())
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var6)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

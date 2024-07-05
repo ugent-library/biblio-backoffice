@@ -61,11 +61,11 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 											<span class="input-group-text">DOI</span>
 										</div>
 										<input type="hidden" name="source" value="datacite"/>
-										<input class="form-control" type="text" name="identifier" value={ args.Identifier } placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K"/>
+										<input class="form-control" type="text" name="identifier" value={ args.Identifier } placeholder={ c.Loc.Get("dataset.single_import.import_by_id.identifier.placeholder") }/>
 									</div>
 								</div>
 							</div>
-							<p class="form-text text-muted small mt-3">If you do not have a DOI (Digital Object Identifier), select the manual registration method in the previous step.</p>
+							<p class="form-text text-muted small mt-3">{ c.Loc.Get("dataset.single_import.import_by_id.identifier.help") }</p>
 						</div>
 					</div>
 					<div class="card mb-6">

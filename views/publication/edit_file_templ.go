@@ -166,7 +166,7 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 					Label: c.Loc.Get("builder.file.publication_version"),
 					Name:  "publication_version",
 					Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/publication_version", idx)),
-					Help:  `Upload the <a href="https://onderzoektips.ugent.be/en/tips/00002096" target="_blank">author accepted manuscript</a> for journal articles not published in open access to enable their public dissemination.`,
+					Help:  c.Loc.Get("builder.file.publication_version.help"),
 					Theme: form.ThemeVertical,
 				},
 				Value:       f.PublicationVersion,
@@ -356,7 +356,7 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 			}
 			templ_7745c5c3_Err = form.Select(form.SelectArgs{
 				FieldArgs: form.FieldArgs{
-					Label: `Access level&nbsp;<strong>during</strong>&nbsp;embargo`,
+					Label: c.Loc.Get("builder.file.access_level_during_embargo"),
 					Name:  "access_level_during_embargo",
 					Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/access_level_during_embargo", idx)),
 					Theme: form.ThemeVertical,
@@ -370,10 +370,10 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 			}
 			templ_7745c5c3_Err = form.Select(form.SelectArgs{
 				FieldArgs: form.FieldArgs{
-					Label: `Access level&nbsp;<strong>after</strong>&nbsp;embargo`,
+					Label: c.Loc.Get("builder.file.access_level_after_embargo"),
 					Name:  "access_level_after_embargo",
 					Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/access_level_after_embargo", idx)),
-					Help:  "Open access is recommended for author accepted manuscripts (AAM) of journal articles, and if legally possible for other cases.",
+					Help:  c.Loc.Get("builder.file.access_level_after_embargo.help"),
 					Theme: form.ThemeVertical,
 				},
 				Value:       f.AccessLevelAfterEmbargo,
@@ -394,7 +394,7 @@ func EditFileDialog(c *ctx.Ctx, p *models.Publication, f *models.PublicationFile
 					Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/file/%d/embargo_date", idx)),
 					Theme: form.ThemeVertical,
 					Cols:  6,
-					Help:  `More information about <a href="https://onderzoektips.ugent.be/en/tips/00002097" target="_blank">embargo periods</a>.`,
+					Help:  c.Loc.Get("builder.file.embargo_date.help"),
 				},
 				Value: f.EmbargoDate,
 				Min:   nextDay().Format("2006-01-02"),

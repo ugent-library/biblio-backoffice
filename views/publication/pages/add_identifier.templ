@@ -84,7 +84,9 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 										</div>
 									</div>
 								</div>
-								<small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/en/tips/00002065/#Step2:ImportusinganID" target="_blank">Identifier import instructions</a></small>
+								<small class="form-text text-muted my-3">
+									@templ.Raw(c.Loc.Get("publication.single_import.import_by_id.file.help"))
+								</small>
 							</div>
 						</div>
 					</div>

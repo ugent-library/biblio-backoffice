@@ -117,7 +117,15 @@ func BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</textarea><p class=\"small form-text text-muted mb-2\">One operation per line, e.g. <code>1234,add_keyword,dna,\"double helix\"</code> or <code>1234,remove_keyword,dna</code>.</p><p class=\"small form-text text-muted\">Find <a class=\"link-dark\" href=\"https://booktower.gitbook.io/product-docs/producten-en-diensten/biblio-academische-bibliografie-en-repository/handleidingen/batch-operaties#voorbeelden-batch-operaties\" target=\"_blank\">more batch operations</a>, or <a href=\"https://booktower.gitbook.io/product-docs/producten-en-diensten/biblio-academische-bibliografie-en-repository/handleidingen/batch-operaties#maak-het-jezelf-gemakkelijk\" target=\"_blank\">download the excel sheet</a> to make it easy.</p></div></div><div class=\"row mb-6\"><div class=\"offset-lg-3 offset-xl-2 col-lg-5 col-xl-4\"><button type=\"button\" name=\"process\" class=\"btn btn-primary\" hx-post=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</textarea>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(c.Loc.Get("publication.batch.mutations.help")).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"row mb-6\"><div class=\"offset-lg-3 offset-xl-2 col-lg-5 col-xl-4\"><button type=\"button\" name=\"process\" class=\"btn btn-primary\" hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

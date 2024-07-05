@@ -164,7 +164,7 @@ templ FacetSince(c *ctx.Ctx, fieldName string, title string, description string,
 			<div class="dropdown-menu__body">
 				<label class="col-form-label" for={ fmt.Sprintf("f-%s", fieldName) }>{ description }</label>
 				<input class="form-control" type="text" id={ fmt.Sprintf("f-%s", fieldName) } name={ fmt.Sprintf("f[%s]", fieldName) } value={ searchArgs.FilterFor(fieldName) }/>
-				<small class="form-text text-muted">Type a date (YYYY-MM-DD), year (YYYY) or timing (today, yesterday).</small>
+				<small class="form-text text-muted">{ c.Loc.Get("facets.facet_since.help") }</small>
 			</div>
 			<div class="bc-navbar bc-navbar--large">
 				<button class="btn btn-primary d-grid w-100" type="submit">Apply filter</button>

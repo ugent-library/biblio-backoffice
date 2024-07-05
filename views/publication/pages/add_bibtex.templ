@@ -53,7 +53,9 @@ templ AddBibTeX(c *ctx.Ctx, step int) {
 										</button>
 									</div>
 								</div>
-								<small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/en/tips/00002068/" target="_blank">BibTeX import instructions</a></small>
+								<small class="form-text text-muted my-3">
+									@templ.Raw(c.Loc.Get("publication.multiple_import.bibtex.file.help"))
+								</small>
 							</form>
 						</div>
 					</div>
