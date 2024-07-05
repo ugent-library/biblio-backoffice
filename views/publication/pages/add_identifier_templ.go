@@ -92,7 +92,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span><h4 class=\"bc-toolbar-title\">Add publication(s)</h4></div></div></div><div class=\"bc-toolbar-right\"><div class=\"bc-toolbar-item\"><button type=\"submit\" class=\"btn btn-primary\"><div class=\"btn-text\">Add publication(s)</div><i class=\"if if-arrow-right\"></i></button></div></div></div></div><div class=\"p-6 u-scroll-wrapper__body\"><div class=\"card mb-6\"><div class=\"card-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\">Enter identifier of your publication</div></div></div><div class=\"card-body\"><div classp=\"card-body\"><p class=\"mb-4\">Enter publication identifier (e.g. DOI, PubMed ID) to import the publication description from an external repository or database.</p><div class=\"mb-6\"><div class=\"row\"><div class=\"col-6\"><div class=\"input-group\"><select name=\"source\" class=\"form-select\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span><h4 class=\"bc-toolbar-title\">Add publication(s)</h4></div></div></div><div class=\"bc-toolbar-right\"><div class=\"bc-toolbar-item\"><button type=\"submit\" class=\"btn btn-primary\"><div class=\"btn-text\">Add publication(s)</div><i class=\"if if-arrow-right\"></i></button></div></div></div></div><div class=\"p-6 u-scroll-wrapper__body\"><div class=\"card mb-6\"><div class=\"card-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\">Enter identifier of your publication</div></div></div><div class=\"card-body\"><div classp=\"card-body\"><p class=\"mb-4\">Enter publication identifier (e.g. DOI, PubMed ID) to import the publication description from an external repository or database.</p><div class=\"mb-6\"><div class=\"row\"><div class=\"col-6\"><div class=\"input-group\"><select name=\"source\" class=\"form-select\" aria-label=\"Identifier type\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -141,7 +141,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div></div></div><small class=\"form-text text-muted my-3\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" aria-label=\"Identifier\" aria-details=\"file_help\"></div></div></div></div><small id=\"file_help\" class=\"form-text text-muted my-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

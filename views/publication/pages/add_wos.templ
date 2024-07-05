@@ -37,7 +37,7 @@ templ AddWebOfScience(c *ctx.Ctx, step int) {
 								@views.CSRFTag(c)
 								<input type="hidden" name="source" value="wos"/>
 								<div class="c-file-upload">
-									<input type="file" name="file"/>
+									<input type="file" name="file" aria-label="Upload .txt file" aria-details="file_help"/>
 									<div class="c-file-upload__content">
 										<p>Drag and drop your .txt file or</p>
 										<button class="btn btn-outline-primary mt-4">
@@ -48,7 +48,7 @@ templ AddWebOfScience(c *ctx.Ctx, step int) {
 										</button>
 									</div>
 								</div>
-								<small class="form-text text-muted my-3">
+								<small id="file_help" class="form-text text-muted my-3">
 									@templ.Raw(c.Loc.Get("publication.multiple_import.wos.file.help"))
 								</small>
 							</form>

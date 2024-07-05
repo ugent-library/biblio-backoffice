@@ -42,7 +42,7 @@ templ AddBibTeX(c *ctx.Ctx, step int) {
 								@views.CSRFTag(c)
 								<input type="hidden" name="source" value="bibtex"/>
 								<div class="c-file-upload">
-									<input type="file" name="file"/>
+									<input type="file" name="file" aria-label="Upload .bib file" aria-details="file_help"/>
 									<div class="c-file-upload__content">
 										<p>Drag and drop your .bib file or</p>
 										<button class="btn btn-outline-primary mt-4">
@@ -53,7 +53,7 @@ templ AddBibTeX(c *ctx.Ctx, step int) {
 										</button>
 									</div>
 								</div>
-								<small class="form-text text-muted my-3">
+								<small id="file_help" class="form-text text-muted my-3">
 									@templ.Raw(c.Loc.Get("publication.multiple_import.bibtex.file.help"))
 								</small>
 							</form>
