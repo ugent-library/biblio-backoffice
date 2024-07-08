@@ -1,11 +1,11 @@
 package dataset
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
-	"fmt"
 )
 
 templ SuggestPublications(c *ctx.Ctx, dataset *models.Dataset, publicationHits *models.PublicationHits) {

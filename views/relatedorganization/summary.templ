@@ -1,8 +1,10 @@
 package relatedorganizationviews
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
-import "github.com/ugent-library/biblio-backoffice/models"
-import "fmt"
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
 
 templ SummaryItem(c *ctx.Ctx, org *models.Organization) {
 	<li class="badge badge-light badge-sm">

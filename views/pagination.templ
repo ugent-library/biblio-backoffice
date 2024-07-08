@@ -1,10 +1,12 @@
 package views
 
-import "fmt"
-import "net/url"
-import "github.com/ugent-library/biblio-backoffice/ctx"
-import "github.com/ugent-library/biblio-backoffice/models"
-import pag "github.com/ugent-library/biblio-backoffice/pagination"
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	pag "github.com/ugent-library/biblio-backoffice/pagination"
+	"net/url"
+)
 
 templ Pagination(c *ctx.Ctx, baseURL *url.URL, searchArgs *models.SearchArgs, p pag.Pagination) {
 	<ul class="pagination">

@@ -8,8 +8,8 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
-	"github.com/ugent-library/biblio-backoffice/views/contributor"
-	"github.com/ugent-library/biblio-backoffice/views/relatedorganization"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+	relatedorganizationviews "github.com/ugent-library/biblio-backoffice/views/relatedorganization"
 )
 
 type SummaryArgs struct {
@@ -158,7 +158,6 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									<li class="c-meta-item">{ summaryPart }</li>
 								}
 							</ul>
-
 							if (args.Publication.Type != "issue_editor") && (args.Publication.Type != "book_editor") {
 								@contributorviews.Summary(c, contributorviews.SummaryArgs{
 									Role:             "author",
@@ -172,12 +171,11 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									<i class="if if-user if--small if--muted me-2"></i>
 									<ul class="c-meta-list c-meta-list-inline">
 										<li class="c-meta-item">
-											<span class="badge badge-light">Your role: { getUserContributorRoles(args.Publication, c.User)}</span>
+											<span class="badge badge-light">Your role: { getUserContributorRoles(args.Publication, c.User) }</span>
 										</li>
 									</ul>
 								</div>
 							}
-
 						</div>
 						<div class="vstack gap-3">
 							<div class="d-flex align-items-center">

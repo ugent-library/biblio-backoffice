@@ -1,10 +1,12 @@
 package views
 
 import (
+	"context"
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
-	"fmt"
+	"io"
 )
 
 func facetShortValue(values []string) templ.Component {
