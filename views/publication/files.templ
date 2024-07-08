@@ -83,7 +83,7 @@ templ FilesBody(c *ctx.Ctx, p *models.Publication) {
 						<p class="mt-4 text-muted"><span class="progress-bar-percent">0</span>%</p>
 					</div>
 				</div>
-				<small class="form-text text-muted my-3">
+				<small class="form-text my-3">
 					@templ.Raw(c.Loc.Get("publication.file.help"))
 				</small>
 			</form>

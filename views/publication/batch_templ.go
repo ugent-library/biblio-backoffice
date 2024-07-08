@@ -104,20 +104,20 @@ func BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<textarea class=\"form-control\" id=\"mutations\" name=\"mutations\" rows=\"8\" spellcheck=\"false\" autofocus>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<textarea class=\"form-control\" id=\"mutations\" name=\"mutations\" rows=\"8\" spellcheck=\"false\" autofocus aria-details=\"mutations-help\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(formValue)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/batch.templ`, Line: 55, Col: 116}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/batch.templ`, Line: 55, Col: 146}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</textarea>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</textarea><div id=\"mutations-help\" class=\"form-text\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -125,7 +125,7 @@ func BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"row mb-6\"><div class=\"offset-lg-3 offset-xl-2 col-lg-5 col-xl-4\"><button type=\"button\" name=\"process\" class=\"btn btn-primary\" hx-post=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div><div class=\"row mb-6\"><div class=\"offset-lg-3 offset-xl-2 col-lg-5 col-xl-4\"><button type=\"button\" name=\"process\" class=\"btn btn-primary\" hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

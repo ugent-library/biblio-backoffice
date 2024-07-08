@@ -131,7 +131,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div><div class=\"c-file-upload c-file-upload--disabled file-upload-busy d-none\"><div class=\"c-file-upload__content\"><p class=\"mt-5\">Uploading your file.<br><span>Hold on, do not refresh the page.</span></p><div class=\"progress w-75\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width: 0%\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div><p class=\"mt-4 text-muted\"><span class=\"progress-bar-percent\">0</span>%</p></div></div><small class=\"form-text text-muted my-3\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div><div class=\"c-file-upload c-file-upload--disabled file-upload-busy d-none\"><div class=\"c-file-upload__content\"><p class=\"mt-5\">Uploading your file.<br><span>Hold on, do not refresh the page.</span></p><div class=\"progress w-75\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width: 0%\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div><p class=\"mt-4 text-muted\"><span class=\"progress-bar-percent\">0</span>%</p></div></div><small class=\"form-text my-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

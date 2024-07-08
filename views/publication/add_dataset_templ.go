@@ -28,7 +28,7 @@ func AddDataset(c *ctx.Ctx, publication *models.Publication, hits *models.Datase
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Select datasets</h2></div><div class=\"modal-body\"><p class=\"text-muted\">Select one or more datasets as already registered in Biblio<p class=\"text-muted\">See <a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">Documentation <i class=\"if if--small if-external-link\"></i></a></p></p><label class=\"visually-hidden\" for=\"publication-q\">Search</label> <input class=\"form-control\" type=\"text\" id=\"publication-q\" name=\"q\" placeholder=\"Search...\" autofocus hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Select datasets</h2></div><div class=\"modal-body\"><p class=\"text-muted\">Select one or more datasets as already registered in Biblio.</p><p class=\"text-muted\">See <a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">Documentation <i class=\"if if--small if-external-link\"></i></a></p><label class=\"visually-hidden\" for=\"publication-q\">Search</label> <input class=\"form-control\" type=\"text\" id=\"publication-q\" name=\"q\" placeholder=\"Search...\" autofocus hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

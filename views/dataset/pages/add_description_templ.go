@@ -57,7 +57,7 @@ func AddDescription(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_description.templ`, Line: 43, Col: 26}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_description.templ`, Line: 42, Col: 26}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {

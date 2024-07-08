@@ -141,7 +141,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" aria-label=\"Identifier\" aria-details=\"file_help\"></div></div></div></div><small id=\"file_help\" class=\"form-text text-muted my-3\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" aria-label=\"Identifier\" aria-details=\"file_help\"></div></div></div></div><small id=\"file_help\" class=\"form-text my-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
