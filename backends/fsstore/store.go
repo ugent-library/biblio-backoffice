@@ -26,13 +26,24 @@ func New(c Config) (*Store, error) {
 		dir:     c.Dir,
 		tempDir: c.TempDir,
 	}
-	if err := os.MkdirAll(s.dir, os.ModePerm); err != nil {
-		return nil, fmt.Errorf("fsstore: can't create store dir: %w", err)
+	if err := checkDirOk(s.dir); err != nil {
+		return nil, fmt.Errorf("fsstore: store dir: %w", err)
 	}
-	if err := os.MkdirAll(s.tempDir, os.ModePerm); err != nil {
-		return nil, fmt.Errorf("fsstore: can't create temp dir: %w", err)
+	if err := checkDirOk(s.tempDir); err != nil {
+		return nil, fmt.Errorf("fsstore: temp dir: %w", err)
 	}
 	return s, nil
+}
+
+func checkDirOk(dir string) error {
+	stat, err := os.Stat(dir)
+	if err != nil {
+		return fmt.Errorf("can't stat path %s: %w", dir, err)
+	}
+	if !stat.IsDir() {
+		return fmt.Errorf("path %s is not a directory", dir)
+	}
+	return nil
 }
 
 func fnvHash(s string) uint32 {
