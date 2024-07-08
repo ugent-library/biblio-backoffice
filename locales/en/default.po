@@ -2429,3 +2429,6 @@ msgstr ""
 
 msgid "publication.project.add.search.help"
 msgstr "Select one or more projects as known in GISMO and Research Explorer. <a href=\"https://onderzoektips.ugent.be/en/tips/00002060/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a>"
+
+msgid "dataset.project.add.search.help"
+msgstr "Select one or more projects as known in GISMO and Research Explorer. <a href=\"https://onderzoektips.ugent.be/en/tips/00002060/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a>"
