@@ -1,7 +1,7 @@
 import { getRandomText } from "support/util";
 
 describe("Dataset import", () => {
-  it("should be a possible to import datasets by DOI", () => {
+  it("should be possible to import datasets by DOI", () => {
     cy.loginAsResearcher();
     cy.visit("/");
 

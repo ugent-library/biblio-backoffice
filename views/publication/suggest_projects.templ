@@ -7,7 +7,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 )
 
-templ SuggestProjects(c *ctx.Ctx,  publication *models.Publication, hits []*models.Project) {
+templ SuggestProjects(c *ctx.Ctx, publication *models.Publication, hits []*models.Project) {
 	<ul class="list-group">
 		for _, hit := range hits {
 			<li class="list-group-item">
