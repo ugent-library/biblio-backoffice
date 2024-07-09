@@ -160,7 +160,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div></div></div></div><small class=\"form-text text-muted my-3\"><a href=\"https://onderzoektips.ugent.be/en/tips/00002065/#Step2:ImportusinganID\" target=\"_blank\">Identifier import instructions</a></small></div></div></div></div></div></form>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" required></div></div></div></div><small class=\"form-text text-muted my-3\"><a href=\"https://onderzoektips.ugent.be/en/tips/00002065/#Step2:ImportusinganID\" target=\"_blank\">Identifier import instructions</a></small></div></div></div></div></div></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
