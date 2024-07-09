@@ -1,10 +1,10 @@
 package publication
 
 import (
-	"strings"
-	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/friendly"
+	"strings"
 )
 
 templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction templ.Component) {
@@ -417,7 +417,6 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 																						<span class="text-muted">UGent</span>
 																					</li>
 																				}
-
 																				if s.ORCID() != "" {
 																					<li class="c-meta-item text-nowrap">
 																						<i class="if if-orcid if--small if--success"></i>

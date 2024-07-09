@@ -1,15 +1,15 @@
 package dataset
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/form"
-	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/okay"
-	"fmt"
 )
 
-templ EditLinkDialog(c *ctx.Ctx, dataset *models.Dataset, link * models.DatasetLink, idx int, conflict bool, errors *okay.Errors, isNew bool) {
+templ EditLinkDialog(c *ctx.Ctx, dataset *models.Dataset, link *models.DatasetLink, idx int, conflict bool, errors *okay.Errors, isNew bool) {
 	<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
