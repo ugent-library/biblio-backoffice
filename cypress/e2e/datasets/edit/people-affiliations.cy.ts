@@ -1,4 +1,4 @@
-import { testFocusForForm } from "support/util";
+import { testFormAccessibility } from "support/util";
 
 describe("Editing dataset people & affiliations", () => {
   beforeEach(() => {
@@ -184,7 +184,7 @@ describe("Editing dataset people & affiliations", () => {
       cy.updateFields(
         "Creators",
         () => {
-          testFocusForForm(
+          testFormAccessibility(
             {
               "input[type=text][name=first_name]": "First name",
               "input[type=text][name=last_name]": "Last name",
@@ -204,7 +204,7 @@ describe("Editing dataset people & affiliations", () => {
         .click();
 
       cy.ensureModal("Edit or change creator").within(() => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "input[type=text][name=first_name]": "First name",
             "input[type=text][name=last_name]": "Last name",

@@ -1,4 +1,4 @@
-import { testFocusForForm } from "support/util";
+import { testFormAccessibility } from "support/util";
 
 describe("Editing publication people & affiliations", () => {
   beforeEach(() => {
@@ -184,7 +184,7 @@ describe("Editing publication people & affiliations", () => {
       cy.visitPublication();
 
       cy.updateFields("Authors", () => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "input[name=first_name]": "First name",
             "input[name=last_name]": "Last name",
@@ -198,7 +198,7 @@ describe("Editing publication people & affiliations", () => {
         cy.contains(".btn", "Add author").click();
         cy.wait("@confirmCreate");
 
-        testFocusForForm(
+        testFormAccessibility(
           {
             "select[name=credit_role]": "Roles",
           },
@@ -257,7 +257,7 @@ describe("Editing publication people & affiliations", () => {
       cy.updateFields(
         "Editors",
         () => {
-          testFocusForForm(
+          testFormAccessibility(
             {
               "input[name=first_name]": "First name",
               "input[name=last_name]": "Last name",
@@ -277,7 +277,7 @@ describe("Editing publication people & affiliations", () => {
         .click();
 
       cy.ensureModal("Edit or change editor").within(() => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "input[name=first_name]": "First name",
             "input[name=last_name]": "Last name",
@@ -337,7 +337,7 @@ describe("Editing publication people & affiliations", () => {
       cy.updateFields(
         "Supervisors",
         () => {
-          testFocusForForm(
+          testFormAccessibility(
             {
               "input[name=first_name]": "First name",
               "input[name=last_name]": "Last name",
@@ -357,7 +357,7 @@ describe("Editing publication people & affiliations", () => {
         .click();
 
       cy.ensureModal("Edit or change supervisor").within(() => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "input[name=first_name]": "First name",
             "input[name=last_name]": "Last name",

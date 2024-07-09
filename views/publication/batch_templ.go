@@ -112,27 +112,35 @@ func BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<textarea class=\"form-control\" id=\"mutations\" name=\"mutations\" rows=\"8\" spellcheck=\"false\" autofocus>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<textarea class=\"form-control\" id=\"mutations\" name=\"mutations\" rows=\"8\" spellcheck=\"false\" autofocus aria-details=\"mutations-help\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(formValue)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/batch.templ`, Line: 56, Col: 116}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/batch.templ`, Line: 56, Col: 146}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</textarea><p class=\"small form-text text-muted mb-2\">One operation per line, e.g. <code>1234,add_keyword,dna,\"double helix\"</code> or <code>1234,remove_keyword,dna</code>.</p><p class=\"small form-text text-muted\">Find <a class=\"link-dark\" href=\"https://booktower.gitbook.io/product-docs/producten-en-diensten/biblio-academische-bibliografie-en-repository/handleidingen/batch-operaties#voorbeelden-batch-operaties\" target=\"_blank\">more batch operations</a>, or <a href=\"https://booktower.gitbook.io/product-docs/producten-en-diensten/biblio-academische-bibliografie-en-repository/handleidingen/batch-operaties#maak-het-jezelf-gemakkelijk\" target=\"_blank\">download the excel sheet</a> to make it easy.</p></div></div><div class=\"row mb-6\"><div class=\"offset-lg-3 offset-xl-2 col-lg-5 col-xl-4\"><button type=\"button\" name=\"process\" class=\"btn btn-primary\" hx-post=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</textarea><div id=\"mutations-help\" class=\"form-text\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(c.Loc.Get("publication.batch.mutations.help")).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div><div class=\"row mb-6\"><div class=\"offset-lg-3 offset-xl-2 col-lg-5 col-xl-4\"><button type=\"button\" name=\"process\" class=\"btn btn-primary\" hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_process_batch").String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/batch.templ`, Line: 71, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/batch.templ`, Line: 68, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {

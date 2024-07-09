@@ -156,7 +156,15 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div><div class=\"c-file-upload c-file-upload--disabled file-upload-busy d-none\"><div class=\"c-file-upload__content\"><p class=\"mt-5\">Uploading your file.<br><span>Hold on, do not refresh the page.</span></p><div class=\"progress w-75\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width: 0%\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div><p class=\"mt-4 text-muted\"><span class=\"progress-bar-percent\">0</span>%</p></div></div><small class=\"form-text text-muted my-3\"><a href=\"https://onderzoektips.ugent.be/en/tips/00002066\" target=\"_blank\">Which document format or version should I use?</a></small></form><hr>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div></div><div class=\"c-file-upload c-file-upload--disabled file-upload-busy d-none\"><div class=\"c-file-upload__content\"><p class=\"mt-5\">Uploading your file.<br><span>Hold on, do not refresh the page.</span></p><div class=\"progress w-75\"><div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width: 0%\" aria-valuenow=\"0\" aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div><p class=\"mt-4 text-muted\"><span class=\"progress-bar-percent\">0</span>%</p></div></div><small class=\"form-text my-3\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templ.Raw(c.Loc.Get("publication.file.help")).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</small></form><hr>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -188,7 +196,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var10 string
 					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels." + f.AccessLevel))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 110, Col: 82}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 112, Col: 82}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
@@ -206,7 +214,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var11 string
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels." + f.AccessLevel))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 115, Col: 82}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 117, Col: 82}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
@@ -224,7 +232,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var12 string
 					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels." + f.AccessLevel))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 120, Col: 82}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 122, Col: 82}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 					if templ_7745c5c3_Err != nil {
@@ -242,7 +250,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var13 string
 					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels." + f.AccessLevel))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 125, Col: 82}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 127, Col: 82}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {
@@ -270,7 +278,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels_during_embargo." + f.AccessLevelDuringEmbargo))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 133, Col: 110}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 135, Col: 110}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
@@ -298,7 +306,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels_after_embargo." + f.AccessLevelAfterEmbargo))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 141, Col: 108}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 143, Col: 108}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
@@ -311,7 +319,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var16 string
 					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(f.EmbargoDate)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 141, Col: 131}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 143, Col: 131}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 					if templ_7745c5c3_Err != nil {
@@ -334,7 +342,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var17 string
 					templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_licenses." + f.License))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 146, Col: 68}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 148, Col: 68}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 					if templ_7745c5c3_Err != nil {
@@ -352,7 +360,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var18 string
 					templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(f.OtherLicense)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 148, Col: 36}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 150, Col: 36}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 					if templ_7745c5c3_Err != nil {
@@ -375,7 +383,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var19 string
 					templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_edit_file", "id", p.ID, "file_id", f.ID).String())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 159, Col: 96}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 161, Col: 96}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 					if templ_7745c5c3_Err != nil {
@@ -388,7 +396,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var20 string
 					templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 160, Col: 76}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 162, Col: 76}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 					if templ_7745c5c3_Err != nil {
@@ -401,7 +409,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var21 string
 					templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_confirm_delete_file", "id", p.ID, "snapshot_id", p.SnapshotID, "file_id", f.ID).String())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 169, Col: 135}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 171, Col: 135}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 					if templ_7745c5c3_Err != nil {
@@ -428,7 +436,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var23 string
 				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(f.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 183, Col: 21}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 185, Col: 21}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 				if templ_7745c5c3_Err != nil {
@@ -446,7 +454,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var24 string
 					templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_relations." + f.Relation))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 188, Col: 72}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 190, Col: 72}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 					if templ_7745c5c3_Err != nil {
@@ -465,7 +473,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					var templ_7745c5c3_Var25 string
 					templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_versions." + f.PublicationVersion))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 191, Col: 107}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 193, Col: 107}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 					if templ_7745c5c3_Err != nil {
@@ -483,7 +491,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 				var templ_7745c5c3_Var26 string
 				templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(f.DateCreated.In(c.Timezone).Format("2006-01-02 at 15:04"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 195, Col: 138}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/files.templ`, Line: 197, Col: 138}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 				if templ_7745c5c3_Err != nil {

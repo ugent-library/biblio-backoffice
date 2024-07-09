@@ -62,7 +62,7 @@ func AddWebOfScience(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span><h4 class=\"bc-toolbar-title\">Add publication(s)</h4></div></div></div></div></div><div class=\"p-6 u-scroll-wrapper__body\"><div class=\"card mb-6\"><div class=\"card-header\"><div class=\"collapse-trigger\" data-bs-toggle=\"collapse\" data-bs-target=\"#importFromWOS\" aria-expanded=\"true\" aria-controls=\"collapse1\"></div><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\">Import from Web of Science</div></div></div><div class=\"collapse show\" id=\"importFromWOS\"><div class=\"card-body\"><form class=\"form-change-submit\" action=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span><h4 class=\"bc-toolbar-title\">Add publication(s)</h4></div></div></div></div></div><div class=\"p-6 u-scroll-wrapper__body\"><div class=\"card mb-6\"><div class=\"card-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\">Import from Web of Science</div></div></div><div class=\"card-body\"><form class=\"form-change-submit\" action=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -79,7 +79,15 @@ func AddWebOfScience(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"source\" value=\"wos\"><div class=\"c-file-upload\"><input type=\"file\" name=\"file\"><div class=\"c-file-upload__content\"><p>Drag and drop your .txt file or</p><button class=\"btn btn-outline-primary mt-4\">Upload .txt file<div class=\"spinner-border ms-4\"><span class=\"visually-hidden\"></span></div></button></div></div><small class=\"form-text text-muted my-3\"><a href=\"https://onderzoektips.ugent.be/en/tips/00002067/\" target=\"_blank\">Web of Science import instructions</a></small></form></div></div></div></div></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"source\" value=\"wos\"><div class=\"c-file-upload\"><input type=\"file\" name=\"file\" aria-label=\"Upload .txt file\" aria-details=\"file_help\"><div class=\"c-file-upload__content\"><p>Drag and drop your .txt file or</p><button class=\"btn btn-outline-primary mt-4\">Upload .txt file<div class=\"spinner-border ms-4\"><span class=\"visually-hidden\"></span></div></button></div></div><small id=\"file_help\" class=\"form-text my-3\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templ.Raw(c.Loc.Get("publication.multiple_import.wos.file.help")).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</small></form></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
