@@ -1,4 +1,4 @@
-import { testFocusForForm } from "support/util";
+import { testFormAccessibility } from "support/util";
 
 describe("Editing publication description", () => {
   beforeEach(() => {
@@ -149,7 +149,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=esci_id]": "ESCI ID",
         };
 
-        testFocusForForm(form, "Publication type");
+        testFormAccessibility(form, "Publication type");
       });
     });
 
@@ -193,7 +193,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=eisbn]": "E-ISBN",
         };
 
-        testFocusForForm(form, "Publication type");
+        testFormAccessibility(form, "Publication type");
       });
     });
 
@@ -234,7 +234,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=eisbn]": "E-ISBN",
         };
 
-        testFocusForForm(form, "Publication type");
+        testFormAccessibility(form, "Publication type");
       });
     });
 
@@ -283,7 +283,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=eisbn]": "E-ISBN",
         };
 
-        testFocusForForm(form, "Publication type");
+        testFormAccessibility(form, "Publication type");
       });
     });
 
@@ -328,7 +328,7 @@ describe("Editing publication description", () => {
 
         // TODO: fix for radio button fields
 
-        testFocusForForm(form, "Publication type", [
+        testFormAccessibility(form, "Publication type", [
           "input[type=radio][name=has_confidential_data]",
           "input[type=radio][name=has_patent_application]",
           "input[type=radio][name=has_publications_planned]",
@@ -387,7 +387,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=esci_id]": "ESCI ID",
         };
 
-        testFocusForForm(form, "Publication type");
+        testFormAccessibility(form, "Publication type");
       });
     });
 
@@ -428,7 +428,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=eisbn]": "E-ISBN",
         };
 
-        testFocusForForm(form, "Publication type");
+        testFormAccessibility(form, "Publication type");
       });
     });
 
@@ -473,7 +473,7 @@ describe("Editing publication description", () => {
           "input[type=text][name=eisbn]": "E-ISBN",
         };
 
-        testFocusForForm(form, "Publication type");
+        testFormAccessibility(form, "Publication type");
       });
     });
   });
@@ -528,7 +528,7 @@ describe("Editing publication description", () => {
       cy.ensureModal("Select projects").within(() => {
         cy.get("#project-q").should("be.focused");
 
-        testFocusForForm(
+        testFormAccessibility(
           {
             "#project-q": "Search project",
           },
@@ -634,7 +634,7 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Abstract dialog", () => {
       cy.updateFields("Abstract", () => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "textarea[name=text]": "Abstract",
             "select[name=lang]": "Language",
@@ -718,7 +718,7 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Link dialog", () => {
       cy.updateFields("Link", () => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "input[type=text][name=url]": "URL",
             "select[name=relation]": "Relation",
@@ -828,7 +828,7 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Lay summary dialog", () => {
       cy.updateFields("Lay summary", () => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "textarea[name=text]": "Lay summary",
             "select[name=lang]": "Language",
@@ -896,7 +896,7 @@ describe("Editing publication description", () => {
 
     it("should have clickable labels in the Conference details dialog", () => {
       cy.updateFields("Conference details", () => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "input[type=text][name=name]": "Conference",
             "input[type=text][name=location]": "Conference location",
@@ -995,7 +995,7 @@ describe("Editing publication description", () => {
       cy.updateFields("Additional information", () => {
         cy.focused().should("have.attr", "id", "research_field-0");
 
-        testFocusForForm(
+        testFormAccessibility(
           {
             "select[name=research_field]": "Research field",
             "textarea[name=additional_info]": "Additional information",

@@ -1,4 +1,4 @@
-import { testFocusForForm } from "support/util";
+import { testFormAccessibility } from "support/util";
 
 describe("Editing dataset description", () => {
   beforeEach(() => {
@@ -11,7 +11,7 @@ describe("Editing dataset description", () => {
   describe("Dataset details", () => {
     it("should have clickable labels in the dataset form", () => {
       cy.updateFields("Dataset details", () => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "input[type=text][name=title]": "Title",
             "select[name=identifier_type]": "Persistent identifier type",
@@ -40,7 +40,7 @@ describe("Editing dataset description", () => {
         cy.setFieldByLabel("License", "The license is not listed here");
         cy.wait("@refreshForm");
 
-        testFocusForForm(
+        testFormAccessibility(
           {
             "input[type=text][name=title]": "Title",
             "select[name=identifier_type]": "Persistent identifier type",
@@ -145,7 +145,7 @@ describe("Editing dataset description", () => {
       cy.ensureModal("Select projects").within(() => {
         cy.get("#project-q").should("be.focused");
 
-        testFocusForForm(
+        testFormAccessibility(
           {
             "#project-q": "Search project",
           },
@@ -293,7 +293,7 @@ describe("Editing dataset description", () => {
 
     it("should have clickable labels in the Abstract dialog", () => {
       cy.updateFields("Abstract", () => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "textarea[name=text]": "Abstract",
             "select[name=lang]": "Language",
@@ -372,7 +372,7 @@ describe("Editing dataset description", () => {
 
     it("should have clickable labels in the Link dialog", () => {
       cy.updateFields("Link", () => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "input[type=text][name=url]": "URL",
             "select[name=relation]": "Relation",

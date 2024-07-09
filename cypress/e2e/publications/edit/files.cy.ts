@@ -1,5 +1,5 @@
 import * as dayjs from "dayjs";
-import { testFocusForForm } from "support/util";
+import { testFormAccessibility } from "support/util";
 
 describe("Editing publication files", () => {
   beforeEach(() => {
@@ -184,7 +184,7 @@ describe("Editing publication files", () => {
       // First stub the refresh so nothing changes when clicking the access level radio button labels
       cy.intercept("/publication/*/files/*/refresh-form*", "");
 
-      testFocusForForm(
+      testFormAccessibility(
         {
           "select[name=relation]": "Document type",
           "select[name=publication_version]": "Publication version",
@@ -236,7 +236,7 @@ describe("Editing publication files", () => {
       cy.intercept("/publication/*/files/*/refresh-form*", "");
 
       // Test form again with embargo fields
-      testFocusForForm(
+      testFormAccessibility(
         {
           "select[name=relation]": "Document type",
           "select[name=publication_version]": "Publication version",

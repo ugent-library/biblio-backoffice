@@ -1,4 +1,4 @@
-import { getRandomText } from "support/util";
+import { getRandomText, testFormAccessibility } from "support/util";
 
 describe("Dataset import", () => {
   it("should be possible to import datasets by DOI", () => {
@@ -32,6 +32,8 @@ describe("Dataset import", () => {
     cy.get("@steps").eq(1).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(3).should("not.have.class", "c-stepper__step--active");
+
+    testFormAccessibility({ "input[name=identifier]": "DOI" });
 
     cy.get("input[name=identifier]").type("10.6084/M9.FIGSHARE.22067864.V1");
     cy.contains(".btn", "Add dataset").click();

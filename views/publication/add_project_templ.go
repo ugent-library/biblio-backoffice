@@ -31,20 +31,28 @@ func AddProject(c *ctx.Ctx, publication *models.Publication, hits []*models.Proj
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Select projects</h2></div><div class=\"p-6 border-bottom\"><label class=\"form-label\" for=\"project-q\">Search project</label> <input class=\"form-control mb-4\" type=\"text\" id=\"project-q\" name=\"q\" placeholder=\"Search on title or project identifier...\" autofocus hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Select projects</h2></div><div class=\"p-6 border-bottom\"><label class=\"form-label\" for=\"project-q\">Search project</label> <input class=\"form-control mb-4\" type=\"text\" id=\"project-q\" name=\"q\" placeholder=\"Search on title or project identifier...\" autofocus aria-details=\"project-q-help\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_suggest_projects", "id", publication.ID).String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/add_project.templ`, Line: 23, Col: 85}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/add_project.templ`, Line: 24, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"keyup changed delay:500ms\" hx-target=\"#project-suggestions\"><p class=\"text-muted\">Select one or more projects as known in GISMO and Research Explorer. <a href=\"https://onderzoektips.ugent.be/en/tips/00002060/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a></p></div><div class=\"modal-body\"><div id=\"project-suggestions\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"keyup changed delay:500ms\" hx-target=\"#project-suggestions\"><p id=\"project-q-help\" class=\"form-text fs-4\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.Raw(c.Loc.Get("publication.project.add.search.help")).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div><div class=\"modal-body\"><div id=\"project-suggestions\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

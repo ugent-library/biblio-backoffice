@@ -1,4 +1,4 @@
-import { testFocusForForm } from "support/util";
+import { testFormAccessibility } from "support/util";
 
 describe("Batch publication update", () => {
   beforeEach(() => {
@@ -8,7 +8,7 @@ describe("Batch publication update", () => {
   });
 
   it("should have clickable labels in the form", () => {
-    testFocusForForm(
+    testFormAccessibility(
       {
         "textarea[name=mutations]": "Operations",
       },

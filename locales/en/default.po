@@ -2420,9 +2420,15 @@ msgstr "Type a date (YYYY-MM-DD), year (YYYY) or timing (today, yesterday)."
 
 msgid "publication.batch.mutations.help"
 msgstr ""
-"<p class=\"small form-text text-muted mb-2\">"
+"<p class=\"small text-muted mb-2\">"
 "    One operation per line, e.g. <code>1234,add_keyword,dna,\"double helix\"</code> or <code>1234,remove_keyword,dna</code>."
 "</p>"
-"<p class=\"small form-text text-muted\">"
+"<p class=\"small text-muted\">"
 "    Find <a class=\"link-dark\" href=\"https://booktower.gitbook.io/product-docs/producten-en-diensten/biblio-academische-bibliografie-en-repository/handleidingen/batch-operaties#voorbeelden-batch-operaties\" target=\"_blank\">more batch operations</a>, or <a href=\"https://booktower.gitbook.io/product-docs/producten-en-diensten/biblio-academische-bibliografie-en-repository/handleidingen/batch-operaties#maak-het-jezelf-gemakkelijk\" target=\"_blank\">download the excel sheet</a> to make it easy."
 "</p>"
+
+msgid "publication.project.add.search.help"
+msgstr "Select one or more projects as known in GISMO and Research Explorer. <a href=\"https://onderzoektips.ugent.be/en/tips/00002060/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a>"
+
+msgid "dataset.project.add.search.help"
+msgstr "Select one or more projects as known in GISMO and Research Explorer. <a href=\"https://onderzoektips.ugent.be/en/tips/00002060/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a>"

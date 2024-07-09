@@ -424,7 +424,7 @@ func Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction 
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-group\"><label class=\"form-label form-label-top pb-0 d-block\" for=\"\">Does the dissertation contain privacy-sensitive information?</label> <small class=\"form-text text-muted mb-2\">Does not include patents. Private or sensitive information about individuals or companies that should <strong>never</strong> be disclosed.</small> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-group\"><label class=\"form-label form-label-top pb-0 d-block\" for=\"\">Does the dissertation contain privacy-sensitive information?</label> <small class=\"form-text mb-2\">Does not include patents. Private or sensitive information about individuals or companies that should <strong>never</strong> be disclosed.</small> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -444,7 +444,7 @@ func Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction 
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-group\"><label class=\"form-label form-label-top pb-0 d-block\" for=\"\">Are other publications planned based on this dissertation?</label> <small class=\"form-text text-muted mb-2\">e.g. articles or book</small> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-group\"><label class=\"form-label form-label-top pb-0 d-block\" for=\"\">Are other publications planned based on this dissertation?</label> <small class=\"form-text mb-2\">e.g. articles or book</small> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -464,7 +464,7 @@ func Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction 
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-group\"><label class=\"form-label form-label-top pb-0 d-block\" for=\"\">Does the dissertation contain published articles?</label> <small class=\"form-text text-muted mb-2\">The dissertation contains a copy of the full text, either in the publisher's layout (VoR) or your own (AAM). <a class=\"c-link\" href=\"https://researchtips.ugent.be/en/tips/00002066\">Read more</a></small> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-group\"><label class=\"form-label form-label-top pb-0 d-block\" for=\"\">Does the dissertation contain published articles?</label> <small class=\"form-text mb-2\">The dissertation contains a copy of the full text, either in the publisher's layout (VoR) or your own (AAM). <a class=\"c-link\" href=\"https://researchtips.ugent.be/en/tips/00002066\">Read more</a></small> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

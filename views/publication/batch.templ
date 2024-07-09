@@ -53,8 +53,10 @@ templ BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) {
 					</div>
 				}
 				@form.Errors(errors)
-				<textarea class="form-control" id="mutations" name="mutations" rows="8" spellcheck="false" autofocus>{ formValue }</textarea>
-				@templ.Raw(c.Loc.Get("publication.batch.mutations.help"))
+				<textarea class="form-control" id="mutations" name="mutations" rows="8" spellcheck="false" autofocus aria-details="mutations-help">{ formValue }</textarea>
+				<div id="mutations-help" class="form-text">
+					@templ.Raw(c.Loc.Get("publication.batch.mutations.help"))
+				</div>
 			</div>
 		</div>
 		<div class="row mb-6">

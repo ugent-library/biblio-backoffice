@@ -1,42 +1,82 @@
 const NO_LOG = { log: false };
+const ACTUAL_FIELDS_SELECTOR =
+  "input:not([type=hidden], [type=submit], [type=reset], [type=button], [type=image]), textarea, select";
 
 export function getRandomText() {
   return crypto.randomUUID().replace(/-/g, "").toUpperCase();
 }
 
-export function testFocusForForm(
+export function testFormAccessibility(
   form: Record<string, string | RegExp>,
   autoFocusLabel?: string,
   ignoredFields: string[] = [],
 ) {
-  cy.get<HTMLFormElement>(
-    "input:not([type=hidden], [type=submit], [type=reset], [type=button], [type=image]), textarea, select",
-    NO_LOG,
-  ).then((allFormFields) => {
-    ignoredFields.forEach((f) => (allFormFields = allFormFields.not(f)));
+  testFocusForLabels(ignoredFields, form, autoFocusLabel);
 
-    for (const selector of Object.keys(form)) {
-      testFocusForLabel(
-        form[selector],
-        selector,
-        autoFocusLabel === form[selector],
+  testAriaDescriptionAttributes();
+}
+
+function testFocusForLabels(
+  ignoredFields: string[],
+  form: Record<string, string | RegExp>,
+  autoFocusLabel: string,
+) {
+  cy.get<HTMLFormElement>(ACTUAL_FIELDS_SELECTOR, NO_LOG).then(
+    (allFormFields) => {
+      ignoredFields.forEach((f) => (allFormFields = allFormFields.not(f)));
+
+      for (const selector of Object.keys(form)) {
+        testFocusForLabel(
+          form[selector],
+          selector,
+          autoFocusLabel === form[selector],
+        );
+
+        allFormFields = allFormFields.not(selector);
+      }
+
+      expect(allFormFields.length).to.eq(
+        0,
+        "Not all fields were checked: " +
+          allFormFields
+            .get()
+            .map((f) => `${f.tagName.toLowerCase()}[name=${f.name}]`)
+            .join(", "),
       );
+    },
+  );
+}
 
-      allFormFields = allFormFields.not(selector);
-    }
+function testAriaDescriptionAttributes() {
+  cy.root(NO_LOG).then(($context) => {
+    // Add 2 extra fields for each repeated form value
+    $context.find("button.form-value-add").trigger("click");
+    $context.find("button.form-value-add").trigger("click");
 
-    expect(allFormFields.length).to.eq(
-      0,
-      "Not all fields were checked: " +
-        allFormFields
-          .get()
-          .map((f) => `${f.tagName.toLowerCase()}[name=${f.name}]`)
-          .join(", "),
-    );
+    $context.find(".form-text").each((_, formText) => {
+      const $fields = $context
+        .find(formText)
+        .parent()
+        .find(ACTUAL_FIELDS_SELECTOR);
+      expect($fields).to.have.length.above(0);
+
+      $fields.each((_, field) => {
+        expect(field).to.satisfy(
+          (f: HTMLElement) =>
+            // aria-details references id attribute of .form-text element
+            f.getAttribute("aria-details") === formText.id ||
+            // aria-describedby references id attribute of .form-text element
+            f.getAttribute("aria-describedby") === formText.id ||
+            // aria-description contains the same text content as .form-text element
+            f.getAttribute("aria-description") === formText.innerText,
+          "Field is missing accessibility information referencing its .form-text node.",
+        );
+      });
+    });
   });
 }
 
-export function testFocusForLabel(
+function testFocusForLabel(
   labelText: string | RegExp,
   fieldSelector: string,
   autoFocus = false,

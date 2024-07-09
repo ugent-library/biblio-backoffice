@@ -1,4 +1,4 @@
-import { testFocusForForm } from "support/util";
+import { testFormAccessibility } from "support/util";
 
 describe("Editing dataset Biblio messages", () => {
   describe("as researcher", () => {
@@ -41,7 +41,7 @@ describe("Editing dataset Biblio messages", () => {
 
     it("should have clickable labels in the edit Biblio message dialog", () => {
       cy.updateFields("Messages from and for Biblio team", () => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "textarea[name=message]": "Message",
           },
@@ -113,7 +113,7 @@ describe("Editing dataset Biblio messages", () => {
 
     it("should have clickable labels in the edit librarian tags dialog", () => {
       cy.updateFields("Librarian tags", () => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             ".tags:has(textarea#reviewer_tags) tags span.tagify__input[contenteditable]":
               "Librarian tags",
@@ -150,7 +150,7 @@ describe("Editing dataset Biblio messages", () => {
 
     it("should have clickable labels in the edit librarian note dialog", () => {
       cy.updateFields("Librarian note", () => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "textarea[name=reviewer_note]": "Librarian note",
           },

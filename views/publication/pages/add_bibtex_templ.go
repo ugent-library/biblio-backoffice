@@ -79,7 +79,7 @@ func AddBibTeX(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"source\" value=\"bibtex\"><div class=\"c-file-upload\"><input type=\"file\" name=\"file\" aria-label=\"Upload .bib file\" aria-details=\"file_help\"><div class=\"c-file-upload__content\"><p>Drag and drop your .bib file or</p><button class=\"btn btn-outline-primary mt-4\">Upload .bib file<div class=\"spinner-border ms-4\"><span class=\"visually-hidden\"></span></div></button></div></div><small id=\"file_help\" class=\"form-text text-muted my-3\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"source\" value=\"bibtex\"><div class=\"c-file-upload\"><input type=\"file\" name=\"file\" aria-label=\"Upload .bib file\" aria-details=\"file_help\"><div class=\"c-file-upload__content\"><p>Drag and drop your .bib file or</p><button class=\"btn btn-outline-primary mt-4\">Upload .bib file<div class=\"spinner-border ms-4\"><span class=\"visually-hidden\"></span></div></button></div></div><small id=\"file_help\" class=\"form-text my-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
