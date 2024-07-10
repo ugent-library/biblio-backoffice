@@ -2265,7 +2265,7 @@ msgstr "e.g. 2022"
 msgid "builder.identifier_type.help"
 msgstr ""
 "More information about <a href=\"https://onderzoektips.ugent.be/en/"
-"tips/00001743/\" target=\"_blank\">persistent identifiers.</a><br><a "
+"tips/00001743/\" target=\"_blank\">persistent identifiers</a>.<br><a "
 "href=\"mailto:rdm.support@ugent.be\">Contact us</a> if your identifier is "
 "not in the list."
 

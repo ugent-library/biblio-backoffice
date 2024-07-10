@@ -11,6 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/form"
 )
 
 func AddProject(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Project) templ.Component {
@@ -31,14 +32,22 @@ func AddProject(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Project) tem
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Select projects</h2></div><div class=\"p-6 border-bottom\"><label class=\"form-label\" for=\"project-q\">Search project</label> <input class=\"form-control mb-4\" type=\"text\" id=\"project-q\" name=\"q\" placeholder=\"Search on title or project identifier...\" autofocus aria-details=\"project-q-help\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Select projects</h2></div><div class=\"p-6 border-bottom\"><label class=\"form-label\" for=\"project-q\">Search project</label> <input class=\"form-control mb-4\" type=\"text\" id=\"project-q\" name=\"q\" placeholder=\"Search on title or project identifier...\" autofocus")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, form.GetAccessibilityAttributes(c.Loc.Get("dataset.project.add.search.help"), "project-q-help"))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("dataset_suggest_projects", "id", dataset.ID).String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/add_project.templ`, Line: 24, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/add_project.templ`, Line: 25, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
