@@ -20,7 +20,7 @@ live/server:
 	main.go server start
 
 live/sync_assets:
-	go run $(vWgo) \
+	@go run $(vWgo) \
 	-xdir etc -xdir app/node_modules -xdir app/assets -xdir cypress \
 	-file static/manifest.json \
 	go run $(vTempl) generate --notify-proxy --proxyport=3001 --proxybind="localhost"
