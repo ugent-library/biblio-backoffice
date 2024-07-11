@@ -21,9 +21,6 @@ node_modules
 go.work
 go.work.sum
 
-# Reflex live reloading
-reflex.conf
-
 # Dotenv
 *.env
 
