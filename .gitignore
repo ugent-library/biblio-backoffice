@@ -42,3 +42,6 @@ docker-compose.yml
 
 # esbuild
 meta.json
+
+# templ live server
+views/**/*.txt
