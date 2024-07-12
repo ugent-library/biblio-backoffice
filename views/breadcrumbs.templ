@@ -1,0 +1,33 @@
+package views
+
+import "github.com/ugent-library/biblio-backoffice/ctx"
+
+templ Breadcrumbs(c *ctx.Ctx) {
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item">
+				<a href={ templ.URL(c.PathTo("home").String()) }>
+					<img class="c-logo d-none d-xl-inline-block" src={ c.AssetPath("/images/ghent-university-library-logo.svg") } alt="Ghent University Library"/>
+					<img class="c-logo d-inline-block d-xl-none" src={ c.AssetPath("/images/ghent-university-library-mark.svg") } alt="Ghent University Library"/>
+				</a>
+			</li>
+			<li class="breadcrumb-item">
+				<a href={ templ.URL(c.PathTo("home").String()) }>
+					<i class="if if-book if--small me-3"></i>
+					<span class="breadcrumb-text">Biblio</span>
+				</a>
+			</li>
+			for i, breadcrumb := range c.Breadcrumbs {
+				<li class="breadcrumb-item">
+					if i < len(c.Breadcrumbs) - 1 && c.HasNamedRoute(breadcrumb) {
+						<a href={ templ.URL(c.PathTo(breadcrumb).String()) }>
+							{ c.Loc.GetC(breadcrumb, "breadcrumbs") }
+						</a>
+					} else {
+						{ c.Loc.GetC(breadcrumb, "breadcrumbs") }
+					}
+				</li>
+			}
+		</ol>
+	</nav>
+}

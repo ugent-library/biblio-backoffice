@@ -133,6 +133,7 @@ type Ctx struct {
 	CSPNonce     string
 	Nav          string
 	SubNav       string
+	Breadcrumbs  []string
 	CurrentURL   *url.URL
 
 	// flagContext  *ffcontext.EvaluationContext
@@ -165,6 +166,12 @@ func (c *Ctx) HandleError(w http.ResponseWriter, r *http.Request, err error) {
 	}
 
 	http.Error(w, http.StatusText(httpErr.StatusCode), httpErr.StatusCode)
+}
+
+func (c *Ctx) HasNamedRoute(routeName string) bool {
+	_, err := c.Router.BuildPath(routeName)
+
+	return err == nil
 }
 
 func (c *Ctx) PathTo(name string, pairs ...any) *url.URL {
