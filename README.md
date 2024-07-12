@@ -200,29 +200,24 @@ npm run dev
 
 ### Running tests
 
-This project has integration tests for the GRPC client/server.
+This project contains Cypress integration tests.
 
-Setting up the test environment:
+To run the tests in the CLI run:
 
 ```bash
-# Set up a docker-based isolated, testing environment
-make setup-test-env
-# Run the GRPC API server
-make api-server
+npm test
 ```
 
-In a separate terminal, you can now run the integration tests:
+If you want to run a recorded (CLI) run to the [Cypress Dashboard](https://cloud.cypress.io/projects/mjg74d/runs), first copy the file `cypress/cypress-record.sh.example` to `cypress/cypress-record.sh` and replace the record key with the secret key from Cypress. Then run:
 
 ```bash
-make run-tests
-# or alternatively
-go test client/... -v
+./cypress/cypress-record.sh
 ```
 
-Tearing down the test environment:
+To run the test in the GUI run:
 
 ```bash
-make tear-test-env
+npm run cypress:open
 ```
 
 ## SASS/SCSS & asset compilation
