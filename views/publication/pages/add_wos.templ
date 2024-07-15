@@ -40,7 +40,7 @@ templ AddWebOfScience(c *ctx.Ctx, step int) {
 									type="file"
 									name="file"
 									aria-label="Upload .txt file"
-									{ form.GetAccessibilityAttributes(c.Loc.Get("publication.multiple_import.wos.file.help"), "file-help")... }
+									{ form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.multiple_import.wos.file.help"), "file-help")... }
 								/>
 								<div class="c-file-upload__content">
 									<p>Drag and drop your .txt file or</p>

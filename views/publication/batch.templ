@@ -60,7 +60,7 @@ templ BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) {
 					rows="8"
 					spellcheck="false"
 					autofocus
-					{ form.GetAccessibilityAttributes(c.Loc.Get("publication.batch.mutations.help"), "mutations-help")... }
+					{ form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.batch.mutations.help"), "mutations-help")... }
 				>{ formValue }</textarea>
 				<div id="mutations-help" class="form-text">
 					@templ.Raw(c.Loc.Get("publication.batch.mutations.help"))

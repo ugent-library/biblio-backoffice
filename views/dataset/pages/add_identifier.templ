@@ -67,7 +67,7 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 											name="identifier"
 											value={ args.Identifier }
 											placeholder={ c.Loc.Get("dataset.single_import.import_by_id.identifier.placeholder") }
-											{ form.GetAccessibilityAttributes(c.Loc.Get("dataset.single_import.import_by_id.identifier.help"), "identifier-help")... }
+											{ form.GetAccessibilityDescriptionAttributes(c.Loc.Get("dataset.single_import.import_by_id.identifier.help"), "identifier-help")... }
 											required
 										/>
 									</div>

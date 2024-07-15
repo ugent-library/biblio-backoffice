@@ -36,7 +36,7 @@ func AddProject(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Project) tem
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, form.GetAccessibilityAttributes(c.Loc.Get("dataset.project.add.search.help"), "project-q-help"))
+		templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, form.GetAccessibilityDescriptionAttributes(c.Loc.Get("dataset.project.add.search.help"), "project-q-help"))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

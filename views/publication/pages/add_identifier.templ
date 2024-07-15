@@ -87,7 +87,7 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 													placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K"
 													value={ args.Identifier }
 													aria-label="Identifier"
-													{ form.GetAccessibilityAttributes(c.Loc.Get("publication.single_import.import_by_id.file.help"), "file-help")... }
+													{ form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.single_import.import_by_id.file.help"), "file-help")... }
 													required
 												/>
 											</div>

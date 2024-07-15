@@ -137,7 +137,7 @@ templ Text(args TextArgs) {
 			value={ args.Value }
 			readonly?={ args.Readonly }
 			autofocus?={ args.AutoFocus }
-			{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+			{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 		/>
 	}
 }
@@ -157,7 +157,7 @@ templ TextArea(args TextAreaArgs) {
 			readonly?={ args.Readonly }
 			rows={ fmt.Sprint(args.Rows) }
 			autofocus?={ args.AutoFocus }
-			{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+			{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 		>{ args.Value }</textarea>
 	}
 }
@@ -175,7 +175,7 @@ templ Select(args SelectArgs) {
 			class={ "form-select", "form-control", templ.KV("is-invalid", args.Error != "") }
 			id={ args.Name }
 			name={ args.Name }
-			{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+			{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 		>
 			if args.EmptyOption {
 				<option></option>
@@ -204,7 +204,7 @@ templ Checkbox(args CheckboxArgs) {
 					value={ args.Value }
 					type="checkbox"
 					checked?={ args.Checked }
-					{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+					{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 				/>
 				<label class="form-check-label" for={ args.Name }>{ args.Label }</label>
 				@fieldError(args.FieldArgs)
@@ -247,7 +247,7 @@ templ RadioGroup(args RadioGroupArgs) {
 						name={ args.Name }
 						checked?={ o.Value == args.Value }
 						value={ o.Value }
-						{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+						{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 					/>
 					<span class="pe-5">{ o.Label }</span>
 				</label>
@@ -275,7 +275,7 @@ templ TextRepeat(args TextRepeatArgs) {
 						data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
 						type="text"
 						value={ v }
-						{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+						{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 					/>
 					<button class="btn btn-link-muted btn-icon-only ms-3 form-value-delete" type="button">
 						<i class="if if-delete"></i>
@@ -291,7 +291,7 @@ templ TextRepeat(args TextRepeatArgs) {
 					data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
 					type="text"
 					value=""
-					{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+					{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 				/>
 				<button class="btn btn-outline-primary btn-icon-only ms-3 form-value-add" type="button">
 					<i class="if if-add"></i>
@@ -322,7 +322,7 @@ templ TextRepeatWithAutocomplete(args TextRepeatWithAutocompleteArgs) {
 							type="text"
 							value={ v }
 							autocomplete="off"
-							{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+							{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 							hx-get={ args.AutocompleteURL }
 							hx-trigger="keyup changed delay:100ms"
 							hx-target={ fmt.Sprintf("#%s-%d-autocomplete", args.Name, i) }
@@ -347,7 +347,7 @@ templ TextRepeatWithAutocomplete(args TextRepeatWithAutocompleteArgs) {
 						type="text"
 						value=""
 						autocomplete="off"
-						{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+						{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 						hx-get={ args.AutocompleteURL }
 						hx-trigger="keyup changed delay:100ms"
 						hx-target={ fmt.Sprintf(`#%s-%d-autocomplete`, args.Name, len(args.Values)) }
@@ -391,7 +391,7 @@ templ SelectRepeat(args SelectRepeatArgs) {
 						name={ args.Name }
 						id={ fmt.Sprintf("%s-%d", args.Name, i) }
 						data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
-						{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+						{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 					>
 						if args.EmptyOption {
 							<option></option>
@@ -413,7 +413,7 @@ templ SelectRepeat(args SelectRepeatArgs) {
 					id={ fmt.Sprintf("%s-%d", args.Name, len(args.Values)) }
 					autofocus?={ args.AutoFocus }
 					data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
-					{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+					{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 				>
 					if args.EmptyOption {
 						<option></option>
@@ -452,7 +452,7 @@ templ Date(args DateArgs) {
 			if args.Max != "" {
 				max={ args.Max }
 			}
-			{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+			{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 		/>
 	}
 }
@@ -480,13 +480,14 @@ templ Tags(args TagsArgs) {
 				class="form-control tags-widget-values tagify-custom"
 				autofocus?={ args.AutoFocus }
 				data-input-name={ args.Name }
-				{ GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name))... }
+				aria-label={ args.Label }
+				{ GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name))... }
 			>{ args.jsonValue() }</textarea>
 		</div>
 	}
 }
 
-func GetAccessibilityAttributes(helpText string, helpFieldID string) templ.Attributes {
+func GetAccessibilityDescriptionAttributes(helpText string, helpFieldID string) templ.Attributes {
 	if helpText != "" {
 		if strings.Contains(helpText, "<") {
 			return templ.Attributes{

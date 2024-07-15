@@ -677,7 +677,7 @@ func Text(args TextArgs) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -808,7 +808,7 @@ func TextArea(args TextAreaArgs) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -924,7 +924,7 @@ func Select(args SelectArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1129,7 +1129,7 @@ func Checkbox(args CheckboxArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+		templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1347,7 +1347,7 @@ func RadioGroup(args RadioGroupArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1503,7 +1503,7 @@ func TextRepeat(args TextRepeatArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+				templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1577,7 +1577,7 @@ func TextRepeat(args TextRepeatArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1740,7 +1740,7 @@ func TextRepeatWithAutocomplete(args TextRepeatWithAutocompleteArgs) templ.Compo
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+				templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1918,7 +1918,7 @@ func TextRepeatWithAutocomplete(args TextRepeatWithAutocompleteArgs) templ.Compo
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2126,7 +2126,7 @@ func SelectRepeat(args SelectRepeatArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+				templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -2262,7 +2262,7 @@ func SelectRepeat(args SelectRepeatArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2458,7 +2458,7 @@ func Date(args DateArgs) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2556,11 +2556,24 @@ func Tags(args TagsArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" aria-label=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var142 string
+			templ_7745c5c3_Var142, templ_7745c5c3_Err = templ.JoinStringErrs(args.Label)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 483, Col: 27}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var142))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityAttributes(args.Help, GetFieldHelpID(args.Name)))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, GetAccessibilityDescriptionAttributes(args.Help, GetFieldHelpID(args.Name)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2568,12 +2581,12 @@ func Tags(args TagsArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var142 string
-			templ_7745c5c3_Var142, templ_7745c5c3_Err = templ.JoinStringErrs(args.jsonValue())
+			var templ_7745c5c3_Var143 string
+			templ_7745c5c3_Var143, templ_7745c5c3_Err = templ.JoinStringErrs(args.jsonValue())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 484, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `form/form.templ`, Line: 485, Col: 22}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var142))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var143))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2591,7 +2604,7 @@ func Tags(args TagsArgs) templ.Component {
 	})
 }
 
-func GetAccessibilityAttributes(helpText string, helpFieldID string) templ.Attributes {
+func GetAccessibilityDescriptionAttributes(helpText string, helpFieldID string) templ.Attributes {
 	if helpText != "" {
 		if strings.Contains(helpText, "<") {
 			return templ.Attributes{

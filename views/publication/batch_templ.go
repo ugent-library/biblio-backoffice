@@ -116,7 +116,7 @@ func BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, form.GetAccessibilityAttributes(c.Loc.Get("publication.batch.mutations.help"), "mutations-help"))
+		templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.batch.mutations.help"), "mutations-help"))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

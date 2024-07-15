@@ -165,7 +165,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, form.GetAccessibilityAttributes(c.Loc.Get("publication.single_import.import_by_id.file.help"), "file-help"))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.single_import.import_by_id.file.help"), "file-help"))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

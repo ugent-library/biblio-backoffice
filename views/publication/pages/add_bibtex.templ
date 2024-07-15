@@ -45,7 +45,7 @@ templ AddBibTeX(c *ctx.Ctx, step int) {
 									type="file"
 									name="file"
 									aria-label="Upload .bib file"
-									{ form.GetAccessibilityAttributes(c.Loc.Get("publication.multiple_import.bibtex.file.help"), "file-help")... }
+									{ form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.multiple_import.bibtex.file.help"), "file-help")... }
 								/>
 								<div class="c-file-upload__content">
 									<p>Drag and drop your .bib file or</p>
