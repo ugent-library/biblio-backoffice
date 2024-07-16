@@ -1,11 +1,13 @@
 package publication
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
-import "github.com/ugent-library/biblio-backoffice/identifiers"
-import "github.com/ugent-library/biblio-backoffice/models"
-import "github.com/ugent-library/biblio-backoffice/views"
-import "fmt"
-import "net/url"
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/identifiers"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+	"net/url"
+)
 
 templ SummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
 	<div class="c-button-toolbar">

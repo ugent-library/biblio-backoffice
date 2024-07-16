@@ -1,15 +1,15 @@
 package dataset
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/form"
-	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/okay"
-	"fmt"
 )
 
-templ EditLinkDialog(c *ctx.Ctx, dataset *models.Dataset, link * models.DatasetLink, idx int, conflict bool, errors *okay.Errors, isNew bool) {
+templ EditLinkDialog(c *ctx.Ctx, dataset *models.Dataset, link *models.DatasetLink, idx int, conflict bool, errors *okay.Errors, isNew bool) {
 	<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -31,12 +31,13 @@ templ EditLinkDialog(c *ctx.Ctx, dataset *models.Dataset, link * models.DatasetL
 				@form.Errors(localize.ValidationErrors(c.Loc, errors))
 				@form.Text(form.TextArgs{
 					FieldArgs: form.FieldArgs{
-						Name:     "url",
-						Label:    c.Loc.Get("builder.link.url"),
-						Required: true,
-						Cols:     12,
-						Error:    localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/url", idx)),
-						Theme:    form.ThemeVertical,
+						Name:      "url",
+						Label:     c.Loc.Get("builder.link.url"),
+						Required:  true,
+						Cols:      12,
+						Error:     localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/link/%d/url", idx)),
+						Theme:     form.ThemeVertical,
+						AutoFocus: true,
 					},
 					Value: link.URL,
 				})

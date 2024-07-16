@@ -2,11 +2,11 @@ package publication
 
 import (
 	"fmt"
-	"github.com/ugent-library/okay"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/okay"
 )
 
 templ EditAbstractDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Text, idx int, conflict bool, errors *okay.Errors, isNew bool) {
@@ -31,10 +31,11 @@ templ EditAbstractDialog(c *ctx.Ctx, p *models.Publication, abstract *models.Tex
 				@form.Errors(localize.ValidationErrors(c.Loc, errors))
 				@form.TextArea(form.TextAreaArgs{
 					FieldArgs: form.FieldArgs{
-						Label: c.Loc.Get("builder.abstract.text"),
-						Name:  "text",
-						Error: localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/abstract/%d/text", idx)),
-						Theme: form.ThemeVertical,
+						Label:     c.Loc.Get("builder.abstract.text"),
+						Name:      "text",
+						Error:     localize.ValidationErrorAt(c.Loc, errors, fmt.Sprintf("/abstract/%d/text", idx)),
+						Theme:     form.ThemeVertical,
+						AutoFocus: true,
 					},
 					Value: abstract.Text,
 					Rows:  6,

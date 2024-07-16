@@ -83,7 +83,9 @@ templ FilesBody(c *ctx.Ctx, p *models.Publication) {
 						<p class="mt-4 text-muted"><span class="progress-bar-percent">0</span>%</p>
 					</div>
 				</div>
-				<small class="form-text text-muted my-3"><a href="https://onderzoektips.ugent.be/en/tips/00002066" target="_blank">Which document format or version should I use?</a></small>
+				<small class="form-text my-3">
+					@templ.Raw(c.Loc.Get("publication.file.help"))
+				</small>
 			</form>
 			<hr/>
 		}

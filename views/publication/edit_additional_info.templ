@@ -2,11 +2,11 @@ package publication
 
 import (
 	"fmt"
-	"github.com/ugent-library/okay"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/okay"
 )
 
 templ EditAdditionalInfoDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors *okay.Errors) {
@@ -28,10 +28,11 @@ templ EditAdditionalInfoDialog(c *ctx.Ctx, p *models.Publication, conflict bool,
 						if p.UsesResearchField() {
 							@form.SelectRepeat(form.SelectRepeatArgs{
 								FieldArgs: form.FieldArgs{
-									Label: c.Loc.Get("builder.research_field"),
-									Name:  "research_field",
-									Cols:  9,
-									Error: localize.ValidationErrorAt(c.Loc, errors, "/research_field"),
+									Label:     c.Loc.Get("builder.research_field"),
+									Name:      "research_field",
+									Cols:      9,
+									Error:     localize.ValidationErrorAt(c.Loc, errors, "/research_field"),
+									AutoFocus: true,
 								},
 								Values:      p.ResearchField,
 								EmptyOption: true,

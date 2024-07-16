@@ -33,7 +33,7 @@ type BindDetails struct {
 
 func EditDetails(w http.ResponseWriter, r *http.Request) {
 	views.ShowModal(datasetviews.EditDetailsDialog(
-		ctx.Get(r), ctx.GetDataset(r), false, nil,
+		ctx.Get(r), ctx.GetDataset(r), false, nil, true,
 	)).Render(r.Context(), w)
 }
 
@@ -65,7 +65,7 @@ func RefreshEditDetails(w http.ResponseWriter, r *http.Request) {
 	dataset.Title = b.Title
 	dataset.Year = b.Year
 
-	views.ReplaceModal(datasetviews.EditDetailsDialog(c, dataset, false, nil)).Render(r.Context(), w)
+	views.ReplaceModal(datasetviews.EditDetailsDialog(c, dataset, false, nil, false)).Render(r.Context(), w)
 }
 
 func UpdateDetails(w http.ResponseWriter, r *http.Request) {
@@ -109,7 +109,7 @@ func UpdateDetails(w http.ResponseWriter, r *http.Request) {
 
 	if validationErrs != nil {
 		views.ReplaceModal(datasetviews.EditDetailsDialog(
-			c, dataset, false, validationErrs.(*okay.Errors),
+			c, dataset, false, validationErrs.(*okay.Errors), false,
 		)).Render(r.Context(), w)
 		return
 	}
@@ -119,7 +119,7 @@ func UpdateDetails(w http.ResponseWriter, r *http.Request) {
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
 		views.ReplaceModal(datasetviews.EditDetailsDialog(
-			c, dataset, true, nil,
+			c, dataset, true, nil, false,
 		)).Render(r.Context(), w)
 		return
 	}

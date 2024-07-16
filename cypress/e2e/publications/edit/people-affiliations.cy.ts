@@ -1,8 +1,15 @@
-import { testFocusForForm } from "support/util";
+import { testFormAccessibility } from "support/util";
 
 describe("Editing publication people & affiliations", () => {
   beforeEach(() => {
     cy.loginAsResearcher();
+
+    cy.intercept("/publication/*/contributors/author/suggestions*").as(
+      "suggest",
+    );
+    cy.intercept("/publication/*/contributors/author/confirm-create*").as(
+      "confirmCreate",
+    );
   });
 
   describe("Authors", () => {
@@ -14,13 +21,6 @@ describe("Editing publication people & affiliations", () => {
       cy.get("#authors .card-body").should(
         "contain",
         "Add at least one UGent author.",
-      );
-
-      cy.intercept("/publication/*/contributors/author/suggestions*").as(
-        "suggest",
-      );
-      cy.intercept("/publication/*/contributors/author/confirm-create*").as(
-        "confirmCreate",
       );
 
       cy.contains(".btn", "Add author").click();
@@ -184,7 +184,7 @@ describe("Editing publication people & affiliations", () => {
       cy.visitPublication();
 
       cy.updateFields("Authors", () => {
-        testFocusForForm(
+        testFormAccessibility(
           {
             "input[name=first_name]": "First name",
             "input[name=last_name]": "Last name",
@@ -194,12 +194,16 @@ describe("Editing publication people & affiliations", () => {
 
         cy.setFieldByLabel("First name", "John");
         cy.setFieldByLabel("Last name", "Doe");
-
+        cy.wait("@suggest");
         cy.contains(".btn", "Add author").click();
+        cy.wait("@confirmCreate");
 
-        testFocusForForm({
-          "select[name=credit_role]": "Roles",
-        });
+        testFormAccessibility(
+          {
+            "select[name=credit_role]": "Roles",
+          },
+          "Roles",
+        );
       });
     });
   });
@@ -250,8 +254,30 @@ describe("Editing publication people & affiliations", () => {
       cy.setUpPublication();
       cy.visitPublication();
 
-      cy.updateFields("Editors", () => {
-        testFocusForForm(
+      cy.updateFields(
+        "Editors",
+        () => {
+          testFormAccessibility(
+            {
+              "input[name=first_name]": "First name",
+              "input[name=last_name]": "Last name",
+            },
+            "First name",
+          );
+
+          cy.setFieldByLabel("First name", "Jane");
+          cy.setFieldByLabel("Last name", "Dow");
+          cy.contains(".btn", "Add external editor").click();
+        },
+        true,
+      );
+
+      cy.contains("#contributors-editor-body table tbody tr", "Jane Dow")
+        .find(".if-edit")
+        .click();
+
+      cy.ensureModal("Edit or change editor").within(() => {
+        testFormAccessibility(
           {
             "input[name=first_name]": "First name",
             "input[name=last_name]": "Last name",
@@ -308,8 +334,30 @@ describe("Editing publication people & affiliations", () => {
       cy.setUpPublication("Dissertation");
       cy.visitPublication();
 
-      cy.updateFields("Supervisors", () => {
-        testFocusForForm(
+      cy.updateFields(
+        "Supervisors",
+        () => {
+          testFormAccessibility(
+            {
+              "input[name=first_name]": "First name",
+              "input[name=last_name]": "Last name",
+            },
+            "First name",
+          );
+
+          cy.setFieldByLabel("First name", "Jane");
+          cy.setFieldByLabel("Last name", "Dow");
+          cy.contains(".btn", "Add external supervisor").click();
+        },
+        true,
+      );
+
+      cy.contains("#contributors-supervisor-body table tbody tr", "Jane Dow")
+        .find(".if-edit")
+        .click();
+
+      cy.ensureModal("Edit or change supervisor").within(() => {
+        testFormAccessibility(
           {
             "input[name=first_name]": "First name",
             "input[name=last_name]": "Last name",
@@ -339,7 +387,7 @@ describe("Editing publication people & affiliations", () => {
           "suggestDepartment",
         );
 
-        cy.getLabel("Search").next("input").type("LW17");
+        cy.getLabel("Search").next("input").should("be.focused").type("LW17");
         cy.wait("@suggestDepartment");
 
         cy.contains(".list-group-item", "Department ID LW17")
@@ -357,7 +405,7 @@ describe("Editing publication people & affiliations", () => {
       cy.get("#departments").contains(".btn", "Add department").click();
 
       cy.ensureModal("Select departments").within(() => {
-        cy.getLabel("Search").next("input").type("DI62");
+        cy.getLabel("Search").next("input").should("be.focused").type("DI62");
         cy.wait("@suggestDepartment");
 
         cy.contains(".list-group-item", "Department ID DI62")

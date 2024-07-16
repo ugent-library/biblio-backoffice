@@ -150,4 +150,72 @@ func mapEntry(e *bibtex.Entry, p *models.Publication) {
 			p.WOSID = strings.TrimPrefix(f, "ISI:")
 		}
 	}
+
+	// WOS language
+	if f, ok := fields["language"]; ok {
+		if lang, ok := wosLangs[f]; ok {
+			p.Language = []string{lang}
+		}
+	}
+}
+
+// Mapping between value in WOS Bibtex Language field and ISO-396-2
+// code is made based on https://www.loc.gov/standards/iso639-2/php/code_list.php
+// Languages which differentiate between a bibliographic and terminology code,
+// preference was given to the B code.
+// WOS Language list: https://images.webofknowledge.com/images/help/WOS/hs_language.html
+var wosLangs = map[string]string{
+	"English":        "eng",
+	"Afrikaans":      "afr",
+	"Arabic":         "ara",
+	"Basque":         "baq",
+	"Bengali":        "ben",
+	"Bulgarian":      "bul",
+	"Byelorussian":   "bel",
+	"Catalan":        "cat",
+	"Chinese":        "chi",
+	"Croatian":       "hrv",
+	"Czech":          "cze",
+	"Danish":         "dan",
+	"Dutch":          "dut",
+	"Estonian":       "est",
+	"Finnish":        "fin",
+	"Flemish":        "dut",
+	"French":         "fre",
+	"Gaelic":         "gla",
+	"Galician":       "glg",
+	"Georgian":       "geo",
+	"German":         "ger",
+	"Greek":          "gre",
+	"Hebrew":         "heb",
+	"Hungarian":      "hun",
+	"Icelandic":      "ice",
+	"Italian":        "ita",
+	"Japanese":       "jpn",
+	"Korean":         "kor",
+	"Latin":          "lat",
+	"Latvian":        "lav",
+	"Lithuanian":     "lit",
+	"Macedonian":     "mac",
+	"Malay":          "may",
+	"Multi-Language": "mul",
+	"Norwegian":      "nor",
+	"Persian":        "per",
+	"Polish":         "pol",
+	"Portuguese":     "por",
+	"Provencal":      "pro",
+	"Romansch":       "roh",
+	"Rumanian":       "rup",
+	"Russian":        "rus",
+	"Serbian":        "srp",
+	// "Serbo-Croatian": "" not supported in ISO 369-2
+	"Slovak":      "slo",
+	"Slovenian":   "slv",
+	"Spanish":     "spa",
+	"Swedish":     "swe",
+	"Thai":        "tha",
+	"Turkish":     "tur",
+	"Ukrainian":   "ukr",
+	"Unspecified": "und",
+	"Welsh":       "wel",
 }

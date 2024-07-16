@@ -2,11 +2,11 @@ package publication
 
 import (
 	"fmt"
-	"github.com/ugent-library/okay"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/okay"
 )
 
 type EditReviewerNoteDialogArgs struct {
@@ -33,10 +33,11 @@ templ EditReviewerNoteDialog(c *ctx.Ctx, args EditReviewerNoteDialogArgs) {
 					<li class="list-group-item">
 						@form.TextArea(form.TextAreaArgs{
 							FieldArgs: form.FieldArgs{
-								Label: c.Loc.Get("builder.reviewer_note"),
-								Name:  "reviewer_note",
-								Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/reviewer_note"),
-								Theme: form.ThemeVertical,
+								Label:     c.Loc.Get("builder.reviewer_note"),
+								Name:      "reviewer_note",
+								Error:     localize.ValidationErrorAt(c.Loc, args.Errors, "/reviewer_note"),
+								Theme:     form.ThemeVertical,
+								AutoFocus: true,
 							},
 							Value: args.Publication.ReviewerNote,
 							Rows:  4,

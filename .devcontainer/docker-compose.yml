@@ -1,6 +1,6 @@
 services:
   app:
-    build:
+    build: 
       context: .
       dockerfile: Dockerfile
     env_file:
@@ -48,7 +48,7 @@ services:
       timeout: 10s
       retries: 5
 
-  # NOTE: Elastic 6.8 doesn't provide an arm64 image. So, we need to use a
+  # NOTE: Elastic 6.8 doesn't provide an arm64 image. So, we need to use a 
   # custom image for the time being. Switch to the container below if you are on x86_64.
 
   # es:

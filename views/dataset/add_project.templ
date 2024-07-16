@@ -19,11 +19,15 @@ templ AddProject(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Project) {
 					id="project-q"
 					name="q"
 					placeholder="Search on title or project identifier..."
+					autofocus
+					aria-details="project-q-help"
 					hx-get={ c.PathTo("dataset_suggest_projects", "id", dataset.ID).String() }
 					hx-trigger="keyup changed delay:500ms"
 					hx-target="#project-suggestions"
 				/>
-				<p class="text-muted">Select one or more projects as known in GISMO and Research Explorer. <a href="https://onderzoektips.ugent.be/en/tips/00002060/" target="_blank">View documentation <i class="if if--small if-external-link"></i></a></p>
+				<p id="project-q-help" class="form-text fs-4">
+					@templ.Raw(c.Loc.Get("dataset.project.add.search.help"))
+				</p>
 			</div>
 			<div class="modal-body">
 				<div id="project-suggestions">

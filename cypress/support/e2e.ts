@@ -26,7 +26,7 @@ beforeEach(() => {
 });
 
 function installCSRFTokenCaptureScript() {
-  cy.intercept("**/*", { middleware: true }, (req) => {
+  cy.intercept(/^(?!\/static)\/.+$/, { middleware: true }, (req) => {
     req.on("after:response", (req) => {
       return extractCSRFTokenFromResponse(req);
     });

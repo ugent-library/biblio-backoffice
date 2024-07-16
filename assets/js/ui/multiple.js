@@ -1,4 +1,4 @@
-import htmx from "htmx.org";
+import htmx from "htmx.org/dist/htmx.esm.js";
 
 // Handles fields with multiple values
 export default function () {

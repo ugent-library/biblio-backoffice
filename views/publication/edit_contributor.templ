@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/views/contributor"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
 )
 
 type EditContributorArgs struct {
@@ -32,6 +32,7 @@ templ EditContributor(c *ctx.Ctx, args EditContributorArgs) {
 							Label:      "First name",
 							Value:      args.Contributor.FirstName(),
 							SuggestURL: c.PathTo("publication_edit_contributor_suggest", "id", args.Publication.ID, "role", args.Role, "position", fmt.Sprint(args.Position)).String(),
+							AutoFocus:  true,
 						})
 						@contributorviews.FormFieldContributorSuggest(c, contributorviews.FormFieldContributorSuggestArgs{
 							Name:       "last_name",

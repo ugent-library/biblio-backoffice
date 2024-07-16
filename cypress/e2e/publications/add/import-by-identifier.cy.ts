@@ -1,7 +1,7 @@
 import { getRandomText } from "support/util";
 
 describe("Publication import", () => {
-  it("should be a possible to import publications by DOI", () => {
+  it("should be possible to import publications by DOI", () => {
     cy.loginAsResearcher();
     cy.visit("/");
 

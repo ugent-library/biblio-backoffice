@@ -2,11 +2,11 @@ package publication
 
 import (
 	"fmt"
-	"github.com/ugent-library/okay"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/okay"
 )
 
 type EditReviewerTagsDialogArgs struct {
@@ -33,11 +33,12 @@ templ EditReviewerTagsDialog(c *ctx.Ctx, args EditReviewerTagsDialogArgs) {
 					<li class="list-group-item">
 						@form.Tags(form.TagsArgs{
 							FieldArgs: form.FieldArgs{
-								Label: c.Loc.Get("builder.reviewer_tags"),
-								Name:  "reviewer_tags",
-								Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/message"),
-								Theme: form.ThemeVertical,
-								Help:  c.Loc.Get("builder.keyword.help"),
+								Label:     c.Loc.Get("builder.reviewer_tags"),
+								Name:      "reviewer_tags",
+								Error:     localize.ValidationErrorAt(c.Loc, args.Errors, "/message"),
+								Theme:     form.ThemeVertical,
+								Help:      c.Loc.Get("builder.keyword.help"),
+								AutoFocus: true,
 							},
 							Values: args.Publication.ReviewerTags,
 						})

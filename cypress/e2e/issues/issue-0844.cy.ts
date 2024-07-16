@@ -1,5 +1,7 @@
 // https://github.com/ugent-library/biblio-backoffice/issues/0844
 
+import { testFormAccessibility } from "support/util";
+
 describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when clicking next to dialogue box', () => {
   const DUMMY_WINDOW_PROPERTY = "DUMMY_WINDOW_PROPERTY";
 
@@ -210,6 +212,34 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
           });
         });
       });
+
+    it("should have clickable labels in the created/updated since facet filters", () => {
+      cy.contains(".dropdown", "Created since")
+        .click()
+        .find(".dropdown-menu")
+        .should("be.visible")
+        .within(() => {
+          testFormAccessibility(
+            {
+              "input[name='f[created_since]']": "Show records created since",
+            },
+            "Show records created since",
+          );
+        });
+
+      cy.contains(".dropdown", "Updated since")
+        .click()
+        .find(".dropdown-menu")
+        .should("be.visible")
+        .within(() => {
+          testFormAccessibility(
+            {
+              "input[name='f[updated_since]']": "Show records updated since",
+            },
+            "Show records updated since",
+          );
+        });
+    });
   }
 
   function executeTest(facet: string, triggerFacetFilterCallback: () => void) {

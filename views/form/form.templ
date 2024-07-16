@@ -1,8 +1,8 @@
 package form
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 )
 
 type Theme int
@@ -25,15 +25,16 @@ templ Errors(errors []string) {
 }
 
 type FieldArgs struct {
-	Label    string
-	Name     string
-	Readonly bool
-	Tooltip  string
-	Required bool
-	Error    string
-	Cols     int
-	Help     string
-	Theme    Theme
+	Label     string
+	Name      string
+	Readonly  bool
+	Tooltip   string
+	Required  bool
+	Error     string
+	Cols      int
+	Help      string
+	Theme     Theme
+	AutoFocus bool
 }
 
 templ fieldTooltip(args FieldArgs) {
@@ -59,7 +60,7 @@ templ fieldError(args FieldArgs) {
 
 templ fieldHelp(args FieldArgs) {
 	if args.Help != "" {
-		<small class="form-text text-muted">
+		<small id={ fmt.Sprintf("%s-help", args.Name) } class="form-text">
 			@templ.Raw(args.Help)
 		</small>
 	}
@@ -128,6 +129,10 @@ templ Text(args TextArgs) {
 			type="text"
 			value={ args.Value }
 			readonly?={ args.Readonly }
+			autofocus?={ args.AutoFocus }
+			if args.Help != "" {
+				aria-details={ fmt.Sprintf("%s-help", args.Name) }
+			}
 		/>
 	}
 }
@@ -146,6 +151,7 @@ templ TextArea(args TextAreaArgs) {
 			name={ args.Name }
 			readonly?={ args.Readonly }
 			rows={ fmt.Sprint(args.Rows) }
+			autofocus?={ args.AutoFocus }
 		>{ args.Value }</textarea>
 	}
 }
@@ -163,6 +169,9 @@ templ Select(args SelectArgs) {
 			class={ "form-select", "form-control", templ.KV("is-invalid", args.Error != "") }
 			id={ args.Name }
 			name={ args.Name }
+			if args.Help != "" {
+				aria-details={ fmt.Sprintf("%s-help", args.Name) }
+			}
 		>
 			if args.EmptyOption {
 				<option></option>
@@ -191,13 +200,16 @@ templ Checkbox(args CheckboxArgs) {
 					value={ args.Value }
 					type="checkbox"
 					checked?={ args.Checked }
+					if args.Help != "" {
+						aria-details={ fmt.Sprintf("%s-help", args.Name) }
+					}
 				/>
 				<label class="form-check-label" for={ args.Name }>{ args.Label }</label>
 				if args.Error != "" {
 					<small class="invalid-feedback">{ args.Error }</small>
 				}
 				if args.Help != "" {
-					<small class="form-text text-muted">
+					<small class="form-text">
 						@templ.Raw(args.Help)
 					</small>
 				}
@@ -239,6 +251,9 @@ templ RadioGroup(args RadioGroupArgs) {
 						name={ args.Name }
 						checked?={ o.Value == args.Value }
 						value={ o.Value }
+						if args.Help != "" {
+							aria-details={ fmt.Sprintf("%s-help", args.Name) }
+						}
 					/>
 					<span class="pe-5">{ o.Label }</span>
 				</label>
@@ -247,7 +262,7 @@ templ RadioGroup(args RadioGroupArgs) {
 				<small class="invalid-feedback">{ args.Error }</small>
 			}
 			if args.Help != "" {
-				<small class="form-text text-muted">
+				<small class="form-text">
 					@templ.Raw(args.Help)
 				</small>
 			}
@@ -272,6 +287,9 @@ templ TextRepeat(args TextRepeatArgs) {
 						data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
 						type="text"
 						value={ v }
+						if args.Help != "" {
+							aria-details={ fmt.Sprintf("%s-help", args.Name) }
+						}
 					/>
 					<button class="btn btn-link-muted btn-icon-only ms-3 form-value-delete" type="button">
 						<i class="if if-delete"></i>
@@ -287,6 +305,9 @@ templ TextRepeat(args TextRepeatArgs) {
 					data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
 					type="text"
 					value=""
+					if args.Help != "" {
+						aria-details={ fmt.Sprintf("%s-help", args.Name) }
+					}
 				/>
 				<button class="btn btn-outline-primary btn-icon-only ms-3 form-value-add" type="button">
 					<i class="if if-add"></i>
@@ -317,6 +338,9 @@ templ TextRepeatWithAutocomplete(args TextRepeatWithAutocompleteArgs) {
 							type="text"
 							value={ v }
 							autocomplete="off"
+							if args.Help != "" {
+								aria-details={ fmt.Sprintf("%s-help", args.Name) }
+							}
 							hx-get={ args.AutocompleteURL }
 							hx-trigger="keyup changed delay:100ms"
 							hx-target={ fmt.Sprintf("#%s-%d-autocomplete", args.Name, i) }
@@ -341,6 +365,9 @@ templ TextRepeatWithAutocomplete(args TextRepeatWithAutocompleteArgs) {
 						type="text"
 						value=""
 						autocomplete="off"
+						if args.Help != "" {
+							aria-details={ fmt.Sprintf("%s-help", args.Name) }
+						}
 						hx-get={ args.AutocompleteURL }
 						hx-trigger="keyup changed delay:100ms"
 						hx-target={ fmt.Sprintf(`#%s-%d-autocomplete`, args.Name, len(args.Values)) }
@@ -384,6 +411,9 @@ templ SelectRepeat(args SelectRepeatArgs) {
 						name={ args.Name }
 						id={ fmt.Sprintf("%s-%d", args.Name, i) }
 						data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
+						if args.Help != "" {
+							aria-details={ fmt.Sprintf("%s-help", args.Name) }
+						}
 					>
 						if args.EmptyOption {
 							<option></option>
@@ -403,7 +433,11 @@ templ SelectRepeat(args SelectRepeatArgs) {
 					class={ "form-select", "form-control", templ.KV("is-invalid", args.Error != "") }
 					name={ args.Name }
 					id={ fmt.Sprintf("%s-%d", args.Name, len(args.Values)) }
+					autofocus?={ args.AutoFocus }
 					data-tmpl-id={ fmt.Sprintf("%s-{i}", args.Name) }
+					if args.Help != "" {
+						aria-details={ fmt.Sprintf("%s-help", args.Name) }
+					}
 				>
 					if args.EmptyOption {
 						<option></option>
@@ -442,6 +476,9 @@ templ Date(args DateArgs) {
 			if args.Max != "" {
 				max={ args.Max }
 			}
+			if args.Help != "" {
+				aria-details={ fmt.Sprintf("%s-help", args.Name) }
+			}
 		/>
 	}
 }
@@ -464,7 +501,15 @@ templ Tags(args TagsArgs) {
 	@Field(args.FieldArgs, args.Name) {
 		<div class="tags">
 			<span class="tags-real-values d-none"></span>
-			<textarea id={ args.Name } class="form-control tags-widget-values tagify-custom" data-input-name={ args.Name }>{ args.jsonValue() }</textarea>
+			<textarea
+				id={ args.Name }
+				class="form-control tags-widget-values tagify-custom"
+				autofocus?={ args.AutoFocus }
+				data-input-name={ args.Name }
+				if args.Help != "" {
+					aria-details={ fmt.Sprintf("%s-help", args.Name) }
+				}
+			>{ args.jsonValue() }</textarea>
 		</div>
 	}
 }

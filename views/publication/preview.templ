@@ -1,10 +1,10 @@
 package publication
 
 import (
-	"strings"
-	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/friendly"
+	"strings"
 )
 
 templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction templ.Component) {
@@ -181,7 +181,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 										<label class="form-label form-label-top pb-0 d-block" for="">
 											Does the dissertation contain privacy-sensitive information?
 										</label>
-										<small class="form-text text-muted mb-2">Does not include patents. Private or sensitive information about individuals or companies that should <strong>never</strong> be disclosed.</small>
+										<small class="form-text mb-2">Does not include patents. Private or sensitive information about individuals or companies that should <strong>never</strong> be disclosed.</small>
 										if p.HasConfidentialData != "" {
 											{ p.HasConfidentialData }
 										} else {
@@ -192,7 +192,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 										<label class="form-label form-label-top pb-0 d-block" for="">
 											Are other publications planned based on this dissertation?
 										</label>
-										<small class="form-text text-muted mb-2">e.g. articles or book</small>
+										<small class="form-text mb-2">e.g. articles or book</small>
 										if p.HasPublicationsPlanned != "" {
 											{ p.HasPublicationsPlanned }
 										} else {
@@ -203,7 +203,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 										<label class="form-label form-label-top pb-0 d-block" for="">
 											Does the dissertation contain published articles?
 										</label>
-										<small class="form-text text-muted mb-2">
+										<small class="form-text mb-2">
 											The dissertation contains a copy of the full text, either in the publisher's layout (VoR) or your own (AAM). <a class="c-link" href="https://researchtips.ugent.be/en/tips/00002066">Read more</a>
 										</small>
 										if p.HasPublishedMaterial != "" {
@@ -417,7 +417,6 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 																						<span class="text-muted">UGent</span>
 																					</li>
 																				}
-
 																				if s.ORCID() != "" {
 																					<li class="c-meta-item text-nowrap">
 																						<i class="if if-orcid if--small if--success"></i>

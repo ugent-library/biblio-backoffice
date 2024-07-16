@@ -1,5 +1,5 @@
 describe("Publication import", () => {
-  it("should be a possible to import publications from BibTeX and save as draft", () => {
+  it("should be possible to import publications from BibTeX and save as draft", () => {
     cy.loginAsResearcher();
 
     cy.visit("/");

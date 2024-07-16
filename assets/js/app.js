@@ -1,4 +1,5 @@
-import htmx from "htmx.org";
+import htmx from "htmx.org/dist/htmx.esm.js";
+
 import { initCallback } from "bootstrap.native";
 import csrf from "./ui/csrf.js";
 import checkbox from "./ui/checkbox.js";
@@ -13,7 +14,6 @@ import radioCard from "./ui/radio_card.js";
 import toast from "./ui/toast.js";
 import sortable from "./ui/sortable.js";
 import collapseSubSidebar from "./ui/collapsible_sub_sidebar.js";
-import formAutoFocus from "./ui/form_auto_focus.js";
 import fileUpload from "./ui/file_upload.js";
 import tags from "./ui/tags.js";
 import facetDropdowns from "./ui/facet_dropdowns.js";
@@ -26,7 +26,7 @@ htmx.onLoad(initCallback);
 
 // load htmx extensions
 window.htmx = htmx;
-require("htmx.org/dist/ext/remove-me.js");
+require("htmx-ext-remove-me");
 
 // initialize everything
 document.addEventListener("DOMContentLoaded", function () {
@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
   toast();
   sortable();
   collapseSubSidebar();
-  formAutoFocus();
   fileUpload();
   tags();
   facetDropdowns();

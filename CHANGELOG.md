@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- #1647: Fix i18n label
+- #1645: Fix i18n label
 
 ## [v1.0.56] - 2024-06-27
 

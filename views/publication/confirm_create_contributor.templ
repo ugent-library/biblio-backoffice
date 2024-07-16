@@ -2,12 +2,12 @@ package publication
 
 import (
 	"fmt"
-	"github.com/ugent-library/okay"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
+	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
 	"github.com/ugent-library/biblio-backoffice/views/form"
-	"github.com/ugent-library/biblio-backoffice/views/contributor"
+	"github.com/ugent-library/okay"
 )
 
 type ConfirmCreateContributorArgs struct {
@@ -42,10 +42,11 @@ templ ConfirmCreateContributor(c *ctx.Ctx, args ConfirmCreateContributorArgs) {
 								if args.Role == "author" {
 									@form.SelectRepeat(form.SelectRepeatArgs{
 										FieldArgs: form.FieldArgs{
-											Name:  "credit_role",
-											Label: "Roles",
-											Cols:  9,
-											Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/credit_role"),
+											Name:      "credit_role",
+											Label:     "Roles",
+											Cols:      9,
+											Error:     localize.ValidationErrorAt(c.Loc, args.Errors, "/credit_role"),
+											AutoFocus: true,
 										},
 										Options:     localize.VocabularySelectOptions(c.Loc, "credit_roles"),
 										Values:      args.Contributor.CreditRole,
