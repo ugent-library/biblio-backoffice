@@ -93,31 +93,10 @@ describe("Dataset import", () => {
     const DOI = "10.48804/A76XM9";
 
     // First clean up existing datasets with the same DOI
-    cy.loginAsLibrarian();
-    cy.switchMode("Librarian");
-    const selector =
-      ".card .card-body .list-group .list-group-item .c-button-toolbar .dropdown .dropdown-item:contains('Delete')";
-
-    deleteNextDataset();
-
-    function deleteNextDataset() {
-      cy.visit("/dataset", { qs: { q: DOI, "page-size": 1000 } }).then(() => {
-        const deleteButton = Cypress.$(selector).first();
-
-        if (deleteButton.length > 0) {
-          cy.wrap(deleteButton).click({ force: true });
-
-          cy.intercept("DELETE", "/dataset/*").as("deleteDataset");
-          cy.ensureModal("Confirm deletion").closeModal("Delete");
-          cy.wait("@deleteDataset").then(deleteNextDataset);
-        }
-      });
-    }
-
-    // Actual test starts here
-    cy.loginAsResearcher();
+    cy.deleteDatasets(DOI);
 
     // First make and publish the first dataset manually
+    cy.loginAsLibrarian();
     const title = getRandomText();
     cy.setUpDataset({
       title,
@@ -125,11 +104,15 @@ describe("Dataset import", () => {
         identifier_type: "DOI",
         identifier: DOI,
       },
+      shouldWaitForIndex: true,
       publish: true,
     });
 
     // Some extra time for the dataset to be indexed
     cy.wait(1000);
+
+    // Actual test starts here
+    cy.loginAsResearcher();
 
     // Make the second dataset (via DOI import)
     cy.visit("/add-dataset");

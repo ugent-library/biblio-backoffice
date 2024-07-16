@@ -93,33 +93,10 @@ describe("Publication import", () => {
     const DOI = "10.2307/2323707";
 
     // First clean up existing publications with the same DOI
-    cy.loginAsLibrarian();
-    cy.switchMode("Librarian");
-    const selector =
-      ".card .card-body .list-group .list-group-item .c-button-toolbar .dropdown .dropdown-item:contains('Delete')";
-
-    deleteNextPublication();
-
-    function deleteNextPublication() {
-      cy.visit("/publication", { qs: { q: DOI, "page-size": 1000 } }).then(
-        () => {
-          const deleteButton = Cypress.$(selector).first();
-
-          if (deleteButton.length > 0) {
-            cy.wrap(deleteButton).click({ force: true });
-
-            cy.intercept("DELETE", "/publication/*").as("deletePublication");
-            cy.ensureModal("Confirm deletion").closeModal("Delete");
-            cy.wait("@deletePublication").then(deleteNextPublication);
-          }
-        },
-      );
-    }
-
-    // Actual test starts here
-    cy.loginAsResearcher();
+    cy.deletePublications(DOI);
 
     // First make and publish the first publication manually
+    cy.loginAsLibrarian();
     const title = getRandomText();
     cy.setUpPublication("Miscellaneous", {
       title,
@@ -127,8 +104,11 @@ describe("Publication import", () => {
       publish: true,
     });
 
-    // Some extra time for the dataset to be indexed
+    // Some extra time for the publication to be indexed
     cy.wait(1000);
+
+    // Actual test starts here
+    cy.loginAsResearcher();
 
     // Make the second publication
     cy.visit("/add-publication");

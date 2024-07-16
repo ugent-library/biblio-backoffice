@@ -236,7 +236,7 @@ func Register(c Config) {
 
 					// publication batch operations
 					r.With(ctx.SetNav("batch")).
-						With(ctx.SetBreadcrumbs("publication_batch")).
+						With(ctx.SetBreadcrumbs("publications", "publication_batch")).
 						Get("/publication/batch", publicationbatch.Show).Name("publication_batch")
 					r.Post("/publication/batch", publicationbatch.Process).Name("publication_process_batch")
 				})
@@ -287,29 +287,19 @@ func Register(c Config) {
 							r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
 						})
 
-						// projects
-						r.Get("/projects/add", publicationediting.AddProject).Name("publication_add_project")
-						r.Get("/projects/suggestions", publicationediting.SuggestProjects).Name("publication_suggest_projects")
-						// project_id is last part of url because some id's contain slashes
-						r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", publicationediting.ConfirmDeleteProject).Name("publication_confirm_delete_project")
-
 						// edit only
 						r.Group(func(r *ich.Mux) {
 							r.Use(ctx.RequireEditPublication)
 
-							// abstracts
-							r.Get("/abstracts/add", publicationediting.AddAbstract).Name("publication_add_abstract")
-							r.Post("/abstracts", publicationediting.CreateAbstract).Name("publication_create_abstract")
-							r.Get("/abstracts/{abstract_id}/edit", publicationediting.EditAbstract).Name("publication_edit_abstract")
-							r.Put("/abstracts/{abstract_id}", publicationediting.UpdateAbstract).Name("publication_update_abstract")
-							r.Get("/{snapshot_id}/abstracts/{abstract_id}/confirm-delete", publicationediting.ConfirmDeleteAbstract).Name("publication_confirm_delete_abstract")
-							r.Delete("/abstracts/{abstract_id}", publicationediting.DeleteAbstract).Name("publication_delete_abstract")
-
 							// add (wizard part 2 - after save)
-							r.Get("/add/description", publicationcreating.AddSingleDescription).Name("publication_add_single_description")
-							r.Get("/add/confirm", publicationcreating.AddSingleConfirm).Name("publication_add_single_confirm")
-							r.Post("/add/publish", publicationcreating.AddSinglePublish).Name("publication_add_single_publish")
-							r.Get("/add/finish", publicationcreating.AddSingleFinish).Name("publication_add_single_finish")
+							r.Group(func(r *ich.Mux) {
+								r.Use(ctx.SetBreadcrumbs("publications", "publication_add"))
+
+								r.Get("/add/description", publicationcreating.AddSingleDescription).Name("publication_add_single_description")
+								r.Get("/add/confirm", publicationcreating.AddSingleConfirm).Name("publication_add_single_confirm")
+								r.Post("/add/publish", publicationcreating.AddSinglePublish).Name("publication_add_single_publish")
+								r.Get("/add/finish", publicationcreating.AddSingleFinish).Name("publication_add_single_finish")
+							})
 
 							// delete
 							r.Get("/confirm-delete", publicationediting.ConfirmDelete).Name("publication_confirm_delete")
@@ -323,10 +313,6 @@ func Register(c Config) {
 							r.Get("/type/confirm", publicationediting.ConfirmUpdateType).Name("publication_confirm_update_type")
 							r.Put("/type", publicationediting.UpdateType).Name("publication_update_type")
 
-							// conference
-							r.Get("/conference/edit", publicationediting.EditConference).Name("publication_edit_conference")
-							r.Put("/conference", publicationediting.UpdateConference).Name("publication_update_conference")
-
 							// projects
 							r.Get("/projects/add", publicationediting.AddProject).Name("publication_add_project")
 							r.Get("/projects/suggestions", publicationediting.SuggestProjects).Name("publication_suggest_projects")
@@ -334,6 +320,10 @@ func Register(c Config) {
 							// project_id is last part of url because some id's contain slashes
 							r.Get("/{snapshot_id}/projects/confirm-delete/{project_id:.+}", publicationediting.ConfirmDeleteProject).Name("publication_confirm_delete_project")
 							r.Delete("/projects/{project_id:.+}", publicationediting.DeleteProject).Name("publication_delete_project")
+
+							// conference
+							r.Get("/conference/edit", publicationediting.EditConference).Name("publication_edit_conference")
+							r.Put("/conference", publicationediting.UpdateConference).Name("publication_update_conference")
 
 							// abstracts
 							r.Get("/abstracts/add", publicationediting.AddAbstract).Name("publication_add_abstract")
@@ -467,11 +457,15 @@ func Register(c Config) {
 							r.Use(ctx.RequireEditDataset)
 
 							// wizard (part 2)
-							r.Post("/save", datasetcreating.AddSaveDraft).Name("dataset_add_save_draft")
-							r.Post("/add/publish", datasetcreating.AddPublish).Name("dataset_add_publish")
-							r.Get("/add/finish", datasetcreating.AddFinish).Name("dataset_add_finish")
-							r.Get("/add/confirm", datasetcreating.AddConfirm).Name("dataset_add_confirm")
-							r.Get("/add/description", datasetcreating.AddDescription).Name("dataset_add_description")
+							r.Group(func(r *ich.Mux) {
+								r.Use(ctx.SetBreadcrumbs("datasets", "dataset_add"))
+
+								r.Post("/save", datasetcreating.AddSaveDraft).Name("dataset_add_save_draft")
+								r.Post("/add/publish", datasetcreating.AddPublish).Name("dataset_add_publish")
+								r.Get("/add/finish", datasetcreating.AddFinish).Name("dataset_add_finish")
+								r.Get("/add/confirm", datasetcreating.AddConfirm).Name("dataset_add_confirm")
+								r.Get("/add/description", datasetcreating.AddDescription).Name("dataset_add_description")
+							})
 
 							// delete
 							r.Get("/confirm-delete", datasetediting.ConfirmDelete).Name("dataset_confirm_delete")
@@ -550,21 +544,21 @@ func Register(c Config) {
 							r.Get("/contributors/{role}/{position}/confirm-delete", datasetediting.ConfirmDeleteContributor).Name("dataset_confirm_delete_contributor")
 							r.Delete("/contributors/{role}/{position}", datasetediting.DeleteContributor).Name("dataset_delete_contributor")
 						})
-					})
 
-					// curator actions
-					r.Group(func(r *ich.Mux) {
-						r.Use(ctx.RequireCurator)
+						// curator actions
+						r.Group(func(r *ich.Mux) {
+							r.Use(ctx.RequireCurator)
 
-						// activity
-						r.Get("/reviewer-tags/edit", datasetediting.EditReviewerTags).Name("dataset_edit_reviewer_tags")
-						r.Put("/reviewer-tags", datasetediting.UpdateReviewerTags).Name("dataset_update_reviewer_tags")
-						r.Get("/reviewer-note/edit", datasetediting.EditReviewerNote).Name("dataset_edit_reviewer_note")
-						r.Put("/reviewer-note", datasetediting.UpdateReviewerNote).Name("dataset_update_reviewer_note")
+							// activity
+							r.Get("/reviewer-tags/edit", datasetediting.EditReviewerTags).Name("dataset_edit_reviewer_tags")
+							r.Put("/reviewer-tags", datasetediting.UpdateReviewerTags).Name("dataset_update_reviewer_tags")
+							r.Get("/reviewer-note/edit", datasetediting.EditReviewerNote).Name("dataset_edit_reviewer_note")
+							r.Put("/reviewer-note", datasetediting.UpdateReviewerNote).Name("dataset_update_reviewer_note")
 
-						// (un)lock dataset
-						r.Post("/lock", datasetediting.Lock).Name("dataset_lock")
-						r.Post("/unlock", datasetediting.Unlock).Name("dataset_unlock")
+							// (un)lock dataset
+							r.Post("/lock", datasetediting.Lock).Name("dataset_lock")
+							r.Post("/unlock", datasetediting.Unlock).Name("dataset_unlock")
+						})
 					})
 				})
 
