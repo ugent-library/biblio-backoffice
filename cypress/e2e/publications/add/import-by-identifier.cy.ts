@@ -18,8 +18,9 @@ describe("Publication import", () => {
     cy.get("@steps").eq(1).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
 
-    cy.contains("Import your publication via an identifier").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import your publication via an identifier")
+      .contains(".btn", "Add")
+      .click();
 
     // Step 1b
     cy.contains(".bc-toolbar-title", "Add publication(s)")
@@ -78,8 +79,9 @@ describe("Publication import", () => {
 
     cy.visit("/add-publication");
 
-    cy.contains("Import your publication via an identifier").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import your publication via an identifier")
+      .contains(".btn", "Add")
+      .click();
 
     cy.get("input[name=identifier]").type("SOME/random/DOI.123");
     cy.contains(".btn", "Add publication(s)").click();
@@ -133,8 +135,9 @@ describe("Publication import", () => {
     // Make the second publication
     cy.visit("/add-publication");
 
-    cy.contains("Import your publication via an identifier").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import your publication via an identifier")
+      .contains(".btn", "Add")
+      .click();
 
     cy.get("input[name=identifier]").type(DOI);
     cy.contains(".btn", "Add publication(s)").click();
