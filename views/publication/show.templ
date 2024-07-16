@@ -160,17 +160,17 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 						<h4 class="w-100 mb-0 mb-lg-2">
 							if (p.Type == "issue_editor") || (p.Type == "book_editor") {
 								if p.Editor != nil {
-									TODO: Add editor name + et. al,&nbsp;
+									TODO: Add editor name + et al.,&nbsp;
 								}
 							} else {
 								if p.Author != nil {
-									TODO: Add author name + et. al,&nbsp;
+									TODO: Add author name + et al.,&nbsp;
 								}
 							}
 							if p.Title != "" {
-								<em>"{ p.Title }."&nbsp;</em>
+								<em>"{ p.Title }."</em>&nbsp;
 							} else {
-								<em>"Untitled record."&nbsp;</em>
+								<em>"Untitled record."</em>&nbsp;
 							}
 							if p.Publication != "" {
 								{ p.Publication },&nbsp;
@@ -189,9 +189,16 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 								if p.PageLast != "" {
 									{ p.PageLast }
 								},&nbsp;
+							} else {
+								if p.PageCount != "" {
+									{ p.PageCount } pages,&nbsp;
+								}
 							}
 							if p.Publisher !="" {
 								{ p.Publisher },&nbsp;
+							}
+							if (p.Type == "conference") && p.ConferenceName !="" {
+								{ p.ConferenceName },&nbsp;
 							}
 							if p.Year !="" {
 								{ p.Year }.
