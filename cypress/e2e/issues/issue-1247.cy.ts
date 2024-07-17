@@ -38,8 +38,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
 
     assertUserMenuWorks();
 
-    cy.contains("Miscellaneous").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Miscellaneous").contains(".btn", "Add").click();
 
     cy.location("pathname").should(
       "eq",
