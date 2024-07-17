@@ -259,28 +259,6 @@ describe("Site breadcrumbs", () => {
         verifyBreadcrumbs(...assertions);
       });
     });
-
-    describe("Curator features", () => {
-      beforeEach(() => {
-        cy.loginAsLibrarian();
-        cy.switchMode("Librarian");
-      });
-
-      it("should have breadcrumbs on the batch page", () => {
-        cy.visit("/publication/batch");
-
-        verifyBreadcrumbs(
-          { name: "Publications", url: "/publication" },
-          { name: "Batch import" },
-        );
-      });
-
-      it("should have breadcrumbs on the suggestions page", () => {
-        cy.visit("/candidate-records");
-
-        verifyBreadcrumbs({ name: "Suggestions" });
-      });
-    });
   });
 
   describe("Datasets", () => {
@@ -406,6 +384,25 @@ describe("Site breadcrumbs", () => {
         );
         verifyBreadcrumbs(...assertions);
       });
+    });
+  });
+
+  describe("Curator features", () => {
+    beforeEach(() => {
+      cy.loginAsLibrarian();
+      cy.switchMode("Librarian");
+    });
+
+    it("should have breadcrumbs on the batch page", () => {
+      cy.visit("/publication/batch");
+
+      verifyBreadcrumbs({ name: "Batch import" });
+    });
+
+    it("should have breadcrumbs on the suggestions page", () => {
+      cy.visit("/candidate-records");
+
+      verifyBreadcrumbs({ name: "Suggestions" });
     });
   });
 

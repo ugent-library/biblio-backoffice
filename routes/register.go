@@ -236,7 +236,7 @@ func Register(c Config) {
 
 					// publication batch operations
 					r.With(ctx.SetNav("batch")).
-						With(ctx.SetBreadcrumbs("publications", "publication_batch")).
+						With(ctx.SetBreadcrumbs("publication_batch")).
 						Get("/publication/batch", publicationbatch.Show).Name("publication_batch")
 					r.Post("/publication/batch", publicationbatch.Process).Name("publication_process_batch")
 				})
