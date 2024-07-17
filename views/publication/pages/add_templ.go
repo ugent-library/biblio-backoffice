@@ -93,7 +93,7 @@ func Add(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var7 templ.SafeURL = templ.URL(c.PathTo("publication_add", "method", "wos").String())
+			var templ_7745c5c3_Var7 templ.SafeURL = templ.URL(c.PathTo("publication_add", "method", "manual").String())
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var7)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
