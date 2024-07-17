@@ -61,7 +61,7 @@ func Add(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var4 templ.SafeURL = templ.URL(c.PathTo("dataset_add", "method", "identifier").String())
+			var templ_7745c5c3_Var4 templ.SafeURL = templ.URL(c.PathTo("dataset_add").String())
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -74,11 +74,11 @@ func Add(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button type=\"submit\" class=\"btn btn-primary ms-6\"><i class=\"if if-add\"></i> <span class=\"btn-text\">Add</span></button></form></div></div></div></div><div class=\"card mb-4\"><div class=\"card-body\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div><div class=\"d-flex align-items-center flex-wrap\"><h3 class=\"me-3\">Register a dataset manually</h3><span class=\"badge badge-default\">Beta</span></div><p class=\"text-muted\">Manual input of metadata. Recommended for <a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00001743/\" target=\"_blank\">datasets with identifiers</a> such as ENA BioProject, BioStudies, ENA, Ensembl or Handle. The identifiers are created by external data repositories during data deposit.</p></div></div><div class=\"bc-toolbar-right\"><form action=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"method\" value=\"identifier\"> <button type=\"submit\" class=\"btn btn-primary ms-6\"><i class=\"if if-add\"></i> <span class=\"btn-text\">Add</span></button></form></div></div></div></div><div class=\"card mb-4\"><div class=\"card-body\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div><div class=\"d-flex align-items-center flex-wrap\"><h3 class=\"me-3\">Register a dataset manually</h3><span class=\"badge badge-default\">Beta</span></div><p class=\"text-muted\">Manual input of metadata. Recommended for <a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00001743/\" target=\"_blank\">datasets with identifiers</a> such as ENA BioProject, BioStudies, ENA, Ensembl or Handle. The identifiers are created by external data repositories during data deposit.</p></div></div><div class=\"bc-toolbar-right\"><form action=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var5 templ.SafeURL = templ.URL(c.PathTo("dataset_add", "method", "manual").String())
+			var templ_7745c5c3_Var5 templ.SafeURL = templ.URL(c.PathTo("dataset_add").String())
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var5)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -91,7 +91,7 @@ func Add(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button type=\"submit\" class=\"btn btn-primary ms-6\"><i class=\"if if-add\"></i> <span class=\"btn-text\">Add</span></button></form></div></div></div></div></div><div class=\"col-xl-4\"><div class=\"card bg-light\"><div class=\"card-header bg-transparent\"><div class=\"card-title\">Tips for depositing and registering your data</div></div><div class=\"card-body\"><div class=\"c-content\"><ol><li class=\"mb-4\"><a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00002071/\" target=\"_blank\">Share your data in a repository</a> <em>before</em> registering it in Biblio.<br><span class=\"text-muted\">This step will provide you with an identifier.</span></li><li class=\"mb-4\">Get more information about <a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00002054/\" target=\"_blank\">dataset registration in Biblio</a>.</li><li><a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00002055/\" target=\"_blank\">Follow a simple illustrated guide to register your dataset in Biblio</a>.</li></ol></div></div></div></div></div></div></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"method\" value=\"manual\"> <button type=\"submit\" class=\"btn btn-primary ms-6\"><i class=\"if if-add\"></i> <span class=\"btn-text\">Add</span></button></form></div></div></div></div></div><div class=\"col-xl-4\"><div class=\"card bg-light\"><div class=\"card-header bg-transparent\"><div class=\"card-title\">Tips for depositing and registering your data</div></div><div class=\"card-body\"><div class=\"c-content\"><ol><li class=\"mb-4\"><a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00002071/\" target=\"_blank\">Share your data in a repository</a> <em>before</em> registering it in Biblio.<br><span class=\"text-muted\">This step will provide you with an identifier.</span></li><li class=\"mb-4\">Get more information about <a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00002054/\" target=\"_blank\">dataset registration in Biblio</a>.</li><li><a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00002055/\" target=\"_blank\">Follow a simple illustrated guide to register your dataset in Biblio</a>.</li></ol></div></div></div></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

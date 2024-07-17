@@ -43,8 +43,9 @@ templ Add(c *ctx.Ctx) {
 										</div>
 									</div>
 									<div class="bc-toolbar-right">
-										<form action={ templ.URL(c.PathTo("dataset_add", "method", "identifier").String()) } method="POST">
+										<form action={ templ.URL(c.PathTo("dataset_add").String()) } method="POST">
 											@views.CSRFTag(c)
+											<input type="hidden" name="method" value="identifier"/>
 											<button type="submit" class="btn btn-primary ms-6">
 												<i class="if if-add"></i>
 												<span class="btn-text">Add</span>
@@ -67,8 +68,9 @@ templ Add(c *ctx.Ctx) {
 										</div>
 									</div>
 									<div class="bc-toolbar-right">
-										<form action={ templ.URL(c.PathTo("dataset_add", "method", "manual").String()) } method="POST">
+										<form action={ templ.URL(c.PathTo("dataset_add").String()) } method="POST">
 											@views.CSRFTag(c)
+											<input type="hidden" name="method" value="manual"/>
 											<button type="submit" class="btn btn-primary ms-6">
 												<i class="if if-add"></i>
 												<span class="btn-text">Add</span>
