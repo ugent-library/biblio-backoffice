@@ -19,8 +19,9 @@ describe("Dataset import", () => {
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(3).should("not.have.class", "c-stepper__step--active");
 
-    cy.contains("Register your dataset via a DOI").click();
-    cy.contains(".btn", "Add dataset").click();
+    cy.contains(".card", "Register your dataset via a DOI")
+      .contains(".btn", "Add")
+      .click();
 
     // Step 1b
     cy.contains("Step 1")
@@ -80,8 +81,9 @@ describe("Dataset import", () => {
 
     cy.visit("/add-dataset");
 
-    cy.contains("Register your dataset via a DOI").click();
-    cy.contains(".btn", "Add dataset").click();
+    cy.contains(".card", "Register your dataset via a DOI")
+      .contains(".btn", "Add")
+      .click();
 
     cy.get("input[name=identifier]").type("SOME/random/DOI.123");
     cy.contains(".btn", "Add dataset").click();
@@ -134,8 +136,9 @@ describe("Dataset import", () => {
     // Make the second dataset (via DOI import)
     cy.visit("/add-dataset");
 
-    cy.contains("Register your dataset via a DOI").click();
-    cy.contains(".btn", "Add dataset").click();
+    cy.contains(".card", "Register your dataset via a DOI")
+      .contains(".btn", "Add")
+      .click();
 
     cy.get("input[name=identifier]").type(DOI);
     cy.contains(".btn", "Add dataset").click();
