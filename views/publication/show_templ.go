@@ -44,7 +44,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"bg-white\"><div id=\"summary\"><div class=\"mx-6\"><div class=\"bc-toolbar bc-toolbar-lg-responsive flex-column-reverse flex-lg-row w-100\"><div class=\"bc-toolbar-left\"><div class=\"d-inline-flex align-items-center flex-wrap\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"bg-white\"><div id=\"summary\"><div class=\"mx-6\"><div class=\"bc-toolbar bc-toolbar-md-responsive flex-column-reverse flex-md-row w-100\"><div class=\"bc-toolbar-left\"><div class=\"d-inline-flex align-items-center flex-wrap\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -267,7 +267,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"bc-toolbar-right bc-toolbar-right\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"bc-toolbar-right justify-content-end\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -308,7 +308,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\"><i class=\"if if-lock-unlock\"></i> <span class=\"btn-text\">Unlock record</span></button>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\"><i class=\"if if-lock-unlock\"></i> <span class=\"btn-text d-md-none d-lg-inline\">Unlock record</span></button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -326,7 +326,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\"><i class=\"if if-lock\"></i> <span class=\"btn-text\">Lock record</span></button>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\"><i class=\"if if-lock\"></i> <span class=\"btn-text d-md-none d-lg-inline\">Lock record</span></button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -368,7 +368,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><div class=\"btn-text\">Republish to Biblio</div></button></div>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><div class=\"btn-text\">Republish <span class=\"d-md-none d-lg-inline\">to Biblio</span></div></button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -387,7 +387,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><div class=\"btn-text\">Publish to Biblio</div></button></div>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><div class=\"btn-text\">Publish <span class=\"d-md-none d-lg-inline\">to Biblio</span></div></button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -671,7 +671,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div class=\"bc-toolbar bc-toolbar-md-responsive\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item d-block\"><div class=\"d-block pe-3 my-2\"><div class=\"input-group\"><button type=\"button\" class=\"btn btn-outline-secondary btn-sm\" data-clipboard=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><div class=\"bc-toolbar bc-toolbar-lg-responsive flex-md-row\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item d-block\"><div class=\"d-block pe-3 my-2\"><div class=\"input-group\"><button type=\"button\" class=\"btn btn-outline-secondary btn-sm\" data-clipboard=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
