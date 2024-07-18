@@ -35,7 +35,7 @@ describe("Publication import", () => {
 
     cy.get("select[name=source]").should("have.value", "crossref"); // crossref = DOI
     cy.get("input[name=identifier]").type("10.1016/j.ese.2024.100396");
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".btn", "Preview & import publication").click();
 
     // Step 2
     cy.contains(".bc-toolbar-title", "Complete Description")
@@ -84,7 +84,7 @@ describe("Publication import", () => {
       .click();
 
     cy.get("input[name=identifier]").type("SOME/random/DOI.123");
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".btn", "Preview & import publication").click();
 
     cy.ensureToast(
       "Sorry, something went wrong. Could not import the publication",
@@ -140,7 +140,7 @@ describe("Publication import", () => {
       .click();
 
     cy.get("input[name=identifier]").type(DOI);
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".btn", "Preview & import publication").click();
 
     cy.ensureModal("Are you sure you want to import this publication?").within(
       () => {

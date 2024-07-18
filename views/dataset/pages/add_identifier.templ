@@ -33,59 +33,43 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 							</div>
 						</div>
 						<div class="bc-toolbar-right">
-							<div class="bc-toolbar-item">
+							<div class="c-button-toolbar">
+								<div class="border-end pe-4 me-4">
+									<a class="btn btn-tertiary" href={ templ.URL(c.PathTo("datasets").String()) }>Cancel</a>
+								</div>
+								<a class="btn btn-tertiary" href={ templ.URL(c.PathTo("dataset_add").String()) }>
+									<i class="if if-arrow-left"></i>
+									<span class="btn-text">Previous step</span>
+								</a>
 								<button type="submit" class="btn btn-primary">
-									<div class="btn-text">Add dataset</div>
-									<i class="if if-arrow-right"></i>
+									<div class="btn-text">Preview & import dataset</div>
+									<i class="if if-chevron-right"></i>
 								</button>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="p-6 u-scroll-wrapper__body">
-					<div class="card mb-6">
-						<div class="card-header">
-							<div class="bc-toolbar">
-								<div class="bc-toolbar-left">
-									<div class="bc-toolbar-item">
-										<h5 class="h6">Enter the DOI from an external repository to import the metadata of a dataset</h5>
+					<div class="row">
+						<div class="col-xl-8 mb-6">
+							<div class="card mb-6">
+								<div class="card-body">
+									<h3 class="mb-4">Enter the DOI from an external repository to import the metadata of a dataset</h3>
+									<div class="row">
+										<div class="col-6">
+											<input type="hidden" name="source" value="datacite"/>
+											<div class="input-group">
+												<label class="input-group-text" for="identifier">DOI</label>
+												<input class="form-control" type="text" id="identifier" name="identifier" value={ args.Identifier } placeholder={ c.Loc.Get("dataset.single_import.import_by_id.identifier.placeholder") } aria-details="identifier-help" required/>
+											</div>
+										</div>
 									</div>
+									<p id="identifier-help" class="form-text mt-3">{ c.Loc.Get("dataset.single_import.import_by_id.identifier.help") }</p>
 								</div>
 							</div>
 						</div>
-						<div class="card-body">
-							<div class="row">
-								<div class="col-6">
-									<input type="hidden" name="source" value="datacite"/>
-									<div class="input-group">
-										<label class="input-group-text" for="identifier">DOI</label>
-										<input class="form-control" type="text" id="identifier" name="identifier" value={ args.Identifier } placeholder={ c.Loc.Get("dataset.single_import.import_by_id.identifier.placeholder") } aria-details="identifier-help" required/>
-									</div>
-								</div>
-							</div>
-							<p id="identifier-help" class="form-text mt-3">{ c.Loc.Get("dataset.single_import.import_by_id.identifier.help") }</p>
-						</div>
-					</div>
-					<div class="card mb-6">
-						<div class="card-header">
-							<div class="bc-toolbar">
-								<div class="bc-toolbar-left">
-									<div class="bc-toolbar-item">
-										<h5 class="h6">Tips for depositing and registering your data</h5>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="card-body">
-							<ol>
-								<li class="mb-2" id="notInExternalRepo">
-									<a href="https://onderzoektips.ugent.be/en/tips/00002071/" target="_blank">Share your data in a repository</a> <em>before</em> registering it in Biblio.
-									<br/>
-									<span class="text-muted">This step will provide you with an identifier.</span>
-								</li>
-								<li class="mb-2">Get more information about <a href="https://onderzoektips.ugent.be/en/tips/00002054/" target="_blank">dataset registration in Biblio</a>.</li>
-								<li class="mb-2"><a href="https://onderzoektips.ugent.be/en/tips/00002055/" target="_blank">Follow a simple illustrated guide to register your dataset in Biblio</a>.</li>
-							</ol>
+						<div class="col-xl-4">
+							@tips()
 						</div>
 					</div>
 				</div>

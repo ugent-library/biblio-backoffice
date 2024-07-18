@@ -37,7 +37,7 @@ describe("Dataset import", () => {
     testFormAccessibility({ "input[name=identifier]": "DOI" });
 
     cy.get("input[name=identifier]").type("10.6084/M9.FIGSHARE.22067864.V1");
-    cy.contains(".btn", "Add dataset").click();
+    cy.contains(".btn", "Preview & import dataset").click();
 
     // Step 2
     cy.contains("Step 2")
@@ -86,7 +86,7 @@ describe("Dataset import", () => {
       .click();
 
     cy.get("input[name=identifier]").type("SOME/random/DOI.123");
-    cy.contains(".btn", "Add dataset").click();
+    cy.contains(".btn", "Preview & import dataset").click();
 
     cy.ensureToast("Sorry, something went wrong. Could not import the dataset");
   });
@@ -141,7 +141,7 @@ describe("Dataset import", () => {
       .click();
 
     cy.get("input[name=identifier]").type(DOI);
-    cy.contains(".btn", "Add dataset").click();
+    cy.contains(".btn", "Preview & import dataset").click();
 
     cy.ensureModal("Are you sure you want to import this dataset?").within(
       () => {
