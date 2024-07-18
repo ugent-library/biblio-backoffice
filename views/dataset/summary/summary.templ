@@ -57,26 +57,8 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								if args.Dataset.Locked {
 									@views.BadgeLocked()
 								}
-								<span class="c-subline me-3 pe-3 border-end">
-									if args.Dataset.License != "" && args.Dataset.License != "LicenseNotListed" {
-										<span class="c-subline text-truncate ps-2">{ args.Dataset.License }</span>
-									} else if args.Dataset.License != "" && args.Dataset.License == "LicenseNotListed" {
-										<span class="c-subline text-truncate ps-2">Licensed</span>
-									} else {
-										<a
-											class="c-link-muted"
-											href={ views.URL(args.URL).SetQueryParam("show", "description").SafeURL() }
-											if args.Target != "" {
-												target={ args.Target }
-											}
-										>
-											<i class="if if-edit if--small"></i>
-											<em>Add license</em>
-										</a>
-									}
-								</span>
 								<span
-									class={ "c-subline", "me-3", "pe-3", templ.KV("border-end", args.Dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }
+									class={ "c-subline", "pe-3", templ.KV("border-end", args.Dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess") }
 								>
 									if args.Dataset.AccessLevel == "info:eu-repo/semantics/openAccess" {
 										<i class="if if-download if--small if--success"></i>
@@ -112,7 +94,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									}
 								</span>
 								if args.Dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
-									<span class="c-subline me-3 pe-3">
+									<span class="c-subline px-3">
 										if args.Dataset.AccessLevelAfterEmbargo == "info:eu-repo/semantics/openAccess" {
 											<i class="if if-download if--small if--success"></i>
 										} else {
@@ -123,6 +105,26 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 										</span>
 									</span>
 								}
+
+								<span class="c-subline ps-2 border-start">
+									if args.Dataset.License != "" && args.Dataset.License != "LicenseNotListed" {
+										<span class="c-subline text-truncate ps-2">{ args.Dataset.License }</span>
+									} else if args.Dataset.License != "" && args.Dataset.License == "LicenseNotListed" {
+										<span class="c-subline text-truncate ps-2">Licensed</span>
+									} else {
+										<a
+											class="c-link-muted"
+											href={ views.URL(args.URL).SetQueryParam("show", "description").SafeURL() }
+											if args.Target != "" {
+												target={ args.Target }
+											}
+										>
+											<i class="if if-edit if--small"></i>
+											<em>Add license</em>
+										</a>
+									}
+								</span>
+
 							</div>
 							<h4 class="mb-0">
 								if c.UserRole == "curator" {
