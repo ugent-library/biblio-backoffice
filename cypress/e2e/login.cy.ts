@@ -1,4 +1,4 @@
-describe("The home page", () => {
+describe("Login & authorization", () => {
   it("should be able to load the home page anonymously", () => {
     cy.visit("/");
 
