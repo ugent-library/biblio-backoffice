@@ -133,11 +133,27 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 								</div>
 							</div>
 							<h4 class="list-group-item-title">
-								if dataset.Title != "" {
-									{ dataset.Title }
-								} else {
-									Untitled record
+								if len(dataset.Author) == 1 && dataset.Author[0] != nil {
+									{ dataset.Author[0].LastName() }, { dataset.Author[0].FirstName() }, creator.
 								}
+								if len(dataset.Author) >= 2 {
+									{ dataset.Author[0].LastName() }, { dataset.Author[0].FirstName() }, et al., creators.
+								}
+								if dataset.Title != "" {
+									<em>"{ dataset.Title }."</em>&nbsp;
+								} else {
+									<em>"Untitled record."</em>&nbsp;
+								}
+								if dataset.Publisher !="" {
+									{ dataset.Publisher },&nbsp;
+								}
+								if dataset.Year !="" {
+									{ dataset.Year }.
+								}
+								if dataset.IdentifierType() !="" {
+									{ dataset.IdentifierType() }.
+								}
+
 							</h4>
 						</div>
 					</div>

@@ -158,15 +158,24 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 							</div>
 						</div>
 						<h4 class="w-100 mb-0 mb-lg-2">
+
 							if (p.Type == "issue_editor") || (p.Type == "book_editor") {
-								if p.Editor != nil {
-									TODO: Add editor name + et al.,&nbsp;
+								if len(p.Editor) == 1 && p.Editor[0] != nil {
+									{ p.Editor[0].LastName() }, { p.Editor[0].FirstName() }, editor.
+								}
+
+								if len(p.Editor) >= 2 && p.Editor[0] != nil {
+									{ p.Editor[0].LastName() }, { p.Editor[0].FirstName() }, et al., editors.
 								}
 							} else {
-								if p.Author != nil {
-									TODO: Add author name + et al.,&nbsp;
+								if len(p.Author) > 0 && p.Author[0] != nil {
+									{ p.Author[0].LastName() }, { p.Author[0].FirstName() }
+								}
+								if len(p.Author) >= 2 {
+									et al.
 								}
 							}
+
 							if p.Title != "" {
 								<em>"{ p.Title }."</em>&nbsp;
 							} else {
