@@ -58,8 +58,10 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									@views.BadgeLocked()
 								}
 								<span class="c-subline me-3 pe-3 border-end">
-									if args.Dataset.License != "" {
+									if args.Dataset.License != "" && args.Dataset.License != "LicenseNotListed" {
 										<span class="c-subline text-truncate ps-2">{ args.Dataset.License }</span>
+									} else if args.Dataset.License != "" && args.Dataset.License == "LicenseNotListed" {
+										<span class="c-subline text-truncate ps-2">Licensed</span>
 									} else {
 										<a
 											class="c-link-muted"
@@ -105,7 +107,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 											}
 										>
 											<i class="if if-edit if--small"></i>
-											<em>Add document access level</em>
+											<em>Add access level</em>
 										</a>
 									}
 								</span>
