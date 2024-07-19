@@ -4,7 +4,7 @@ export default defineConfig({
   projectId: "mjg74d",
 
   env: {
-    OIDC_ORIGIN: "http://localhost:3002",
+    OIDC_ORIGIN: "http://localhost:3041",
     ELASTICSEARCH_ORIGIN: "http://localhost:3061",
     RESEARCHER_USER_NAME: "biblio-researcher",
     RESEARCHER_NAME: "Biblio Researcher",

@@ -4,7 +4,7 @@ PT J
 AU Henning, D
 AF Henning, D
 TI From Kangars to Rubiks. The long line of traitors in the historical
-   political culture of Latvia [CYPRESSTEST]
+   political culture of Latvia
 SO JOURNAL OF BALTIC STUDIES
 LA English
 DT Article
