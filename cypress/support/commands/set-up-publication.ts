@@ -80,15 +80,17 @@ export default function setUpPublication(
 
           Object.assign(body, otherFields);
 
-          cy.htmxRequest({
-            method: "PUT",
-            url: `/publication/${biblioId}/details`,
-            headers: {
-              "If-Match": snapshotId,
-            },
-            form: true,
-            body,
-          });
+          if (Object.values(body).filter((v) => v !== null).length > 0) {
+            cy.htmxRequest({
+              method: "PUT",
+              url: `/publication/${biblioId}/details`,
+              headers: {
+                "If-Match": snapshotId,
+              },
+              form: true,
+              body,
+            });
+          }
         });
 
       if (prepareForPublishing || publish) {

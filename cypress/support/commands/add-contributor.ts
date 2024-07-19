@@ -92,7 +92,17 @@ function addContributor(
           url: `/${scope}/${biblioId}/contributors/${contributorType}/suggestions`,
           qs,
         })
-        .then(extractHxValues);
+        .then((response) => {
+          const hxVals = extractHxValues(response);
+
+          if (hxVals == null) {
+            throw new Error(
+              `Could not find an internal ${contributorType} by the name "${firstName} ${lastName}".`,
+            );
+          }
+
+          return hxVals;
+        });
     } else {
       // For external contributors, we can skip this and continue working with first name & last name as parameters
     }

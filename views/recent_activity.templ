@@ -18,6 +18,7 @@ const (
 	RepublishEvent
 	WithdrawEvent
 	LockEvent
+	UnlockEvent
 	UpdateEvent
 	MessageEvent
 )
@@ -53,7 +54,9 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
 									case WithdrawEvent:
 										<i class="if if-arrow-go-back"></i>
 									case LockEvent:
-										<i class="if if-check"></i>
+										<i class="if if-lock"></i>
+									case UnlockEvent:
+										<i class="if if-lock-unlock"></i>
 									case UpdateEvent:
 										<i class="if if-edit"></i>
 									case MessageEvent:
@@ -79,7 +82,7 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
 									{ " " }
 									switch act.Event {
 										case CreateEvent:
-											started a { c.Loc.Get("activity_statuses."+act.Status) }
+											started a { c.Loc.Get("activity_statuses." + act.Status) }
 										case PublishEvent:
 											published a
 										case RepublishEvent:
@@ -88,6 +91,8 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
 											withdrew a
 										case LockEvent:
 											locked a
+										case UnlockEvent:
+											unlocked a
 										case UpdateEvent:
 											edited a
 										case MessageEvent:
@@ -96,11 +101,10 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
 									{ " " }
 									switch act.Object {
 										case PublicationObject:
-											publication
+											publication:
 										case DatasetObject:
-											dataset
+											dataset:
 									}
-									{ ": " }
 									<a class="c-activity-item__link" href={ templ.URL(act.URL) }>
 										if act.Title != "" {
 											{ act.Title }
