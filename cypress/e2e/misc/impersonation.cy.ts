@@ -1,8 +1,8 @@
 describe("User impersonation", () => {
   it("should be possible for a librarian to use the app as another user and to return to their own profile afterwards", () => {
-    const LIBRARIAN_NAME = Cypress.env("LIBRARIAN_NAME");
+    const LIBRARIAN_NAME = "Biblio Librarian1";
 
-    cy.loginAsLibrarian();
+    cy.login("librarian1");
 
     cy.visit("/");
 

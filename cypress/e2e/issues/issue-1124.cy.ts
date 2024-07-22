@@ -2,7 +2,7 @@
 
 describe("Issue #1124:  Add friendlier consistent confirmation toaster when locking or unlocking a record", () => {
   it("should display a toast and badge when publications are locked/unlocked", () => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
 
     cy.setUpPublication("Dissertation");
 
@@ -28,7 +28,7 @@ describe("Issue #1124:  Add friendlier consistent confirmation toaster when lock
       cy.contains(".btn", "Lock record").should("not.exist");
 
       // Publication can be locked by librarian
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.switchMode("Librarian");
 
       cy.visit("/publication");
@@ -67,7 +67,7 @@ describe("Issue #1124:  Add friendlier consistent confirmation toaster when lock
       cy.contains(".list-group-item", "Locked").should("be.visible");
 
       // Publication does have lock icon in the list view for researcher
-      cy.loginAsResearcher();
+      cy.login("researcher1");
       cy.visit("/publication", { qs: { q: biblioId, "f[scope]": "all" } });
       cy.contains("Showing 1 publications").should("be.visible");
       cy.get(".list-group-item .if.if-lock").should("be.visible");
@@ -84,7 +84,7 @@ describe("Issue #1124:  Add friendlier consistent confirmation toaster when lock
       cy.contains(".btn", "Edit").should("not.exist");
 
       // Now go back as librarian to unlock the publication
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.switchMode("Librarian");
 
       cy.visitPublication();

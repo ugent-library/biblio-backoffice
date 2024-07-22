@@ -1,9 +1,12 @@
 import * as dayjs from "dayjs";
+import { getRandomText } from "support/util";
 
 describe("The researcher dashboard", () => {
   describe("Recent activity", () => {
     it("should display recent publication activity", () => {
-      cy.loginAsLibrarian();
+      const PUBLICATION_TITLE = "My publication title " + getRandomText();
+
+      cy.login("librarian1");
 
       cy.setUpPublication(undefined, {
         otherFields: {
@@ -23,7 +26,7 @@ describe("The researcher dashboard", () => {
       cy.updateFields(
         "Publication details",
         () => {
-          cy.setFieldByLabel("Title", "My publication title");
+          cy.setFieldByLabel("Title", PUBLICATION_TITLE);
           cy.setFieldByLabel("Publication year", "1981");
         },
         true,
@@ -32,33 +35,33 @@ describe("The researcher dashboard", () => {
       cy.ensureModal("Are you sure?").closeModal("Publish");
 
       verifyMostRecentActivity(
-        "You published a publication: My publication title.",
+        `You published a publication: ${PUBLICATION_TITLE}.`,
       );
 
       cy.visitPublication();
       cy.contains(".btn", "Withdraw").click();
       cy.ensureModal("Are you sure?").closeModal("Withdraw");
       verifyMostRecentActivity(
-        "You withdrew a publication: My publication title.",
+        `You withdrew a publication: ${PUBLICATION_TITLE}.`,
       );
 
       cy.visitPublication();
       cy.contains(".btn", "Republish").click();
       cy.ensureModal("Are you sure?").closeModal("Republish");
       verifyMostRecentActivity(
-        "You republished a publication: My publication title.",
+        `You republished a publication: ${PUBLICATION_TITLE}.`,
       );
 
       cy.visitPublication();
       cy.contains(".btn", "Lock record").click();
       verifyMostRecentActivity(
-        "You locked a publication: My publication title.",
+        `You locked a publication: ${PUBLICATION_TITLE}.`,
       );
 
       cy.visitPublication();
       cy.contains(".btn", "Unlock record").click();
       verifyMostRecentActivity(
-        "You unlocked a publication: My publication title.",
+        `You unlocked a publication: ${PUBLICATION_TITLE}.`,
       );
 
       cy.visitPublication();
@@ -70,12 +73,14 @@ describe("The researcher dashboard", () => {
         true,
       );
       verifyMostRecentActivity(
-        "You left a comment on a publication: My publication title.",
+        `You left a comment on a publication: ${PUBLICATION_TITLE}.`,
       );
     });
 
     it("should display recent dataset activity", () => {
-      cy.loginAsLibrarian();
+      const DATASET_TITLE = "My dataset title " + getRandomText();
+
+      cy.login("librarian1");
 
       cy.setUpDataset({
         // Make sure the dataset is not immediately updated after creation
@@ -94,7 +99,7 @@ describe("The researcher dashboard", () => {
       cy.updateFields(
         "Dataset details",
         () => {
-          cy.setFieldByLabel("Title", "My dataset title");
+          cy.setFieldByLabel("Title", DATASET_TITLE);
           cy.setFieldByLabel("Persistent identifier type", "DOI");
           cy.setFieldByLabel("Identifier", "10.5072/test/t");
 
@@ -114,25 +119,25 @@ describe("The researcher dashboard", () => {
       cy.contains(".btn", "Publish to Biblio").click();
       cy.ensureModal("Are you sure?").closeModal("Publish");
 
-      verifyMostRecentActivity("You published a dataset: My dataset title.");
+      verifyMostRecentActivity(`You published a dataset: ${DATASET_TITLE}.`);
 
       cy.visitDataset();
       cy.contains(".btn", "Withdraw").click();
       cy.ensureModal("Are you sure?").closeModal("Withdraw");
-      verifyMostRecentActivity("You withdrew a dataset: My dataset title.");
+      verifyMostRecentActivity(`You withdrew a dataset: ${DATASET_TITLE}.`);
 
       cy.visitDataset();
       cy.contains(".btn", "Republish").click();
       cy.ensureModal("Are you sure?").closeModal("Republish");
-      verifyMostRecentActivity("You republished a dataset: My dataset title.");
+      verifyMostRecentActivity(`You republished a dataset: ${DATASET_TITLE}.`);
 
       cy.visitDataset();
       cy.contains(".btn", "Lock record").click();
-      verifyMostRecentActivity("You locked a dataset: My dataset title.");
+      verifyMostRecentActivity(`You locked a dataset: ${DATASET_TITLE}.`);
 
       cy.visitDataset();
       cy.contains(".btn", "Unlock record").click();
-      verifyMostRecentActivity("You unlocked a dataset: My dataset title.");
+      verifyMostRecentActivity(`You unlocked a dataset: ${DATASET_TITLE}.`);
 
       cy.visitDataset();
       cy.updateFields(
@@ -143,36 +148,31 @@ describe("The researcher dashboard", () => {
         true,
       );
       verifyMostRecentActivity(
-        "You left a comment on a dataset: My dataset title.",
+        `You left a comment on a dataset: ${DATASET_TITLE}.`,
       );
     });
 
     it("should show other actor names but not biblio team member names", () => {
-      // As researcher
-      cy.loginAsResearcher();
-      cy.setUpPublication("Dissertation", { prepareForPublishing: true });
-      cy.addAuthor("Biblio", "Librarian");
-      verifyMostRecentActivity(
-        "You edited a publication: The Dissertation title.",
-      );
+      const PUBLICATION_TITLE = "The Dissertation title " + getRandomText();
 
-      // As librarian
-      cy.loginAsLibrarian();
-      cy.visit("/");
-      cy.contains("button.dropdown-toggle", "Biblio Librarian").click();
-      cy.contains(".dropdown-item", "View as").click();
-      cy.ensureModal("View as other user").within(() => {
-        cy.setFieldByLabel("First name", "John");
-        cy.setFieldByLabel("Last name", "Doe");
-        cy.contains(".btn", "Change user").click();
+      // As researcher1
+      cy.login("researcher1");
+      cy.setUpPublication("Dissertation", {
+        prepareForPublishing: true,
+        title: PUBLICATION_TITLE,
       });
-
-      // As John Doe
-      cy.contains("Viewing the perspective of John Doe.").should("be.visible");
+      cy.addAuthor("Biblio", "Researcher2");
+      cy.addAuthor("Biblio", "Librarian1");
+      cy.addAuthor("Biblio", "Librarian2");
       verifyMostRecentActivity(
-        "Biblio Researcher edited a publication: The Dissertation title.",
+        `You edited a publication: ${PUBLICATION_TITLE}.`,
       );
 
+      // As researcher2
+      cy.login("researcher2");
+      verifyMostRecentActivity(
+        `Biblio Researcher1 edited a publication: ${PUBLICATION_TITLE}.`,
+      );
       cy.visitPublication();
       cy.updateFields(
         "Messages from and for Biblio team",
@@ -182,27 +182,36 @@ describe("The researcher dashboard", () => {
         true,
       );
       verifyMostRecentActivity(
-        "You left a comment on a publication: The Dissertation title.",
+        `You left a comment on a publication: ${PUBLICATION_TITLE}.`,
       );
 
-      // As researcher
-      cy.loginAsResearcher();
+      // As researcher1
+      cy.login("researcher1");
       verifyMostRecentActivity(
-        "John Doe left a comment on a publication: The Dissertation title.",
+        `Biblio Researcher2 left a comment on a publication: ${PUBLICATION_TITLE}.`,
       );
 
-      // As librarian
-      cy.loginAsLibrarian();
+      // As librarian1
+      cy.login("librarian1");
+      verifyMostRecentActivity(
+        `Biblio Researcher2 left a comment on a publication: ${PUBLICATION_TITLE}.`,
+      );
       cy.visitPublication();
       cy.contains(".btn", "Lock record").click();
       verifyMostRecentActivity(
-        "You locked a publication: The Dissertation title.",
+        `You locked a publication: ${PUBLICATION_TITLE}.`,
       );
 
-      // As researcher
-      cy.loginAsResearcher();
+      // As researcher1
+      cy.login("researcher1");
       verifyMostRecentActivity(
-        "A Biblio team member locked a publication: The Dissertation title.",
+        `A Biblio team member locked a publication: ${PUBLICATION_TITLE}.`,
+      );
+
+      // As librarian2
+      cy.login("librarian2");
+      verifyMostRecentActivity(
+        `A Biblio team member locked a publication: ${PUBLICATION_TITLE}.`,
       );
     });
   });
@@ -210,7 +219,7 @@ describe("The researcher dashboard", () => {
   const NO_LOG = { log: false };
 
   function verifyMostRecentActivity(expectedText: string) {
-    cy.wait(500, NO_LOG);
+    cy.wait(1000, NO_LOG);
 
     cy.visit("/dashboard", NO_LOG);
 

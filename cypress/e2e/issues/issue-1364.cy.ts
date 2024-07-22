@@ -6,7 +6,7 @@ describe('Issue #1364: Add "Updated (oldest first)" to sorting options', () => {
   const randomTitle = getRandomText();
 
   before(() => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
 
     // Create 3 datasets and publications
     for (let i = 1; i <= 3; i++) {
@@ -49,7 +49,7 @@ describe('Issue #1364: Add "Updated (oldest first)" to sorting options', () => {
     );
   });
 
-  beforeEach(() => cy.loginAsResearcher());
+  beforeEach(() => cy.login("researcher1"));
 
   describe("for publications", () => {
     it("should be possible to sort by oldest updated first", () => {

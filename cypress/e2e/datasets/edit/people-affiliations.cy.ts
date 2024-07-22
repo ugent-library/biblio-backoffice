@@ -2,7 +2,7 @@ import { testFormAccessibility } from "support/util";
 
 describe("Editing dataset people & affiliations", () => {
   beforeEach(() => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
   });
 
   describe("Creators", () => {
