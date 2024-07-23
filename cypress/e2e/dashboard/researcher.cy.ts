@@ -173,45 +173,37 @@ describe("The researcher dashboard", () => {
       verifyMostRecentActivity(
         `Biblio Researcher1 edited a publication: ${PUBLICATION_TITLE}.`,
       );
-      cy.visitPublication();
-      cy.updateFields(
-        "Messages from and for Biblio team",
-        () => {
-          cy.setFieldByLabel("Message", "The biblio message");
-        },
-        true,
-      );
+      cy.addSupervisor("Biblio", "Researcher1");
       verifyMostRecentActivity(
-        `You left a comment on a publication: ${PUBLICATION_TITLE}.`,
+        `You edited a publication: ${PUBLICATION_TITLE}.`,
       );
 
       // As researcher1
       cy.login("researcher1");
       verifyMostRecentActivity(
-        `Biblio Researcher2 left a comment on a publication: ${PUBLICATION_TITLE}.`,
+        `Biblio Researcher2 edited a publication: ${PUBLICATION_TITLE}.`,
       );
 
       // As librarian1
       cy.login("librarian1");
       verifyMostRecentActivity(
-        `Biblio Researcher2 left a comment on a publication: ${PUBLICATION_TITLE}.`,
+        `Biblio Researcher2 edited a publication: ${PUBLICATION_TITLE}.`,
       );
-      cy.visitPublication();
-      cy.contains(".btn", "Lock record").click();
+      cy.addSupervisor("Biblio", "Librarian1");
       verifyMostRecentActivity(
-        `You locked a publication: ${PUBLICATION_TITLE}.`,
+        `You edited a publication: ${PUBLICATION_TITLE}.`,
       );
 
       // As researcher1
       cy.login("researcher1");
       verifyMostRecentActivity(
-        `A Biblio team member locked a publication: ${PUBLICATION_TITLE}.`,
+        `A Biblio team member edited a publication: ${PUBLICATION_TITLE}.`,
       );
 
       // As librarian2
       cy.login("librarian2");
       verifyMostRecentActivity(
-        `A Biblio team member locked a publication: ${PUBLICATION_TITLE}.`,
+        `Biblio Librarian1 edited a publication: ${PUBLICATION_TITLE}.`,
       );
     });
   });
