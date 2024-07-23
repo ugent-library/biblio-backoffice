@@ -205,14 +205,11 @@ func mapRecord(r Record, p *models.Publication) {
 				p.Author = nil
 			}
 			for _, val := range v {
-				nameParts := reSplit.Split(val, -1)
-				lastName := nameParts[0]
-				firstName := "[missing]" // TODO
-				if len(nameParts) > 1 {
-					firstName = nameParts[1]
-				}
-				c := models.ContributorFromFirstLastName(firstName, lastName)
-				p.Author = append(p.Author, c)
+				p.Author = append(p.Author, extractContributor(val))
+			}
+		case "BE", "ED":
+			for _, val := range v {
+				p.Editor = append(p.Editor, extractContributor(val))
 			}
 		case "TI", "T1":
 			p.Title = strings.Join(v, "")
@@ -353,4 +350,16 @@ func parseConferenceDate(date string) [2]string {
 	}
 
 	return result
+}
+
+func extractContributor(val string) *models.Contributor {
+	nameParts := reSplit.Split(val, -1)
+
+	lastName := strings.TrimSpace(nameParts[0])
+	firstName := "[missing]" // TODO
+	if len(nameParts) > 1 {
+		firstName = strings.TrimSpace(nameParts[1])
+	}
+
+	return models.ContributorFromFirstLastName(firstName, lastName)
 }
