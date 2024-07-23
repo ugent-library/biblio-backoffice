@@ -2,7 +2,7 @@ import { getRandomText } from "support/util";
 
 describe("Publication import", () => {
   it("should be possible to import publications by DOI", () => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
     cy.visit("/");
 
     cy.contains(".btn", "Add research").click();
@@ -74,7 +74,7 @@ describe("Publication import", () => {
   });
 
   it("should show an error toast if the DOI is invalid", () => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
 
     cy.visit("/add-publication");
 
@@ -96,7 +96,7 @@ describe("Publication import", () => {
     cy.deletePublications(DOI);
 
     // First make and publish the first publication manually
-    cy.loginAsLibrarian();
+    cy.login("librarian1");
     const title = getRandomText();
     cy.setUpPublication("Miscellaneous", {
       title,
@@ -108,7 +108,7 @@ describe("Publication import", () => {
     cy.wait(1000);
 
     // Actual test starts here
-    cy.loginAsResearcher();
+    cy.login("researcher1");
 
     // Make the second publication
     cy.visit("/add-publication");

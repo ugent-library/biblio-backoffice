@@ -5,7 +5,7 @@ type Breadcrumbs = {
 
 describe("Site breadcrumbs", () => {
   beforeEach(() => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
   });
 
   it("should have no additional breadcrumbs on the anonymous homepage", () => {
@@ -27,7 +27,7 @@ describe("Site breadcrumbs", () => {
 
     describe("As Librarian", () => {
       it("should have breadcrumbs on the dashboard", () => {
-        cy.loginAsLibrarian();
+        cy.login("librarian1");
         cy.switchMode("Librarian");
 
         cy.visit("/dashboard/publications/faculties");
@@ -389,7 +389,7 @@ describe("Site breadcrumbs", () => {
 
   describe("Curator features", () => {
     beforeEach(() => {
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.switchMode("Librarian");
     });
 

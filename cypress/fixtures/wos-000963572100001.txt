@@ -31,7 +31,7 @@ AF Christodoulaki, A.
    Heindryckx, B.
 TI Characterization of ovarian tissue oocytes from transgender men reveals
    poor calcium release and embryo development, which might be overcome by
-   spindle transfer [CYPRESSTEST]
+   spindle transfer
 SO HUMAN REPRODUCTION
 LA English
 DT Article

@@ -13,7 +13,7 @@ export default function switchMode(mode: "Researcher" | "Librarian"): void {
   cy.session(
     mode,
     () => {
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
 
       cy.htmxRequest({
         method: "PUT",

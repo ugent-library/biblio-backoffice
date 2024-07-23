@@ -2,7 +2,7 @@ import { getRandomText, testFormAccessibility } from "support/util";
 
 describe("Dataset import", () => {
   it("should be possible to import datasets by DOI", () => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
     cy.visit("/");
 
     cy.contains(".btn", "Add research").click();
@@ -76,7 +76,7 @@ describe("Dataset import", () => {
   });
 
   it("should show an error toast if the DOI is invalid", () => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
 
     cy.visit("/add-dataset");
 
@@ -96,7 +96,7 @@ describe("Dataset import", () => {
     cy.deleteDatasets(DOI);
 
     // First make and publish the first dataset manually
-    cy.loginAsLibrarian();
+    cy.login("librarian1");
     const title = getRandomText();
     cy.setUpDataset({
       title,
@@ -112,7 +112,7 @@ describe("Dataset import", () => {
     cy.wait(1000);
 
     // Actual test starts here
-    cy.loginAsResearcher();
+    cy.login("librarian1");
 
     // Make the second dataset (via DOI import)
     cy.visit("/add-dataset");
