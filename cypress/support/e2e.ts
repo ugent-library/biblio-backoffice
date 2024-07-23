@@ -12,25 +12,27 @@ before(() => {
 });
 
 beforeEach(() => {
-  // Make sure we don't install the catpure script twice for any given test.
+  // Make sure we don't install the capture script twice for any given test.
   if (!cy.state("aliases")?.captureCSRFTokenInstalled) {
     installCSRFTokenCaptureScript();
   }
 
-  // Keep dashboard-icon polling from Cypress command log
-  cy.intercept({ method: "GET", url: "/dashboard-icon" }, { log: false });
-  cy.intercept(
-    { method: "GET", url: "/candidate-records-icon" },
-    { log: false },
-  );
+  // Keep polling requests from Cypress command log
+  cy.intercept({ method: "GET", url: /^\/static\// }, { log: false });
+  cy.intercept({ method: "GET", url: /^\/\w+-icon/ }, { log: false });
+  cy.intercept({ method: "GET", url: /^\/static\// }, { log: false });
 });
 
 function installCSRFTokenCaptureScript() {
-  cy.intercept(/^(?!\/static)\/.+$/, { middleware: true }, (req) => {
-    req.on("after:response", (req) => {
-      return extractCSRFTokenFromResponse(req);
-    });
-  });
+  cy.intercept(
+    /^\/(?!_templ\/|static\/|\w+-icon).*$/,
+    { middleware: true },
+    (req) => {
+      req.on("after:response", (req) => {
+        return extractCSRFTokenFromResponse(req);
+      });
+    },
+  );
 
   const aliases = cy.state("aliases") || {};
   aliases.captureCSRFTokenInstalled = true;

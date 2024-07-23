@@ -11,7 +11,9 @@ export default function visitPublication(
     updateLogMessage(log, biblioId);
     updateConsoleProps(log, (cp) => (cp["Biblio ID"] = biblioId));
 
-    cy.intercept(`/publication/${biblioId}/description*`).as("editPublication");
+    cy.intercept({ url: `/publication/${biblioId}/description*`, times: 1 }).as(
+      "editPublication",
+    );
 
     cy.visit(`/publication/${biblioId}`, { log: false });
 
