@@ -1,6 +1,6 @@
 describe("Publication import", () => {
   it("should be possible to import publications from BibTeX and save as draft", () => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
 
     cy.visit("/");
 
@@ -154,7 +154,7 @@ describe("Publication import", () => {
   });
 
   it("should show an error toast if the import file contains an error", () => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
 
     cy.visit("/add-publication");
 

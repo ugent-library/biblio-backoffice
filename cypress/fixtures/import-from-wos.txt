@@ -10,7 +10,7 @@ AF Tuytschaever, Tessa
    De Boeck, Elien
    Uyttendaele, Mieke
 TI Microbiological characteristics and applied preservation method of novel
-   ready-to-eat vegetarian spreads and dips [CYPRESSTEST]
+   ready-to-eat vegetarian spreads and dips
 SO FOOD CONTROL
 LA English
 DT Article
@@ -68,7 +68,7 @@ AF Van Winckel, Tim
    Vlaeminck, Siegfried E.
    De Clippeleir, Haydee
 TI Enhancing bioflocculation in high-rate activated sludge improves
-   effluent quality yet increases sensitivity to surface overflow rate [CYPRESSTEST]
+   effluent quality yet increases sensitivity to surface overflow rate
 SO CHEMOSPHERE
 LA English
 DT Article
@@ -149,7 +149,7 @@ AF Claerbout, Jolien
    Heungens, Kurt
    Hofte, Monica
 TI Fusarium isolates from Belgium causing wilt in lettuce show genetic and
-   pathogenic diversity [CYPRESSTEST]
+   pathogenic diversity
 SO PLANT PATHOLOGY
 LA English
 DT Article; Early Access
@@ -234,7 +234,7 @@ AF Matassa, Silvio
    Smolders, Erik
    Wuertz, Stefan
    Verstraete, Willy
-TI How can we possibly resolve the planet's nitrogen dilemma? [CYPRESSTEST]
+TI How can we possibly resolve the planet's nitrogen dilemma?
 SO MICROBIAL BIOTECHNOLOGY
 LA English
 DT Editorial Material; Early Access

@@ -10,18 +10,18 @@ dayjs.extend(CustomParseFormat);
 describe("Issue #1370: Make created, edited and system update timestamp more informative.", () => {
   const RANDOM_TEXT = getRandomText();
   const CREATED_REGEX =
-    /^Created (?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}) by Biblio Researcher.$/;
+    /^Created (?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}) by Biblio Researcher1.$/;
   const EDITED_REGEX =
-    /^Edited (?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}) by Biblio Librarian.$/;
+    /^Edited (?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}) by Biblio Librarian1.$/;
 
   describe("for publications", () => {
     before(() => {
-      cy.loginAsResearcher();
+      cy.login("researcher1");
       cy.setUpPublication("Miscellaneous", {
         title: `Publication ${RANDOM_TEXT}`,
       });
 
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.visitPublication();
       cy.updateFields(
         "Publication details",
@@ -36,7 +36,7 @@ describe("Issue #1370: Make created, edited and system update timestamp more inf
     });
 
     beforeEach(() => {
-      cy.loginAsResearcher();
+      cy.login("researcher1");
 
       cy.visit("/publication", { qs: { q: RANDOM_TEXT } });
       cy.extractBiblioId();
@@ -63,13 +63,13 @@ describe("Issue #1370: Make created, edited and system update timestamp more inf
 
   describe("for datasets", () => {
     before(() => {
-      cy.loginAsResearcher();
+      cy.login("researcher1");
       cy.setUpDataset({
         title: `Dataset ${RANDOM_TEXT}`,
         shouldWaitForIndex: true,
       });
 
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.visitDataset();
       cy.updateFields(
         "Dataset details",
@@ -81,7 +81,7 @@ describe("Issue #1370: Make created, edited and system update timestamp more inf
     });
 
     beforeEach(() => {
-      cy.loginAsResearcher();
+      cy.login("researcher1");
 
       cy.visit("/dataset", { qs: { q: RANDOM_TEXT } });
       cy.extractBiblioId();

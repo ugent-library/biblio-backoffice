@@ -8,7 +8,7 @@ describe("Issue #1241: As a researcher or librarian, I should not be able to sel
 
   describe("For publications", () => {
     it("should not be possible to select a date before tomorrow for embargo end date", () => {
-      cy.loginAsResearcher();
+      cy.login("researcher1");
 
       cy.setUpPublication("Book");
 
@@ -80,7 +80,7 @@ describe("Issue #1241: As a researcher or librarian, I should not be able to sel
 
   describe("For datasets", () => {
     it("should not be possible to select a date before tomorrow for embargo end date", () => {
-      cy.loginAsResearcher();
+      cy.login("researcher1");
 
       cy.setUpDataset();
 

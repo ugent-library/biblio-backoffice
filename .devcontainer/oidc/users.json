@@ -1,31 +1,6 @@
 [
   {
-    "id": "biblio-librarian",
-    "claims": [
-      {
-        "name": "name",
-        "value": "Biblio Librarian"
-      },
-      {
-        "name": "given_name",
-        "value": "biblio"
-      },
-      {
-        "name": "family_name",
-        "value": "librarian"
-      },
-      {
-        "name": "preferred_username",
-        "value": "biblio-librarian"
-      },
-      {
-        "name": "email",
-        "value": "biblio-librarian@ugent.be"
-      }
-    ]
-  },
-  {
-    "id": "biblio-researcher",
+    "id": "researcher1",
     "claims": [
       {
         "name": "name",
@@ -33,19 +8,95 @@
       },
       {
         "name": "given_name",
-        "value": "biblio"
+        "value": "Biblio"
       },
       {
         "name": "family_name",
-        "value": "researcher"
+        "value": "Researcher1"
       },
       {
         "name": "preferred_username",
-        "value": "biblio-researcher"
+        "value": "researcher1"
       },
       {
         "name": "email",
-        "value": "biblio-researcher@ugent.be"
+        "value": "researcher@ugent.be"
+      }
+    ]
+  },
+
+  {
+    "id": "researcher2",
+    "claims": [
+      {
+        "name": "name",
+        "value": "Biblio Researcher2"
+      },
+      {
+        "name": "given_name",
+        "value": "Biblio"
+      },
+      {
+        "name": "family_name",
+        "value": "Researcher2"
+      },
+      {
+        "name": "preferred_username",
+        "value": "researcher2"
+      },
+      {
+        "name": "email",
+        "value": "researcher2@ugent.be"
+      }
+    ]
+  },
+  {
+    "id": "librarian1",
+    "claims": [
+      {
+        "name": "name",
+        "value": "Biblio Librarian"
+      },
+      {
+        "name": "given_name",
+        "value": "Biblio"
+      },
+      {
+        "name": "family_name",
+        "value": "Librarian1"
+      },
+      {
+        "name": "preferred_username",
+        "value": "librarian1"
+      },
+      {
+        "name": "email",
+        "value": "librarian@ugent.be"
+      }
+    ]
+  },
+  {
+    "id": "librarian2",
+    "claims": [
+      {
+        "name": "name",
+        "value": "Biblio Librarian2"
+      },
+      {
+        "name": "given_name",
+        "value": "Biblio"
+      },
+      {
+        "name": "family_name",
+        "value": "Librarian2"
+      },
+      {
+        "name": "preferred_username",
+        "value": "librarian2"
+      },
+      {
+        "name": "email",
+        "value": "librarian2@ugent.be"
       }
     ]
   }

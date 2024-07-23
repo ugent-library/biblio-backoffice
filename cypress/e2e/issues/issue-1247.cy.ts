@@ -20,7 +20,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
   };
 
   beforeEach(() => {
-    cy.loginAsLibrarian();
+    cy.login("librarian1");
 
     cy.switchMode("Librarian");
   });
@@ -50,7 +50,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
     cy.updateFields(
       "Publication details",
       () => {
-        cy.setFieldByLabel("Title", "Test publication [CYPRESSTEST]");
+        cy.setFieldByLabel("Title", "Test publication");
         cy.setFieldByLabel(
           "Publication year",
           new Date().getFullYear().toString(),
@@ -112,7 +112,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
     cy.updateFields(
       "Dataset details",
       () => {
-        cy.setFieldByLabel("Title", `Test dataset [CYPRESSTEST]`);
+        cy.setFieldByLabel("Title", `Test dataset`);
         cy.setFieldByLabel("Persistent identifier type", "DOI");
         cy.setFieldByLabel("Identifier", "10.5072/test/t");
 

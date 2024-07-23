@@ -120,9 +120,12 @@ export function extractHtmxJsonAttribute<T extends object>(
   const $partial = Cypress.$(response.body);
   const $node = $partial.find(selector);
 
-  const json = decodeEntities($node.attr(hxAttributeName));
+  if ($node.length === 0) {
+    return null;
+  }
 
-  return JSON.parse(json) as T;
+  const hxAttribute = $node.attr(hxAttributeName);
+  return JSON.parse(decodeEntities(hxAttribute)) as T;
 }
 
 export function extractSnapshotId(
