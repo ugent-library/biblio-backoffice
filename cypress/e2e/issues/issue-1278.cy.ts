@@ -2,7 +2,7 @@
 
 describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see how I am related to a record (supervisor, author, editor, ...) in the card", () => {
   beforeEach(() => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
   });
 
   describe("for publications", () => {
@@ -12,10 +12,10 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
 
       // Add myself as author
       cy.visitPublication();
-      cy.addAuthor("Biblio", "Researcher");
+      cy.addAuthor("Biblio", "Researcher1");
       verifyMyRoles("publication", "author");
 
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.switchMode("Librarian");
       verifyMyRoles("publication");
     });
@@ -26,10 +26,10 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
 
       // Add myself as editor
       cy.visitPublication();
-      cy.addEditor("Biblio", "Researcher");
+      cy.addEditor("Biblio", "Researcher1");
       verifyMyRoles("publication", "editor");
 
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.switchMode("Librarian");
       verifyMyRoles("publication");
     });
@@ -40,10 +40,10 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
 
       // Add myself as supervisor
       cy.visitPublication();
-      cy.addSupervisor("Biblio", "Researcher");
+      cy.addSupervisor("Biblio", "Researcher1");
       verifyMyRoles("publication", "supervisor");
 
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.switchMode("Librarian");
       verifyMyRoles("publication");
     });
@@ -54,15 +54,15 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
 
       // Add myself as editor
       cy.visitPublication();
-      cy.addEditor("Biblio", "Researcher");
+      cy.addEditor("Biblio", "Researcher1");
       verifyMyRoles("publication", "editor");
 
       // Add myself as author
       cy.visitPublication();
-      cy.addAuthor("Biblio", "Researcher");
+      cy.addAuthor("Biblio", "Researcher1");
       verifyMyRoles("publication", "author", "editor");
 
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.switchMode("Librarian");
       verifyMyRoles("publication");
     });
@@ -73,15 +73,15 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
 
       // Add myself as supervisor
       cy.visitPublication();
-      cy.addSupervisor("Biblio", "Researcher");
+      cy.addSupervisor("Biblio", "Researcher1");
       verifyMyRoles("publication", "supervisor");
 
       // Add myself as author
       cy.visitPublication();
-      cy.addAuthor("Biblio", "Researcher");
+      cy.addAuthor("Biblio", "Researcher1");
       verifyMyRoles("publication", "author", "supervisor");
 
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.switchMode("Librarian");
       verifyMyRoles("publication");
     });
@@ -95,7 +95,7 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       cy.addAuthor("John", "Doe");
       verifyMyRoles("publication", "registrar");
 
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.switchMode("Librarian");
       verifyMyRoles("publication");
     });
@@ -108,10 +108,10 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
 
       // Add myself as creator
       cy.visitDataset();
-      cy.addCreator("Biblio", "Researcher");
+      cy.addCreator("Biblio", "Researcher1");
       verifyMyRoles("dataset", "creator");
 
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.switchMode("Librarian");
       verifyMyRoles("dataset");
     });
@@ -125,7 +125,7 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       cy.addCreator("John", "Doe");
       verifyMyRoles("dataset", "registrar");
 
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
       cy.switchMode("Librarian");
       verifyMyRoles("dataset");
     });

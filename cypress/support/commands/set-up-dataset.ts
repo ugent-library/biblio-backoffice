@@ -46,7 +46,7 @@ export default function setUpDataset({
         .then((snapshotId) => {
           // Then update details
           const body = {
-            title: `${title} [CYPRESSTEST]`,
+            title,
             identifier_type: "DOI",
             identifier: "10.7202/1041023ar",
           };
@@ -61,15 +61,17 @@ export default function setUpDataset({
 
           Object.assign(body, otherFields);
 
-          cy.htmxRequest({
-            method: "PUT",
-            url: `/dataset/${biblioId}/details`,
-            headers: {
-              "If-Match": snapshotId,
-            },
-            form: true,
-            body,
-          });
+          if (Object.values(body).filter((v) => v !== null).length > 0) {
+            cy.htmxRequest({
+              method: "PUT",
+              url: `/dataset/${biblioId}/details`,
+              headers: {
+                "If-Match": snapshotId,
+              },
+              form: true,
+              body,
+            });
+          }
         });
 
       if (prepareForPublishing || publish) {

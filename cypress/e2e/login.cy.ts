@@ -1,4 +1,4 @@
-describe("The home page", () => {
+describe("Login & authorization", () => {
   it("should be able to load the home page anonymously", () => {
     cy.visit("/");
 
@@ -51,7 +51,7 @@ describe("The home page", () => {
   });
 
   it("should be able to logon as researcher", () => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
 
     cy.visit("/");
 
@@ -76,7 +76,7 @@ describe("The home page", () => {
   });
 
   it("should be able to logon as librarian and switch to librarian mode", () => {
-    cy.loginAsLibrarian();
+    cy.login("librarian1");
 
     cy.visit("/");
 
@@ -148,7 +148,7 @@ describe("The home page", () => {
   });
 
   it("should not set the biblio-backoffice cookie twice when switching roles", () => {
-    cy.loginAsLibrarian();
+    cy.login("librarian1");
 
     cy.visit("/");
 

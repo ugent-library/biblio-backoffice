@@ -1,7 +1,5 @@
 // Parent commands
 import login from "./login";
-import loginAsResearcher from "./login-as-researcher";
-import loginAsLibrarian from "./login-as-librarian";
 import switchMode from "./switch-mode";
 import ensureModal from "./ensure-modal";
 import ensureNoModal from "./ensure-no-modal";
@@ -36,10 +34,6 @@ import closeToast from "./close-toast";
 // Parent commands
 Cypress.Commands.addAll({
   login,
-
-  loginAsResearcher,
-
-  loginAsLibrarian,
 
   switchMode,
 
