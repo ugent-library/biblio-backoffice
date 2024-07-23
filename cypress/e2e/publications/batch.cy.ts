@@ -2,7 +2,7 @@ import { testFormAccessibility } from "support/util";
 
 describe("Batch publication update", () => {
   beforeEach(() => {
-    cy.loginAsLibrarian();
+    cy.login("librarian1");
     cy.switchMode("Librarian");
     cy.visit("/publication/batch");
   });

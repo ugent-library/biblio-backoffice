@@ -1,7 +1,7 @@
 describe("Publishing publications", () => {
   describe("as researcher", () => {
     beforeEach(() => {
-      cy.loginAsResearcher();
+      cy.login("researcher1");
     });
 
     it("should be possible to publish, withdraw and republish a publication", () => {
@@ -144,7 +144,7 @@ describe("Publishing publications", () => {
 
   describe("as librarian", () => {
     beforeEach(() => {
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
     });
 
     it("should be possible to lock and unlock a publication", () => {
