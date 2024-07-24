@@ -75,7 +75,7 @@ describe("Login & authorization", () => {
     cy.contains(".c-sidebar__item", "Batch").should("not.exist");
   });
 
-  it("should be able to logon as librarian and switch to librarian mode", () => {
+  it("should be able to logon as librarian and switch curator mode (researcher/librarian)", () => {
     cy.login("librarian1");
 
     cy.visit("/");
