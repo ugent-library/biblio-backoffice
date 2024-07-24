@@ -109,7 +109,7 @@ describe("Publishing datasets", () => {
 
       cy.contains(".nav-link", "People & Affiliations").click();
 
-      // Delete interal author
+      // Delete internal author
       cy.get("#authors button:has(.if-delete)").click();
       cy.ensureModal("Confirm deletion").closeModal("Delete");
 

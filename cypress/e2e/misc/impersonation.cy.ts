@@ -7,7 +7,6 @@ describe("User impersonation", () => {
     cy.visit("/");
 
     cy.contains(".bc-avatar-and-text:visible", LIBRARIAN_NAME).click();
-
     cy.contains("View as").click();
 
     cy.ensureModal("View as other user").within(() => {
