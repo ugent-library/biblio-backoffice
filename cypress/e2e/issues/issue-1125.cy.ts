@@ -8,7 +8,6 @@ describe('Issue #1125: Add "locked" message when record is locked', () => {
 
     // Lock the publication
     cy.login("librarian1");
-    cy.switchMode("Librarian");
 
     cy.visitPublication();
 

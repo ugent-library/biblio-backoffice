@@ -16,7 +16,6 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       verifyMyRoles("publication", "author");
 
       cy.login("librarian1");
-      cy.switchMode("Librarian");
       verifyMyRoles("publication");
     });
 
@@ -30,7 +29,6 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       verifyMyRoles("publication", "editor");
 
       cy.login("librarian1");
-      cy.switchMode("Librarian");
       verifyMyRoles("publication");
     });
 
@@ -44,7 +42,6 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       verifyMyRoles("publication", "supervisor");
 
       cy.login("librarian1");
-      cy.switchMode("Librarian");
       verifyMyRoles("publication");
     });
 
@@ -63,7 +60,6 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       verifyMyRoles("publication", "author", "editor");
 
       cy.login("librarian1");
-      cy.switchMode("Librarian");
       verifyMyRoles("publication");
     });
 
@@ -82,7 +78,6 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       verifyMyRoles("publication", "author", "supervisor");
 
       cy.login("librarian1");
-      cy.switchMode("Librarian");
       verifyMyRoles("publication");
     });
 
@@ -96,7 +91,6 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       verifyMyRoles("publication", "registrar");
 
       cy.login("librarian1");
-      cy.switchMode("Librarian");
       verifyMyRoles("publication");
     });
   });
@@ -112,7 +106,6 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       verifyMyRoles("dataset", "creator");
 
       cy.login("librarian1");
-      cy.switchMode("Librarian");
       verifyMyRoles("dataset");
     });
 
@@ -126,7 +119,6 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
       verifyMyRoles("dataset", "registrar");
 
       cy.login("librarian1");
-      cy.switchMode("Librarian");
       verifyMyRoles("dataset");
     });
   });
