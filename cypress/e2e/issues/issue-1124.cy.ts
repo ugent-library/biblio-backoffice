@@ -41,15 +41,12 @@ describe("Issue #1124:  Add friendlier consistent confirmation toaster when lock
       cy.visitPublication();
       cy.clocked(() => {
         cy.contains(".btn", "Lock record").should("be.visible").click();
+        cy.tick(300); // .fade has transition-duration of 0.15s
+        cy.ensureToast("Publication was successfully locked.");
 
-        // Confirmation toast is displayed upon locking (and hidden after 5s)
-        cy.contains(".toast", "Publication was successfully locked.")
-          .as("lockedToast")
-          .should("be.visible");
-
+        // auto-hide
         cy.tick(5000);
-
-        cy.get("@lockedToast").should("not.exist");
+        cy.ensureNoToast();
       });
 
       // Publication now has lock icon in the detail view
@@ -91,15 +88,12 @@ describe("Issue #1124:  Add friendlier consistent confirmation toaster when lock
 
       cy.clocked(() => {
         cy.contains(".btn", "Unlock record").should("be.visible").click();
+        cy.tick(300); // .fade has transition-duration of 0.15s
+        cy.ensureToast("Publication was successfully unlocked.");
 
-        // Confirmation toast is displayed upon locking (and hidden after 5s)
-        cy.contains(".toast", "Publication was successfully unlocked.")
-          .as("unlockedToast")
-          .should("be.visible");
-
+        // auto-hide
         cy.tick(5000);
-
-        cy.get("@unlockedToast").should("not.exist");
+        cy.ensureNoToast();
       });
 
       // Lock icon is removed again

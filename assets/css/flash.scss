@@ -1,18 +1,10 @@
 #flash-messages {
-  position: absolute;
-  top: 2rem;
+  top: 12rem;
   right: 2rem;
   display: flex;
   flex-direction: column-reverse;
+  gap: 2rem;
   background-color: transparent;
-  pointer-events: none;
 
-  .toast {
-    margin: 10rem 0.3rem 1.3rem 0;
-
-    &.fade {
-      opacity: 1;
-      display: block;
-    }
-  }
+  @extend .toast-container;
 }

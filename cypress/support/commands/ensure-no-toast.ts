@@ -11,7 +11,18 @@ export default function ensureNoToast(
 
   const { timeout } = options;
 
-  return cy.get(".toast", { log: false, timeout }).should("not.exist");
+  return cy.then(() => {
+    // First check if there are any toasts and assert accordingly.
+    // If not, either cy.get() or the chained assertion will fail.
+    const $toasts = Cypress.$(".toast");
+    if ($toasts.length > 0) {
+      // expect(...) will not work here as that assertion would fail if toast is still hiding.
+      // Cypress retry-ability fixes that.
+      cy.get(".toast", { log: false, timeout }).should("not.be.visible");
+    } else {
+      cy.get(".toast", { log: false, timeout }).should("not.exist");
+    }
+  });
 }
 
 declare global {

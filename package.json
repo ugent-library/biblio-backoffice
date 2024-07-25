@@ -24,7 +24,6 @@
     "bootstrap": "^5.2.3",
     "bootstrap.native": "^5.0.9",
     "flatpickr": "^4.6.3",
-    "htmx-ext-remove-me": "^2.0.0",
     "htmx.org": "^2.0.0",
     "sass": "^1.68.0",
     "sortablejs": "^1.15.0"
