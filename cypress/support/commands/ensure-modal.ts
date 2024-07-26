@@ -20,14 +20,19 @@ export default function ensureModal(
   }
 
   // Assertion "be.visible" doesn't work here because it is behind the dialog
-  cy.get("#modal-backdrop", NO_LOG).then((modalBackdrop) => {
+  cy.get(".modal-backdrop", NO_LOG).then((modalBackdrop) => {
+    if (modalBackdrop.length !== 1) {
+      expect(modalBackdrop).to.have.length(1);
+    }
+
     if (!modalBackdrop.get(0).classList.contains("show")) {
-      cy.wrap(modalBackdrop, NO_LOG).should("have.class", "show");
+      expect(modalBackdrop).to.have.class("show");
     }
   });
 
   return cy
-    .get("#modal", NO_LOG)
+    .get(".modal", NO_LOG)
+    .should("have.length", 1)
     .should("be.visible")
     .within(NO_LOG, () => {
       if (expectedTitle === null) {
