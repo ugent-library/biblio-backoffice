@@ -13,8 +13,7 @@ templ ConfirmHide(c *ctx.Ctx, rec *models.CandidateRecord) {
 					<div class="bc-avatar">
 						<i class="if if-alert"></i>
 					</div>
-					<h4>Are you sure you want to hide this suggestion?</h4>
-					<p>You cannot undo this action.</p>
+					<h4>Do you want to reject this suggestion for all authors, supervisors and registrators?</h4>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -29,7 +28,7 @@ templ ConfirmHide(c *ctx.Ctx, rec *models.CandidateRecord) {
 							class="btn btn-danger"
 							hx-put={ c.PathTo("reject_candidate_record", "id", rec.ID).String() }
 							hx-swap="none"
-						>Yes, hide suggestion</button>
+						>Yes, reject suggestion</button>
 					</div>
 				</div>
 			</div>
