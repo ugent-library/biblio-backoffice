@@ -1,30 +1,43 @@
+import Modal from "bootstrap.native/modal";
+
 export default function (error) {
   let modals = document.querySelector("#modals");
+  if (modals) {
+    /*
+     * Expects somewhere in the document ..
+     *
+     * <template class="template-modal-error"></template>
+     *
+     * .. a template that encapsulates the modal body
+     * */
+    const templateModalError = document.querySelector(
+      "template.template-modal-error",
+    );
 
-  if (!modals) return;
+    if (templateModalError) {
+      const modalEl = templateModalError.content
+        .cloneNode(true)
+        .querySelector(".modal");
 
-  /*
-   * Expects somewhere in the document ..
-   *
-   * <template class="template-modal-error"></template>
-   *
-   * .. a template that encapsulates the modal body
-   * */
-  let templateModalError = document.querySelector(
-    "template.template-modal-error",
-  );
+      modalEl.querySelector(".msg").textContent = error;
 
-  if (!templateModalError) return;
+      modals.innerHTML = "";
+      modals.appendChild(modalEl);
 
-  let modal = templateModalError.content.cloneNode(true);
+      initModal(modalEl);
+    }
+  }
+}
 
-  // modal-close not triggered for dynamically added modals
-  modal.querySelector(".modal-close").addEventListener("click", function () {
-    modals.innerHTML = "";
+function initModal(modalEl) {
+  const modal = new Modal(modalEl, {
+    backdrop: "static",
+    keyboard: false,
   });
 
-  modal.querySelector(".msg").textContent = error;
+  modal.show();
 
-  modals.innerHTML = "";
-  modals.appendChild(modal);
+  modalEl.addEventListener("hidden.bs.modal", function () {
+    modalEl.remove();
+  });
 }

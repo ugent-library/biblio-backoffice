@@ -310,11 +310,11 @@ describe("Editing publication files", () => {
       .invoke("attr", "data-max-size-error", "Maximum file size is 1 B")
       .selectFile("cypress/fixtures/empty-pdf.pdf");
 
-    cy.ensureModal(null).within(() => {
-      cy.root().should("contain.text", "Maximum file size is 1 B");
-
-      cy.contains(".btn", "Close").click();
-    });
+    cy.ensureModal(null)
+      .within(() => {
+        cy.root().should("contain.text", "Maximum file size is 1 B");
+      })
+      .closeModal("Close");
     cy.ensureNoModal();
   });
 });
