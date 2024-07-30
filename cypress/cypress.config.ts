@@ -6,10 +6,6 @@ export default defineConfig({
   env: {
     OIDC_ORIGIN: "http://localhost:3041",
     ELASTICSEARCH_ORIGIN: "http://localhost:3061",
-    RESEARCHER_USER_NAME: "biblio-researcher",
-    RESEARCHER_NAME: "Biblio Researcher",
-    LIBRARIAN_USER_NAME: "biblio-librarian",
-    LIBRARIAN_NAME: "Biblio Librarian",
   },
 
   e2e: {

@@ -1,7 +1,7 @@
 describe("Publishing datasets", () => {
   describe("as researcher", () => {
     beforeEach(() => {
-      cy.loginAsResearcher();
+      cy.login("researcher1");
     });
 
     it("should be possible to publish, withdraw and republish a dataset", () => {
@@ -109,7 +109,7 @@ describe("Publishing datasets", () => {
 
       cy.contains(".nav-link", "People & Affiliations").click();
 
-      // Delete interal author
+      // Delete internal author
       cy.get("#authors button:has(.if-delete)").click();
       cy.ensureModal("Confirm deletion").closeModal("Delete");
 
@@ -150,7 +150,7 @@ describe("Publishing datasets", () => {
 
   describe("as librarian", () => {
     beforeEach(() => {
-      cy.loginAsLibrarian();
+      cy.login("librarian1");
     });
 
     it("should be possible to lock and unlock a dataset", () => {

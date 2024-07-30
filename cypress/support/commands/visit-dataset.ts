@@ -9,7 +9,9 @@ export default function visitDataset(
     updateLogMessage(log, biblioId);
     updateConsoleProps(log, (cp) => (cp["Biblio ID"] = biblioId));
 
-    cy.intercept(`/dataset/${biblioId}/description*`).as("editDataset");
+    cy.intercept({ url: `/dataset/${biblioId}/description*`, times: 1 }).as(
+      "editDataset",
+    );
 
     cy.visit(`/dataset/${biblioId}`, { log: false });
 

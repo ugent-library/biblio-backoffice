@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "module": "ES2015",
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "ES2018",
     "lib": ["es5", "dom", "DOM.Iterable"],
     "types": ["cypress", "node"],
     "noEmit": true,
