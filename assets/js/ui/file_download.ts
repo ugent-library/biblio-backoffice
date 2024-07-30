@@ -23,7 +23,8 @@ export default function fileDownload(el) {
           );
         }
 
-        const filename = extractFileName(response);
+        const filename =
+          anchor.getAttribute("download") || extractFileName(response);
         const blob = await response.blob();
 
         const dummyAnchor = document.createElement("a");
