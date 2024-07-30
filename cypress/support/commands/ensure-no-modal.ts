@@ -11,7 +11,7 @@ export default function ensureNoModal(
     logCommand("ensureNoModal");
   }
 
-  cy.get("#modals > *, #modal, #modal-backdrop", { log: false }).should(
+  cy.get("#modals > *, .modal, .modal-backdrop", { log: false }).should(
     "not.exist",
   );
 }

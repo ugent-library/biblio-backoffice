@@ -22,7 +22,7 @@ templ actions(c *ctx.Ctx, rec *models.CandidateRecord) {
 
 templ downloadMainFileAction(c *ctx.Ctx, rec *models.CandidateRecord) {
 	if f := rec.Publication.MainFile(); f != nil {
-		<a class="btn btn-tertiary btn-lg-only-responsive" href={ templ.URL(c.PathTo("candidate_record_download_file", "id", rec.ID, "file_id", f.ID).String()) }>
+		<a class="btn btn-tertiary btn-lg-only-responsive" href={ templ.URL(c.PathTo("candidate_record_download_file", "id", rec.ID, "file_id", f.ID).String()) } download>
 			<i class="if if-eye"></i>
 			<span class="btn-text">View file</span>
 		</a>

@@ -184,7 +184,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div class=\"c-thumbnail c-thumbnail-5-4 c-thumbnail-small c-thumbnail-xl-large mb-6 mb-xl-0 flex-shrink-0 d-none d-lg-block\"><div class=\"c-thumbnail-inner\"><i class=\"if if-article\"></i></div></div></a><div class=\"c-thumbnail-text u-min-w-0\"><div class=\"bc-toolbar bc-toolbar--auto\"><div class=\"bc-toolbar-left flex-wrap\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" download><div class=\"c-thumbnail c-thumbnail-5-4 c-thumbnail-small c-thumbnail-xl-large mb-6 mb-xl-0 flex-shrink-0 d-none d-lg-block\"><div class=\"c-thumbnail-inner\"><i class=\"if if-article\"></i></div></div></a><div class=\"c-thumbnail-text u-min-w-0\"><div class=\"bc-toolbar bc-toolbar--auto\"><div class=\"bc-toolbar-left flex-wrap\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -429,7 +429,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><span class=\"list-group-item-title\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" download><span class=\"list-group-item-title\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

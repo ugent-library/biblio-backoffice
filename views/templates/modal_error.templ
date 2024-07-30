@@ -1,0 +1,27 @@
+package viewtemplates
+
+templ ModalErrorTemplate() {
+	<template id="template-modal-error">
+		<div class="modal fade" tabindex="-1" aria-modal="true" role="dialog">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="c-blank-slate c-blank-slate-danger">
+							<div class="bc-avatar">
+								<i class="if if-error-circle"></i>
+							</div>
+							<p class="msg"></p>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="bc-toolbar">
+							<div class="bc-toolbar-left">
+								<button type="button" class="btn btn-link" data-bs-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</template>
+}

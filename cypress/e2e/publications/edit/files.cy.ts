@@ -303,4 +303,18 @@ describe("Editing publication files", () => {
       cy.get("@refreshForm.all").should("have.length", 3);
     });
   });
+
+  it("should error when you try to upload a file that is too large", () => {
+    cy.get("input[type=file][name=file]")
+      .invoke("attr", "data-max-size", "1")
+      .invoke("attr", "data-max-size-error", "Maximum file size is 1 B")
+      .selectFile("cypress/fixtures/empty-pdf.pdf");
+
+    cy.ensureModal(null)
+      .within(() => {
+        cy.root().should("contain.text", "Maximum file size is 1 B");
+      })
+      .closeModal("Close");
+    cy.ensureNoModal();
+  });
 });

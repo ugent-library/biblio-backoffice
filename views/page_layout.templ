@@ -1,6 +1,9 @@
 package views
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	viewtemplates "github.com/ugent-library/biblio-backoffice/views/templates"
+)
 
 templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
 	<!DOCTYPE html>
@@ -220,35 +223,13 @@ templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
 				</div>
 			</main>
 			<div id="modals"></div>
-			<template class="template-modal-error">
-				<div class="d-block modal-backdrop fade show"></div>
-				<div class="d-block modal show" tabindex="-1" aria-modal="true" role="dialog">
-					<div class="modal-dialog modal-dialog-centered" role="document">
-						<div class="modal-content">
-							<div class="modal-body">
-								<div class="c-blank-slate c-blank-slate-danger">
-									<div class="bc-avatar">
-										<i class="if if-error-circle"></i>
-									</div>
-									<p class="msg"></p>
-								</div>
-							</div>
-							<div class="modal-footer">
-								<div class="bc-toolbar">
-									<div class="bc-toolbar-left">
-										<button class="btn btn-link modal-close">Close</button>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</template>
+			@viewtemplates.ModalErrorTemplate()
 			<div id="flash-messages">
 				for _, f := range c.Flash {
 					@flashMessage(f)
 				}
 			</div>
+			@viewtemplates.FlashMessageTemplate()
 			<script nonce={ c.CSPNonce } type="application/javascript" src={ c.AssetPath("/js/app.js") }></script>
 		</body>
 	</html>

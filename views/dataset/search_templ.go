@@ -344,7 +344,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-download\"></i> <span>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" download><i class=\"if if-download\"></i> <span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

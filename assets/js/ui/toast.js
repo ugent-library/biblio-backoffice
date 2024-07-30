@@ -1,15 +1,11 @@
 import htmx from "htmx.org/dist/htmx.esm.js";
+import { Toast } from "bootstrap.native";
 
 export default function () {
-  let addEvents = function (rootEl) {
-    rootEl
-      .querySelectorAll('.btn-close[data-bs-dismiss="toast"]')
-      .forEach(function (btn) {
-        btn.addEventListener("click", () => {
-          btn.closest(".toast").remove();
-        });
-      });
-  };
-
-  htmx.onLoad(addEvents);
+  htmx.onLoad((rootEl) => {
+    rootEl.querySelectorAll(".toast").forEach((toastEl) => {
+      // Bootstrap already initializes the toast but doesn't show it automatically
+      Toast.getInstance(toastEl).show();
+    });
+  });
 }

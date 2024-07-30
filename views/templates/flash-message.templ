@@ -1,0 +1,29 @@
+package viewtemplates
+
+templ FlashMessageTemplate() {
+	<template id="template-flash-message">
+		<div
+			class="toast"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body align-items-center">
+					<i class="d-none me-4 if if--success if-check-circle-fill"></i>
+					<i class="d-none me-4 if if--primary if-info-circle-filled"></i>
+					<i class="d-none me-4 if if--warning if-alert-fill"></i>
+					<i class="d-none me-4 if if--error if-error-circle-fill"></i>
+					<div class="d-none me-4 spinner-border text-primary" role="status">
+						<span class="visually-hidden">Loading...</span>
+					</div>
+					<div class="toast-content">
+						<h3 class="d-none alert-title"></h3>
+						<div class="toast-text"></div>
+					</div>
+				</div>
+				<button class="btn-close" type="button" data-bs-dismiss="toast" aria-label="Close"></button>
+			</div>
+		</div>
+	</template>
+}

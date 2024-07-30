@@ -17,16 +17,20 @@ import collapseSubSidebar from "./ui/collapsible_sub_sidebar.js";
 import fileUpload from "./ui/file_upload.js";
 import tags from "./ui/tags.js";
 import facetDropdowns from "./ui/facet_dropdowns.js";
+import fileDownload from "./ui/file_download.js";
 
 // configure htmx
 htmx.config.defaultFocusScroll = true;
 
-// apply bootstrap js to new dom content
-htmx.onLoad(initCallback);
+htmx.onLoad((el) => {
+  // apply Bootstrap JS to new DOM content (not on initial load)
+  if (el !== document.body) {
+    initCallback(el);
+  }
+});
 
-// load htmx extensions
-window.htmx = htmx;
-require("htmx-ext-remove-me");
+// load htmx extensions (uncomment if any HTMX extensions are needed)
+// window.htmx = htmx;
 
 // initialize everything
 document.addEventListener("DOMContentLoaded", function () {
@@ -49,4 +53,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
 htmx.onLoad(function (el) {
   clipboard(el);
+  fileDownload(el);
 });

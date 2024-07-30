@@ -96,7 +96,7 @@ templ FilesBody(c *ctx.Ctx, p *models.Publication) {
 						<div class="list-group-item-inner">
 							<div class="list-group-item-main u-min-w-0">
 								<div class="c-thumbnail-and-text align-items-start d-block d-lg-flex">
-									<a href={ templ.URL(c.PathTo("publication_download_file", "id", p.ID, "file_id", f.ID).String()) }>
+									<a href={ templ.URL(c.PathTo("publication_download_file", "id", p.ID, "file_id", f.ID).String()) } download>
 										<div class="c-thumbnail c-thumbnail-5-4 c-thumbnail-small c-thumbnail-xl-large mb-6 mb-xl-0 flex-shrink-0 d-none d-lg-block">
 											<div class="c-thumbnail-inner">
 												<i class="if if-article"></i>
@@ -180,7 +180,7 @@ templ FilesBody(c *ctx.Ctx, p *models.Publication) {
 											</div>
 										</div>
 										<h4>
-											<a href={ templ.URL(c.PathTo("publication_download_file", "id", p.ID, "file_id", f.ID).String()) }>
+											<a href={ templ.URL(c.PathTo("publication_download_file", "id", p.ID, "file_id", f.ID).String()) } download>
 												<span class="list-group-item-title">
 													{ f.Name }
 												</span>

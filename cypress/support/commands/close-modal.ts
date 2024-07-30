@@ -39,7 +39,7 @@ export default function closeModal(
 
         return $el;
       })
-      .click(NO_LOG);
+      .click({ ...NO_LOG, animationDistanceThreshold: 1 });
   };
 
   if (subject) {

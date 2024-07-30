@@ -136,7 +136,7 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 											<i class="if if-more"></i>
 										</button>
 										<div class="dropdown-menu">
-											<a class="dropdown-item" target="_blank" href={ templ.URL(datasetSearchExportURL(c, args.SearchArgs).String()) }>
+											<a class="dropdown-item" target="_blank" href={ templ.URL(datasetSearchExportURL(c, args.SearchArgs).String()) } download>
 												<i class="if if-download"></i>
 												<span>{ c.Loc.Get("export_to.xlsx") }</span>
 											</a>

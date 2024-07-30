@@ -19,6 +19,7 @@ describe("Publishing datasets", () => {
         .closeModal("Publish");
       cy.ensureNoModal();
       cy.ensureToast("Dataset was successfully published.").closeToast();
+      cy.ensureNoToast();
 
       cy.contains(".btn-outline-danger", "Withdraw").click();
       cy.ensureModal("Are you sure?")
