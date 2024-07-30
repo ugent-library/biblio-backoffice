@@ -1,11 +1,11 @@
-import showFlashMessage from "./flash_message";
+import FlashMessage from "./flash_message";
 
 export default function fileDownload(el) {
   el.querySelectorAll("a[download]").forEach((anchor) => {
     anchor.addEventListener("click", async (e) => {
       e.preventDefault();
 
-      const flashMessage = showFlashMessage({
+      const flashMessage = new FlashMessage({
         isLoading: true,
         text: "Preparing download...",
         isDismissible: false,
@@ -13,6 +13,7 @@ export default function fileDownload(el) {
           autohide: false,
         },
       });
+      flashMessage.show();
 
       try {
         const response = await fetch(anchor.href);
@@ -31,22 +32,20 @@ export default function fileDownload(el) {
         dummyAnchor.setAttribute("download", filename);
         dummyAnchor.textContent = filename;
 
-        flashMessage?.setLevel("success");
-        flashMessage?.setIsLoading(false);
-        flashMessage?.setText("Download ready: " + dummyAnchor.outerHTML);
-        flashMessage?.setIsDismissible(true);
+        flashMessage.setLevel("success");
+        flashMessage.setIsLoading(false);
+        flashMessage.setText("Download ready: " + dummyAnchor.outerHTML);
+        flashMessage.setIsDismissible(true);
 
         // Trigger download (save-as window or auto-download, depending on browser settings)
         dummyAnchor.click();
       } catch (error) {
-        if (flashMessage) {
-          flashMessage.hide();
-        }
+        flashMessage.hide();
 
-        showFlashMessage({
+        new FlashMessage({
           level: "error",
           text: error.message,
-        });
+        }).show();
       }
     });
   });
