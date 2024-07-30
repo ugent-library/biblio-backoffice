@@ -235,7 +235,6 @@ func (c *Client) SuggestProjects(q string) ([]*models.Project, error) {
 				p.EUProject = &models.EUProject{}
 			}
 			p.EUProject.Acronym = v.(string)
-			p.Description = p.EUProject.Acronym
 		}
 		if v, ok := m["eu_framework_programme"]; ok {
 			if p.EUProject == nil {
@@ -254,6 +253,10 @@ func (c *Client) SuggestProjects(q string) ([]*models.Project, error) {
 		// iweto_id not filled in everywhere, but should be same as id for now
 		if p.IWETOID == "" {
 			p.IWETOID = p.ID
+		}
+
+		if v, ok := m["abstract"]; ok {
+			p.Description = v.(string)
 		}
 
 		projects = append(projects, &p)
