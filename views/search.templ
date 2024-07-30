@@ -201,7 +201,7 @@ templ FacetLine() {
 
 templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 	<div
-		class={ "bc-toolbar", "bc-toolbar--auto", "mb-4", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2) }
+		class={ "bc-toolbar", "bc-toolbar-lg-responsive", "bc-toolbar--auto", "mb-4", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2) }
 	>
 		<div class="bc-toolbar-left">
 			<div class="bc-toolbar-item">
@@ -212,7 +212,7 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 			<div class="bc-toolbar-item">
 				<div class="c-button-toolbar">
 					if len(searchArgs.FacetLines) > 2 {
-						<div class="form-check">
+						<div class="form-chec ps-0">
 							<input
 								type="checkbox"
 								id="show-all-facet-filters-toggle"
@@ -225,13 +225,13 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 							<label for="show-all-facet-filters-toggle" class="btn btn-link toggle-off">
 								<i class="if if-chevron-down u-no-transition"></i>
 								<span class="btn-text">
-									<span class="u-no-transition">Show all filters</span>
+									<span class="u-no-transition">Show more <span class="d-none d-xl-inline-block">filters</span></span>
 								</span>
 							</label>
 							<label for="show-all-facet-filters-toggle" class="btn btn-link toggle-on">
 								<i class="if if-chevron-up u-no-transition"></i>
 								<span class="btn-text">
-									<span class="u-no-transition">Show less filters</span>
+									<span class="u-no-transition">Show less <span class="d-none d-xl-inline-block">filters</span></span>
 								</span>
 							</label>
 						</div>
@@ -243,7 +243,7 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 						}
 						<button class="btn btn-link btn-muted text-muted" type="submit">
 							<i class="if if-close"></i>
-							<span class="btn-text">Reset filters</span>
+							<span class="btn-text">Reset <span class="d-none d-xl-inline-block">filters</span></span>
 						</button>
 					</form>
 				</div>
