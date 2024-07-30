@@ -26,5 +26,6 @@ func UpdatedBy(c *ctx.Ctx, updatedAt *time.Time, updatedBy *models.Person, lastU
 	if lastUpdatedBy != nil {
 		s += " Last edit by " + lastUpdatedBy.FullName
 	}
+	s += "."
 	return s
 }
