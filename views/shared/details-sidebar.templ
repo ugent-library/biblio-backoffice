@@ -1,0 +1,172 @@
+package shared
+
+import "github.com/ugent-library/biblio-backoffice/ctx"
+
+templ DetailsSidebar(c *ctx.Ctx) {
+	<div id="sidebar-message" data-sidebar-content class="c-sub-sidebar c-sub-sidebar--large h-100 u-z-reset bg-white border-start">
+		<div class="overflow-hidden u-scroll-wrapper">
+			<div class="bc-navbar bc-navbar--bordered-bottom">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<h3>Biblio messages</h3>
+					</div>
+					<div class="bc-toolbar-right">
+						<button class="btn btn-muted btn-icon-only" type="button" data-sidebar-close>
+							<i class="if if-close"></i>
+							<div class="visually-hidden">Close</div>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="u-scroll-wrapper__body p-6">
+				<div class="form-group">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<label class="col-form-label">Messages from and for Biblio team</label>
+						</div>
+						<div class="bc-toolbar-right">
+							<button class="btn btn-primary btn-sm">Save</button>
+						</div>
+					</div>
+					<textarea class="form-control" rows="15">The language-edited version of the PhD will be published in the forthcoming weeks as a book with ISBN number, which will be fully open access (based on the contract with the publisher) and uploaded in biblio. Dr Depauw prefers the language-edited book version to be published in full open access instead of the original dissertation, which therefore has been limited to author/admin only</textarea>
+					<p class="text-muted mt-2">Have any questions or changes to report? Mail to <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.</p>
+				</div>
+				<div class="form-group">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<label class="col-form-label">Librarian tags</label>
+						</div>
+						<div class="bc-toolbar-right">
+							<button class="btn btn-primary btn-sm">Save</button>
+						</div>
+					</div>
+					<textarea class="form-control" id="tags" placeholder="tags" autofocus></textarea>
+					<p class="text-muted mt-2">For internal use only.</p>
+				</div>
+				<div class="form-group">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							<label class="col-form-label">Librarian note</label>
+						</div>
+						<div class="bc-toolbar-right">
+							<button class="btn btn-primary btn-sm">Save</button>
+						</div>
+					</div>
+					<textarea class="form-control" rows="15">The language-edited version of the PhD will be published in the forthcoming weeks as a book with ISBN number, which will be fully open access (based on the contract with the publisher) and uploaded in biblio. Dr Depauw prefers the language-edited book version to be published in full open access instead of the original dissertation, which therefore has been limited to author/admin only</textarea>
+					<p class="text-muted mt-2">For internal use only.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="sidebar-history" data-sidebar-content class="c-sub-sidebar c-sub-sidebar--large h-100 u-z-reset bg-white border-start">
+		<div class="overflow-hidden u-scroll-wrapper">
+			<div class="bc-navbar bc-navbar--bordered-bottom">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<h3>Activity history</h3>
+					</div>
+					<div class="bc-toolbar-right">
+						<button class="btn btn-muted btn-icon-only" type="button" data-sidebar-close>
+							<i class="if if-close"></i>
+							<div class="visually-hidden">Close</div>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="u-scroll-wrapper__body p-6">
+				<ul class="c-activity-list">
+					<li class="c-activity-item">
+						<div class="c-activity-item__avatar-wrapper">
+							<div class="bc-avatar bc-avatar--muted bc-avatar--small">
+								<i class="if if-edit"></i>
+							</div>
+						</div>
+						<div class="c-activity-item__content">
+							<div class="c-activity-item__activity">
+								<div class="c-activity-item__date">21 maart 2022 at 18:34</div>
+								<div class="c-activity-item__text">
+									<span class="fw-bold">Wouter Bosmans</span>
+									edited the access level questions
+								</div>
+							</div>
+						</div>
+					</li>
+					<li class="c-activity-item">
+						<div class="c-activity-item__avatar-wrapper">
+							<div class="bc-avatar bc-avatar--muted bc-avatar--small">
+								<i class="if if-edit"></i>
+							</div>
+						</div>
+						<div class="c-activity-item__content">
+							<div class="c-activity-item__activity">
+								<div class="c-activity-item__date">21 maart 2022 at 18:34</div>
+								<div class="c-activity-item__text">
+									<span class="fw-bold">Wouter Bosmans</span>
+									started completing the draft publication.
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div id="sidebar-info" data-sidebar-content class="c-sub-sidebar c-sub-sidebar h-100 u-z-reset bg-white border-start">
+		<div class="overflow-hidden u-scroll-wrapper">
+			<div class="bc-navbar bc-navbar--bordered-bottom">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<h3>Details</h3>
+					</div>
+					<div class="bc-toolbar-right">
+						<button class="btn btn-muted btn-icon-only" type="button" data-sidebar-close>
+							<i class="if if-close"></i>
+							<div class="visually-hidden">Close</div>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="u-scroll-wrapper__body p-6">
+				<ul class="c-activity-list">
+					<div class="form-group">
+						<label class="form-label form-label-top">Created by</label>
+						<p>Jane Cooper</p>
+					</div>
+					<div class="form-group">
+						<label class="form-label form-label-top">Creation date</label>
+						<p>2023-06-02</p>
+					</div>
+					<div class="form-group">
+						<label class="form-label form-label-top">Source</label>
+						<a class="c-link" href="#">Plato</a>
+					</div>
+					<div class="form-group">
+						<label class="form-label form-label-top">DOI</label>
+						<a class="c-link" href="#">10.1016/j.apergo.2023.104214</a>
+					</div>
+					<div class="form-group">
+						<label class="form-label form-label-top">Web of Science</label>
+						<a class="c-link" href="#">001155148400001</a>
+					</div>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="c-sub-sidebar c-sub-sidebar--small bg-light">
+		<div class="c-sub-sidebar__content">
+			<div class="d-flex justify-content-center py-3">
+				<nav class="nav nav-sidebar flex-column gap-2" data-sidebar-menu>
+					<button class="nav-link" type="button" data-target-id="sidebar-message" title="Biblio messages">
+						<i class="if if-message if--notification"></i>
+					</button>
+					<button class="nav-link" type="button" data-target-id="sidebar-history" title="Activity history">
+						<i class="if if-time"></i>
+					</button>
+					<button class="nav-link" type="button" data-target-id="sidebar-info" title="Details">
+						<i class="if if-info-circle"></i>
+					</button>
+				</nav>
+			</div>
+		</div>
+	</div>
+}
