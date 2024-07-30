@@ -1,4 +1,4 @@
-import Modal from "bootstrap.native/modal";
+import { Modal } from "bootstrap.native";
 
 export default function (error) {
   let modals = document.querySelector("#modals");
@@ -6,12 +6,12 @@ export default function (error) {
     /*
      * Expects somewhere in the document ..
      *
-     * <template class="template-modal-error"></template>
+     * <template id="template-modal-error"></template>
      *
      * .. a template that encapsulates the modal body
      * */
     const templateModalError = document.querySelector(
-      "template.template-modal-error",
+      "template#template-modal-error",
     );
 
     if (templateModalError) {

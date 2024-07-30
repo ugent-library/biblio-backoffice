@@ -107,7 +107,7 @@ func downloadMainFileAction(c *ctx.Ctx, rec *models.CandidateRecord) templ.Compo
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-eye\"></i> <span class=\"btn-text\">View file</span></a>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" download><i class=\"if if-eye\"></i> <span class=\"btn-text\">View file</span></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

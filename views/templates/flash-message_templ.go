@@ -8,7 +8,7 @@ package viewtemplates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func ModalErrorTemplate() templ.Component {
+func FlashMessageTemplate() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -26,7 +26,7 @@ func ModalErrorTemplate() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<template id=\"template-modal-error\"><div class=\"modal fade\" tabindex=\"-1\" aria-modal=\"true\" role=\"dialog\"><div class=\"modal-dialog modal-dialog-centered\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-body\"><div class=\"c-blank-slate c-blank-slate-danger\"><div class=\"bc-avatar\"><i class=\"if if-error-circle\"></i></div><p class=\"msg\"></p></div></div><div class=\"modal-footer\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><button type=\"button\" class=\"btn btn-link\" data-bs-dismiss=\"modal\">Close</button></div></div></div></div></div></div></template>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<template id=\"template-flash-message\"><div class=\"toast\" role=\"alert\" aria-live=\"assertive\" aria-atomic=\"true\"><div class=\"d-flex\"><div class=\"toast-body align-items-center\"><i class=\"d-none me-4 if if--success if-check-circle-fill\"></i> <i class=\"d-none me-4 if if--primary if-info-circle-filled\"></i> <i class=\"d-none me-4 if if--warning if-alert-fill\"></i> <i class=\"d-none me-4 if if--error if-error-circle-fill\"></i><div class=\"d-none me-4 spinner-border text-primary\" role=\"status\"><span class=\"visually-hidden\">Loading...</span></div><div class=\"toast-content\"><h3 class=\"d-none alert-title\"></h3><div class=\"toast-text\"></div></div></div><button class=\"btn-close\" type=\"button\" data-bs-dismiss=\"toast\" aria-label=\"Close\"></button></div></div></template>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
