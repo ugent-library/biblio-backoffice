@@ -237,7 +237,9 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 						</div>
 					}
 					<form method="GET" action={ URL(c.CurrentURL).ClearQuery().SafeURL() }>
-						<input type="hidden" name="f[scope]" value={ searchArgs.FilterFor("scope") }/>
+						if scope := searchArgs.FilterFor("scope"); scope != "" {
+							<input type="hidden" name="f[scope]" value={ scope }/>
+						}
 						<input type="hidden" name="q" value={ searchArgs.Query }/>
 						for _, sort := range searchArgs.Sort {
 							<input type="hidden" name="sort" value={ sort }/>
