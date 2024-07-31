@@ -4,6 +4,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/shared"
 )
 
 templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
@@ -180,6 +181,7 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 					hx-trigger="load delay:100ms"
 					hx-target="#show-content"
 				></div>
+				@shared.DetailsSidebar(c)
 			</div>
 		</div>
 	}
