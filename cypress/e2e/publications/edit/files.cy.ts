@@ -3,7 +3,7 @@ import { testFormAccessibility } from "support/util";
 
 describe("Editing publication files", () => {
   beforeEach(() => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
 
     cy.setUpPublication();
     cy.visitPublication();

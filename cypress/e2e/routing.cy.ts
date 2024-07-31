@@ -2,10 +2,10 @@ import { getCSRFToken } from "support/util";
 
 describe("Authorization", () => {
   it("should not be possible to edit or delete publications from another user", () => {
-    cy.loginAsLibrarian();
+    cy.login("researcher1");
     cy.setUpPublication();
 
-    cy.loginAsResearcher();
+    cy.login("researcher2");
 
     testForbiddenPublicationRoute("/add/description");
     testForbiddenPublicationRoute("/add/confirm");
@@ -125,10 +125,10 @@ describe("Authorization", () => {
   });
 
   it("should not be possible to edit or delete datasets from another user", () => {
-    cy.loginAsLibrarian();
+    cy.login("researcher1");
     cy.setUpDataset();
 
-    cy.loginAsResearcher();
+    cy.login("researcher2");
 
     testForbiddenDatasetRoute("/add/description");
     testForbiddenDatasetRoute("/add/confirm");
@@ -220,7 +220,7 @@ describe("Authorization", () => {
   });
 
   it("should not be possible to edit publication reviewer tags and notes as a regular user", () => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
 
     cy.setUpPublication();
 
@@ -231,7 +231,7 @@ describe("Authorization", () => {
   });
 
   it("should not be possible to edit dataset reviewer tags and notes as a regular user", () => {
-    cy.loginAsResearcher();
+    cy.login("researcher1");
 
     cy.setUpDataset();
 

@@ -2,7 +2,9 @@
 
 describe("Issue #961: [filters] Prioritise filter sequence and visibility", () => {
   describe("for researchers", () => {
-    beforeEach(cy.loginAsResearcher);
+    beforeEach(() => {
+      cy.login("researcher1");
+    });
 
     it("should not show collapsible facet filters for publications", () => {
       cy.visit("/publication");
@@ -47,7 +49,9 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
   });
 
   describe("for librarians", () => {
-    beforeEach(cy.loginAsLibrarian);
+    beforeEach(() => {
+      cy.login("librarian1");
+    });
 
     describe("in researcher mode", () => {
       beforeEach(() => {

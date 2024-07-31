@@ -1,6 +1,8 @@
 import { logCommand } from "./helpers";
 
-export default function login(username, password): void {
+type Username = "researcher1" | "researcher2" | "librarian1" | "librarian2";
+
+export default function login(username: Username): void {
   // WARNING: Whenever you change the code of the session setup, Cypress will throw an error:
   //   This session already exists. You may not create a new session with a previously used identifier.
   //   If you want to create a new session with a different setup function, please call cy.session() with
@@ -27,7 +29,9 @@ export default function login(username, password): void {
           body.username = username;
         }
         if ("password" in body) {
-          body.password = password;
+          throw new Error(
+            "Current Cypres setup doesn't support password login.",
+          );
         }
 
         cy.request({
@@ -53,7 +57,7 @@ export default function login(username, password): void {
 declare global {
   namespace Cypress {
     interface Chainable {
-      login(username: string, password: string): Chainable<void>;
+      login(username: Username): Chainable<void>;
     }
   }
 }
