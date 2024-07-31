@@ -414,12 +414,12 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(".\"</em>&nbsp; ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(".\"</em> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<em>\"Untitled record.\"</em>&nbsp; ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<em>\"Untitled record.\"</em> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -434,7 +434,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",&nbsp; ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(", ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

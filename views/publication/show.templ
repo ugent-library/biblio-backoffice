@@ -177,18 +177,18 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 							}
 
 							if p.Title != "" {
-								<em>"{ p.Title }."</em>&nbsp;
+								<em>"{ p.Title }."</em>
 							} else {
-								<em>"Untitled record."</em>&nbsp;
+								<em>"Untitled record."</em>
 							}
 							if p.Publication != "" {
-								{ p.Publication },&nbsp;
+								{ p.Publication },
 							}
 							if p.Volume != "" {
-								vol. { p.Volume },&nbsp;
+								vol. { p.Volume },
 							}
 							if p.Issue != "" {
-								no. { p.Issue },&nbsp;
+								no. { p.Issue },
 							}
 							if p.PageFirst != "" || p.PageLast != "" {
 								if p.PageFirst != "" {
@@ -196,20 +196,20 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 								}
 								<span>-</span>
 								if p.PageLast != "" {
-									{ p.PageLast }
-								},&nbsp;
+									{ p.PageLast },
+								}
 							} else {
 								if p.PageCount != "" {
-									{ p.PageCount } pages,&nbsp;
+									{ p.PageCount } pages,
 								}
 							}
-							if p.Publisher !="" {
-								{ p.Publisher },&nbsp;
+							if (p.Type != "conference") && p.Publisher != "" {
+								{ p.Publisher },
 							}
-							if (p.Type == "conference") && p.ConferenceName !="" {
-								{ p.ConferenceName },&nbsp;
+							if (p.Type == "conference") && p.ConferenceName != "" {
+								{ p.ConferenceName },
 							}
-							if p.Year !="" {
+							if p.Year != "" {
 								{ p.Year }.
 							}
 						</h4>

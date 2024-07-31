@@ -507,12 +507,12 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(".\"</em>&nbsp; ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(".\"</em> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<em>\"Untitled record.\"</em>&nbsp; ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<em>\"Untitled record.\"</em> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -527,7 +527,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",&nbsp; ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(", ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -546,7 +546,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",&nbsp; ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(", ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -565,7 +565,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",&nbsp; ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(", ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -600,14 +600,10 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(", ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",&nbsp; ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
 				}
 			} else {
 				if p.PageCount != "" {
@@ -620,13 +616,13 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" pages,&nbsp; ")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" pages, ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 			}
-			if p.Publisher != "" {
+			if (p.Type != "conference") && p.Publisher != "" {
 				var templ_7745c5c3_Var33 string
 				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(p.Publisher)
 				if templ_7745c5c3_Err != nil {
@@ -636,7 +632,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",&nbsp; ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(", ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -651,7 +647,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(",&nbsp; ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(", ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

@@ -175,12 +175,12 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 								{ dataset.Author[0].LastName() }, { dataset.Author[0].FirstName() }, et al., creators.
 							}
 							if dataset.Title != "" {
-								<em>"{ dataset.Title }."</em>&nbsp;
+								<em>"{ dataset.Title }."</em>
 							} else {
-								<em>"Untitled record."</em>&nbsp;
+								<em>"Untitled record."</em>
 							}
 							if dataset.Publisher !="" {
-								{ dataset.Publisher },&nbsp;
+								{ dataset.Publisher },
 							}
 							if dataset.Year !="" {
 								{ dataset.Year }.
