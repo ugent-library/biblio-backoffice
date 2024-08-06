@@ -90,15 +90,19 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 							<div class="d-inline-flex align-items-center flex-wrap">
 								<span class="badge rounded-pill badge-light me-4">Authors</span>
 								@contributorviews.Summary(c, contributorviews.SummaryArgs{
-									Role:         "author",
-									Contributors: p.Author,
+									Role:                    "author",
+									Contributors:            p.Author,
+									CanViewMoreContributors: c.User.CanViewPublication(p),
+									CanEditContributors:     c.User.CanEditPublication(p),
 								})
 							</div>
 							<div class="d-inline-flex align-items-center flex-wrap">
 								<span class="badge rounded-pill badge-light me-4">Supervisors</span>
 								@contributorviews.Summary(c, contributorviews.SummaryArgs{
-									Role:         "supervisor",
-									Contributors: p.Supervisor,
+									Role:                    "supervisor",
+									Contributors:            p.Supervisor,
+									CanViewMoreContributors: c.User.CanViewPublication(p),
+									CanEditContributors:     c.User.CanEditPublication(p),
 								})
 							</div>
 						</div>
