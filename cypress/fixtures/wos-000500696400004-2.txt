@@ -9,8 +9,6 @@ AF Dubois, Hanne
    Wullaert, Andy
 BE VanpouilleBox, C
    Galluzzi, L
-BF Vanpouille-Box, Claire
-   Galluzzi, Lorenzo
 TI Nucleic Acid Induced Interferon and Inflammasome Responses in Regulating
    Host Defense to Gastrointestinal Viruses
 SO NUCLEIC ACID SENSING AND IMMUNITY, PT B
