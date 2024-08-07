@@ -23,7 +23,7 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 										</span>
 									}
 									<span class="c-subline text-nowrap me-3 pe-3 border-end">
-										{ c.Loc.Get("publication_types." + p.Type) }
+										{ c.Loc.Get("publication_types." + p.Type) }:
 										if p.Classification != "" {
 											{ p.Classification }
 										}
