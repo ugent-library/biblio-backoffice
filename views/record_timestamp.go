@@ -24,8 +24,7 @@ func UpdatedBy(c *ctx.Ctx, updatedAt *time.Time, updatedBy *models.Person, lastU
 
 	s := fmt.Sprintf("System update %s.", updatedAt.In(c.Timezone).Format("2006-01-02 15:04"))
 	if lastUpdatedBy != nil {
-		s += " Last edit by " + lastUpdatedBy.FullName
+		s += " Last edit by " + lastUpdatedBy.FullName + "."
 	}
-	s += "."
 	return s
 }
