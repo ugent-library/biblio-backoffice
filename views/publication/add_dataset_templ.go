@@ -44,7 +44,7 @@ func AddDataset(c *ctx.Ctx, publication *models.Publication, hits *models.Datase
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"keyup changed delay:500ms\" hx-target=\"#dataset-suggestions\"><p class=\"text-muted\">Select one or more datasets as already registered in Biblio. <a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a></p></div><div class=\"modal-body\"><div id=\"dataset-suggestions\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"keyup changed delay:500ms\" hx-target=\"#dataset-suggestions\"><p class=\"text-muted\">Select one or more datasets that are already registered in Biblio. <a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a></p></div><div class=\"modal-body\"><div id=\"dataset-suggestions\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

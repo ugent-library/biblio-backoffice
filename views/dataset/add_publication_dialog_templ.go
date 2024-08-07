@@ -44,7 +44,7 @@ func AddPublicationDialog(c *ctx.Ctx, dataset *models.Dataset, publicationHits *
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"keyup changed delay:500ms\" hx-target=\"#publication-suggestions\"><p class=\"text-muted\">Select one or more publications as already registered in Biblio. <a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a></p></div><div class=\"modal-body\"><div id=\"publication-suggestions\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"keyup changed delay:500ms\" hx-target=\"#publication-suggestions\"><p class=\"text-muted\">Select one or more publications that are already registered in Biblio. <a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a></p></div><div class=\"modal-body\"><div id=\"publication-suggestions\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
