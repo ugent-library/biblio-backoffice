@@ -1,8 +1,8 @@
 export default function initSearchFields(el: HTMLElement) {
-  el.querySelectorAll<HTMLInputElement>("input[type=search]").forEach(
+  el.querySelectorAll<HTMLInputElement>("input[data-submit-on-clear]").forEach(
     (input) => {
       const form = input.closest("form");
-      if (form && !hasHtmxAttributes(input) && !hasHtmxAttributes(form)) {
+      if (form) {
         input.addEventListener("search", () => {
           if (input.value === "") {
             form.submit();
@@ -11,8 +11,4 @@ export default function initSearchFields(el: HTMLElement) {
       }
     },
   );
-}
-
-function hasHtmxAttributes(el: HTMLElement) {
-  return el.getAttributeNames().some((attr) => attr.startsWith("hx-"));
 }

@@ -901,7 +901,7 @@ func Query(c *ctx.Ctx, searchArgs *models.SearchArgs) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"Search...\" autocomplete=\"off\"> <button type=\"submit\" class=\"btn btn-outline-primary\" type=\"button\"><i class=\"if if-search\"></i> <span class=\"btn-text\">Search</span></button></div></div><div class=\"col-3\"><div class=\"d-flex align-items-center\"><label class=\"pe-3 text-nowrap\" for=\"sort\">Sort by</label> <select class=\"form-select form-change-submit\" name=\"sort\" id=\"sort\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"Search...\" autocomplete=\"off\" data-submit-on-clear> <button type=\"submit\" class=\"btn btn-outline-primary\" type=\"button\"><i class=\"if if-search\"></i> <span class=\"btn-text\">Search</span></button></div></div><div class=\"col-3\"><div class=\"d-flex align-items-center\"><label class=\"pe-3 text-nowrap\" for=\"sort\">Sort by</label> <select class=\"form-select form-change-submit\" name=\"sort\" id=\"sort\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
