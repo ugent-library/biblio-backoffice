@@ -1,6 +1,8 @@
 {
+  "include": ["assets/js/**/*.ts"],
   "compilerOptions": {
     "lib": ["dom"],
-    "noEmit": true
+    "noEmit": true,
+    "allowJs": true
   }
 }
