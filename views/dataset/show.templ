@@ -7,7 +7,13 @@ import (
 )
 
 templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
-	@views.PageLayout(c, views.PageLayoutArgs{Title: c.Loc.Get("dataset.page.show.title")}) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title: c.Loc.Get("dataset.page.show.title"),
+		Breadcrumbs: []views.Breadcrumb{
+			{LabelID: "datasets", URL: c.PathTo("datasets")},
+			{LabelID: "dataset"},
+		},
+	}) {
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bg-white">
 				<div class="bc-navbar bc-navbar--large bc-navbar--white">

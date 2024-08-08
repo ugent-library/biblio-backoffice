@@ -185,7 +185,7 @@ func Register(c Config) {
 			r.Group(func(r *ich.Mux) {
 				r.Use(ctx.RequireUser)
 
-				r.With(ctx.SetNav("dashboard")).With(ctx.SetBreadcrumbs("dashboard")).Get("/dashboard", handlers.DashBoard).Name("dashboard")
+				r.With(ctx.SetNav("dashboard")).Get("/dashboard", handlers.DashBoard).Name("dashboard")
 				r.Get("/dashboard-icon", handlers.DashBoardIcon).Name("dashboard_icon")
 				// dashboard action required component
 				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
@@ -201,18 +201,14 @@ func Register(c Config) {
 					r.Group(func(r *ich.Mux) {
 						r.Use(ctx.SetNav("dashboard"))
 
-						r.With(ctx.SetBreadcrumbs("dashboard_datasets")).
-							Get("/dashboard/datasets/{type}", dashboard.CuratorDatasets).Name("dashboard_datasets")
-						r.With(ctx.SetBreadcrumbs("dashboard_publications")).
-							Get("/dashboard/publications/{type}", dashboard.CuratorPublications).Name("dashboard_publications")
+						r.Get("/dashboard/datasets/{type}", dashboard.CuratorDatasets).Name("dashboard_datasets")
+						r.Get("/dashboard/publications/{type}", dashboard.CuratorPublications).Name("dashboard_publications")
 					})
 
 					r.Post("/dashboard/refresh-apublications/{type}", dashboard.RefreshAPublications).Name("dashboard_refresh_apublications")
 					r.Post("/dashboard/refresh-upublications/{type}", dashboard.RefreshUPublications).Name("dashboard_refresh_upublications")
 
-					r.With(ctx.SetNav("candidate_records")).
-						With(ctx.SetBreadcrumbs("candidate_records")).
-						Get("/candidate-records", candidaterecords.CandidateRecords).Name("candidate_records")
+					r.With(ctx.SetNav("candidate_records")).Get("/candidate-records", candidaterecords.CandidateRecords).Name("candidate_records")
 					r.Get("/candidate-records-icon", candidaterecords.CandidateRecordsIcon).Name("candidate_records_icon")
 					r.Get("/candidate-records/{id}/preview", candidaterecords.CandidateRecordPreview).Name("candidate_records_preview")
 					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
@@ -236,7 +232,6 @@ func Register(c Config) {
 
 					// publication batch operations
 					r.With(ctx.SetNav("batch")).
-						With(ctx.SetBreadcrumbs("publication_batch")).
 						Get("/publication/batch", publicationbatch.Show).Name("publication_batch")
 					r.Post("/publication/batch", publicationbatch.Process).Name("publication_process_batch")
 				})
@@ -248,15 +243,12 @@ func Register(c Config) {
 				// publications
 				r.Group(func(r *ich.Mux) {
 					r.Use(ctx.SetNav("publications"))
-					r.Use(ctx.SetBreadcrumbs("publications"))
 
 					// search
 					r.Get("/publication", publicationsearching.Search).Name("publications")
 
 					// import (wizard part 1 - before save)
 					r.Route("/add-publication", func(r *ich.Mux) {
-						r.Use(ctx.AddBreadcrumb("publication_add"))
-
 						r.Get("/", publicationcreating.Add).Name("publication_add")
 						r.Post("/import/single", publicationcreating.AddSingleImport).Name("publication_add_single_import")
 						r.Post("/import/single/confirm", publicationcreating.AddSingleImportConfirm).Name("publication_add_single_import_confirm")
@@ -272,7 +264,6 @@ func Register(c Config) {
 					r.Route("/publication/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetPublication(c.Services.Repo))
 						r.Use(ctx.RequireViewPublication)
-						r.Use(ctx.AddBreadcrumb("publication"))
 
 						// view only functions
 						r.Group(func(r *ich.Mux) {
@@ -293,8 +284,6 @@ func Register(c Config) {
 
 							// add (wizard part 2 - after save)
 							r.Group(func(r *ich.Mux) {
-								r.Use(ctx.SetBreadcrumbs("publications", "publication_add"))
-
 								r.Get("/add/description", publicationcreating.AddSingleDescription).Name("publication_add_single_description")
 								r.Get("/add/confirm", publicationcreating.AddSingleConfirm).Name("publication_add_single_confirm")
 								r.Post("/add/publish", publicationcreating.AddSinglePublish).Name("publication_add_single_publish")
@@ -426,14 +415,11 @@ func Register(c Config) {
 				// datasets
 				r.Group(func(r *ich.Mux) {
 					r.Use(ctx.SetNav("datasets"))
-					r.Use(ctx.SetBreadcrumbs("datasets"))
 
 					r.Get("/dataset", datasetsearching.Search).Name("datasets")
 
 					// dataset wizard (part 1)
 					r.Route("/add-dataset", func(r *ich.Mux) {
-						r.Use(ctx.AddBreadcrumb("dataset_add"))
-
 						r.Get("/", datasetcreating.Add).Name("dataset_add")
 						r.Post("/", datasetcreating.Add).Name("dataset_add")
 						r.Post("/import/confirm", datasetcreating.ConfirmImport).Name("dataset_confirm_import")
@@ -443,7 +429,6 @@ func Register(c Config) {
 					r.Route("/dataset/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetDataset(c.Services.Repo))
 						r.Use(ctx.RequireViewDataset)
-						r.Use(ctx.AddBreadcrumb("dataset"))
 
 						// view only functions
 						r.Get("/", datasetviewing.Show).Name("dataset")
@@ -458,8 +443,6 @@ func Register(c Config) {
 
 							// wizard (part 2)
 							r.Group(func(r *ich.Mux) {
-								r.Use(ctx.SetBreadcrumbs("datasets", "dataset_add"))
-
 								r.Post("/save", datasetcreating.AddSaveDraft).Name("dataset_add_save_draft")
 								r.Post("/add/publish", datasetcreating.AddPublish).Name("dataset_add_publish")
 								r.Get("/add/finish", datasetcreating.AddFinish).Name("dataset_add_finish")

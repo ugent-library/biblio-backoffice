@@ -19,7 +19,10 @@ type AddMultipleConfirmArgs struct {
 }
 
 templ AddMultipleConfirm(c *ctx.Ctx, args AddMultipleConfirmArgs) {
-	@views.PageLayout(c, views.PageLayoutArgs{Title: "Add - Publications - Biblio"}) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title:       "Add - Publications - Biblio",
+		Breadcrumbs: addPublicationBreadcrumbs(c),
+	}) {
 		@publication.AddMultipleSidebar(c, args.Step)
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">

@@ -3,8 +3,9 @@ package views
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
 type PageLayoutArgs struct {
-	Title string
-	Meta  templ.Component
+	Title       string
+	Meta        templ.Component
+	Breadcrumbs []Breadcrumb
 }
 
 templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
@@ -51,7 +52,7 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 					<div class="bc-toolbar bc-toolbar-sm">
 						<div class="bc-toolbar-left">
 							<div class="bc-toolbar-item">
-								@Breadcrumbs(c)
+								@Breadcrumbs(c, args.Breadcrumbs)
 							</div>
 						</div>
 						<div class="bc-toolbar-right">

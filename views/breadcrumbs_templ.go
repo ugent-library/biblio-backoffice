@@ -8,9 +8,17 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"net/url"
+)
 
-func Breadcrumbs(c *ctx.Ctx) templ.Component {
+type Breadcrumb struct {
+	LabelID string
+	URL     *url.URL
+}
+
+func Breadcrumbs(c *ctx.Ctx, crumbs []Breadcrumb) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -44,7 +52,7 @@ func Breadcrumbs(c *ctx.Ctx) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.AssetPath("/images/ghent-university-library-logo.svg"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `breadcrumbs.templ`, Line: 10, Col: 112}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `breadcrumbs.templ`, Line: 18, Col: 112}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -57,7 +65,7 @@ func Breadcrumbs(c *ctx.Ctx) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(c.AssetPath("/images/ghent-university-library-mark.svg"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `breadcrumbs.templ`, Line: 11, Col: 112}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `breadcrumbs.templ`, Line: 19, Col: 112}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -76,17 +84,17 @@ func Breadcrumbs(c *ctx.Ctx) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for i, breadcrumb := range c.Breadcrumbs {
+		for i, crumb := range crumbs {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"breadcrumb-item\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if i < len(c.Breadcrumbs)-1 && c.HasNamedRoute(breadcrumb) {
+			if i < len(crumbs)-1 && crumb.URL != nil {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var6 templ.SafeURL = templ.URL(c.PathTo(breadcrumb).String())
+				var templ_7745c5c3_Var6 templ.SafeURL = templ.URL(crumb.URL.String())
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var6)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -96,9 +104,9 @@ func Breadcrumbs(c *ctx.Ctx) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var7 string
-				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.GetC(breadcrumb, "breadcrumbs"))
+				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.GetC(crumb.LabelID, "breadcrumbs"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `breadcrumbs.templ`, Line: 24, Col: 46}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `breadcrumbs.templ`, Line: 32, Col: 49}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -110,9 +118,9 @@ func Breadcrumbs(c *ctx.Ctx) templ.Component {
 				}
 			} else {
 				var templ_7745c5c3_Var8 string
-				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.GetC(breadcrumb, "breadcrumbs"))
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.GetC(crumb.LabelID, "breadcrumbs"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `breadcrumbs.templ`, Line: 27, Col: 45}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `breadcrumbs.templ`, Line: 35, Col: 48}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {

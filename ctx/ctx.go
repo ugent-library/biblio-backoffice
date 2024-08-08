@@ -133,7 +133,6 @@ type Ctx struct {
 	CSPNonce     string
 	Nav          string
 	SubNav       string
-	Breadcrumbs  []string
 	CurrentURL   *url.URL
 
 	// flagContext  *ffcontext.EvaluationContext

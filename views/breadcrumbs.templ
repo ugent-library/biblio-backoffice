@@ -1,8 +1,16 @@
 package views
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"net/url"
+)
 
-templ Breadcrumbs(c *ctx.Ctx) {
+type Breadcrumb struct {
+	LabelID string
+	URL     *url.URL
+}
+
+templ Breadcrumbs(c *ctx.Ctx, crumbs []Breadcrumb) {
 	<nav aria-label="breadcrumb">
 		<ol class="breadcrumb">
 			<li class="breadcrumb-item">
@@ -17,14 +25,14 @@ templ Breadcrumbs(c *ctx.Ctx) {
 					<span class="breadcrumb-text">Biblio</span>
 				</a>
 			</li>
-			for i, breadcrumb := range c.Breadcrumbs {
+			for i, crumb := range crumbs {
 				<li class="breadcrumb-item">
-					if i < len(c.Breadcrumbs) - 1 && c.HasNamedRoute(breadcrumb) {
-						<a href={ templ.URL(c.PathTo(breadcrumb).String()) }>
-							{ c.Loc.GetC(breadcrumb, "breadcrumbs") }
+					if i < len(crumbs) - 1 && crumb.URL != nil {
+						<a href={ templ.URL(crumb.URL.String()) }>
+							{ c.Loc.GetC(crumb.LabelID, "breadcrumbs") }
 						</a>
 					} else {
-						{ c.Loc.GetC(breadcrumb, "breadcrumbs") }
+						{ c.Loc.GetC(crumb.LabelID, "breadcrumbs") }
 					}
 				</li>
 			}

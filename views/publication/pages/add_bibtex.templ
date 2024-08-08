@@ -9,7 +9,10 @@ import (
 )
 
 templ AddBibTeX(c *ctx.Ctx, step int) {
-	@views.PageLayout(c, views.PageLayoutArgs{Title: "Add - Publications - Biblio"}) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title:       "Add - Publications - Biblio",
+		Breadcrumbs: addPublicationBreadcrumbs(c),
+	}) {
 		@publication.AddMultipleSidebar(c, step)
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">

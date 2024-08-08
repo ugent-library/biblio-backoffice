@@ -18,7 +18,10 @@ type AddIdentifierArgs struct {
 }
 
 templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
-	@views.PageLayout(c, views.PageLayoutArgs{Title: "Add - Datasets - Biblio"}) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title:       "Add - Datasets - Biblio",
+		Breadcrumbs: addDatasetBreadcrumbs(c),
+	}) {
 		@datasetviews.AddSidebar(c, 1)
 		<form class="w-100" action={ templ.URL(c.PathTo("dataset_confirm_import").String()) } method="POST">
 			@views.CSRFTag(c)

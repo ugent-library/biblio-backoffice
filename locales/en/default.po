@@ -2438,14 +2438,6 @@ msgid "dashboard"
 msgstr "Dashboard"
 
 msgctxt "breadcrumbs"
-msgid "dashboard_publications"
-msgstr "Dashboard"
-
-msgctxt "breadcrumbs"
-msgid "dashboard_datasets"
-msgstr "Dashboard"
-
-msgctxt "breadcrumbs"
 msgid "publications"
 msgstr "Publications"
 
