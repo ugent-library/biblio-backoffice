@@ -2,7 +2,7 @@
 
 describe("Issue #1123:  WoS import cuts keywords up because of newlines in import", () => {
   it("should not split up keywords by newlines", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/add-publication");
 

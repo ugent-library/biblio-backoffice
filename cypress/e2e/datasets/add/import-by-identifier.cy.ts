@@ -2,7 +2,7 @@ import { getRandomText, testFormAccessibility } from "support/util";
 
 describe("Dataset import", () => {
   it("should be possible to import datasets by DOI", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
     cy.visit("/");
 
     cy.contains(".btn", "Add research").click();
@@ -77,7 +77,7 @@ describe("Dataset import", () => {
   });
 
   it("should show an error toast if the DOI is invalid", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/add-dataset");
 
@@ -95,7 +95,7 @@ describe("Dataset import", () => {
     const DOI = "10.48804/A76XM9";
 
     // First clean up existing datasets with the same DOI
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
     const selector =
       ".card .card-body .list-group .list-group-item .c-button-toolbar .dropdown .dropdown-item:contains('Delete')";
 
@@ -116,7 +116,7 @@ describe("Dataset import", () => {
     }
 
     // Actual test starts here
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     // First make and publish the first dataset manually
     const title = getRandomText();

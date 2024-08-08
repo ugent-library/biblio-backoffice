@@ -51,7 +51,7 @@ describe("Login & authorization", () => {
   });
 
   it("should be able to logon as researcher", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/");
 
@@ -76,7 +76,7 @@ describe("Login & authorization", () => {
   });
 
   it("should be able to logon as librarian and switch curator mode (researcher/librarian)", () => {
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
 
     cy.visit("/");
 
@@ -104,7 +104,7 @@ describe("Login & authorization", () => {
     cy.contains(".c-sidebar__item", "Batch").should("be.visible");
     cy.contains(".c-sidebar__item", "Suggestions").should("be.visible");
 
-    cy.switchMode("Researcher");
+    cy.loginAsLibrarian("librarian1", "Researcher");
 
     cy.visit("/");
     cy.get(".c-sidebar button.dropdown-toggle")
@@ -127,7 +127,7 @@ describe("Login & authorization", () => {
     cy.contains(".c-sidebar__item", "Batch").should("not.exist");
     cy.contains(".c-sidebar__item", "Suggestions").should("not.exist");
 
-    cy.switchMode("Librarian");
+    cy.loginAsLibrarian("librarian1", "Librarian");
 
     cy.visit("/");
     cy.get(".c-sidebar button.dropdown-toggle")
@@ -154,7 +154,7 @@ describe("Login & authorization", () => {
   });
 
   it("should not set the biblio-backoffice cookie twice when switching roles", () => {
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
 
     cy.visit("/");
 
@@ -195,7 +195,7 @@ describe("Login & authorization", () => {
     cy.visit("/");
     cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
 
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
     cy.visit("/");
     cy.location("pathname").should("eq", "/dashboard/publications/faculties"); // auto redirect
     cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
@@ -207,11 +207,11 @@ describe("Login & authorization", () => {
   });
 
   it("should clear curator mode cookie on logout", () => {
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
     cy.visit("/");
     cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
 
-    cy.switchMode("Researcher");
+    cy.loginAsLibrarian("librarian1", "Researcher");
     cy.visit("/");
     cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
 
@@ -220,7 +220,7 @@ describe("Login & authorization", () => {
     cy.location("pathname").should("eq", "/");
     cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
 
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
     cy.visit("/");
     cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
   });
