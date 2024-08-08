@@ -96,7 +96,7 @@ describe("Publication import", () => {
 
     // First clean up existing publications with the same DOI
     cy.login("librarian1");
-    cy.switchMode("Librarian");
+
     const selector =
       ".card .card-body .list-group .list-group-item .c-button-toolbar .dropdown .dropdown-item:contains('Delete')";
 

@@ -29,7 +29,6 @@ describe("Issue #1124:  Add friendlier consistent confirmation toaster when lock
 
       // Publication can be locked by librarian
       cy.login("librarian1");
-      cy.switchMode("Librarian");
 
       cy.visit("/publication");
       cy.get('input[name=q][placeholder="Search..."]').type(biblioId);
@@ -85,7 +84,6 @@ describe("Issue #1124:  Add friendlier consistent confirmation toaster when lock
 
       // Now go back as librarian to unlock the publication
       cy.login("librarian1");
-      cy.switchMode("Librarian");
 
       cy.visitPublication();
 
