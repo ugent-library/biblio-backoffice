@@ -20,7 +20,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
   };
 
   beforeEach(() => {
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
   });
 
   Object.entries(testCases).forEach(([path, name]) => {

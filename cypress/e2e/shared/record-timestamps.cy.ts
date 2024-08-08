@@ -14,13 +14,13 @@ describe("Record timestamps", () => {
   describe("for publications", () => {
     describe("normal flow", () => {
       before(() => {
-        cy.login("researcher1");
+        cy.loginAsResearcher("researcher1");
         cy.setUpPublication("Miscellaneous", {
           title: `Publication ${RANDOM_TEXT}`,
         });
         cy.addAuthor("Biblio", "Researcher2");
 
-        cy.login("researcher2");
+        cy.loginAsResearcher("researcher2");
         cy.addAuthor("New", "Author", { external: true });
 
         // Give elastic some extra time to index
@@ -28,7 +28,7 @@ describe("Record timestamps", () => {
       });
 
       beforeEach(() => {
-        cy.login("researcher1");
+        cy.loginAsResearcher("researcher1");
 
         cy.visit("/publication", { qs: { q: RANDOM_TEXT } });
         cy.extractBiblioId();
@@ -58,7 +58,7 @@ describe("Record timestamps", () => {
     });
 
     it("should not display curator names to non-curators", () => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
 
       cy.setUpPublication("Book");
       cy.addAuthor("Biblio", "Researcher1");
@@ -87,7 +87,7 @@ describe("Record timestamps", () => {
       assertTimestamp("#summary .c-subline", "Edited", "Biblio Librarian1");
 
       // as a non-curator
-      cy.login("researcher1");
+      cy.loginAsResearcher("researcher1");
 
       cy.get<string>("@biblioId").then((biblioId) => {
         cy.visit("/publication", { qs: { q: biblioId } });
@@ -109,7 +109,7 @@ describe("Record timestamps", () => {
       assertTimestamp("#summary .c-subline", "Edited", "a Biblio team member");
 
       // as a different curator
-      cy.login("librarian2");
+      cy.loginAsLibrarian("librarian2");
 
       cy.get<string>("@biblioId").then((biblioId) => {
         cy.visit("/publication", { qs: { q: biblioId } });
@@ -135,13 +135,13 @@ describe("Record timestamps", () => {
   describe("for datasets", () => {
     describe("normal flow", () => {
       before(() => {
-        cy.login("researcher1");
+        cy.loginAsResearcher("researcher1");
         cy.setUpDataset({
           title: `Dataset ${RANDOM_TEXT}`,
         });
         cy.addCreator("Biblio", "Researcher2");
 
-        cy.login("researcher2");
+        cy.loginAsResearcher("researcher2");
         cy.addCreator("New", "Creator", { external: true });
 
         // Give elastic some extra time to index
@@ -149,7 +149,7 @@ describe("Record timestamps", () => {
       });
 
       beforeEach(() => {
-        cy.login("researcher1");
+        cy.loginAsResearcher("researcher1");
 
         cy.visit("/dataset", { qs: { q: RANDOM_TEXT } });
         cy.extractBiblioId();
@@ -179,7 +179,7 @@ describe("Record timestamps", () => {
     });
 
     it("should not display curator names to non-curators", () => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
 
       cy.setUpDataset();
       cy.addCreator("Biblio", "Researcher1");
@@ -208,7 +208,7 @@ describe("Record timestamps", () => {
       assertTimestamp("#summary .c-subline", "Edited", "Biblio Librarian1");
 
       // as a non-curator
-      cy.login("researcher1");
+      cy.loginAsResearcher("researcher1");
 
       cy.get<string>("@biblioId").then((biblioId) => {
         cy.visit("/dataset", { qs: { q: biblioId } });
@@ -230,7 +230,7 @@ describe("Record timestamps", () => {
       assertTimestamp("#summary .c-subline", "Edited", "a Biblio team member");
 
       // as a different curator
-      cy.login("librarian2");
+      cy.loginAsLibrarian("librarian2");
 
       cy.get<string>("@biblioId").then((biblioId) => {
         cy.visit("/dataset", { qs: { q: biblioId } });

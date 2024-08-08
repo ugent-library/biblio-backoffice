@@ -6,7 +6,7 @@ describe("The researcher dashboard", () => {
     it("should display recent publication activity", () => {
       const PUBLICATION_TITLE = "My publication title " + getRandomText();
 
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1", "Researcher");
 
       cy.setUpPublication(undefined, {
         otherFields: {
@@ -80,7 +80,7 @@ describe("The researcher dashboard", () => {
     it("should display recent dataset activity", () => {
       const DATASET_TITLE = "My dataset title " + getRandomText();
 
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1", "Researcher");
 
       cy.setUpDataset({
         // Make sure the dataset is not immediately updated after creation
@@ -156,7 +156,7 @@ describe("The researcher dashboard", () => {
       const PUBLICATION_TITLE = "The Dissertation title " + getRandomText();
 
       // As researcher1
-      cy.login("researcher1");
+      cy.loginAsResearcher("researcher1");
       cy.setUpPublication("Dissertation", {
         prepareForPublishing: true,
         title: PUBLICATION_TITLE,
@@ -169,7 +169,7 @@ describe("The researcher dashboard", () => {
       );
 
       // As researcher2
-      cy.login("researcher2");
+      cy.loginAsResearcher("researcher2");
       verifyMostRecentActivity(
         `Biblio Researcher1 edited a publication: ${PUBLICATION_TITLE}.`,
       );
@@ -179,29 +179,29 @@ describe("The researcher dashboard", () => {
       );
 
       // As researcher1
-      cy.login("researcher1");
+      cy.loginAsResearcher("researcher1");
       verifyMostRecentActivity(
         `Biblio Researcher2 edited a publication: ${PUBLICATION_TITLE}.`,
       );
 
       // As librarian1
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1", "Researcher");
       verifyMostRecentActivity(
         `Biblio Researcher2 edited a publication: ${PUBLICATION_TITLE}.`,
       );
-      cy.addSupervisor("Biblio", "Librarian1");
+      cy.addSupervisor("Biblio", "Researcher2");
       verifyMostRecentActivity(
         `You edited a publication: ${PUBLICATION_TITLE}.`,
       );
 
       // As researcher1
-      cy.login("researcher1");
+      cy.loginAsResearcher("researcher1");
       verifyMostRecentActivity(
         `A Biblio team member edited a publication: ${PUBLICATION_TITLE}.`,
       );
 
       // As librarian2
-      cy.login("librarian2");
+      cy.loginAsLibrarian("librarian2", "Researcher");
       verifyMostRecentActivity(
         `Biblio Librarian1 edited a publication: ${PUBLICATION_TITLE}.`,
       );

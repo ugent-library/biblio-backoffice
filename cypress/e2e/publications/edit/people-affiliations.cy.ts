@@ -2,7 +2,7 @@ import { testFormAccessibility } from "support/util";
 
 describe("Editing publication people & affiliations", () => {
   beforeEach(() => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.intercept("/publication/*/contributors/author/suggestions*").as(
       "suggest",
