@@ -53,27 +53,43 @@ function testAriaDescriptionAttributes() {
     $context.find("button.form-value-add").trigger("click");
     $context.find("button.form-value-add").trigger("click");
 
+    // .form-text elements close to a field (within the same parent) are considered crucial information for accessibility
     $context.find(".form-text").each((_, formText) => {
-      const $fields = $context
-        .find(formText)
-        .parent()
-        .find(ACTUAL_FIELDS_SELECTOR);
+      const $fields = Cypress.$(formText).parent().find(ACTUAL_FIELDS_SELECTOR);
       expect($fields).to.have.length.above(0);
 
       $fields.each((_, field) => {
         expect(field).to.satisfy(
-          (f: HTMLElement) =>
-            // aria-details references id attribute of .form-text element
-            f.getAttribute("aria-details") === formText.id ||
-            // aria-describedby references id attribute of .form-text element
-            f.getAttribute("aria-describedby") === formText.id ||
-            // aria-description contains the same text content as .form-text element
-            f.getAttribute("aria-description") === formText.innerText,
+          // These fields should either have an aria-describedby attribute or aria-description combined with aria-details attributes.
+          (f: HTMLFormElement) => {
+            return (
+              // aria-describedby references id attribute of .form-text element
+              f.getAttribute("aria-describedby") === formText.id ||
+              // aria-description contains the same text content as .form-text element
+              (checkAriaDescription(f, formText) &&
+                // aria-details references id attribute of .form-text element
+                f.getAttribute("aria-details") === formText.id)
+            );
+          },
           "Field is missing accessibility information referencing its .form-text node.",
         );
       });
     });
   });
+}
+
+function checkAriaDescription(field: HTMLFormElement, formText: HTMLElement) {
+  const ariaDescription = field.getAttribute("aria-description");
+
+  if (ariaDescription) {
+    // We check that the word sequence from the .form-text element is contained in the aria-description (ignoring any other information)
+    const words = formText.innerText.split(/[^a-zA-Z0-9]+/g).filter(Boolean);
+    const regex = new RegExp(`^.*${words.join(".*")}.*$`, "s");
+
+    return regex.test(ariaDescription);
+  }
+
+  return false;
 }
 
 function testFocusForLabel(
