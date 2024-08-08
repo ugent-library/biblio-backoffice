@@ -189,7 +189,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if f.AccessLevel == "info:eu-repo/semantics/openAccess" {
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-subline text-nowrap me-3 pe-3 my-2 border-end\"><i class=\"if if-download if--small if--muted\"></i> <span>")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-subline text-nowrap me-3 pe-3 my-2\"><i class=\"if if-download if--small if--success\"></i> <span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -207,7 +207,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				} else if f.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-subline text-nowrap me-3 pe-3 my-2 border-end\"><i class=\"if if-ghent-university if--small if--muted\"></i> <span>")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-subline text-nowrap me-3 pe-3 my-2\"><i class=\"if if-ghent-university if--small if--primary\"></i> <span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -225,7 +225,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				} else if f.AccessLevel == "info:eu-repo/semantics/closedAccess" {
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-subline text-nowrap me-3 pe-3 my-2 border-end\"><i class=\"if if-eye-off if--small if--muted\"></i> <span>")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-subline text-nowrap me-3 pe-3 my-2\"><i class=\"if if-eye-off if--small if--muted\"></i> <span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -261,7 +261,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					if f.AccessLevelDuringEmbargo == "info:eu-repo/semantics/closedAccess" {
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-eye-off if--small if--primary\"></i> ")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-eye-off if--small if--muted\"></i> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -284,17 +284,17 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div><div class=\"c-subline text-nowrap me-3 pe-3 my-2 border-end\">")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div><div class=\"c-subline text-nowrap me-3 my-2\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if f.AccessLevelAfterEmbargo == "info:eu-repo/semantics/openAccess" {
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-download if--small if--muted\"></i> ")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-download if--small if--success\"></i> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					} else {
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-ghent-university if--small if--muted\"></i> ")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-ghent-university if--small if--primary\"></i> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -330,7 +330,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-subline text-nowrap me-3 pe-3 my-2\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-subline text-nowrap me-3 ps-3 my-2 border-start\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
