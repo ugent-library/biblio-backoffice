@@ -73,7 +73,6 @@ describe("Issue #1246: Close button on toast does not work", () => {
     cy.setUpPublication("Miscellaneous");
 
     cy.login("librarian1");
-    cy.switchMode("Librarian");
     cy.visitPublication();
 
     cy.contains(".btn", "Lock record").click();
@@ -85,7 +84,6 @@ describe("Issue #1246: Close button on toast does not work", () => {
     cy.setUpPublication("Miscellaneous");
 
     cy.login("librarian1");
-    cy.switchMode("Librarian");
     cy.visitPublication();
 
     cy.contains(".btn", "Lock record").click();

@@ -6,6 +6,7 @@ import (
 
 	"slices"
 
+	"github.com/gorilla/sessions"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
@@ -48,7 +49,9 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	session.Values[ctx.UserIDKey] = user.ID
-	if _, ok := session.Values[ctx.UserRoleKey]; !ok {
+	if user.CanCurate() {
+		session.Values[ctx.UserRoleKey] = "curator"
+	} else {
 		session.Values[ctx.UserRoleKey] = "user"
 	}
 
@@ -76,11 +79,7 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// only remember user role
-	delete(session.Values, ctx.UserIDKey)
-	delete(session.Values, ctx.OriginalUserIDKey)
-	delete(session.Values, ctx.OriginalUserRoleKey)
-	if err := session.Save(r, w); err != nil {
+	if err := ClearSession(w, r, session); err != nil {
 		c.HandleError(w, r, fmt.Errorf("session could not be saved: %w", err))
 		return
 	}
@@ -112,4 +111,12 @@ func UpdateRole(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("HX-Redirect", c.PathTo("dashboard").String())
+}
+
+func ClearSession(w http.ResponseWriter, r *http.Request, session *sessions.Session) error {
+	delete(session.Values, ctx.UserIDKey)
+	delete(session.Values, ctx.OriginalUserIDKey)
+	delete(session.Values, ctx.OriginalUserRoleKey)
+	delete(session.Values, ctx.UserRoleKey)
+	return session.Save(r, w)
 }

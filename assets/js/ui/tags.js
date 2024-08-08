@@ -66,19 +66,35 @@ export default function () {
         );
       });
 
-      // handle label focus
       const { originalInput, input } = tagify.DOM;
-      if (originalInput && originalInput.id && input) {
-        const label = document.querySelector(
-          `label[for="${originalInput.id}"]`,
-        );
-        if (label) {
-          label.addEventListener("click", () => {
-            // for some reason focus is lost again immediatly if you don't set it with timeout
-            window.setTimeout(() => input.focus(), 0);
-          });
-        }
+      if (originalInput && input) {
+        handleLabelFocus(originalInput, input);
+
+        copyAriaAttributes(originalInput, input);
       }
     });
   });
+}
+
+function handleLabelFocus(originalInput, input) {
+  if (originalInput.id) {
+    const label = document.querySelector(`label[for="${originalInput.id}"]`);
+
+    if (label) {
+      label.addEventListener("click", () => {
+        // for some reason focus is lost again immediately if you don't set it with timeout
+        window.setTimeout(() => input.focus(), 0);
+      });
+    }
+  }
+}
+
+function copyAriaAttributes(originalInput, input) {
+  if (originalInput && input) {
+    for (const attr of originalInput.attributes) {
+      if (attr.name.startsWith("aria-") && !input.hasAttribute(attr.name)) {
+        input.setAttribute(attr.name, attr.value);
+      }
+    }
+  }
 }

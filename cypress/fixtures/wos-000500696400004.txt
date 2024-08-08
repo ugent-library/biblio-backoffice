@@ -1,0 +1,64 @@
+﻿FN Clarivate Analytics Web of Science
+VR 1.0
+PT S
+AU Dubois, H
+   van Loo, G
+   Wullaert, A
+AF Dubois, Hanne
+   van Loo, Geert
+   Wullaert, Andy
+BE VanpouilleBox, C
+   Galluzzi, L
+BF Vanpouille-Box, Claire
+   Galluzzi, Lorenzo
+TI Nucleic Acid Induced Interferon and Inflammasome Responses in Regulating
+   Host Defense to Gastrointestinal Viruses
+SO NUCLEIC ACID SENSING AND IMMUNITY, PT B
+SE International Review of Cell and Molecular Biology
+LA English
+DT Review; Book Chapter
+ID ACUTE RESPIRATORY SYNDROME; DOUBLE-STRANDED-RNA; INDUCIBLE GENE-I; HUMAN
+   GUT VIROME; NF-KAPPA-B; RIG-I; ROTAVIRUS INFECTION; NLRP3 INFLAMMASOME;
+   NOROVIRUS GASTROENTERITIS; REOVIRUS INFECTION
+AB The gut bacterial and fungal communities residing in the gastrointestinal tract have undisputed far-reaching effects in regulating host health. In the meantime, however, metagenomic sequencing efforts are revealing enteric viruses as the most abundant dimension of the intestinal gut ecosystem, and the first gut virome-wide association studies showed that inflammatory bowel disease as well as type 1 diabetes could be linked to the presence or absence of particular viral inhabitants in the intestine. In line with the genetic component of these human diseases, mouse model studies demonstrated how beneficial functions of a resident virus can switch to detrimental inflammatory effects in a genetically predisposed host. Such viral-induced intestinal immune disturbances are also recapitulated by several gastrointestinal infectious viruses such as rotavirus and human norovirus. This wide range of viral effects on intestinal immunity emphasizes the need for understanding the innate immune responses to gastrointestinal viruses. Numerous nucleic acid sensors such as DexD/H helicases and AIM2 serve as cytosolic viral guardians to induce antiviral interferon and/or pro-inflammatory inflammasome responses. In both cases, pioneering examples are emerging in which RNA helicases cooperate with particular Nod-like receptors to trigger these cellular responses to enteric viruses. Here we summarize the reported beneficial versus detrimental effects of enteric viruses in the intestinal immune system, and we zoom in on the mechanisms through which sensing of nucleic acids from these enteric viruses trigger interferon and inflammasome responses.
+C1 [Dubois, Hanne; Wullaert, Andy] Univ Ghent, Dept Internal Med, Ghent, Belgium.
+   [Dubois, Hanne; van Loo, Geert; Wullaert, Andy] VIB, VIB UGent Ctr Inflammat Res, Ghent, Belgium.
+   [Dubois, Hanne; Wullaert, Andy] Univ Ghent, Ghent Gut Inflammat Grp GGIG, Ghent, Belgium.
+   [van Loo, Geert] Univ Ghent, Dept Biomed Mol Biol, Ghent, Belgium.
+C3 Ghent University; Ghent University; Flanders Institute for Biotechnology
+   (VIB); Ghent University; Ghent University
+RP Wullaert, A (corresponding author), Univ Ghent, Dept Internal Med, Ghent, Belgium.; Wullaert, A (corresponding author), VIB, VIB UGent Ctr Inflammat Res, Ghent, Belgium.; Wullaert, A (corresponding author), Univ Ghent, Ghent Gut Inflammat Grp GGIG, Ghent, Belgium.
+EM andy.wullaert@ugent.be
+ED Doe, John
+   Dow, Jane
+RI Van Loo, Geert/JPA-2609-2023; Wullaert, Andy/R-1924-2019
+OI Wullaert, Andy/0000-0001-5012-654X; Geert, van Loo/0000-0002-8427-4775
+NR 163
+TC 3
+Z9 3
+U1 2
+U2 10
+PU ACADEMIC PRESS LTD-ELSEVIER SCIENCE LTD
+PI LONDON
+PA 125 LONDON WALL, LONDON EC2Y 5AS, ENGLAND
+SN 1937-6448
+BN 978-0-12-815981-1
+J9 INT REV CEL MOL BIO
+JI Int. Rev. Cell Mol. Biol.
+PY 2019
+VL 345
+BP 137
+EP 171
+DI 10.1016/bs.ircmb.2018.08.003
+PG 35
+WC Biochemistry & Molecular Biology; Immunology
+WE Book Citation Index – Science (BKCI-S); Science Citation Index Expanded (SCI-EXPANDED)
+SC Biochemistry & Molecular Biology; Immunology
+GA BO1JX
+UT WOS:000500696400004
+PM 30904192
+OA Green Published
+DA 2024-07-23
+ER
+
+EF
