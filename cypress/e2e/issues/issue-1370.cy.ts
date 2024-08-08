@@ -56,8 +56,8 @@ describe("Issue #1370: Make created, edited and system update timestamp more inf
     it("should display the date created and edited in the publication detail page", () => {
       cy.visitPublication();
 
-      assertTimestamp("#summary .c-subline", "Created", CREATED_REGEX);
-      assertTimestamp("#summary .c-subline", "Edited", EDITED_REGEX);
+      assertTimestamp("#summary .c-body-small", "Created", CREATED_REGEX);
+      assertTimestamp("#summary .c-body-small", "Edited", EDITED_REGEX);
     });
   });
 
@@ -101,8 +101,8 @@ describe("Issue #1370: Make created, edited and system update timestamp more inf
     it("should display the date created and edited in the dataset detail page", () => {
       cy.visitDataset();
 
-      assertTimestamp("#summary .c-subline", "Created", CREATED_REGEX);
-      assertTimestamp("#summary .c-subline", "Edited", EDITED_REGEX);
+      assertTimestamp("#summary .c-body-small", "Created", CREATED_REGEX);
+      assertTimestamp("#summary .c-body-small", "Edited", EDITED_REGEX);
     });
   });
 
