@@ -3,7 +3,7 @@
 describe("Issue #961: [filters] Prioritise filter sequence and visibility", () => {
   describe("for researchers", () => {
     beforeEach(() => {
-      cy.login("librarian1");
+      cy.login("researcher1");
     });
 
     it("should not show collapsible facet filters for publications", () => {

@@ -188,56 +188,36 @@ BIBLIO_BACKOFFICE_INSECURE (default: false)
 
 ## Development
 
-This project uses [reflex](https://github.com/cespare/reflex) to watch for file
+This project uses [wgo](https://github.com/bokwoon95/wgo) to watch for file
 changes and recompile the application and assets:
 
-```
-cd biblio-backoffice
-go install github.com/cespare/reflex@latest
-cp reflex.example.conf reflex.conf
-reflex -d none -c reflex.conf
-```
-
-Refer to `reflex.example.conf`. The command assumes the existence of a `.env` file
-which exports all relevant environment variables:
-
 ```bash
-export BIBLIO_BACKOFFICE_MODE="development"
-export BIBLIO_BACKOFFICE_BASE_URL="http://localhost:3001"
-...
-```
-
-Alternatively, adapt this command in your `reflex.conf` to suit your needs.
-
-```
-'source .env && go run main.go server start --host localhost --port 3001'
+cd biblio-backoffice
+make dev
+# or
+npm run dev
 ```
 
 ### Running tests
 
-This project has integration tests for the GRPC client/server.
+This project contains Cypress integration tests.
 
-Setting up the test environment:
+To run the tests in the CLI run:
 
 ```bash
-# Set up a docker-based isolated, testing environment
-make setup-test-env
-# Run the GRPC API server
-make api-server
+npm test
 ```
 
-In a separate terminal, you can now run the integration tests:
+If you want to run a recorded (CLI) run to the [Cypress Dashboard](https://cloud.cypress.io/projects/mjg74d/runs), first copy the file `cypress/cypress-record.sh.example` to `cypress/cypress-record.sh` and replace the record key with the secret key from Cypress. Then run:
 
 ```bash
-make run-tests
-# or alternatively
-go test client/... -v
+./cypress/cypress-record.sh
 ```
 
-Tearing down the test environment:
+To run the test in the GUI run:
 
 ```bash
-make tear-test-env
+npm run cypress:open
 ```
 
 ## SASS/SCSS & asset compilation
@@ -248,12 +228,14 @@ Install node dependencies:
 npm install
 ```
 
-Assets will be recompiled automatically if you use [reflex](https://github.com/cespare/reflex) (see above).
+Assets will be recompiled automatically if you use [wgo](https://github.com/bokwoon95/wgo) (see above).
 
 Build assets manually:
 
-```
+```bash
 node esbuild.mjs
+# or
+npm run build:assets
 ```
 
 esbuild [documentation](https://esbuild.github.io/).
@@ -299,7 +281,7 @@ You are now logged into the dev container and ready to develop code, write code,
 **Run the project**
 
 1. Open a new terminal in VS Code from the `Terminal` menu link.
-2. Execute this command `reflex -d none -c reflex.docker.conf`.
+2. Execute this command `make dev`.
 3. Once the application has started, VS Code will show a popup with a link that opens the project in your browser.
 
 **Networking**

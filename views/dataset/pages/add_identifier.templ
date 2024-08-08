@@ -4,6 +4,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/aria"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
 )
@@ -60,7 +61,16 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 											<input type="hidden" name="source" value="datacite"/>
 											<div class="input-group">
 												<label class="input-group-text" for="identifier">DOI</label>
-												<input class="form-control" type="text" id="identifier" name="identifier" value={ args.Identifier } placeholder={ c.Loc.Get("dataset.single_import.import_by_id.identifier.placeholder") } aria-details="identifier-help" required/>
+												<input
+													class="form-control"
+													type="text"
+													id="identifier"
+													name="identifier"
+													value={ args.Identifier }
+													placeholder={ c.Loc.Get("dataset.single_import.import_by_id.identifier.placeholder") }
+													{ aria.Attributes(c.Loc.Get("dataset.single_import.import_by_id.identifier.help"), "identifier-help")... }
+													required
+												/>
 											</div>
 										</div>
 									</div>

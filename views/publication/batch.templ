@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/aria"
 	"github.com/ugent-library/biblio-backoffice/views/form"
 )
 
@@ -53,7 +54,15 @@ templ BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) {
 					</div>
 				}
 				@form.Errors(errors)
-				<textarea class="form-control" id="mutations" name="mutations" rows="8" spellcheck="false" autofocus aria-details="mutations-help">{ formValue }</textarea>
+				<textarea
+					class="form-control"
+					id="mutations"
+					name="mutations"
+					rows="8"
+					spellcheck="false"
+					autofocus
+					{ aria.Attributes(c.Loc.Get("publication.batch.mutations.help"), "mutations-help")... }
+				>{ formValue }</textarea>
 				<div id="mutations-help" class="form-text">
 					@templ.Raw(c.Loc.Get("publication.batch.mutations.help"))
 				</div>
