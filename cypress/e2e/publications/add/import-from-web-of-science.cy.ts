@@ -1,6 +1,6 @@
 describe("Publication import", () => {
   it("should be possible to import publications from Web of Science and save as draft", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/");
 
@@ -70,7 +70,7 @@ describe("Publication import", () => {
   });
 
   it("should be possible to import publications from Web of Science and publish", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/");
 

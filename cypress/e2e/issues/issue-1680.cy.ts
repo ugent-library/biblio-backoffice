@@ -2,7 +2,7 @@
 
 describe('Issue #1680: Make sure tabs are not reset when clicking "reset filters"', () => {
   beforeEach(() => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
   });
 
   describe("for publications", () => {

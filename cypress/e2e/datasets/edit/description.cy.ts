@@ -2,7 +2,7 @@ import { testFormAccessibility } from "support/util";
 
 describe("Editing dataset description", () => {
   beforeEach(() => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.setUpDataset();
     cy.visitDataset();

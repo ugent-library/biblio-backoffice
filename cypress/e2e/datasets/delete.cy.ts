@@ -1,6 +1,6 @@
 describe("Deleting a dataset", () => {
   it("should be possible to delete a dataset", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.setUpDataset();
     cy.visitDataset();

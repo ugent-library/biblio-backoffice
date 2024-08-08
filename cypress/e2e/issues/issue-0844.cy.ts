@@ -12,7 +12,7 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
   const ACTION_HIT_ESCAPE_KEY = () => cy.document().find("body").type("{esc}");
 
   before(() => {
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
 
     cy.setUpPublication(undefined, {
       otherFields: {
@@ -48,7 +48,7 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
 
   describe("as researcher", () => {
     beforeEach(() => {
-      cy.login("researcher1");
+      cy.loginAsResearcher("researcher1");
     });
 
     describe("for publications", () => {
@@ -85,7 +85,7 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
 
   describe("as librarian", () => {
     beforeEach(() => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
     });
 
     describe("for publications", () => {

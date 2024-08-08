@@ -2,7 +2,7 @@ import { getRandomText } from "support/util";
 
 describe("Issue #1127: Cannot search any longer on book title, journal title, short journal title nor conference title", () => {
   beforeEach(() => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
   });
 
   it("should be possible to search by publisher", () => {
