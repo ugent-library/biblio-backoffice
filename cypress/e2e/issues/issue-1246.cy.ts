@@ -2,7 +2,7 @@
 
 describe("Issue #1246: Close button on toast does not work", () => {
   beforeEach(() => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
   });
 
   it("should be possible to dismiss the delete publication toast", () => {
@@ -72,8 +72,7 @@ describe("Issue #1246: Close button on toast does not work", () => {
   it("should be possible to dismiss the locked publication toast", () => {
     cy.setUpPublication("Miscellaneous");
 
-    cy.login("librarian1");
-    cy.switchMode("Librarian");
+    cy.loginAsLibrarian("librarian1");
     cy.visitPublication();
 
     cy.contains(".btn", "Lock record").click();
@@ -84,8 +83,7 @@ describe("Issue #1246: Close button on toast does not work", () => {
   it("should be possible to dismiss the unlocked publication toast", () => {
     cy.setUpPublication("Miscellaneous");
 
-    cy.login("librarian1");
-    cy.switchMode("Librarian");
+    cy.loginAsLibrarian("librarian1");
     cy.visitPublication();
 
     cy.contains(".btn", "Lock record").click();

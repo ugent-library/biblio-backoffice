@@ -2,7 +2,7 @@ import { getRandomText } from "support/util";
 
 describe("Editing dataset publications", () => {
   beforeEach(() => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
   });
 
   it("should be possible to add and delete related publications", () => {

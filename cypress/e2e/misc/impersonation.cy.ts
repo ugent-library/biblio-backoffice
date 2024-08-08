@@ -2,7 +2,7 @@ describe("User impersonation", () => {
   it("should be possible for a librarian to use the app as another user and to return to their own profile afterwards", () => {
     const LIBRARIAN_NAME = "Biblio Librarian1";
 
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
 
     cy.visit("/");
 

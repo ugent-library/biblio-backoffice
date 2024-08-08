@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/gorilla/sessions"
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/handlers/authenticating"
 	"github.com/ugent-library/biblio-backoffice/views"
 )
 
@@ -18,7 +18,7 @@ func UserNotFound(w http.ResponseWriter, r *http.Request) {
 		InternalServerError(w, r)
 		return
 	}
-	if err := clearSession(w, r, session); err != nil {
+	if err := authenticating.ClearSession(w, r, session); err != nil {
 		c.Log.Error("unable to save session", "error", err)
 		InternalServerError(w, r)
 		return
@@ -38,12 +38,4 @@ func InternalServerError(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	w.WriteHeader(500)
 	views.InternalServerError(c).Render(r.Context(), w)
-}
-
-func clearSession(w http.ResponseWriter, r *http.Request, session *sessions.Session) error {
-	delete(session.Values, ctx.UserIDKey)
-	delete(session.Values, ctx.OriginalUserIDKey)
-	delete(session.Values, ctx.OriginalUserRoleKey)
-	delete(session.Values, ctx.UserRoleKey)
-	return session.Save(r, w)
 }

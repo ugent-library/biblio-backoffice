@@ -1,8 +1,21 @@
 import { logCommand } from "./helpers";
 
-type Username = "researcher1" | "researcher2" | "librarian1" | "librarian2";
+export function loginAsResearcher(username: string): void {
+  login("loginAsResearcher", username, null);
+}
 
-export default function login(username: Username): void {
+export function loginAsLibrarian(
+  username: string,
+  reviewerMode = "Librarian",
+): void {
+  login("loginAsLibrarian", username, reviewerMode);
+}
+
+function login(
+  commandName: string,
+  username: string,
+  reviewerMode?: string,
+): void {
   // WARNING: Whenever you change the code of the session setup, Cypress will throw an error:
   //   This session already exists. You may not create a new session with a previously used identifier.
   //   If you want to create a new session with a different setup function, please call cy.session() with
@@ -10,14 +23,20 @@ export default function login(username: Username): void {
   //
   // Temporarily uncomment the following line to clear the sessions if this happens
   // Cypress.session.clearAllSavedSessions()
+  const sessionName = username + (reviewerMode ? ` (${reviewerMode})` : "");
 
-  logCommand("login", { username }, username);
+  const consoleProps = { username };
+  if (reviewerMode) {
+    consoleProps["Reviewer mode"] = reviewerMode;
+  }
+
+  logCommand(commandName, consoleProps, sessionName);
 
   // First clear the current CSRF token
   cy.state("ctx").CSRFToken = "";
 
   cy.session(
-    username,
+    sessionName,
     () => {
       cy.request({ url: "/login", log: false }).then((response) => {
         const form = new DOMParser()
@@ -46,6 +65,13 @@ export default function login(username: Username): void {
           // Make sure we don't leak passwords in the Cypress log
           log: false,
         });
+
+        if (reviewerMode) {
+          cy.htmxRequest({
+            method: "PUT",
+            url: "/role/" + (reviewerMode === "Librarian" ? "curator" : "user"),
+          });
+        }
       });
     },
     {
@@ -57,7 +83,14 @@ export default function login(username: Username): void {
 declare global {
   namespace Cypress {
     interface Chainable {
-      login(username: Username): Chainable<void>;
+      loginAsResearcher(
+        username: "researcher1" | "researcher2",
+      ): Chainable<void>;
+
+      loginAsLibrarian(
+        username: "librarian1" | "librarian2",
+        reviewerMode?: "Librarian" | "Researcher",
+      ): Chainable<void>;
     }
   }
 }

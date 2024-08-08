@@ -62,6 +62,12 @@ templ SuggestProjects(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Projec
 													<code class="c-code d-inline-block">{ hit.IWETOID }</code>
 												</div>
 											}
+											if hit.EUProject != nil && hit.EUProject.Acronym != "" {
+												<div class="ps-4 border-left">
+													<span>EU Acronym</span>
+													<code class="c-code d-inline-block">{ hit.EUProject.Acronym }</code>
+												</div>
+											}
 											if hit.EUProject != nil && hit.EUProject.ID != "" {
 												<div class="ps-4 border-left">
 													<span>CORDIS ID</span>
