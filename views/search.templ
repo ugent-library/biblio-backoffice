@@ -173,9 +173,9 @@ templ FacetSince(c *ctx.Ctx, fieldName string, title string, description string,
 					id={ fmt.Sprintf("f-%s", fieldName) }
 					name={ fmt.Sprintf("f[%s]", fieldName) }
 					value={ searchArgs.FilterFor(fieldName) }
-					{ aria.Attributes(c.Loc.Get("facets.facet_since.help"), form.GetFieldHelpID(fieldName))... }
+					{ aria.Attributes(c.Loc.Get("facets.facet_since.help"), form.FieldHelpID(fieldName))... }
 				/>
-				<small id={ form.GetFieldHelpID(fieldName) } class="form-text">{ c.Loc.Get("facets.facet_since.help") }</small>
+				<small id={ form.FieldHelpID(fieldName) } class="form-text">{ c.Loc.Get("facets.facet_since.help") }</small>
 			</div>
 			<div class="bc-navbar bc-navbar--large">
 				<button class="btn btn-primary d-grid w-100" type="submit">Apply filter</button>

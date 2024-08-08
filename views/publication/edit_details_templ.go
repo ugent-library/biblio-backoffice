@@ -90,7 +90,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, aria.Attributes(c.Loc.Get("builder.type.help"), form.GetFieldHelpID("type")))
+				templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, aria.Attributes(c.Loc.Get("builder.type.help"), form.FieldHelpID("type")))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
