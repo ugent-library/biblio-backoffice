@@ -112,7 +112,7 @@ templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[strin
 }
 
 templ Search(c *ctx.Ctx, args *SearchArgs) {
-	@views.PageLayout(c, "Overview - Datasets - Biblio", nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{Title: "Overview - Datasets - Biblio"}) {
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bg-white">
 				<div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom bc-navbar--white h-auto">

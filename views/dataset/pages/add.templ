@@ -7,7 +7,7 @@ import (
 )
 
 templ Add(c *ctx.Ctx) {
-	@views.PageLayout(c, "Add - Datasets - Biblio", nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{Title: "Add - Datasets - Biblio"}) {
 		@datasetviews.AddSidebar(c, 1)
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">

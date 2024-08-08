@@ -7,7 +7,7 @@ import (
 )
 
 templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
-	@views.PageLayout(c, c.Loc.Get("dataset.page.show.title"), nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{Title: c.Loc.Get("dataset.page.show.title")}) {
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bg-white">
 				<div class="bc-navbar bc-navbar--large bc-navbar--white">

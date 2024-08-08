@@ -7,7 +7,7 @@ import (
 )
 
 templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
-	@views.PageLayout(c, c.Loc.Get("publication.page.show.title"), nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{Title: c.Loc.Get("publication.page.show.title")}) {
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bg-white" data-collapsed="true">
 				<div class="bc-navbar bc-navbar--large bc-navbar--white">

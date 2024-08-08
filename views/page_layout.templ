@@ -2,7 +2,12 @@ package views
 
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
-templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
+type PageLayoutArgs struct {
+	Title string
+	Meta  templ.Component
+}
+
+templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 	<!DOCTYPE html>
 	<html class="u-maximize-height" dir="ltr" lang="en">
 		<head>
@@ -11,10 +16,10 @@ templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
 			<meta name="robots" content="noindex"/>
 			<link rel="stylesheet" href={ c.AssetPath("/css/app.css") }/>
 			<link rel="icon" href={ c.AssetPath("/favicon.ico") }/>
-			<title>{ title }</title>
+			<title>{ args.Title }</title>
 			<meta name="csrf-token" content={ c.CSRFToken }/>
-			if meta != nil {
-				@meta
+			if args.Meta != nil {
+				@args.Meta
 			}
 		</head>
 		<body class="u-maximize-height overflow-hidden u-scroll-wrapper">

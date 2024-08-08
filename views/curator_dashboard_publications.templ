@@ -19,7 +19,7 @@ type CuratorDashboardPublicationsArgs struct {
 }
 
 templ CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublicationsArgs) {
-	@PageLayout(c, "Dashboard - Publications - Biblio", nil) {
+	@PageLayout(c, PageLayoutArgs{Title: "Dashboard - Publications - Biblio"}) {
 		<div class="c-sub-sidebar c-sidebar--bordered">
 			<div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom">
 				<div class="bc-toolbar">

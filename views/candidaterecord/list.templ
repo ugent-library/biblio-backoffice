@@ -7,7 +7,7 @@ import (
 )
 
 templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHits, recs []*models.CandidateRecord) {
-	@views.PageLayout(c, "Biblio", nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{Title: "Biblio"}) {
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bg-white">
 				<div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom h-auto">

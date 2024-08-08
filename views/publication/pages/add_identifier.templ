@@ -31,7 +31,7 @@ var sourceLabels = []string{
 }
 
 templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
-	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{Title: "Add - Publications - Biblio"}) {
 		@publicationviews.AddSingleSidebar(c, args.Step)
 		<form class="w-100 u-scroll-wrapper" action={ templ.URL(c.PathTo("publication_add_single_import_confirm").String()) } method="POST">
 			@views.CSRFTag(c)
