@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/aria"
+	"github.com/ugent-library/biblio-backoffice/views/form"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"io"
 )
@@ -171,9 +173,9 @@ templ FacetSince(c *ctx.Ctx, fieldName string, title string, description string,
 					id={ fmt.Sprintf("f-%s", fieldName) }
 					name={ fmt.Sprintf("f[%s]", fieldName) }
 					value={ searchArgs.FilterFor(fieldName) }
-					aria-details={ fmt.Sprintf("f-%s-help", fieldName) }
+					{ aria.Attributes(c.Loc.Get("facets.facet_since.help"), form.FieldHelpID(fieldName))... }
 				/>
-				<small id={ fmt.Sprintf("f-%s-help", fieldName) } class="form-text">{ c.Loc.Get("facets.facet_since.help") }</small>
+				<small id={ form.FieldHelpID(fieldName) } class="form-text">{ c.Loc.Get("facets.facet_since.help") }</small>
 			</div>
 			<div class="bc-navbar bc-navbar--large">
 				<button class="btn btn-primary d-grid w-100" type="submit">Apply filter</button>
