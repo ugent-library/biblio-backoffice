@@ -49,43 +49,164 @@ func AddManual(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <form class=\"w-100 u-scroll-wrapper\" action=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <div class=\"w-100 u-scroll-wrapper\"><div class=\"bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><div class=\"d-flex flex-column\"><span class=\"text-muted\">Step ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 templ.SafeURL = templ.URL(c.PathTo("publication_add_single_import_confirm").String())
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(step))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_manual.templ`, Line: 19, Col: 56}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" method=\"POST\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span><h4 class=\"bc-toolbar-title\">Enter a publication manually</h4></div></div></div><div class=\"bc-toolbar-right\"><div class=\"c-button-toolbar\"><div class=\"border-end pe-4 me-4\"><a class=\"btn btn-tertiary\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = views.CSRFTag(c).Render(ctx, templ_7745c5c3_Buffer)
+			var templ_7745c5c3_Var4 templ.SafeURL = templ.URL(c.PathTo("publications").String())
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><div class=\"d-flex flex-column\"><span class=\"text-muted\">Step ")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Cancel</a></div><a class=\"btn btn-tertiary\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(step))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_manual.templ`, Line: 21, Col: 57}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			var templ_7745c5c3_Var5 templ.SafeURL = templ.URL(c.PathTo("publication_add").String())
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var5)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span><h4 class=\"bc-toolbar-title\">Add publication(s)</h4></div></div></div><div class=\"bc-toolbar-right\"><div class=\"bc-toolbar-item\"><button type=\"submit\" class=\"btn btn-primary\"><div class=\"btn-text\">Add publication(s)</div><i class=\"if if-arrow-right\"></i></button></div></div></div></div><div class=\"p-6 u-scroll-wrapper__body\"><div class=\"card mb-6\"><div class=\"card-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\">Publication does not have an identifier. Enter manually</div></div></div><div class=\"card-body radio-card-group\"><h4 class=\"mb-5\">As author</h4><div class=\"row mb-5\"><div class=\"col\"><label class=\"c-radio-card c-radio-card--selected\" aria-selected=\"true\"><div class=\"c-radio-card__radio\"><div class=\"form-check\"><input class=\"form-check-input\" id=\"radio-journal-article\" type=\"radio\" name=\"publication_type\" value=\"journal_article\" checked=\"checked\"> <label class=\"form-check-label\" for=\"radio-journal-article\"></label></div></div><div class=\"c-radio-card__content\">Journal Article</div></label></div><div class=\"col\"><label class=\"c-radio-card\" aria-selected=\"false\"><div class=\"c-radio-card__radio\"><div class=\"form-check\"><input class=\"form-check-input\" id=\"radio-book-chapter\" type=\"radio\" name=\"publication_type\" value=\"book_chapter\"> <label class=\"form-check-label\" for=\"radio-book-chapter\"></label></div></div><div class=\"c-radio-card__content\">Book Chapter</div></label></div></div><div class=\"row mb-5\"><div class=\"col\"><label class=\"c-radio-card\" aria-selected=\"false\"><div class=\"c-radio-card__radio\"><div class=\"form-check\"><input class=\"form-check-input\" id=\"radio-book\" type=\"radio\" name=\"publication_type\" value=\"book\"> <label class=\"form-check-label\" for=\"radio-book\"></label></div></div><div class=\"c-radio-card__content\">Book</div></label></div><div class=\"col\"><label class=\"c-radio-card\" aria-selected=\"false\"><div class=\"c-radio-card__radio\"><div class=\"form-check\"><input class=\"form-check-input\" id=\"radio-conference\" type=\"radio\" name=\"publication_type\" value=\"conference\"> <label class=\"form-check-label\" for=\"radio-conference\"></label></div></div><div class=\"c-radio-card__content\">Conference contribution</div></label></div></div><div class=\"row mb-5\"><div class=\"col\"><label class=\"c-radio-card\" aria-selected=\"false\"><div class=\"c-radio-card__radio\"><div class=\"form-check\"><input class=\"form-check-input\" id=\"radio-dissertation\" type=\"radio\" name=\"publication_type\" value=\"dissertation\"> <label class=\"form-check-label\" for=\"radio-dissertation\"></label></div></div><div class=\"c-radio-card__content\">Dissertation</div></label></div><div class=\"col\"><label class=\"c-radio-card\" aria-selected=\"false\"><div class=\"c-radio-card__radio\"><div class=\"form-check\"><input class=\"form-check-input\" id=\"radio-miscellaneous\" type=\"radio\" name=\"publication_type\" value=\"miscellaneous\"> <label class=\"form-check-label\" for=\"radio-miscellaneous\"></label></div></div><div class=\"c-radio-card__content\">Miscellaneous</div></label></div></div><h4 class=\"mb-5\">As editor</h4><div class=\"row\"><div class=\"col\"><label class=\"c-radio-card\" aria-selected=\"false\"><div class=\"c-radio-card__radio\"><div class=\"form-check\"><input class=\"form-check-input\" id=\"radio-book-editor\" type=\"radio\" name=\"publication_type\" value=\"book_editor\"> <label class=\"form-check-label\" for=\"radio-book-editor\"></label></div></div><div class=\"c-radio-card__content\">Book</div></label></div><div class=\"col\"><label class=\"c-radio-card\" aria-selected=\"false\"><div class=\"c-radio-card__radio\"><div class=\"form-check\"><input class=\"form-check-input\" id=\"radio-issue-editor\" type=\"radio\" name=\"publication_type\" value=\"issue_editor\"> <label class=\"form-check-label\" for=\"radio-issue-editor\"></label></div></div><div class=\"c-radio-card__content\">Issue</div></label></div></div></div></div></div></div></form>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-arrow-left\"></i> <span class=\"btn-text\">Previous step</span></a></div></div></div></div><div class=\"p-6 u-scroll-wrapper__body\"><div class=\"container-sm\"><h2 class=\"mb-6\">Choose publication type</h2><div class=\"mb-6\"><h3 class=\"mb-4\">As author</h3><div class=\"row\"><div class=\"col-lg-6\"><div class=\"card mb-3\"><div class=\"card-body py-5\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><p>Journal article</p></div><div class=\"bc-toolbar-right\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = addButton(c, "journal_article").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></div><div class=\"col-lg-6\"><div class=\"card mb-3\"><div class=\"card-body py-5\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><p>Book chapter</p></div><div class=\"bc-toolbar-right\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = addButton(c, "book_chapter").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></div><div class=\"col-lg-6\"><div class=\"card mb-3\"><div class=\"card-body py-5\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><p>Book</p></div><div class=\"bc-toolbar-right\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = addButton(c, "book").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></div><div class=\"col-lg-6\"><div class=\"card mb-3\"><div class=\"card-body py-5\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><p>Conference contribution</p></div><div class=\"bc-toolbar-right\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = addButton(c, "conference").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></div><div class=\"col-lg-6\"><div class=\"card mb-3\"><div class=\"card-body py-5\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><p>Dissertation</p></div><div class=\"bc-toolbar-right\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = addButton(c, "dissertation").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></div><div class=\"col-lg-6\"><div class=\"card mb-3\"><div class=\"card-body py-5\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><p>Miscellaneous</p></div><div class=\"bc-toolbar-right\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = addButton(c, "miscellaneous").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></div></div></div><div class=\"c-or\"><span>Or</span></div><div class=\"mb-6\"><h3 class=\"mb-4\">As editor</h3><div class=\"row\"><div class=\"col-lg-6\"><div class=\"card mb-3\"><div class=\"card-body py-5\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><p>Book</p></div><div class=\"bc-toolbar-right\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = addButton(c, "book_editor").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></div><div class=\"col-lg-6\"><div class=\"card mb-3\"><div class=\"card-body py-5\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><p>Issue</p></div><div class=\"bc-toolbar-right\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = addButton(c, "issue_editor").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div></div></div></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return templ_7745c5c3_Err
 		})
 		templ_7745c5c3_Err = views.PageLayout(c, "Add - Publications - Biblio", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func addButton(c *ctx.Ctx, publicationType string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form action=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 templ.SafeURL = templ.URL(c.PathTo("publication_add_single_import_confirm").String())
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var7)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" method=\"POST\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = views.CSRFTag(c).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"publication_type\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(publicationType)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/pages/add_manual.templ`, Line: 174, Col: 70}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <button type=\"submit\" class=\"btn btn-primary ms-6\"><i class=\"if if-add\"></i> <span class=\"btn-text\">Add</span></button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -1,7 +1,7 @@
 package views
 
 import (
-	"fmt"
+	"strings"
 	"time"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
@@ -9,22 +9,49 @@ import (
 )
 
 func CreatedBy(c *ctx.Ctx, createdAt *time.Time, createdBy *models.Person) string {
-	s := fmt.Sprintf("Created %s", createdAt.In(c.Timezone).Format("2006-01-02 15:04"))
+	sb := &strings.Builder{}
+
+	sb.WriteString("Created ")
+	sb.WriteString(createdAt.In(c.Timezone).Format("2006-01-02 15:04"))
+
 	if createdBy != nil {
-		s += " by " + createdBy.FullName
+		sb.WriteString(" by ")
+		addEditorInfo(c, sb, createdBy)
 	}
-	s += "."
-	return s
+
+	sb.WriteString(".")
+
+	return sb.String()
 }
 
 func UpdatedBy(c *ctx.Ctx, updatedAt *time.Time, updatedBy *models.Person, lastUpdatedBy *models.Person) string {
+	sb := &strings.Builder{}
+
 	if updatedBy != nil {
-		return fmt.Sprintf("Edited %s by %s.", updatedAt.In(c.Timezone).Format("2006-01-02 15:04"), updatedBy.FullName)
+		sb.WriteString("Edited ")
+		sb.WriteString(updatedAt.In(c.Timezone).Format("2006-01-02 15:04"))
+		sb.WriteString(" by ")
+		addEditorInfo(c, sb, updatedBy)
+		sb.WriteString(".")
+	} else {
+		sb.WriteString("System update ")
+		sb.WriteString(updatedAt.In(c.Timezone).Format("2006-01-02 15:04"))
+		sb.WriteString(".")
+
+		if lastUpdatedBy != nil {
+			sb.WriteString(" Last edit by ")
+			addEditorInfo(c, sb, lastUpdatedBy)
+			sb.WriteString(".")
+		}
 	}
 
-	s := fmt.Sprintf("System update %s.", updatedAt.In(c.Timezone).Format("2006-01-02 15:04"))
-	if lastUpdatedBy != nil {
-		s += " Last edit by " + lastUpdatedBy.FullName + "."
+	return sb.String()
+}
+
+func addEditorInfo(c *ctx.Ctx, sb *strings.Builder, person *models.Person) {
+	if person.CanCurate() && !c.User.CanCurate() {
+		sb.WriteString("a Biblio team member")
+	} else {
+		sb.WriteString(person.FullName)
 	}
-	return s
 }

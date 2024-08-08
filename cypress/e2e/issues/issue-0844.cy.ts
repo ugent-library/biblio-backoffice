@@ -86,8 +86,6 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
   describe("as librarian", () => {
     beforeEach(() => {
       cy.login("librarian1");
-
-      cy.switchMode("Librarian");
     });
 
     describe("for publications", () => {
