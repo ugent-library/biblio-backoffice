@@ -9,14 +9,14 @@ import (
 )
 
 func CreatedBy(c *ctx.Ctx, createdAt *time.Time, createdBy *models.Person) string {
-	sb := strings.Builder{}
+	sb := &strings.Builder{}
 
 	sb.WriteString("Created ")
 	sb.WriteString(createdAt.In(c.Timezone).Format("2006-01-02 15:04"))
 
 	if createdBy != nil {
 		sb.WriteString(" by ")
-		addEditorInfo(c, &sb, createdBy)
+		addEditorInfo(c, sb, createdBy)
 	}
 
 	sb.WriteString(".")
@@ -25,13 +25,13 @@ func CreatedBy(c *ctx.Ctx, createdAt *time.Time, createdBy *models.Person) strin
 }
 
 func UpdatedBy(c *ctx.Ctx, updatedAt *time.Time, updatedBy *models.Person, lastUpdatedBy *models.Person) string {
-	sb := strings.Builder{}
+	sb := &strings.Builder{}
 
 	if updatedBy != nil {
 		sb.WriteString("Edited ")
 		sb.WriteString(updatedAt.In(c.Timezone).Format("2006-01-02 15:04"))
 		sb.WriteString(" by ")
-		addEditorInfo(c, &sb, updatedBy)
+		addEditorInfo(c, sb, updatedBy)
 		sb.WriteString(".")
 	} else {
 		sb.WriteString("System update ")
@@ -40,7 +40,7 @@ func UpdatedBy(c *ctx.Ctx, updatedAt *time.Time, updatedBy *models.Person, lastU
 
 		if lastUpdatedBy != nil {
 			sb.WriteString(" Last edit by ")
-			addEditorInfo(c, &sb, lastUpdatedBy)
+			addEditorInfo(c, sb, lastUpdatedBy)
 		}
 	}
 
