@@ -37,8 +37,7 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
 
     assertUserMenuWorks();
 
-    cy.contains("Miscellaneous").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Miscellaneous").contains(".btn", "Add").click();
 
     cy.location("pathname").should(
       "eq",
@@ -101,8 +100,9 @@ describe("Issue #1247: User menu popup hidden behind publication details", () =>
 
     assertUserMenuWorks();
 
-    cy.contains("Register a dataset manually").click("left");
-    cy.contains(".btn", "Add dataset").click();
+    cy.contains(".card", "Register a dataset manually")
+      .contains(".btn", "Add")
+      .click();
 
     cy.location("pathname").should("eq", "/add-dataset");
 

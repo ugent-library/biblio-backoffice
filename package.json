@@ -7,6 +7,7 @@
     "build": "go build -o app -v",
     "build:assets": "node esbuild.mjs",
     "build:assets:watch": "node esbuild.mjs --watch",
+    "build:templ": "templ generate --path views",
     "start": "./app server start",
     "test": "cypress run --config-file cypress/cypress.config.ts --config retries=2",
     "test:bibliodev": "env-cmd --file ./cypress/.env npm test --",

@@ -22,16 +22,23 @@ templ AddBibTeX(c *ctx.Ctx, step int) {
 							</div>
 						</div>
 					</div>
+					<div class="bc-toolbar-right">
+						<div class="c-button-toolbar">
+							<div class="border-end pe-4 me-4">
+								<a class="btn btn-tertiary" href={ templ.URL(c.PathTo("publications").String()) }>Cancel</a>
+							</div>
+							<a class="btn btn-tertiary" href={ templ.URL(c.PathTo("publication_add").String()) }>
+								<i class="if if-arrow-left"></i>
+								<span class="btn-text">Previous step</span>
+							</a>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="p-6 u-scroll-wrapper__body">
-				<div class="card mb-6">
-					<div class="card-header">
-						<div class="bc-toolbar">
-							<div class="bc-toolbar-left">Import via BibTeX file</div>
-						</div>
-					</div>
+				<div class="card">
 					<div class="card-body">
+						<h3 class="mb-4">Import via BibTeX file</h3>
 						<form
 							class="form-change-submit"
 							action={ templ.URL(c.PathTo("publication_add_multiple_import").String()) }

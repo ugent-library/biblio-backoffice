@@ -18,8 +18,9 @@ describe("Publication import", () => {
     cy.get("@steps").eq(1).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
 
-    cy.contains("Import via BibTeX file").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import via BibTeX file")
+      .contains(".btn", "Add")
+      .click();
 
     // Upload BibTeX file
     cy.get(".c-file-upload").should(
@@ -157,8 +158,9 @@ describe("Publication import", () => {
 
     cy.visit("/add-publication");
 
-    cy.contains("Import via BibTeX file").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import via BibTeX file")
+      .contains(".btn", "Add")
+      .click();
 
     cy.get("input[name=file]").selectFile(
       "cypress/fixtures/import-from-bibtex-error.bib",
