@@ -135,7 +135,7 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
       cy.then(() => {
         // Display all filters if necessary
         // Using jQuery here as the Cypress way would fail if the label is missing
-        Cypress.$('label:contains("Show all filters")').trigger("click");
+        Cypress.$('label:contains("Show more filters")').trigger("click");
       });
 
       // cy.get("[data-facet-dropdown]").should("have.length", facets.length);
