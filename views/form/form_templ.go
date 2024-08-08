@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ugent-library/biblio-backoffice/views/form/aria"
+	"github.com/ugent-library/biblio-backoffice/views/aria"
 )
 
 type Theme int

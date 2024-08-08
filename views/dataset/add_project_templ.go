@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/views/form/aria"
+	"github.com/ugent-library/biblio-backoffice/views/aria"
 )
 
 func AddProject(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Project) templ.Component {

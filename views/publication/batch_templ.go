@@ -12,8 +12,8 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/aria"
 	"github.com/ugent-library/biblio-backoffice/views/form"
-	"github.com/ugent-library/biblio-backoffice/views/form/aria"
 )
 
 func Batch(c *ctx.Ctx) templ.Component {
