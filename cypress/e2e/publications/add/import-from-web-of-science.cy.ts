@@ -1,6 +1,6 @@
 describe("Publication import", () => {
   it("should be possible to import publications from Web of Science and save as draft", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/");
 
@@ -18,8 +18,9 @@ describe("Publication import", () => {
     cy.get("@steps").eq(1).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
 
-    cy.contains("Import from Web of Science").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import from Web of Science")
+      .contains(".btn", "Add")
+      .click();
 
     // Upload WoS file
     cy.get(".c-file-upload").should(
@@ -69,7 +70,7 @@ describe("Publication import", () => {
   });
 
   it("should be possible to import publications from Web of Science and publish", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/");
 
@@ -87,8 +88,9 @@ describe("Publication import", () => {
     cy.get("@steps").eq(1).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
 
-    cy.contains("Import from Web of Science").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import from Web of Science")
+      .contains(".btn", "Add")
+      .click();
 
     // Upload WoS file
     cy.get(".c-file-upload").should(

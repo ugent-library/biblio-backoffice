@@ -5,33 +5,33 @@ describe("The publication search (for researchers)", () => {
     const randomTitleSuffix = getRandomText();
 
     // Setup
-    cy.login("librarian1");
+    cy.loginAsResearcher("researcher1");
     cy.setUpPublication("Dissertation", {
       biblioIDAlias: "dissertation1",
       title: `Dissertation 1 ${randomTitleSuffix}`,
       shouldWaitForIndex: true,
     });
-    cy.addAuthor("Biblio", "Librarian1", { biblioIdAlias: "@dissertation1" });
-    cy.addSupervisor("Biblio", "Researcher1", {
+    cy.addAuthor("Biblio", "Researcher1", { biblioIdAlias: "@dissertation1" });
+    cy.addSupervisor("Biblio", "Researcher2", {
       biblioIdAlias: "@dissertation1",
     });
 
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher2");
     cy.setUpPublication("Book", {
       biblioIDAlias: "book",
       title: `Book ${randomTitleSuffix}`,
       shouldWaitForIndex: true,
     });
     cy.addAuthor("John", "Doe", { biblioIdAlias: "@book" });
-    cy.addEditor("Biblio", "Researcher1", { biblioIdAlias: "@book" });
+    cy.addEditor("Biblio", "Researcher2", { biblioIdAlias: "@book" });
 
     cy.setUpPublication("Dissertation", {
       biblioIDAlias: "dissertation2",
       title: `Dissertation 2 ${randomTitleSuffix}`,
       shouldWaitForIndex: true,
     });
-    cy.addAuthor("Biblio", "Researcher1", { biblioIdAlias: "@dissertation2" });
-    cy.addSupervisor("Biblio", "Librarian1", {
+    cy.addAuthor("Biblio", "Researcher2", { biblioIdAlias: "@dissertation2" });
+    cy.addSupervisor("Biblio", "Researcher1", {
       biblioIdAlias: "@dissertation2",
     });
 
@@ -40,8 +40,8 @@ describe("The publication search (for researchers)", () => {
       title: `Dissertation 3 ${randomTitleSuffix}`,
       shouldWaitForIndex: true,
     });
-    cy.addAuthor("Biblio", "Librarian1", { biblioIdAlias: "@dissertation3" });
-    cy.addSupervisor("Biblio", "Researcher1", {
+    cy.addAuthor("Biblio", "Researcher1", { biblioIdAlias: "@dissertation3" });
+    cy.addSupervisor("Biblio", "Researcher2", {
       biblioIdAlias: "@dissertation3",
     });
 

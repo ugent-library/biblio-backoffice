@@ -2,7 +2,7 @@ import { getRandomText } from "support/util";
 
 describe("Publication import", () => {
   it("should be possible to import publications by DOI", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
     cy.visit("/");
 
     cy.contains(".btn", "Add research").click();
@@ -18,8 +18,9 @@ describe("Publication import", () => {
     cy.get("@steps").eq(1).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
 
-    cy.contains("Import your publication via an identifier").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import your publication via an identifier")
+      .contains(".btn", "Add")
+      .click();
 
     // Step 1b
     cy.contains(".bc-toolbar-title", "Add publication(s)")
@@ -34,7 +35,7 @@ describe("Publication import", () => {
 
     cy.get("select[name=source]").should("have.value", "crossref"); // crossref = DOI
     cy.get("input[name=identifier]").type("10.1016/j.ese.2024.100396");
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".btn", "Preview & import publication").click();
 
     // Step 2
     cy.contains(".bc-toolbar-title", "Complete Description")
@@ -74,15 +75,16 @@ describe("Publication import", () => {
   });
 
   it("should show an error toast if the DOI is invalid", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/add-publication");
 
-    cy.contains("Import your publication via an identifier").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import your publication via an identifier")
+      .contains(".btn", "Add")
+      .click();
 
     cy.get("input[name=identifier]").type("SOME/random/DOI.123");
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".btn", "Preview & import publication").click();
 
     cy.ensureToast(
       "Sorry, something went wrong. Could not import the publication",
@@ -96,7 +98,7 @@ describe("Publication import", () => {
     cy.deletePublications(DOI);
 
     // First make and publish the first publication manually
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
     const title = getRandomText();
     cy.setUpPublication("Miscellaneous", {
       title,
@@ -108,16 +110,17 @@ describe("Publication import", () => {
     cy.wait(1000);
 
     // Actual test starts here
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     // Make the second publication
     cy.visit("/add-publication");
 
-    cy.contains("Import your publication via an identifier").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import your publication via an identifier")
+      .contains(".btn", "Add")
+      .click();
 
     cy.get("input[name=identifier]").type(DOI);
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".btn", "Preview & import publication").click();
 
     cy.ensureModal("Are you sure you want to import this publication?").within(
       () => {

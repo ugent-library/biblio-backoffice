@@ -24,8 +24,7 @@ function deleteMany(
   }
 
   cy.getAllCookies(NO_LOG).then((originalCookies) => {
-    cy.login("librarian1");
-    cy.switchMode("Librarian");
+    cy.loginAsLibrarian("librarian1");
 
     cy.visit(`/${type}`, {
       qs: { q: query, "page-size": 1000 },

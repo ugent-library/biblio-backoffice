@@ -764,7 +764,7 @@ msgid "builder.conference.start_date"
 msgstr "Conference start date"
 
 msgid "builder.keyword.help"
-msgstr "Type keywords and separate them by <code>TAB</code>, <code>;</code> or <code>ENTER</code>. A keyword is accepted when it turns blue. Duplicates are removed. <br> e.g. <code>DNA;Health Insurance&lt;ENTER&gt;</code>"
+msgstr "Separate keywords by <span class='visually-hidden'>semicolon</span><code>;</code>, <code>TAB</code> or <code>ENTER</code>. Duplicates will be removed automatically."
 
 msgid "builder.conference.start_date.help"
 msgstr "YYYY-MM-DD"
@@ -2265,7 +2265,7 @@ msgstr "e.g. 2022"
 msgid "builder.identifier_type.help"
 msgstr ""
 "More information about <a href=\"https://onderzoektips.ugent.be/en/"
-"tips/00001743/\" target=\"_blank\">persistent identifiers.</a><br><a "
+"tips/00001743/\" target=\"_blank\">persistent identifiers</a>.<br><a "
 "href=\"mailto:rdm.support@ugent.be\">Contact us</a> if your identifier is "
 "not in the list."
 

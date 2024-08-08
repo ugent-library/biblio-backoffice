@@ -5,7 +5,7 @@ type Breadcrumbs = {
 
 describe("Site breadcrumbs", () => {
   beforeEach(() => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
   });
 
   it("should have no additional breadcrumbs on the anonymous homepage", () => {
@@ -27,8 +27,7 @@ describe("Site breadcrumbs", () => {
 
     describe("As Librarian", () => {
       it("should have breadcrumbs on the dashboard", () => {
-        cy.login("librarian1");
-        cy.switchMode("Librarian");
+        cy.loginAsLibrarian("librarian1");
 
         cy.visit("/dashboard/publications/faculties");
         verifyBreadcrumbs({ name: "Dashboard" });
@@ -134,7 +133,7 @@ describe("Site breadcrumbs", () => {
         verifyBreadcrumbs(...assertions);
 
         cy.get('input[name="identifier"]').type(DOI);
-        cy.contains(".btn", "Add publication(s)").click();
+        cy.contains(".btn", "Preview & import publication").click();
         cy.location("pathname").should(
           "eq",
           "/add-publication/import/single/confirm",
@@ -167,8 +166,7 @@ describe("Site breadcrumbs", () => {
         cy.visit("/add-publication?method=manual");
         verifyBreadcrumbs(...assertions);
 
-        cy.contains("Miscellaneous").click();
-        cy.contains(".btn", "Add publication(s)").click();
+        cy.contains(".card", "Miscellaneous").contains(".btn", "Add").click();
         cy.location("pathname").should(
           "eq",
           "/add-publication/import/single/confirm",
@@ -295,12 +293,13 @@ describe("Site breadcrumbs", () => {
         cy.deleteDatasets(DOI);
 
         cy.visit("/add-dataset");
-        cy.contains("h6", "Register your dataset via a DOI").click();
-        cy.contains(".btn", "Add dataset").click();
+        cy.contains(".card", "Register your dataset via a DOI")
+          .contains(".btn", "Add")
+          .click();
         verifyBreadcrumbs(...assertions);
 
         cy.get("input[name=identifier]").type(DOI);
-        cy.contains(".btn", "Add dataset").click();
+        cy.contains(".btn", "Preview & import dataset").click();
         cy.location("pathname").should("eq", "/add-dataset/import/confirm");
         verifyBreadcrumbs(...assertions);
 
@@ -340,8 +339,9 @@ describe("Site breadcrumbs", () => {
       it("should have breadcrumbs in the manual flow", () => {
         cy.visit("/add-dataset");
 
-        cy.contains("h6", "Register a dataset manually").click();
-        cy.contains(".btn", "Add dataset").click();
+        cy.contains(".card", "Register a dataset manually")
+          .contains(".btn", "Add")
+          .click();
         verifyBreadcrumbs(...assertions);
 
         cy.updateFields(
@@ -389,8 +389,7 @@ describe("Site breadcrumbs", () => {
 
   describe("Curator features", () => {
     beforeEach(() => {
-      cy.login("librarian1");
-      cy.switchMode("Librarian");
+      cy.loginAsLibrarian("librarian1");
     });
 
     it("should have breadcrumbs on the batch page", () => {
