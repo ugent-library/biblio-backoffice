@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views"
-	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/form/aria"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
@@ -84,7 +84,7 @@ func AddBibTeX(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.multiple_import.bibtex.file.help"), "file-help"))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, aria.Attributes(c.Loc.Get("publication.multiple_import.bibtex.file.help"), "file-help"))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

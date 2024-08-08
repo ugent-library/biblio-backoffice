@@ -5,7 +5,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
-	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/form/aria"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 )
@@ -87,7 +87,7 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 													placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K"
 													value={ args.Identifier }
 													aria-label="Identifier"
-													{ form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.single_import.import_by_id.file.help"), "file-help")... }
+													{ aria.Attributes(c.Loc.Get("publication.single_import.import_by_id.file.help"), "file-help")... }
 													required
 												/>
 											</div>

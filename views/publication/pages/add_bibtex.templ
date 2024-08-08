@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views"
-	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/form/aria"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
@@ -45,7 +45,7 @@ templ AddBibTeX(c *ctx.Ctx, step int) {
 									type="file"
 									name="file"
 									aria-label="Upload .bib file"
-									{ form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.multiple_import.bibtex.file.help"), "file-help")... }
+									{ aria.Attributes(c.Loc.Get("publication.multiple_import.bibtex.file.help"), "file-help")... }
 								/>
 								<div class="c-file-upload__content">
 									<p>Drag and drop your .bib file or</p>

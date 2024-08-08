@@ -3,7 +3,7 @@ package dataset
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/form/aria"
 )
 
 templ AddProject(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Project) {
@@ -21,7 +21,7 @@ templ AddProject(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Project) {
 					name="q"
 					placeholder="Search on title or project identifier..."
 					autofocus
-					{ form.GetAccessibilityDescriptionAttributes(c.Loc.Get("dataset.project.add.search.help"), "project-q-help")... }
+					{ aria.Attributes(c.Loc.Get("dataset.project.add.search.help"), "project-q-help")... }
 					hx-get={ c.PathTo("dataset_suggest_projects", "id", dataset.ID).String() }
 					hx-trigger="keyup changed delay:500ms"
 					hx-target="#project-suggestions"

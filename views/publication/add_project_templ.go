@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/form/aria"
 )
 
 func AddProject(c *ctx.Ctx, publication *models.Publication, hits []*models.Project) templ.Component {
@@ -36,7 +36,7 @@ func AddProject(c *ctx.Ctx, publication *models.Publication, hits []*models.Proj
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.project.add.search.help"), "project-q-help"))
+		templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, aria.Attributes(c.Loc.Get("publication.project.add.search.help"), "project-q-help"))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views"
-	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/form/aria"
 	"github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
@@ -40,7 +40,7 @@ templ AddWebOfScience(c *ctx.Ctx, step int) {
 									type="file"
 									name="file"
 									aria-label="Upload .txt file"
-									{ form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.multiple_import.wos.file.help"), "file-help")... }
+									{ aria.Attributes(c.Loc.Get("publication.multiple_import.wos.file.help"), "file-help")... }
 								/>
 								<div class="c-file-upload__content">
 									<p>Drag and drop your .txt file or</p>

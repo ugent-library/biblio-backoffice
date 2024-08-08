@@ -5,6 +5,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/form/aria"
 )
 
 templ Batch(c *ctx.Ctx) {
@@ -60,7 +61,7 @@ templ BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) {
 					rows="8"
 					spellcheck="false"
 					autofocus
-					{ form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.batch.mutations.help"), "mutations-help")... }
+					{ aria.Attributes(c.Loc.Get("publication.batch.mutations.help"), "mutations-help")... }
 				>{ formValue }</textarea>
 				<div id="mutations-help" class="form-text">
 					@templ.Raw(c.Loc.Get("publication.batch.mutations.help"))

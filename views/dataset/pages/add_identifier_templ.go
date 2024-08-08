@@ -14,7 +14,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 	datasetsummaryviews "github.com/ugent-library/biblio-backoffice/views/dataset/summary"
-	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/form/aria"
 )
 
 type AddIdentifierArgs struct {
@@ -106,7 +106,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, form.GetAccessibilityDescriptionAttributes(c.Loc.Get("dataset.single_import.import_by_id.identifier.help"), "identifier-help"))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, aria.Attributes(c.Loc.Get("dataset.single_import.import_by_id.identifier.help"), "identifier-help"))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

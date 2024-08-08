@@ -13,7 +13,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
-	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/form/aria"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 )
@@ -165,7 +165,7 @@ func AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, form.GetAccessibilityDescriptionAttributes(c.Loc.Get("publication.single_import.import_by_id.file.help"), "file-help"))
+			templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, aria.Attributes(c.Loc.Get("publication.single_import.import_by_id.file.help"), "file-help"))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
