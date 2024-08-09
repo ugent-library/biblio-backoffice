@@ -2,7 +2,7 @@ import { getRandomText } from "support/util";
 
 describe("Editing publication datasets", () => {
   beforeEach(() => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
   });
 
   it("should be possible to add and delete related datasets", () => {
@@ -28,7 +28,10 @@ describe("Editing publication datasets", () => {
         "suggestDataset",
       );
 
-      cy.getLabel("Search").next("input").should("be.focused").type(title);
+      cy.getLabel("Search datasets")
+        .next("input")
+        .should("be.focused")
+        .type(title);
       cy.wait("@suggestDataset");
 
       cy.contains(".list-group-item", title)

@@ -2,7 +2,7 @@
 
 describe("Issue #1625: Editors do not show up on WoS import", () => {
   it("should import editors from Web of Science", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/add-publication", {
       qs: {
@@ -28,7 +28,7 @@ describe("Issue #1625: Editors do not show up on WoS import", () => {
   });
 
   it("should use Web of Science field BE as fallback if BF is missing", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/add-publication", {
       qs: {

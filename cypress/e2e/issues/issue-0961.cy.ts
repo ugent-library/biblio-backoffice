@@ -3,7 +3,7 @@
 describe("Issue #961: [filters] Prioritise filter sequence and visibility", () => {
   describe("for researchers", () => {
     beforeEach(() => {
-      cy.login("researcher1");
+      cy.loginAsResearcher("researcher1");
     });
 
     it("should not show collapsible facet filters for publications", () => {
@@ -49,13 +49,9 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
   });
 
   describe("for librarians", () => {
-    beforeEach(() => {
-      cy.login("librarian1");
-    });
-
     describe("in researcher mode", () => {
       beforeEach(() => {
-        cy.switchMode("Researcher");
+        cy.loginAsLibrarian("librarian1", "Researcher");
 
         cy.visit("/");
 
@@ -108,6 +104,8 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
 
     describe("in librarian mode", () => {
       beforeEach(() => {
+        cy.loginAsLibrarian("librarian1");
+
         cy.visit("/");
 
         cy.get(".c-sidebar .dropdown button.dropdown-toggle .visually-hidden")
@@ -129,7 +127,7 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
         assertAssetsAreCollapsed();
         cy.get("@facets").filter(":visible").should("have.length", 10);
 
-        cy.contains(".btn", "Show all filters").click();
+        cy.contains(".btn", "Show more filters").click();
         assertAssetsAreExpanded();
         cy.get("@facets").filter(":visible").should("have.length", 17);
 
@@ -168,7 +166,7 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
         cy.visit("/publication");
         assertAssetsAreCollapsed();
 
-        cy.contains(".btn", "Show all filters").click();
+        cy.contains(".btn", "Show more filters").click();
         assertAssetsAreExpanded();
 
         cy.contains(".dropdown", "Legacy")
@@ -240,7 +238,7 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
         });
         assertAssetsAreCollapsed();
 
-        cy.contains(".btn", "Show all filters").click();
+        cy.contains(".btn", "Show more filters").click();
         assertAssetsAreExpanded();
 
         cy.contains(".dropdown", "File type")
@@ -291,20 +289,20 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
   });
 
   function assertNoCollapsibleFacetFilters() {
-    cy.contains(".btn", "Show all filters").should("not.exist");
+    cy.contains(".btn", "Show more filters").should("not.exist");
     cy.get(".toggle-zone").should("not.exist");
     cy.get("#show-all-facet-filters-toggle").should("not.exist");
   }
 
   function assertAssetsAreCollapsed() {
     cy.get(".toggle-zone .badge-list:visible").should("have.length", 2);
-    cy.contains(".btn", "Show all filters").should("be.visible");
+    cy.contains(".btn", "Show more filters").should("be.visible");
     cy.contains(".btn", "Show less filters").should("not.be.visible");
   }
 
   function assertAssetsAreExpanded() {
     cy.get(".toggle-zone .badge-list:visible").should("have.length", 3);
-    cy.contains(".btn", "Show all filters").should("not.be.visible");
+    cy.contains(".btn", "Show more filters").should("not.be.visible");
     cy.contains(".btn", "Show less filters").should("be.visible");
   }
 

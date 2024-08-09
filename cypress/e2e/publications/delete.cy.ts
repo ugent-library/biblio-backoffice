@@ -1,6 +1,6 @@
 describe("Deleting a publication", () => {
   it("should be possible to delete a publication", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.setUpPublication();
     cy.visitPublication();
