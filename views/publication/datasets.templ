@@ -79,36 +79,40 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 }
 
 templ datasetSummaryActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset) {
-	<div class="bc-toolbar-item ms-auto ms-lg-0">
-		<div class="c-button-toolbar">
-			<div class="dropdown dropleft">
-				<button
-					class="btn btn-link btn-link-p-0 btn-icon-only"
-					type="button"
-					data-bs-toggle="dropdown"
-					aria-haspopup="true"
-					aria-expanded="false"
-				>
-					<i class="if if-more"></i>
-				</button>
-				<div class="dropdown-menu">
-					<a class="dropdown-item" href={ templ.URL(c.PathTo("dataset", "id", d.ID).String()) }>
-						<i class="if if-eye"></i>
-						<span>View dataset</span>
-					</a>
-					if c.User.CanEditPublication(p) {
-						<button
-							class="dropdown-item"
-							type="button"
-							hx-get={ c.PathTo("publication_confirm_delete_dataset", "id", p.ID, "snapshot_id", p.SnapshotID, "dataset_id", d.ID).String() }
-							hx-target="#modals"
-						>
-							<i class="if if-delete"></i>
-							<span>Remove from publication</span>
-						</button>
-					}
+	if c.User.CanViewDataset(d) || c.User.CanEditPublication(p) {
+		<div class="bc-toolbar-item ms-auto ms-lg-0">
+			<div class="c-button-toolbar">
+				<div class="dropdown dropleft">
+					<button
+						class="btn btn-link btn-link-p-0 btn-icon-only"
+						type="button"
+						data-bs-toggle="dropdown"
+						aria-haspopup="true"
+						aria-expanded="false"
+					>
+						<i class="if if-more"></i>
+					</button>
+					<div class="dropdown-menu">
+						if c.User.CanViewDataset(d) {
+							<a class="dropdown-item" href={ templ.URL(c.PathTo("dataset", "id", d.ID).String()) }>
+								<i class="if if-eye"></i>
+								<span>View dataset</span>
+							</a>
+						}
+						if c.User.CanEditPublication(p) {
+							<button
+								class="dropdown-item"
+								type="button"
+								hx-get={ c.PathTo("publication_confirm_delete_dataset", "id", p.ID, "snapshot_id", p.SnapshotID, "dataset_id", d.ID).String() }
+								hx-target="#modals"
+							>
+								<i class="if if-delete"></i>
+								<span>Remove from publication</span>
+							</button>
+						}
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	}
 }

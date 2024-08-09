@@ -60,7 +60,11 @@ templ PublicationsBody(c *ctx.Ctx, dataset *models.Dataset, relatedPublications 
 					<li class="list-group-item">
 						<div class="d-flex w-100">
 							<div class="w-100">
-								@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{Publication: pub, URL: c.PathTo("publication", "id", pub.ID), Actions: publicationSummaryActions(c, dataset, pub)})
+								@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
+									Publication: pub,
+									URL:         c.PathTo("publication", "id", pub.ID),
+									Actions:     publicationSummaryActions(c, dataset, pub),
+								})
 							</div>
 						</div>
 					</li>
@@ -75,36 +79,40 @@ templ PublicationsBody(c *ctx.Ctx, dataset *models.Dataset, relatedPublications 
 }
 
 templ publicationSummaryActions(c *ctx.Ctx, dataset *models.Dataset, pub *models.Publication) {
-	<div class="bc-toolbar-item ms-auto ms-lg-0">
-		<div class="c-button-toolbar">
-			<div class="dropdown dropleft">
-				<button
-					class="btn btn-link btn-link-p-0 btn-icon-only"
-					type="button"
-					data-bs-toggle="dropdown"
-					aria-haspopup="true"
-					aria-expanded="false"
-				>
-					<i class="if if-more"></i>
-				</button>
-				<div class="dropdown-menu">
-					<a class="dropdown-item" href={ templ.URL(c.PathTo("publication", "id", pub.ID).String()) }>
-						<i class="if if-eye"></i>
-						<span>View publication</span>
-					</a>
-					if c.User.CanEditDataset(dataset) {
-						<button
-							class="dropdown-item"
-							type="button"
-							hx-get={ c.PathTo("dataset_confirm_delete_publication", "id", dataset.ID, "snapshot_id", dataset.SnapshotID, "publication_id", pub.ID).String() }
-							hx-target="#modals"
-						>
-							<i class="if if-delete"></i>
-							<span>Remove from dataset</span>
-						</button>
-					}
+	if c.User.CanViewPublication(pub) || c.User.CanEditDataset(dataset) {
+		<div class="bc-toolbar-item ms-auto ms-lg-0">
+			<div class="c-button-toolbar">
+				<div class="dropdown dropleft">
+					<button
+						class="btn btn-link btn-link-p-0 btn-icon-only"
+						type="button"
+						data-bs-toggle="dropdown"
+						aria-haspopup="true"
+						aria-expanded="false"
+					>
+						<i class="if if-more"></i>
+					</button>
+					<div class="dropdown-menu">
+						if c.User.CanViewPublication(pub) {
+							<a class="dropdown-item" href={ templ.URL(c.PathTo("publication", "id", pub.ID).String()) }>
+								<i class="if if-eye"></i>
+								<span>View publication</span>
+							</a>
+						}
+						if c.User.CanEditDataset(dataset) {
+							<button
+								class="dropdown-item"
+								type="button"
+								hx-get={ c.PathTo("dataset_confirm_delete_publication", "id", dataset.ID, "snapshot_id", dataset.SnapshotID, "publication_id", pub.ID).String() }
+								hx-target="#modals"
+							>
+								<i class="if if-delete"></i>
+								<span>Remove from dataset</span>
+							</button>
+						}
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	}
 }

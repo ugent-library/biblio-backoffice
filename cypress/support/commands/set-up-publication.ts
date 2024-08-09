@@ -94,7 +94,7 @@ export default function setUpPublication(
         });
 
       if (prepareForPublishing || publish) {
-        cy.addAuthor("John", "Doe");
+        cy.addAuthor("John", "Doe", { biblioIDAlias: `@${biblioIDAlias}` });
       }
 
       if (publish) {

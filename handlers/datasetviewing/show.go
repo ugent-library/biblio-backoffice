@@ -49,7 +49,7 @@ func ShowPublications(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	dataset := ctx.GetDataset(r)
 
-	relatedPublications, err := c.Repo.GetVisibleDatasetPublications(c.User, dataset)
+	relatedPublications, err := c.Repo.GetDatasetPublications(dataset)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
