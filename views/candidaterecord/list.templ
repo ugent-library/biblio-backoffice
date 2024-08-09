@@ -55,7 +55,7 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 												hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
 												hx-target="#modals"
 											>
-												<div class="btn-text">Remove suggestion</div>
+												<div class="btn-text">Reject</div>
 											</button>
 											<button
 												class="btn btn-link btn-link-muted"

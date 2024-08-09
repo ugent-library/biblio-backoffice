@@ -12,6 +12,14 @@ templ Preview(c *ctx.Ctx, rec *models.CandidateRecord) {
 
 templ actions(c *ctx.Ctx, rec *models.CandidateRecord) {
 	<button
+		class="btn btn-link btn-link-muted"
+		hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
+		hx-target="#modals"
+	>
+		<div class="btn-text">Reject</div>
+	</button>
+
+	<button
 		class="btn btn-primary"
 		hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
 		hx-swap="none"
