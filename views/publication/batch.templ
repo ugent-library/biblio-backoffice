@@ -9,7 +9,12 @@ import (
 )
 
 templ Batch(c *ctx.Ctx) {
-	@views.PageLayout(c, "Batch", nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title: "Batch",
+		Breadcrumbs: []views.Breadcrumb{
+			{LabelID: "publication_batch"},
+		},
+	}) {
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bg-white">
 				<div class="bc-navbar bc-navbar--xlarge bc-navbar--white bc-navbar--bordered-bottom">
