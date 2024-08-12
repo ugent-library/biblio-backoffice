@@ -1,0 +1,47 @@
+package proxyviews
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+templ Suggestions(c *ctx.Ctx, hits []*models.Person) {
+	<ul class="list-group">
+        for  _, p := range hits {
+		<li class="list-group-item">
+			<div class="list-group-item-inner">
+				<div class="list-group-item-main">
+					<div class="bc-avatar-and-text align-items-start">
+						<div class="bc-avatar mt-3">
+							<i class="if if-ghent-university"></i>
+						</div>
+						<div class="bc-avatar-text">
+							<h4>{ p.FullName }</h4>
+							<ul class="c-meta-list c-meta-list-horizontal">
+                                for _, id := range p.UGentID {
+								<li class="c-meta-item">
+									<i class="if if-ghent-university if--small if--muted"></i>
+									<span class="c-body-small">{ id }</span>
+								</li>
+                                }
+                                if p.ORCID != "" {
+								<li class="c-meta-item">
+									<i class="if if-orcid if--small text-success"></i>
+									<span class="c-body-small">{ p.ORCID }</span>
+								</li>
+                                }
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="c-button-toolbar">
+					<button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addProxyReviewerStepResearcher">
+						<span class="btn-text">Choose proxy</span>
+						<i class="if if-arrow-right"></i>
+					</button>
+				</div>
+			</div>
+		</li>
+        }
+	</ul>
+}

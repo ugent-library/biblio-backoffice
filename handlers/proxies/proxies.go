@@ -16,5 +16,25 @@ func Proxies(w http.ResponseWriter, r *http.Request) {
 func AddProxy(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-	views.ShowModal(proxyviews.Add(c)).Render(r.Context(), w)
+	hits, err := c.UserSearchService.SuggestUsers("")
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	views.ShowModal(proxyviews.Add(c, hits)).Render(r.Context(), w)
+}
+
+func SuggestProxies(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	q := r.URL.Query().Get("proxy_query")
+
+	hits, err := c.UserSearchService.SuggestUsers(q)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	proxyviews.Suggestions(c, hits).Render(r.Context(), w)
 }

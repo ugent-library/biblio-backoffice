@@ -221,6 +221,7 @@ func Register(c Config) {
 					// proxy management
 					r.With(ctx.SetNav("proxies")).Get("/proxies", proxies.Proxies).Name("proxies")
 					r.Get("/proxies/add", proxies.AddProxy).Name("add_proxy")
+					r.Get("/proxies/suggestions", proxies.SuggestProxies).Name("suggest_proxies")
 
 					// impersonate user
 					r.Get("/impersonation/add", impersonating.AddImpersonation).Name("add_impersonation")
