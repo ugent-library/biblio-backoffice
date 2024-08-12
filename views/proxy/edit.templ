@@ -1,0 +1,66 @@
+package proxyviews
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
+
+templ Edit(c *ctx.Ctx, proxy *models.Person, hits []*models.Person) {
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<div class="bc-toolbar-item">
+							<div class="mt-5">
+								<h2 class="modal-title">Select researchers</h2>
+								<p class="mb-5 text-muted">The researchers that <strong>{ proxy.FullName }</strong> will be responsible for. You can only add UGent researchers.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="p-6 border-bottom">
+				<form class="row">
+					<div class="form-group col-6">
+						<label class="col-form-label">Search researchers</label>
+						<input class="form-control" type="search" id="proxy-query" name="proxy_query" value=""
+							hx-get={ c.PathTo("proxy_suggest_people", "proxy_id", proxy.ID).String() } 
+							hx-trigger="input changed delay:250ms, proxy_query"
+							hx-target="#people-suggestions"
+							hx-swap="outerHTML"
+						/>
+						<span class="form-text text-muted" for="proxy-query">Enter first- and last name, OrcID or UGent ID.</span>
+					</div>
+				</form>
+			</div>
+			<div class="modal-body">
+				<div class="row h-100 mb-8">
+					<div class="col-6 border-end">
+						<h3 class="mb-4">Search results</h3>
+						@PeopleSuggestions(c, hits)
+					</div>
+					<div class="col-6 ps-8">
+						<h3 class="mb-4">Selected researchers for { proxy.FullName }</h3>
+						<p class="text-muted">Select researchers from the left panel search results.</p>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="bc-toolbar h-auto">
+					<div class="bc-toolbar-left flex-wrap">
+						<div class="bc-toolbar-item">
+							<button class="btn btn-link modal-close">Cancel</button>
+						</div>
+						// <div class="bc-toolbar-item">
+						// 	<button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#addProxyReviewerStepProxy">
+						// 		<i class="if if-arrow-left"></i>
+						// 		<span class="button-text">Back to proxy</span>
+						// 	</button>
+						// </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
