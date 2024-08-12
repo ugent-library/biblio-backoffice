@@ -50,11 +50,6 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-	if !c.User.CanCurate() {
-		c.HandleError(w, r, httperror.Unauthorized)
-		return
-	}
-
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
 		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
@@ -84,11 +79,6 @@ func CandidateRecordsIcon(w http.ResponseWriter, r *http.Request) {
 func ConfirmRejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-	if !c.User.CanCurate() {
-		c.HandleError(w, r, httperror.Unauthorized)
-		return
-	}
-
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
 		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
@@ -106,11 +96,6 @@ func ConfirmRejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 
 func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-
-	if !c.User.CanCurate() {
-		c.HandleError(w, r, httperror.Unauthorized)
-		return
-	}
 
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {
@@ -135,11 +120,6 @@ func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 
 func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-
-	if !c.User.CanCurate() {
-		c.HandleError(w, r, httperror.Unauthorized)
-		return
-	}
 
 	b := bindCandidateRecord{}
 	if err := bind.Request(r, &b); err != nil {

@@ -1,0 +1,144 @@
+package proxyviews
+
+import "github.com/ugent-library/biblio-backoffice/ctx"
+
+templ Add(c *ctx.Ctx) {
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<div class="bc-toolbar-item">
+							<div class="mt-5">
+								<h2 class="modal-title">Choose a proxy</h2>
+								<p class="mb-5 text-muted">The person that will take on responsibility for researchers.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="p-6 border-bottom">
+				<div class="form-group col-5">
+					<label class="col-form-label">Search a proxy</label>
+					<input class="form-control" id="search-researcher" type="text" value="Jane"/>
+					<span class="form-text text-muted" for="search-researcher">Enter first- and last name, OrcID or UGent ID.</span>
+				</div>
+			</div>
+			<div class="modal-body">
+				<ul class="list-group">
+					<li class="list-group-item">
+						<div class="list-group-item-inner">
+							<div class="list-group-item-main">
+								<div class="bc-avatar-and-text align-items-start">
+									<div class="bc-avatar mt-3">
+										<i class="if if-ghent-university"></i>
+									</div>
+									<div class="bc-avatar-text">
+										<h4>Jane Cooper</h4>
+										<ul class="c-meta-list c-meta-list-horizontal">
+											<li class="c-meta-item">
+												<i class="if if-ghent-university if--small if--muted"></i>
+												<span class="c-body-small">000100680542</span>
+											</li>
+											<li class="c-meta-item">
+												<i class="if if-ghent-university if--small if--muted"></i>
+												<span class="c-body-small">801002040996</span>
+											</li>
+											<li class="c-meta-item">
+												<i class="if if-orcid if--small text-success"></i>
+												<span class="c-body-small">0000-0002-7344-1791</span>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="c-button-toolbar">
+								<button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addProxyReviewerStepResearcher">
+									<span class="btn-text">Choose proxy</span>
+									<i class="if if-arrow-right"></i>
+								</button>
+							</div>
+						</div>
+					</li>
+					<li class="list-group-item">
+						<div class="list-group-item-inner">
+							<div class="list-group-item-main">
+								<div class="bc-avatar-and-text align-items-start">
+									<div class="bc-avatar mt-3">
+										<i class="if if-ghent-university"></i>
+									</div>
+									<div class="bc-avatar-text">
+										<h4>Jane Doe</h4>
+										<ul class="c-meta-list c-meta-list-horizontal">
+											<li class="c-meta-item">
+												<i class="if if-ghent-university if--small if--muted"></i>
+												<span class="c-body-small">000100680538</span>
+											</li>
+											<li class="c-meta-item">
+												<i class="if if-ghent-university if--small if--muted"></i>
+												<span class="c-body-small">801302040996</span>
+											</li>
+											<li class="c-meta-item">
+												<i class="if if-orcid if--small text-success"></i>
+												<span class="c-body-small">0000-0002-7344-1792</span>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="c-button-toolbar">
+								<button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addProxyReviewerStepResearcher">
+									<span class="btn-text">Choose proxy</span>
+									<i class="if if-arrow-right"></i>
+								</button>
+							</div>
+						</div>
+					</li>
+					<li class="list-group-item">
+						<div class="list-group-item-inner">
+							<div class="list-group-item-main">
+								<div class="bc-avatar-and-text align-items-start">
+									<div class="bc-avatar mt-3">
+										<i class="if if-ghent-university"></i>
+									</div>
+									<div class="bc-avatar-text">
+										<h4>Jane Fisher</h4>
+										<ul class="c-meta-list c-meta-list-horizontal">
+											<li class="c-meta-item">
+												<i class="if if-ghent-university if--small if--muted"></i>
+												<span class="c-body-small">000100680554</span>
+											</li>
+											<li class="c-meta-item">
+												<i class="if if-ghent-university if--small if--muted"></i>
+												<span class="c-body-small">801202040996</span>
+											</li>
+											<li class="c-meta-item">
+												<i class="if if-orcid if--small text-success"></i>
+												<span class="c-body-small">0000-0002-7344-1793</span>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="c-button-toolbar">
+								<button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addProxyReviewerStepResearcher">
+									<span class="btn-text">Choose proxy</span>
+									<i class="if if-arrow-right"></i>
+								</button>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="modal-footer h-auto py-4">
+				<div class="bc-toolbar h-auto">
+					<div class="bc-toolbar-left flex-wrap">
+						<div class="bc-toolbar-item">
+							<button class="btn btn-link modal-close">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
