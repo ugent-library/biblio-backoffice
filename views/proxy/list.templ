@@ -1,0 +1,15 @@
+package candidaterecordviews
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/views"
+)
+
+templ List(c *ctx.Ctx) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title: "Biblio",
+		Breadcrumbs: []views.Breadcrumb{
+			{LabelID: "proxies"},
+		},
+    })
+}

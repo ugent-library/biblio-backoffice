@@ -31,12 +31,12 @@ func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-column h-100\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center\"><h2 class=\"mb-0\">Action required</h2>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if pTotal > 0 || dTotal > 0 {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"badge bg-danger rounded-pill badge-sm ms-3 d-flex justify-content-center\">")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -49,22 +49,22 @@ func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"bc-toolbar-right\"><div class=\"d-flex align-items-center\"><a class=\"text-muted px-2\" href=\"#\" data-bs-container=\"body\" data-bs-toggle=\"popover-custom\" data-bs-placement=\"right\" data-popover-content=\"#action-required-tooltip\"><i class=\"if if-info-circle\"></i> <span class=\"visually-hidden\">More info</span></a><div class=\"u-hidden\" id=\"action-required-tooltip\"><div class=\"popover-body p-0\"><p>For items appearing in <strong>Action required</strong> the Biblio Team requested some extra information. You can complete them and make visible to the public again. <a class=\"c-link\" target=\"_blank\" href=\"https://onderzoektips.ugent.be/en/tips/00002173/\"><span class=\"text-decoration-underline\">Read the research tip</span> <i class=\"if if--small if-external-link\"></i></a></p></div></div></div></div></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if pTotal > 0 || dTotal > 0 {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"card mb-6 flex-grow-1\"><ul class=\"list-group list-group-flush\">")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if pTotal > 0 {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item bg-transparent\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center flex-wrap\"><h4 class=\"font-weight-bold me-4\">Publications</h4><span class=\"badge badge-sm badge-pill badge-danger-light\"><span class=\"badge-circle\"></span> <span class=\"badge-text\">")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -77,7 +77,7 @@ func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" Biblio withdrawn</span></span></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-outline-secondary\" href=\"")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -86,18 +86,18 @@ func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><span class=\"btn-text\">Complete</span></a></div></div></li>")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item bg-transparent\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center flex-wrap\"><h4 class=\"font-weight-bold me-4\">Publications</h4></div></div><div class=\"d-flex align-items-center\"><i class=\"if if-check if--small if--success me-2\"></i> <span class=\"c-body-small text-muted\">Completed</span></div></div></li>")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 9)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 			if dTotal > 0 {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item bg-transparent\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center flex-wrap\"><h4 class=\"font-weight-bold me-4\">Datasets</h4><span class=\"badge badge-sm badge-pill badge-danger-light\"><span class=\"badge-circle\"></span> <span class=\"badge-text\">")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 10)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -110,7 +110,7 @@ func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" Biblio withdrawn</span></span></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-outline-secondary\" href=\"")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 11)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -119,22 +119,22 @@ func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><span class=\"btn-text\">Complete</span></a></div></div></li>")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 12)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item bg-transparent\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center flex-wrap\"><h4 class=\"font-weight-bold me-4\">Datasets</h4></div></div><div class=\"d-flex align-items-center\"><i class=\"if if-check if--small if--success me-2\"></i> <span class=\"c-body-small text-muted\">Completed</span></div></div></li>")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 13)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 14)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"card mb-6 flex-grow-1 bg-lightest shadow-none u-mix-blend-multiply\"><div class=\"c-blank-slate py-6\"><img class=\"mb-4\" src=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 15)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -147,12 +147,12 @@ func ActionRequired(c *ctx.Ctx, pTotal, dTotal int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"\" width=\"auto\" height=\"32\"><p>No actions left to do.</p></div></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 16)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 17)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

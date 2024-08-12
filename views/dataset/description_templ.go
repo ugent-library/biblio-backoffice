@@ -31,7 +31,7 @@ func Description(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-swap-oob=\"innerHTML:#show-nav\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -39,7 +39,7 @@ func Description(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div hx-swap-oob=\"innerHTML:#show-sidebar\"><div class=\"c-sub-sidebar c-sub-sidebar--bordered u-z-reset h-100\" data-sidebar=\"\"><div class=\"bc-navbar bc-navbar--bordered-bottom bc-navbar--large\"><button class=\"btn btn-link btn-icon-only ms-n3\" type=\"button\" data-sidebar-toggle=\"\"><i class=\"if if-menu\"></i> <span class=\"visually-hidden\">Sections</span></button></div><div class=\"c-sub-sidebar__content\"><div class=\"p-4\"><nav class=\"nav nav-pills flex-column\"><a class=\"nav-link\" href=\"#dataset-details\">Dataset details</a> <a class=\"nav-link\" href=\"#projects\">Projects</a> <a class=\"nav-link\" href=\"#abstracts\">Abstracts</a> <a class=\"nav-link\" href=\"#links\">Links</a></nav></div></div></div></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

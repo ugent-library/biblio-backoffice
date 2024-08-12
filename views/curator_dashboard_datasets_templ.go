@@ -47,7 +47,7 @@ func CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) te
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-sub-sidebar c-sidebar--bordered\"><div class=\"bc-navbar bc-navbar--large bc-navbar--bordered-bottom\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><h4 class=\"bc-toolbar-title\">Dashboard</h4></div></div></div></div><div class=\"c-sub-sidebar__menu my-6\">")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -55,12 +55,12 @@ func CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) te
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"w-100 u-scroll-wrapper\"><div class=\"bg-white\"><div class=\"bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom\"><div class=\"bc-toolbar bc-toolbar--auto\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><h4 class=\"bc-toolbar-title\">Datasets</h4></div></div><div class=\"bc-toolbar-right\"><div class=\"bc-toolbar-item\"></div></div></div></div></div><div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"pb-5\"><p><strong>Why are the totals wrong?</strong></p><p>Some publications are associated with more than 1 faculty.</p><p>The category \"all\" in the table header may contain less publications, as it only counts each publication once.</p></div><div class=\"card w-100 mb-6\"><div class=\"card-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><h3 class=\"card-title\">Datasets</h3></div></div></div><div class=\"card-body w-100 p-0\"><div class=\"table-responsive\"><table class=\"table table-sm table-bordered\"><thead><tr><th class=\"table-col-sm-fixed table-col-sm-fixed-left\" scope=\"col\"></th>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for _, f := range args.Faculties {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<th scope=\"col\">")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -73,17 +73,17 @@ func CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) te
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</th>")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tr></thead> <tbody>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for pti, pt := range args.PTypes {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr><th class=\"table-col-sm-fixed table-col-sm-fixed-left\" scope=\"col\">")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -96,18 +96,18 @@ func CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) te
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</th>")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, f := range args.Faculties {
 					if cell, ok := args.Datasets[f][pti]; ok {
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<td>")
+						templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						if cell[1] == "" {
-							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span>")
+							templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 9)
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
@@ -120,12 +120,12 @@ func CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) te
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span>")
+							templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 10)
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 						} else {
-							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"")
+							templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 11)
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
@@ -134,7 +134,7 @@ func CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) te
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
+							templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 12)
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
@@ -147,23 +147,23 @@ func CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) te
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a>")
+							templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 13)
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td>")
+						templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 14)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tr>")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 15)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tbody></table></div></div></div></div></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 16)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

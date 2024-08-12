@@ -55,7 +55,7 @@ func Add(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <div class=\"w-100 u-scroll-wrapper\"><div class=\"bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><div class=\"d-flex flex-column\"><span class=\"text-muted\">Step 1</span><h4 class=\"bc-toolbar-title\">Add dataset</h4></div></div></div><div class=\"bc-toolbar-right\"><div class=\"bc-toolbar-item\"><a class=\"btn btn-tertiary\" href=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -64,7 +64,7 @@ func Add(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Cancel</a></div></div></div></div><div class=\"p-6 u-scroll-wrapper__body\"><div class=\"row\"><div class=\"col-xl-8 mb-6\"><div class=\"card mb-4\"><div class=\"card-body\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div><div class=\"d-flex align-items-center flex-wrap\"><h3 class=\"me-3\">Register your dataset via a DOI</h3><span class=\"badge badge-success-light\">Recommended</span></div><p class=\"text-muted\">Automated retrieval of metadata. For datasets that have a <a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00001743/#WhatisaDigitalObjectIdentifier(DOI)?\" target=\"_blank\">DOI (Digital Object Identifier)</a>, created by the external data repository during data deposit.</p></div></div><div class=\"bc-toolbar-right\"><form action=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -73,7 +73,7 @@ func Add(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" method=\"POST\">")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -81,7 +81,7 @@ func Add(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"method\" value=\"identifier\"> <button type=\"submit\" class=\"btn btn-primary ms-6\"><i class=\"if if-add\"></i> <span class=\"btn-text\">Add</span></button></form></div></div></div></div><div class=\"card mb-4\"><div class=\"card-body\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div><div class=\"d-flex align-items-center flex-wrap\"><h3 class=\"me-3\">Register a dataset manually</h3><span class=\"badge badge-default\">Beta</span></div><p class=\"text-muted\">Manual input of metadata. Recommended for <a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00001743/\" target=\"_blank\">datasets with identifiers</a> such as ENA BioProject, BioStudies, ENA, Ensembl or Handle. The identifiers are created by external data repositories during data deposit.</p></div></div><div class=\"bc-toolbar-right\"><form action=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -90,7 +90,7 @@ func Add(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" method=\"POST\">")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -98,7 +98,7 @@ func Add(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"method\" value=\"manual\"> <button type=\"submit\" class=\"btn btn-primary ms-6\"><i class=\"if if-add\"></i> <span class=\"btn-text\">Add</span></button></form></div></div></div></div></div><div class=\"col-xl-4\">")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -106,7 +106,7 @@ func Add(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -141,7 +141,7 @@ func tips() templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"card bg-light\"><div class=\"card-header bg-transparent\"><div class=\"card-title\">Tips for depositing and registering your data</div></div><div class=\"card-body\"><div class=\"c-content\"><ol><li class=\"mb-4\"><a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00002071/\" target=\"_blank\">Share your data in a repository</a> <em>before</em> registering it in Biblio.<br><span class=\"text-muted\">This step will provide you with an identifier.</span></li><li class=\"mb-4\">Get more information about <a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00002054/\" target=\"_blank\">dataset registration in Biblio</a>.</li><li><a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00002055/\" target=\"_blank\">Follow a simple illustrated guide to register your dataset in Biblio</a>.</li></ol></div></div></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -2451,11 +2451,15 @@ msgstr "New publication"
 
 msgctxt "breadcrumbs"
 msgid "publication_batch"
-msgstr "Batch import"
+msgstr "Batch operations"
 
 msgctxt "breadcrumbs"
 msgid "candidate_records"
 msgstr "Suggestions"
+
+msgctxt "breadcrumbs"
+msgid "proxies"
+msgstr "Proxies"
 
 msgctxt "breadcrumbs"
 msgid "datasets"

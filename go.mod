@@ -38,6 +38,7 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231012201019-e917dd12ba7a
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.33.0
+	jaytaylor.com/html2text v0.0.0-20230321000545-74c2419ad056
 	mvdan.cc/xurls/v2 v2.5.0
 )
 
@@ -115,7 +116,6 @@ require (
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	jaytaylor.com/html2text v0.0.0-20230321000545-74c2419ad056 // indirect
 )
 
 require (

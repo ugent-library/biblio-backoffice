@@ -179,14 +179,6 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 											</a>
 										</li>
 										if c.UserRole == "curator" {
-											<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "batch") }>
-												<a href={ templ.URL(c.PathTo("publication_batch").String()) }>
-													<span class="c-sidebar__icon">
-														<i class="if if-tool"></i>
-													</span>
-													<span class="c-sidebar__label">Batch</span>
-												</a>
-											</li>
 											if c.FlagCandidateRecords() {
 												<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "candidate_records") }>
 													<a
@@ -198,6 +190,22 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 													</a>
 												</li>
 											}
+											<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "batch") }>
+												<a href={ templ.URL(c.PathTo("publication_batch").String()) }>
+													<span class="c-sidebar__icon">
+														<i class="if if-tool"></i>
+													</span>
+													<span class="c-sidebar__label">Batch operations</span>
+												</a>
+											</li>
+											<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "proxies") }>
+												<a href={ templ.URL(c.PathTo("proxies").String()) }>
+													<span class="c-sidebar__icon">
+														<i class="if if-user-add"></i>
+													</span>
+													<span class="c-sidebar__label">Proxies</span>
+												</a>
+											</li>
 										}
 									</ul>
 								</nav>

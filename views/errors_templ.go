@@ -40,7 +40,7 @@ func NotFound(c *ctx.Ctx) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"u-scroll-wrapper__body p-6\"><div class=\"c-blank-slate c-blank-slate-default c-blank-slate-large\"><div class=\"bc-avatar bc-avatar--medium\">?</div><h3 class=\"c-blank-slate-title\">This page does not exist</h3><p>Your (re)search was too groundbreaking.</p><div class=\"c-button-toolbar\"><a class=\"btn btn-outline-primary\" href=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -49,7 +49,7 @@ func NotFound(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-arrow-left\"></i> <span class=\"btn-text\">Take me back</span></a></div></div></div></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -93,7 +93,7 @@ func InternalServerError(c *ctx.Ctx) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"u-scroll-wrapper__body p-6\"><div class=\"c-blank-slate c-blank-slate-default c-blank-slate-large\"><div class=\"bc-avatar bc-avatar--medium\">?</div><h3 class=\"c-blank-slate-title\">This page does not exist</h3><p>Your (re)search was too groundbreaking.</p><div class=\"c-button-toolbar\"><a class=\"btn btn-outline-primary\" href=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -102,7 +102,7 @@ func InternalServerError(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-arrow-left\"></i> <span class=\"btn-text\">Take me back</span></a></div></div></div></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -146,7 +146,7 @@ func UserNotFound(c *ctx.Ctx) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"u-scroll-wrapper__body p-6\"><div class=\"c-blank-slate c-blank-slate-default c-blank-slate-large\"><div class=\"bc-avatar bc-avatar--medium\">?</div><h3 class=\"c-blank-slate-title\">User record not found</h3><p>Your account does not exist (anymore) or has been made inactive</p><div class=\"c-button-toolbar\"><a class=\"btn btn-outline-primary\" href=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -155,7 +155,7 @@ func UserNotFound(c *ctx.Ctx) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-arrow-left\"></i> <span class=\"btn-text\">Take me home</span></a></div></div></div></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -33,7 +33,7 @@ func PreviewAccesLevel(c *ctx.Ctx, f *models.PublicationFile) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		switch f.AccessLevel {
 		case "info:eu-repo/semantics/openAccess":
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-avatar bc-avatar--square mt-2 bc-avatar--success-light\"><i class=\"if if-download\"></i></div><div class=\"bc-avatar-text\"><h4>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -46,12 +46,12 @@ func PreviewAccesLevel(c *ctx.Ctx, f *models.PublicationFile) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><p class=\"text-muted c-body-small\">The document will be visible to anyone.</p></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "info:eu-repo/semantics/embargoedAccess":
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-avatar bc-avatar--square mt-2 bc-avatar--warning-light\"><i class=\"if if-time text-muted\"></i></div><div class=\"bc-avatar-text\"><h4>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -64,12 +64,12 @@ func PreviewAccesLevel(c *ctx.Ctx, f *models.PublicationFile) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><p class=\"text-muted c-body-small\">Use to switch access levels after a specified period. Recommended for AAM journal articles.</p></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "info:eu-repo/semantics/restrictedAccess":
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-avatar bc-avatar--square mt-2 bc-avatar--light-blue\"><i class=\"if if-ghent-university\"></i></div><div class=\"bc-avatar-text\"><h4>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -82,12 +82,12 @@ func PreviewAccesLevel(c *ctx.Ctx, f *models.PublicationFile) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><p class=\"text-muted c-body-small\">The document will be visible to users within the UGent network only. The metadata will be available to anyone.</p></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "info:eu-repo/semantics/closedAccess":
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-avatar bc-avatar--square mt-2 bc-avatar--danger-light\"><i class=\"if if-forbid text-muted\"></i></div><div class=\"bc-avatar-text\"><h4>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -100,7 +100,7 @@ func PreviewAccesLevel(c *ctx.Ctx, f *models.PublicationFile) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><p class=\"text-muted c-body-small\">Only you, related UGent members and Biblio team members can see the document. The metadata will be available to anyone.</p></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
