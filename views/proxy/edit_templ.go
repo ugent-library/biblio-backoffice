@@ -61,7 +61,7 @@ func Edit(c *ctx.Ctx, proxy *models.Person, hits []*models.Person) templ.Compone
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = PeopleSuggestions(c, hits).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PeopleSuggestions(c, proxy, hits).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

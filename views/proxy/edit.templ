@@ -38,7 +38,7 @@ templ Edit(c *ctx.Ctx, proxy *models.Person, hits []*models.Person) {
 				<div class="row h-100 mb-8">
 					<div class="col-6 border-end">
 						<h3 class="mb-4">Search results</h3>
-						@PeopleSuggestions(c, hits)
+						@PeopleSuggestions(c, proxy, hits)
 					</div>
 					<div class="col-6 ps-8">
 						<h3 class="mb-4">Selected researchers for { proxy.FullName }</h3>

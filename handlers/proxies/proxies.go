@@ -14,6 +14,11 @@ type bindProxy struct {
 	ProxyID string `path:"proxy_id"`
 }
 
+type bindProxyPerson struct {
+	ProxyID  string `path:"proxy_id"`
+	PersonID string `path:"person_id" form:"person_id"`
+}
+
 func Proxies(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	proxyviews.List(c).Render(r.Context(), w)
@@ -72,6 +77,18 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 func SuggestPeople(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
+	b := bindProxy{}
+	if err := bind.Request(r, &b); err != nil {
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
+		return
+	}
+
+	proxy, err := c.UserService.GetUser(b.ProxyID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
 	q := r.URL.Query().Get("proxy_query")
 
 	hits, err := c.PersonSearchService.SuggestPeople(q)
@@ -80,5 +97,35 @@ func SuggestPeople(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxyviews.PeopleSuggestions(c, hits).Render(r.Context(), w)
+	proxyviews.PeopleSuggestions(c, proxy, hits).Render(r.Context(), w)
+}
+
+func AddPerson(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	b := bindProxyPerson{}
+	if err := bind.Request(r, &b); err != nil {
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
+		return
+	}
+
+	if err := c.Repo.AddProxyPerson(r.Context(), b.ProxyID, b.PersonID); err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+}
+
+func DeletePerson(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	b := bindProxyPerson{}
+	if err := bind.Request(r, &b); err != nil {
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
+		return
+	}
+
+	if err := c.Repo.RemoveProxyPerson(r.Context(), b.ProxyID, b.PersonID); err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
 }
