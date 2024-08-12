@@ -6,21 +6,27 @@ import (
 )
 
 templ People(c *ctx.Ctx, proxy *models.Person, people []*models.Person) {
-	<ul id="people" class="list-group">
-		for  _, p := range people {
-			<li class="list-group-item">
-				@suggestion(c, p) {
-					<btn
-						class="btn btn-default"
-						type="button"
-						hx-delete={ c.PathTo("proxy_delete_person", "proxy_id", proxy.ID, "person_id", p.ID).String() }
-						hx-swap="none"
-					>
-						<i class="if if-arrow-left"></i>
-						<span class="btn-text">Deselect</span>
-					</btn>
+	<div id="people">
+		if len(people) > 0 {
+			<ul class="list-group">
+				for  _, p := range people {
+					<li class="list-group-item">
+						@suggestion(c, p) {
+							<btn
+								class="btn btn-default"
+								type="button"
+								hx-delete={ c.PathTo("proxy_remove_person", "proxy_id", proxy.ID, "person_id", p.ID).String() }
+								hx-swap="none"
+							>
+								<i class="if if-arrow-left"></i>
+								<span class="btn-text">Deselect</span>
+							</btn>
+						}
+					</li>
 				}
-			</li>
+			</ul>
+		} else {
+			<p class="text-muted">Select researchers from the left panel search results.</p>
 		}
-	</ul>
+	</div>
 }

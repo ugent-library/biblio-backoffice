@@ -3,7 +3,9 @@ package proxies
 import (
 	"net/http"
 
+	"github.com/a-h/templ"
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 	proxyviews "github.com/ugent-library/biblio-backoffice/views/proxy"
 	"github.com/ugent-library/bind"
@@ -14,9 +16,14 @@ type bindProxy struct {
 	ProxyID string `path:"proxy_id"`
 }
 
-type bindProxyPerson struct {
+type bindAddProxyPerson struct {
 	ProxyID  string `path:"proxy_id"`
-	PersonID string `path:"person_id" form:"person_id"`
+	PersonID string `form:"person_id"`
+}
+
+type bindRemoveProxyPerson struct {
+	ProxyID  string `path:"proxy_id"`
+	PersonID string `path:"person_id"`
 }
 
 func Proxies(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +78,22 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ReplaceModal(proxyviews.Edit(c, proxy, hits)).Render(r.Context(), w)
+	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), b.ProxyID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	people := make([]*models.Person, len(peopleIDs))
+	for i, id := range peopleIDs {
+		person, err := c.PersonService.GetPerson(id)
+		if err != nil {
+			c.HandleError(w, r, err)
+			return
+		}
+		people[i] = person
+	}
+
+	views.ReplaceModal(proxyviews.Edit(c, proxy, people, hits)).Render(r.Context(), w)
 }
 
 func SuggestPeople(w http.ResponseWriter, r *http.Request) {
@@ -103,7 +125,7 @@ func SuggestPeople(w http.ResponseWriter, r *http.Request) {
 func AddPerson(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-	b := bindProxyPerson{}
+	b := bindAddProxyPerson{}
 	if err := bind.Request(r, &b); err != nil {
 		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
@@ -113,12 +135,37 @@ func AddPerson(w http.ResponseWriter, r *http.Request) {
 		c.HandleError(w, r, err)
 		return
 	}
+
+	proxy, err := c.UserService.GetUser(b.ProxyID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), b.ProxyID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	people := make([]*models.Person, len(peopleIDs))
+	for i, id := range peopleIDs {
+		person, err := c.PersonService.GetPerson(id)
+		if err != nil {
+			c.HandleError(w, r, err)
+			return
+		}
+		people[i] = person
+	}
+
+	views.ReplaceMany(map[string]templ.Component{
+		"outerHTML:#people": proxyviews.People(c, proxy, people),
+	}).Render(r.Context(), w)
 }
 
 func DeletePerson(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-	b := bindProxyPerson{}
+	b := bindRemoveProxyPerson{}
 	if err := bind.Request(r, &b); err != nil {
 		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
@@ -128,4 +175,29 @@ func DeletePerson(w http.ResponseWriter, r *http.Request) {
 		c.HandleError(w, r, err)
 		return
 	}
+
+	proxy, err := c.UserService.GetUser(b.ProxyID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), b.ProxyID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	people := make([]*models.Person, len(peopleIDs))
+	for i, id := range peopleIDs {
+		person, err := c.PersonService.GetPerson(id)
+		if err != nil {
+			c.HandleError(w, r, err)
+			return
+		}
+		people[i] = person
+	}
+
+	views.ReplaceMany(map[string]templ.Component{
+		"outerHTML:#people": proxyviews.People(c, proxy, people),
+	}).Render(r.Context(), w)
 }

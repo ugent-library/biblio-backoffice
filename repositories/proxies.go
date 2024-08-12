@@ -2,7 +2,21 @@ package repositories
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5"
 )
+
+func (r *Repo) ProxyPersonIDs(ctx context.Context, proxyID string) ([]string, error) {
+	q := `
+		select person_id from proxies
+		where proxy_person_id = $1;
+	`
+	rows, err := r.conn.Query(ctx, q, proxyID)
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectRows(rows, pgx.RowTo[string])
+}
 
 func (r *Repo) AddProxyPerson(ctx context.Context, proxyID, personID string) error {
 	q := `

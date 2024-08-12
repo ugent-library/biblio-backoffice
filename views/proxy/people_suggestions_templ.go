@@ -60,7 +60,7 @@ func PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person) 
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("proxy_add_person", "proxy_id", proxy.ID).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/people_suggestions.templ`, Line: 17, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/people_suggestions.templ`, Line: 18, Col: 76}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -73,7 +73,7 @@ func PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person) 
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf(`{"person_id": "%s"}`, p.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/people_suggestions.templ`, Line: 18, Col: 56}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/people_suggestions.templ`, Line: 19, Col: 57}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
