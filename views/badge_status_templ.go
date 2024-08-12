@@ -27,17 +27,17 @@ func BadgeStatus(s string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if s == "public" {
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"badge badge-sm rounded-pill badge-success-light my-2 me-3\"><span class=\"badge-circle\"></span> <span class=\"badge-text\">Biblio public</span></span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if s == "returned" {
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"badge badge-sm rounded-pill badge-danger-light my-2 me-3\"><span class=\"badge-circle\"></span> <span class=\"badge-text\">Biblio withdrawn</span></span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if s == "private" {
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"badge badge-sm rounded-pill badge-warning-light my-2 me-3\"><span class=\"badge-circle\"></span> <span class=\"badge-text\">Biblio draft</span></span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

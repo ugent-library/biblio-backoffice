@@ -56,7 +56,7 @@ func Add(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <div class=\"w-100 u-scroll-wrapper\"><div class=\"bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><div class=\"d-flex flex-column\"><span class=\"text-muted\">Step ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -69,7 +69,7 @@ func Add(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span><h4 class=\"bc-toolbar-title\">Start: add publication(s)</h4></div></div></div><div class=\"bc-toolbar-right\"><div class=\"bc-toolbar-item\"><a class=\"btn btn-tertiary\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -78,7 +78,7 @@ func Add(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Cancel</a></div></div></div></div><div class=\"p-6 u-scroll-wrapper__body\"><div class=\"row\"><div class=\"col-xl-9 mb-6\"><div class=\"card mb-4\"><div class=\"card-body\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div><div class=\"d-flex align-items-center flex-wrap\"><h3 class=\"me-3\">Import from Web of Science</h3><span class=\"badge badge-default\">Recommended for records in WoS</span></div><p class=\"text-muted\">Import one or more publications. This option saves you the most time.</p></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-primary ms-6\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -87,7 +87,7 @@ func Add(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-add\"></i> <span class=\"btn-text\">Add</span></a></div></div></div></div><div class=\"card mb-4\"><div class=\"card-body\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div><div class=\"d-flex align-items-center flex-wrap\"><h3>Import your publication via an identifier</h3></div><p class=\"text-muted\">Use DOI, PubMed ID or arXiv ID. A good second option.</p></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-primary ms-6\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -96,7 +96,7 @@ func Add(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-add\"></i> <span class=\"btn-text\">Add</span></a></div></div></div></div><div class=\"card mb-4\"><div class=\"card-body\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div><div class=\"d-flex align-items-center flex-wrap\"><h3>Enter a publication manually</h3></div><p class=\"text-muted\">Create a publication record from scratch using a template. Recommended for publications such as dissertations.</p></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-primary ms-6\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -105,7 +105,7 @@ func Add(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-add\"></i> <span class=\"btn-text\">Add</span></a></div></div></div></div><div class=\"card mb-4\"><div class=\"card-body\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div><div class=\"d-flex align-items-center flex-wrap\"><h3>Import via BibTeX file</h3></div><p class=\"text-muted\">Import multiple publications via library files. Use this options if there is no Web of Science import or identifier import available.</p></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-primary ms-6\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -114,7 +114,7 @@ func Add(c *ctx.Ctx, step int) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-add\"></i> <span class=\"btn-text\">Add</span></a></div></div></div></div></div><div class=\"col-xl-3\"><div class=\"card bg-light\"><div class=\"card-header bg-transparent\"><div class=\"card-title\">Tips for adding your publications</div></div><div class=\"card-body\"><div class=\"c-content\"><ol><li class=\"mb-4\">Follow a <a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00002065/\" target=\"_blank\">step by step guide</a> about deposit and registration of publications.</li><li>Read general <a class=\"c-link\" href=\"https://onderzoektips.ugent.be/en/tips/00002064/\" target=\"_blank\">documentation</a> about deposit and registration of publications.</li></ol></div></div></div></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
