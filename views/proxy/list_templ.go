@@ -10,10 +10,11 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 )
 
-func List(c *ctx.Ctx) templ.Component {
+func List(c *ctx.Ctx, proxies [][]*models.Person) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -50,13 +51,39 @@ func List(c *ctx.Ctx) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("add_proxy").String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/list.templ`, Line: 29, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/list.templ`, Line: 32, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><i class=\"if if-add\"></i><div class=\"btn-text\">Add proxy</div></button></div></div></div></div></div></div><div class=\"u-scroll-wrapper__body w-100 p-6\"><form class=\"mb-4\"><div class=\"row\"><div class=\"col\"><div class=\"input-group flex-nowrap\"><label class=\"visually-hidden\" for=\"search\">Search</label> <input class=\"form-control\" type=\"text\" name=\"search\" placeholder=\"Search\" value=\"801002040997\"> <button class=\"btn btn-outline-primary\" type=\"submit\"><i class=\"if if-search\"></i><div class=\"btn-text\">Search</div></button></div></div></div></form><div class=\"table-responsive\"><table class=\"table table-sm table-bordered\"><thead><tr><th class=\"text-nowrap\" colspan=\"2\">Proxy</th><th class=\"text-nowrap\">manages these bibliographies:</th></tr></thead> <tbody><tr><td class=\"text-nowrap\"><div class=\"my-3\"><p class=\"mb-2\">Full name of proxy</p><ul class=\"c-meta-list c-meta-list-horizontal\"><li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--muted\"></i> <small>001984272820</small></li><li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--muted\"></i> <small>801002040996</small></li><li class=\"c-meta-item\"><i class=\"if if-orcid if--small text-success\"></i> <small>0000-0002-7344-1793</small></li></ul></div></td><td class=\"text-nowrap\"><div class=\"text-center\"><span class=\"bc-avatar bc-avatar--green mb-3\"><i class=\"if if-arrow-right\"></i></span></div></td><td class=\"text-nowrap p-0\"><table class=\"table table-sm\"><tbody><tr><td class=\"text-nowrap py-5\"><p>Researcher full name 1</p><ul class=\"c-meta-list c-meta-list-horizontal\"><li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--muted\"></i> <span class=\"c-body-small\">000100680542</span></li><li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--muted\"></i> <span class=\"c-body-small\">801002040996</span></li><li class=\"c-meta-item\"><i class=\"if if-orcid if--small text-success\"></i> <span class=\"c-body-small\">0000-0002-7344-1791</span></li></ul></td><td class=\"border-start\"><div class=\"c-button-toolbar flex-nowrap\"><a class=\"btn btn-link btn-link-muted\" href=\"reviewer-proxies--deleted.html\"><i class=\"if if-delete\"></i> <span class=\"btn-text\">Delete</span></a></div></td></tr><tr><td class=\"text-nowrap py-5\"><p>Researcher full name 2</p><ul class=\"c-meta-list c-meta-list-horizontal\"><li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--muted\"></i> <span class=\"c-body-small\">000100680538</span></li><li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--muted\"></i> <span class=\"c-body-small\">801302040996</span></li><li class=\"c-meta-item\"><i class=\"if if-orcid if--small text-success\"></i> <span class=\"c-body-small\">0000-0002-7344-1792</span></li></ul></td><td class=\"border-start\"><div class=\"c-button-toolbar flex-nowrap\"><a class=\"btn btn-link btn-link-muted\" href=\"reviewer-proxies--deleted.html\"><i class=\"if if-delete\"></i> <span class=\"btn-text\">Delete</span></a></div></td></tr><tr><td class=\"text-nowrap py-5\"><p>Researcher full name 3</p><ul class=\"c-meta-list c-meta-list-horizontal\"><li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--muted\"></i> <span class=\"c-body-small\">000100680554</span></li><li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--muted\"></i> <span class=\"c-body-small\">801202040996</span></li><li class=\"c-meta-item\"><i class=\"if if-orcid if--small text-success\"></i> <span class=\"c-body-small\">0000-0002-7344-1793</span></li></ul></td><td class=\"border-start\"><div class=\"c-button-toolbar flex-nowrap\"><a class=\"btn btn-link btn-link-muted\" href=\"reviewer-proxies--deleted.html\"><i class=\"if if-delete\"></i> <span class=\"btn-text\">Delete</span></a></div></td></tr><tr><td class=\"text-nowrap py-5\"><p>Researcher full name 4</p><ul class=\"c-meta-list c-meta-list-horizontal\"><li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--muted\"></i> <span class=\"c-body-small\"><mark>801302040997</mark></span></li><li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--muted\"></i> <span class=\"c-body-small\">801302040998</span></li><li class=\"c-meta-item\"><i class=\"if if-orcid if--small text-success\"></i> <span class=\"c-body-small\">0000-0002-7344-1794</span></li></ul></td><td class=\"border-start\"><div class=\"c-button-toolbar flex-nowrap\"><a class=\"btn btn-link btn-link-muted\" href=\"reviewer-proxies--deleted.html\"><i class=\"if if-delete\"></i> <span class=\"btn-text\">Delete</span></a></div></td></tr><tr><td class=\"text-nowrap text-center\" colspan=\"2\"><div class=\"d-grid gap-2\"><button class=\"btn btn-link btn-link-muted\" type=\"button\" data-bs-toggle=\"modal\" data-bs-target=\"#addProxyReviewerStepResearcher\"><i class=\"if if-add\"></i> <span class=\"btn-text\">Add researcher</span></button></div></td></tr></tbody></table></td></tr></tbody></table></div></div></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><i class=\"if if-add\"></i><div class=\"btn-text\">Add proxy</div></button></div></div></div></div></div></div><div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"table-responsive\"><table class=\"table table-sm table-bordered\"><tbody>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			for _, p := range proxies {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr><td class=\"text-nowrap\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = tableItem(c, p[0]).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"text-nowrap\"><div class=\"text-center\">manages <i class=\"if if-arrow-right\"></i></div></td><td class=\"text-nowrap\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = tableItem(c, p[1]).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tbody></table></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -68,6 +95,87 @@ func List(c *ctx.Ctx) templ.Component {
 				{LabelID: "proxies"},
 			},
 		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func tableItem(c *ctx.Ctx, p *models.Person) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"my-3\"><p class=\"mb-2\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var5 string
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(p.FullName)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/list.templ`, Line: 87, Col: 30}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p><ul class=\"c-meta-list c-meta-list-horizontal\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, id := range p.UGentID {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--muted\"></i> <small>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(id)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/list.templ`, Line: 92, Col: 16}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</small></li>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.ORCID != "" {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><i class=\"if if-orcid if--small text-success\"></i> <span class=\"c-body-small\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(p.ORCID)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/list.templ`, Line: 98, Col: 41}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></li>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

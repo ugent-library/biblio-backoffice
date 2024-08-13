@@ -9,7 +9,7 @@ templ Suggestions(c *ctx.Ctx, hits []*models.Person) {
 	<ul class="list-group">
 		for  _, p := range hits {
 			<li class="list-group-item">
-				@suggestion(c, p) {
+				@listItem(c, p) {
 					<button
 						class="btn btn-primary"
 						type="button"

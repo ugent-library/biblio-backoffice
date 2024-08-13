@@ -11,7 +11,7 @@ templ PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person)
 		<ul class="list-group me-6">
 			for  _, p := range hits {
 				<li class="list-group-item">
-					@suggestion(c, p) {
+					@listItem(c, p) {
 						<div
 							class="btn btn-outline-primary"
 							type="button"

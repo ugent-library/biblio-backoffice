@@ -69,3 +69,9 @@ templ Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) {
 		</div>
 	</div>
 }
+
+templ RefreshEdit(c *ctx.Ctx, proxy *models.Person, people []*models.Person) {
+	<div hx-swap-oob="outerHTML:#people">
+		@People(c, proxy, people)
+	</div>
+}

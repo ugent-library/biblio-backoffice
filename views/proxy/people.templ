@@ -11,7 +11,7 @@ templ People(c *ctx.Ctx, proxy *models.Person, people []*models.Person) {
 			<ul class="list-group">
 				for  _, p := range people {
 					<li class="list-group-item">
-						@suggestion(c, p) {
+						@listItem(c, p) {
 							<btn
 								class="btn btn-default"
 								type="button"

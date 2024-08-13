@@ -6,6 +6,31 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+func (r *Repo) EachProxy(ctx context.Context, fn func(string, string) bool) error {
+	q := `
+		select proxy_person_id, person_id from proxies
+		order by proxy_person_id, person_id;
+	`
+	rows, err := r.conn.Query(ctx, q)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	var proxyID string
+	var personID string
+	for rows.Next() {
+		if err := rows.Scan(&proxyID, &personID); err != nil {
+			return err
+		}
+		if !fn(proxyID, personID) {
+			break
+		}
+	}
+
+	return rows.Err()
+}
+
 func (r *Repo) ProxyPersonIDs(ctx context.Context, proxyID string) ([]string, error) {
 	q := `
 		select person_id from proxies

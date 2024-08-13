@@ -3,7 +3,6 @@ package proxies
 import (
 	"net/http"
 
-	"github.com/a-h/templ"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -28,7 +27,32 @@ type bindRemoveProxyPerson struct {
 
 func Proxies(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	proxyviews.List(c).Render(r.Context(), w)
+
+	var proxies [][]*models.Person
+	var proxy *models.Person
+	var person *models.Person
+	var iterErr error
+
+	err := c.Repo.EachProxy(r.Context(), func(proxyID, personID string) bool {
+		if proxy, iterErr = c.PersonService.GetPerson(proxyID); iterErr != nil {
+			return false
+		}
+		if person, iterErr = c.PersonService.GetPerson(personID); iterErr != nil {
+			return false
+		}
+		proxies = append(proxies, []*models.Person{proxy, person})
+		return true
+	})
+	if iterErr != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	proxyviews.List(c, proxies).Render(r.Context(), w)
 }
 
 func AddProxy(w http.ResponseWriter, r *http.Request) {
@@ -157,9 +181,7 @@ func AddPerson(w http.ResponseWriter, r *http.Request) {
 		people[i] = person
 	}
 
-	views.ReplaceMany(map[string]templ.Component{
-		"outerHTML:#people": proxyviews.People(c, proxy, people),
-	}).Render(r.Context(), w)
+	proxyviews.RefreshEdit(c, proxy, people).Render(r.Context(), w)
 }
 
 func DeletePerson(w http.ResponseWriter, r *http.Request) {
@@ -197,7 +219,5 @@ func DeletePerson(w http.ResponseWriter, r *http.Request) {
 		people[i] = person
 	}
 
-	views.ReplaceMany(map[string]templ.Component{
-		"outerHTML:#people": proxyviews.People(c, proxy, people),
-	}).Render(r.Context(), w)
+	proxyviews.RefreshEdit(c, proxy, people).Render(r.Context(), w)
 }

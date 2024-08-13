@@ -8,14 +8,6 @@ templ Replace(selector string, component templ.Component) {
 	</div>
 }
 
-templ ReplaceMany(components map[string]templ.Component) {
-	for selector, component := range components {
-		<div hx-swap-oob={ selector }>
-			@component
-		</div>
-	}
-}
-
 templ ReplaceModal(component templ.Component) {
 	<div hx-swap-oob="innerHTML:#modal">
 		@component
