@@ -2,6 +2,31 @@ package repositories
 
 import "github.com/ugent-library/biblio-backoffice/models"
 
+func (s *Repo) isProxyForPublication(u *models.Person, p *models.Publication) bool {
+	var personIDs []string
+
+	if p.CreatorID != "" {
+		personIDs = append(personIDs, p.CreatorID)
+	}
+	for _, c := range p.Author {
+		if c.PersonID != "" {
+			personIDs = append(personIDs, c.PersonID)
+		}
+	}
+	for _, c := range p.Editor {
+		if c.PersonID != "" {
+			personIDs = append(personIDs, c.PersonID)
+		}
+	}
+	for _, c := range p.Supervisor {
+		if c.PersonID != "" {
+			personIDs = append(personIDs, c.PersonID)
+		}
+	}
+
+	return len(personIDs) > 0 && s.isProxy(u.ID, personIDs)
+}
+
 func (s *Repo) CanViewPublication(u *models.Person, p *models.Publication) bool {
 	if !u.Active {
 		return false
@@ -30,7 +55,8 @@ func (s *Repo) CanViewPublication(u *models.Person, p *models.Publication) bool 
 			return true
 		}
 	}
-	return false
+
+	return s.isProxyForPublication(u, p)
 }
 
 func (s *Repo) CanWithdrawPublication(u *models.Person, p *models.Publication) bool {
@@ -75,7 +101,8 @@ func (s *Repo) CanEditPublication(u *models.Person, p *models.Publication) bool 
 			return true
 		}
 	}
-	return false
+
+	return s.isProxyForPublication(u, p)
 }
 
 func (s *Repo) CanDeletePublication(u *models.Person, p *models.Publication) bool {
@@ -91,10 +118,36 @@ func (s *Repo) CanDeletePublication(u *models.Person, p *models.Publication) boo
 	if p.Locked {
 		return false
 	}
-	if p.Status == "private" && p.CreatorID == u.ID {
-		return true
+	if p.Status == "private" {
+		if p.CreatorID == u.ID {
+			return true
+		}
+		if p.CreatorID != "" && s.isProxy(u.ID, []string{p.CreatorID}) {
+			return true
+		}
 	}
+
 	return false
+}
+
+func (s *Repo) isProxyForDataset(u *models.Person, d *models.Dataset) bool {
+	var personIDs []string
+
+	if d.CreatorID != "" {
+		personIDs = append(personIDs, d.CreatorID)
+	}
+	for _, c := range d.Author {
+		if c.PersonID != "" {
+			personIDs = append(personIDs, c.PersonID)
+		}
+	}
+	for _, c := range d.Contributor {
+		if c.PersonID != "" {
+			personIDs = append(personIDs, c.PersonID)
+		}
+	}
+
+	return len(personIDs) > 0 && s.isProxy(u.ID, personIDs)
 }
 
 func (s *Repo) CanViewDataset(u *models.Person, d *models.Dataset) bool {
@@ -120,7 +173,8 @@ func (s *Repo) CanViewDataset(u *models.Person, d *models.Dataset) bool {
 			return true
 		}
 	}
-	return false
+
+	return s.isProxyForDataset(u, d)
 }
 
 func (s *Repo) CanWithdrawDataset(u *models.Person, d *models.Dataset) bool {
@@ -157,7 +211,8 @@ func (s *Repo) CanEditDataset(u *models.Person, d *models.Dataset) bool {
 			return true
 		}
 	}
-	return false
+
+	return s.isProxyForDataset(u, d)
 }
 
 func (s *Repo) CanDeleteDataset(u *models.Person, d *models.Dataset) bool {
@@ -173,9 +228,15 @@ func (s *Repo) CanDeleteDataset(u *models.Person, d *models.Dataset) bool {
 	if d.Locked {
 		return false
 	}
-	if d.Status == "private" && d.CreatorID == u.ID {
-		return true
+	if d.Status == "private" {
+		if d.CreatorID == u.ID {
+			return true
+		}
+		if d.CreatorID != "" && s.isProxy(u.ID, []string{d.CreatorID}) {
+			return true
+		}
 	}
+
 	return false
 }
 
@@ -192,5 +253,5 @@ func (s *Repo) CanViewDashboard(u *models.Person) bool {
 }
 
 func (s *Repo) CanChangeType(u *models.Person, p *models.Publication) bool {
-	return s.CanEditPublication(u, p) && p.Status != "public"
+	return p.Status != "public" && s.CanEditPublication(u, p)
 }

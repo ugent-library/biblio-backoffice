@@ -6,6 +6,19 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+func (s *Repo) isProxy(proxyID string, personIDs []string) bool {
+	q := `
+		select exists(select 1 from proxies where proxy_person_id = $1 and person_id = any($2));
+	`
+	var exists bool
+	if err := s.conn.QueryRow(context.TODO(), q, &exists); err != nil {
+		// TODO log error
+		return false
+	}
+
+	return exists
+}
+
 func (r *Repo) EachProxy(ctx context.Context, fn func(string, string) bool) error {
 	q := `
 		select proxy_person_id, person_id from proxies
