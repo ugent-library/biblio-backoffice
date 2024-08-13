@@ -35,28 +35,32 @@ func SetDataset(repo *repositories.Repo) func(http.Handler) http.Handler {
 	}
 }
 
-func RequireViewDataset(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		c := Get(r)
+func RequireViewDataset(repo *repositories.Repo) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			c := Get(r)
 
-		if !c.User.CanViewDataset(GetDataset(r)) {
-			c.HandleError(w, r, httperror.Forbidden)
-			return
-		}
+			if !c.Repo.CanViewDataset(c.User, GetDataset(r)) {
+				c.HandleError(w, r, httperror.Forbidden)
+				return
+			}
 
-		next.ServeHTTP(w, r)
-	})
+			next.ServeHTTP(w, r)
+		})
+	}
 }
 
-func RequireEditDataset(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		c := Get(r)
+func RequireEditDataset(repo *repositories.Repo) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			c := Get(r)
 
-		if !c.User.CanEditDataset(GetDataset(r)) {
-			c.HandleError(w, r, httperror.Forbidden)
-			return
-		}
+			if !c.Repo.CanEditDataset(c.User, GetDataset(r)) {
+				c.HandleError(w, r, httperror.Forbidden)
+				return
+			}
 
-		next.ServeHTTP(w, r)
-	})
+			next.ServeHTTP(w, r)
+		})
+	}
 }

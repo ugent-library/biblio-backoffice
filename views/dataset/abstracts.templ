@@ -17,7 +17,7 @@ templ Abstracts(c *ctx.Ctx, dataset *models.Dataset) {
 					<h1 class="bc-toolbar-title">Abstract</h1>
 				</div>
 				<div class="bc-toolbar-right">
-					if c.User.CanEditDataset(dataset) {
+					if c.Repo.CanEditDataset(c.User, dataset) {
 						<button
 							class="btn btn-outline-primary"
 							type="button"
@@ -56,7 +56,7 @@ templ AbstractsBody(c *ctx.Ctx, dataset *models.Dataset) {
 							</td>
 							<td>{ localize.LanguageName(a.Lang) }</td>
 							<td class="pe-6">
-								if c.User.CanEditDataset(dataset) {
+								if c.Repo.CanEditDataset(c.User, dataset) {
 									<div class="c-button-toolbar">
 										<div class="dropdown">
 											<button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

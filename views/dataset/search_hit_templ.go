@@ -77,7 +77,7 @@ func SummaryActions(c *ctx.Ctx, dataset *models.Dataset, url string) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		if c.User.CanDeleteDataset(dataset) {
+		if c.Repo.CanDeleteDataset(c.User, dataset) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"dropdown-item border-top\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

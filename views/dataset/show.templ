@@ -27,7 +27,7 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 							</div>
 						</div>
 						<div class="bc-toolbar-right">
-							if c.User.CanWithdrawDataset(dataset) {
+							if c.Repo.CanWithdrawDataset(c.User, dataset) {
 								<div class="bc-toolbar-item">
 									<button
 										class="btn btn-outline-danger"
@@ -39,7 +39,7 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 									</button>
 								</div>
 							}
-							if c.User.CanPublishDataset(dataset) && dataset.Status == "returned" {
+							if c.Repo.CanPublishDataset(c.User, dataset) && dataset.Status == "returned" {
 								<div class="bc-toolbar-item">
 									<button
 										class="btn btn-success"
@@ -50,7 +50,7 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 									</button>
 								</div>
 							}
-							if c.User.CanPublishDataset(dataset) && dataset.Status != "returned" {
+							if c.Repo.CanPublishDataset(c.User, dataset) && dataset.Status != "returned" {
 								<div class="bc-toolbar-item">
 									<button
 										class="btn btn-success"
@@ -62,7 +62,7 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 								</div>
 							}
 							<div class="bc-toolbar-item">
-								if c.User.CanCurate() && dataset.Locked {
+								if c.Repo.CanCurate(c.User) && dataset.Locked {
 									<button
 										class="btn btn-outline-secondary"
 										hx-post={ views.URL(c.PathTo("dataset_unlock", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.String()).String() }
@@ -71,7 +71,7 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 										<i class="if if-lock-unlock"></i>
 										<span class="btn-text">Unlock record</span>
 									</button>
-								} else if c.User.CanCurate() {
+								} else if c.Repo.CanCurate(c.User) {
 									<button
 										class="btn btn-outline-secondary"
 										hx-post={ views.URL(c.PathTo("dataset_lock", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.String()).String() }
@@ -82,7 +82,7 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 									</button>
 								}
 							</div>
-							if c.User.CanDeleteDataset(dataset) {
+							if c.Repo.CanDeleteDataset(c.User, dataset) {
 								<div class="bc-toolbar-item">
 									<div class="dropdown">
 										<button

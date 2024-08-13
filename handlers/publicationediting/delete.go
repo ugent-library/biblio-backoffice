@@ -28,7 +28,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	publication := ctx.GetPublication(r)
 
-	if !c.User.CanDeletePublication(publication) {
+	if !c.Repo.CanDeletePublication(c.User, publication) {
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}

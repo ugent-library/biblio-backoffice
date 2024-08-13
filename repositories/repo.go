@@ -1082,7 +1082,7 @@ func (s *Repo) GetVisiblePublicationDatasets(u *models.Person, p *models.Publica
 	}
 	filteredDatasets := make([]*models.Dataset, 0, len(datasets))
 	for _, dataset := range datasets {
-		if u.CanViewDataset(dataset) {
+		if s.CanViewDataset(u, dataset) {
 			filteredDatasets = append(filteredDatasets, dataset)
 		}
 	}
@@ -1110,7 +1110,7 @@ func (s *Repo) GetVisibleDatasetPublications(u *models.Person, d *models.Dataset
 	}
 	filteredPublications := make([]*models.Publication, 0, len(publications))
 	for _, publication := range publications {
-		if u.CanViewPublication(publication) {
+		if s.CanViewPublication(u, publication) {
 			filteredPublications = append(filteredPublications, publication)
 		}
 	}

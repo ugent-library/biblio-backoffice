@@ -25,7 +25,7 @@ func Publish(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	dataset := ctx.GetDataset(r)
 
-	if !c.User.CanPublishDataset(dataset) {
+	if !c.Repo.CanPublishDataset(c.User, dataset) {
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}

@@ -57,7 +57,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if c.User.CanWithdrawPublication(p) {
+			if c.Repo.CanWithdrawPublication(c.User, p) {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar-item\"><button class=\"btn btn-outline-danger\" hx-get=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -76,7 +76,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					return templ_7745c5c3_Err
 				}
 			}
-			if c.User.CanPublishPublication(p) && p.Status == "returned" {
+			if c.Repo.CanPublishPublication(c.User, p) && p.Status == "returned" {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar-item\"><button class=\"btn btn-success\" hx-get=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -95,7 +95,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					return templ_7745c5c3_Err
 				}
 			}
-			if c.User.CanPublishPublication(p) && p.Status != "returned" {
+			if c.Repo.CanPublishPublication(c.User, p) && p.Status != "returned" {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar-item\"><button class=\"btn btn-success\" hx-get=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -118,7 +118,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if c.User.CanCurate() && p.Locked {
+			if c.Repo.CanCurate(c.User) && p.Locked {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn btn-outline-secondary\" hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -136,7 +136,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-			} else if c.User.CanCurate() {
+			} else if c.Repo.CanCurate(c.User) {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn btn-outline-secondary\" hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -159,7 +159,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if c.User.CanDeletePublication(p) {
+			if c.Repo.CanDeletePublication(c.User, p) {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar-item\"><div class=\"dropdown dropleft\"><button class=\"btn btn-outline-primary btn-icon-only\" type=\"button\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"><i class=\"if if-more\"></i></button><div class=\"dropdown-menu\"><a class=\"dropdown-item\" href=\"#\" hx-get=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err

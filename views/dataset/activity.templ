@@ -15,7 +15,7 @@ templ Activity(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 	</div>
 	<div hx-swap-oob="innerHTML:#show-sidebar"></div>
 	<div class="row">
-		if c.User.CanCurate() {
+		if c.Repo.CanCurate(c.User) {
 			<div class="col-lg-6">
 				<div class="card mb-6">
 					<div class="card-header">
@@ -75,7 +75,7 @@ templ Activity(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 							<h3 class="card-title">Messages from and for Biblio team</h3>
 						</div>
 						<div class="bc-toolbar-right">
-							if c.User.CanEditDataset(dataset) {
+							if c.Repo.CanEditDataset(c.User, dataset) {
 								<button
 									class="btn btn-outline-primary"
 									type="button"

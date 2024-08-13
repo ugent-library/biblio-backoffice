@@ -47,7 +47,7 @@ func Activity(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Com
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanCurate() {
+		if c.Repo.CanCurate(c.User) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"col-lg-6\"><div class=\"card mb-6\"><div class=\"card-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><h3 class=\"card-title\">Librarian tags</h3></div><div class=\"bc-toolbar-right\"><button class=\"btn btn-outline-primary\" type=\"button\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -99,7 +99,7 @@ func Activity(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Com
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditDataset(dataset) {
+		if c.Repo.CanEditDataset(c.User, dataset) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn btn-outline-primary\" type=\"button\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

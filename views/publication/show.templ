@@ -27,7 +27,7 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 							</div>
 						</div>
 						<div class="bc-toolbar-right">
-							if c.User.CanWithdrawPublication(p) {
+							if c.Repo.CanWithdrawPublication(c.User, p) {
 								<div class="bc-toolbar-item">
 									<button
 										class="btn btn-outline-danger"
@@ -39,7 +39,7 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 									</button>
 								</div>
 							}
-							if c.User.CanPublishPublication(p) && p.Status == "returned" {
+							if c.Repo.CanPublishPublication(c.User, p) && p.Status == "returned" {
 								<div class="bc-toolbar-item">
 									<button
 										class="btn btn-success"
@@ -50,7 +50,7 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 									</button>
 								</div>
 							}
-							if c.User.CanPublishPublication(p) &&  p.Status != "returned" {
+							if c.Repo.CanPublishPublication(c.User, p) &&  p.Status != "returned" {
 								<div class="bc-toolbar-item">
 									<button
 										class="btn btn-success"
@@ -62,7 +62,7 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 								</div>
 							}
 							<div class="bc-toolbar-item">
-								if c.User.CanCurate() && p.Locked {
+								if c.Repo.CanCurate(c.User) && p.Locked {
 									<button
 										class="btn btn-outline-secondary"
 										hx-post={ c.PathTo("publication_unlock", "id", p.ID, "redirect-url", c.CurrentURL.String()).String() }
@@ -71,7 +71,7 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 										<i class="if if-lock-unlock"></i>
 										<span class="btn-text">Unlock record</span>
 									</button>
-								} else if c.User.CanCurate() {
+								} else if c.Repo.CanCurate(c.User) {
 									<button
 										class="btn btn-outline-secondary"
 										hx-post={ c.PathTo("publication_lock", "id", p.ID, "redirect-url", c.CurrentURL.String()).String() }
@@ -82,7 +82,7 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 									</button>
 								}
 							</div>
-							if c.User.CanDeletePublication(p) {
+							if c.Repo.CanDeletePublication(c.User, p) {
 								<div class="bc-toolbar-item">
 									<div class="dropdown dropleft">
 										<button

@@ -147,7 +147,7 @@ func SummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.
 				}
 			}
 		}
-		if c.User.CanDeletePublication(pub) {
+		if c.Repo.CanDeletePublication(c.User, pub) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"dropdown-item border-top\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

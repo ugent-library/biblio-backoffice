@@ -25,7 +25,7 @@ func Withdraw(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	publication := ctx.GetPublication(r)
 
-	if !c.User.CanWithdrawPublication(publication) {
+	if !c.Repo.CanWithdrawPublication(c.User, publication) {
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}

@@ -71,7 +71,7 @@ templ RecentActivity(c *ctx.Ctx, acts []Activity) {
 									<span>
 										if act.User != nil && act.User.ID == c.User.ID {
 											You
-										} else if act.User != nil && act.User.CanCurate() && !c.User.CanCurate() {
+										} else if act.User != nil && c.Repo.CanCurate(act.User) && !c.Repo.CanCurate(c.User) {
 											A Biblio team member
 										} else if act.User != nil {
 											{ act.User.FullName }

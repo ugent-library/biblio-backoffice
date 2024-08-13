@@ -116,7 +116,7 @@ func globalSearch(searcher backends.DatasetIndex) (*models.DatasetHits, error) {
 func CurationSearch(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-	if !c.User.CanCurate() {
+	if !c.Repo.CanCurate(c.User) {
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}

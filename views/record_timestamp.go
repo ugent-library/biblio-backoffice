@@ -48,7 +48,7 @@ func UpdatedBy(c *ctx.Ctx, updatedAt *time.Time, updatedBy *models.Person, lastU
 }
 
 func addEditorInfo(c *ctx.Ctx, sb *strings.Builder, person *models.Person) {
-	if person.CanCurate() && !c.User.CanCurate() {
+	if c.Repo.CanCurate(person) && !c.Repo.CanCurate(c.User) {
 		sb.WriteString("a Biblio team member")
 	} else {
 		sb.WriteString(person.FullName)

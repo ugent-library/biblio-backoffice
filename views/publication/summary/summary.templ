@@ -201,7 +201,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 							<div class="vstack gap-3">
 								<ul class="c-meta-list c-meta-list-inline">
 									if vabb := args.Publication.VABB(); vabb != "" {
-										if c.User.CanCurate() {
+										if c.Repo.CanCurate(c.User) {
 											<li class="c-meta-item">
 												<i class="if if-bar-chart if--muted if--small"></i>
 												<span class="text-muted">VABB: { vabb }</span>

@@ -59,7 +59,7 @@ func Publications(c *ctx.Ctx, dataset *models.Dataset, publications []*models.Pu
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditDataset(dataset) {
+		if c.Repo.CanEditDataset(c.User, dataset) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-button-toolbar\" data-panel-state=\"read\"><button class=\"btn btn-outline-primary\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -176,7 +176,7 @@ func publicationSummaryActions(c *ctx.Ctx, dataset *models.Dataset, pub *models.
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditDataset(dataset) {
+		if c.Repo.CanEditDataset(c.User, dataset) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"dropdown-item\" type=\"button\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

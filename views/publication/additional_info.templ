@@ -16,7 +16,7 @@ templ AdditionalInfo(c *ctx.Ctx, p *models.Publication) {
 					<h1 class="bc-toolbar-title">Additional information</h1>
 				</div>
 				<div class="bc-toolbar-right">
-					if c.User.CanEditPublication(p) {
+					if c.Repo.CanEditPublication(c.User, p) {
 						<button
 							class="btn btn-outline-primary"
 							hx-get={ c.PathTo("publication_edit_additional_info", "id", p.ID).String() }

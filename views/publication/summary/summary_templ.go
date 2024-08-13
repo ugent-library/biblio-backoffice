@@ -564,7 +564,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if vabb := args.Publication.VABB(); vabb != "" {
-				if c.User.CanCurate() {
+				if c.Repo.CanCurate(c.User) {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><i class=\"if if-bar-chart if--muted if--small\"></i> <span class=\"text-muted\">VABB: ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err

@@ -59,7 +59,7 @@ templ SummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) {
 						</a>
 					}
 				}
-				if c.User.CanDeletePublication(pub) {
+				if c.Repo.CanDeletePublication(c.User, pub) {
 					<button
 						class="dropdown-item border-top"
 						hx-get={ views.URL(c.PathTo("publication_confirm_delete", "id", pub.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).String() }

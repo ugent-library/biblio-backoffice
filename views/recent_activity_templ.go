@@ -132,7 +132,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-				} else if act.User != nil && act.User.CanCurate() && !c.User.CanCurate() {
+				} else if act.User != nil && c.Repo.CanCurate(act.User) && !c.Repo.CanCurate(c.User) {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("A Biblio team member")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err

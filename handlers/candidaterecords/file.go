@@ -14,7 +14,7 @@ import (
 func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-	if !c.User.CanCurate() {
+	if !c.Repo.CanCurate(c.User) {
 		c.HandleError(w, r, httperror.Unauthorized)
 		return
 	}

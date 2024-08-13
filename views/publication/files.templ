@@ -37,7 +37,7 @@ templ Files(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 
 templ FilesBody(c *ctx.Ctx, p *models.Publication) {
 	<div class="card-body p-0">
-		if c.User.CanEditPublication(p) {
+		if c.Repo.CanEditPublication(c.User, p) {
 			<form
 				class="p-6"
 				method="POST"
@@ -153,7 +153,7 @@ templ FilesBody(c *ctx.Ctx, p *models.Publication) {
 											</div>
 											<div class="bc-toolbar-right">
 												<div class="bc-toolbar-item ms-auto ms-lg-0">
-													if c.User.CanEditPublication(p) {
+													if c.Repo.CanEditPublication(c.User, p) {
 														<div class="c-button-toolbar">
 															<button
 																class="btn btn-icon-only"

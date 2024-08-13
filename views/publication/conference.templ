@@ -16,7 +16,7 @@ templ Conference(c *ctx.Ctx, p *models.Publication) {
 					<h1 class="bc-toolbar-title">Conference details</h1>
 				</div>
 				<div class="bc-toolbar-right">
-					if c.User.CanEditPublication(p) {
+					if c.Repo.CanEditPublication(c.User, p) {
 						<div class="c-button-toolbar" data-panel-state="read">
 							<button
 								class="btn btn-outline-primary"

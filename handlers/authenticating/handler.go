@@ -49,7 +49,7 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	session.Values[ctx.UserIDKey] = user.ID
-	if user.CanCurate() {
+	if c.Repo.CanCurate(user) {
 		session.Values[ctx.UserRoleKey] = "curator"
 	} else {
 		session.Values[ctx.UserRoleKey] = "user"

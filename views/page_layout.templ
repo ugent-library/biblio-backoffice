@@ -92,7 +92,7 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 														</div>
 													</div>
 													<hr class="dropdown-divider"/>
-													if c.User.CanImpersonateUser() && c.OriginalUser == nil {
+													if c.Repo.CanImpersonateUser(c.User) && c.OriginalUser == nil {
 														<a
 															class="dropdown-item"
 															href="#"
@@ -125,7 +125,7 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 			<main>
 				<div class="d-flex u-maximize-height">
 					<div class={ "c-sidebar", templ.KV("c-sidebar--dark-gray", c.UserRole == "curator") }>
-						if c.User != nil && c.User.CanCurate() {
+						if c.User != nil && c.Repo.CanCurate(c.User) {
 							<div class="dropdown mx-lg-4 mb-6 mt-3">
 								<button class="btn btn-outline-light dropdown-toggle w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 									switch c.UserRole {

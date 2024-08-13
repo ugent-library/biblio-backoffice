@@ -31,7 +31,7 @@ templ Datasets(c *ctx.Ctx, publication *models.Publication, datasets []*models.D
 					</a>
 				</div>
 				<div class="bc-toolbar-right">
-					if c.User.CanEditPublication(publication) {
+					if c.Repo.CanEditPublication(c.User, publication) {
 						<div class="c-button-toolbar" data-panel-state="read">
 							<button
 								class="btn btn-outline-primary"
@@ -96,7 +96,7 @@ templ datasetSummaryActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset
 						<i class="if if-eye"></i>
 						<span>View dataset</span>
 					</a>
-					if c.User.CanEditPublication(p) {
+					if c.Repo.CanEditPublication(c.User, p) {
 						<button
 							class="dropdown-item"
 							type="button"

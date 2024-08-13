@@ -274,12 +274,10 @@ func Register(c Config) {
 
 					r.Route("/publication/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetPublication(c.Services.Repo))
-						r.Use(ctx.RequireViewPublication)
+						r.Use(ctx.RequireViewPublication(c.Services.Repo))
 
 						// view only functions
 						r.Group(func(r *ich.Mux) {
-							r.Use(ctx.RequireViewPublication)
-
 							r.Get("/", publicationviewing.Show).Name("publication")
 							r.With(ctx.SetSubNav("description")).Get("/description", publicationviewing.ShowDescription).Name("publication_description")
 							r.With(ctx.SetSubNav("contributors")).Get("/contributors", publicationviewing.ShowContributors).Name("publication_contributors")
@@ -291,7 +289,7 @@ func Register(c Config) {
 
 						// edit only
 						r.Group(func(r *ich.Mux) {
-							r.Use(ctx.RequireEditPublication)
+							r.Use(ctx.RequireEditPublication(c.Services.Repo))
 
 							// add (wizard part 2 - after save)
 							r.Group(func(r *ich.Mux) {
@@ -439,7 +437,7 @@ func Register(c Config) {
 
 					r.Route("/dataset/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetDataset(c.Services.Repo))
-						r.Use(ctx.RequireViewDataset)
+						r.Use(ctx.RequireViewDataset(c.Services.Repo))
 
 						// view only functions
 						r.Get("/", datasetviewing.Show).Name("dataset")
@@ -450,7 +448,7 @@ func Register(c Config) {
 
 						// edit only
 						r.Group(func(r *ich.Mux) {
-							r.Use(ctx.RequireEditDataset)
+							r.Use(ctx.RequireEditDataset(c.Services.Repo))
 
 							// wizard (part 2)
 							r.Group(func(r *ich.Mux) {

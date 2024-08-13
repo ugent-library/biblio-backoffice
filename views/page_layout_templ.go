@@ -226,7 +226,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if c.User.CanImpersonateUser() && c.OriginalUser == nil {
+			if c.Repo.CanImpersonateUser(c.User) && c.OriginalUser == nil {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"dropdown-item\" href=\"#\" hx-get=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -299,7 +299,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User != nil && c.User.CanCurate() {
+		if c.User != nil && c.Repo.CanCurate(c.User) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"dropdown mx-lg-4 mb-6 mt-3\"><button class=\"btn btn-outline-light dropdown-toggle w-100 d-flex align-items-center justify-content-center\" type=\"button\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

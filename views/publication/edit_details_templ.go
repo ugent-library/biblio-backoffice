@@ -55,7 +55,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanChangeType(p) {
+		if c.Repo.CanChangeType(c.User, p) {
 			templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -255,7 +255,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 				return templ_7745c5c3_Err
 			}
 		}
-		if c.User.CanCurate() {
+		if c.Repo.CanCurate(c.User) {
 			templ_7745c5c3_Err = form.Select(form.SelectArgs{
 				FieldArgs: form.FieldArgs{
 					Label:    c.Loc.Get("builder.classification"),
@@ -280,7 +280,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 				return templ_7745c5c3_Err
 			}
 		}
-		if c.User.CanCurate() {
+		if c.Repo.CanCurate(c.User) {
 			templ_7745c5c3_Err = form.Checkbox(form.CheckboxArgs{
 				FieldArgs: form.FieldArgs{
 					Label: c.Loc.Get("builder.legacy"),
@@ -713,7 +713,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 			return templ_7745c5c3_Err
 		}
 		if p.UsesWOS() {
-			if c.User.CanCurate() {
+			if c.Repo.CanCurate(c.User) {
 				templ_7745c5c3_Err = form.Text(form.TextArgs{
 					FieldArgs: form.FieldArgs{
 						Label:   c.Loc.Get("builder.wos_type"),

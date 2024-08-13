@@ -25,7 +25,7 @@ func Withdraw(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	dataset := ctx.GetDataset(r)
 
-	if !c.User.CanWithdrawDataset(dataset) {
+	if !c.Repo.CanWithdrawDataset(c.User, dataset) {
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}
