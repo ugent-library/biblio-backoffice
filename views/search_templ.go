@@ -721,7 +721,7 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) templ.Component {
 			templ_7745c5c3_Var38 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var39 = []any{"bc-toolbar", "bc-toolbar--auto", "mb-4", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2)}
+		var templ_7745c5c3_Var39 = []any{"bc-toolbar", "bc-toolbar-lg-responsive", "bc-toolbar--auto", "mb-4", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var39...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -752,7 +752,7 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if len(searchArgs.FacetLines) > 2 {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"form-check\"><input type=\"checkbox\" id=\"show-all-facet-filters-toggle\" class=\"btn-check toggle\" autocomplete=\"off\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"form-chec ps-0\"><input type=\"checkbox\" id=\"show-all-facet-filters-toggle\" class=\"btn-check toggle\" autocomplete=\"off\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -762,7 +762,7 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> <label for=\"show-all-facet-filters-toggle\" class=\"btn btn-link toggle-off\"><i class=\"if if-chevron-down u-no-transition\"></i> <span class=\"btn-text\"><span class=\"u-no-transition\">Show all filters</span></span></label> <label for=\"show-all-facet-filters-toggle\" class=\"btn btn-link toggle-on\"><i class=\"if if-chevron-up u-no-transition\"></i> <span class=\"btn-text\"><span class=\"u-no-transition\">Show less filters</span></span></label></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("> <label for=\"show-all-facet-filters-toggle\" class=\"btn btn-link toggle-off\"><i class=\"if if-chevron-down u-no-transition\"></i> <span class=\"btn-text\"><span class=\"u-no-transition\">Show more <span class=\"d-none d-xl-inline-block\">filters</span></span></span></label> <label for=\"show-all-facet-filters-toggle\" class=\"btn btn-link toggle-on\"><i class=\"if if-chevron-up u-no-transition\"></i> <span class=\"btn-text\"><span class=\"u-no-transition\">Show less <span class=\"d-none d-xl-inline-block\">filters</span></span></span></label></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -835,7 +835,7 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn btn-link btn-muted text-muted\" type=\"submit\"><i class=\"if if-close\"></i> <span class=\"btn-text\">Reset filters</span></button></form></div></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn btn-link btn-muted text-muted\" type=\"submit\"><i class=\"if if-close\"></i> <span class=\"btn-text\">Reset <span class=\"d-none d-xl-inline-block\">filters</span></span></button></form></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
