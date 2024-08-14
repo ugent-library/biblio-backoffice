@@ -3,7 +3,7 @@ package views
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
 templ NotFound(c *ctx.Ctx) {
-	@PageLayout(c, "Biblio", nil) {
+	@PageLayout(c, PageLayoutArgs{Title: "Biblio"}) {
 		<div class="w-100 u-scroll-wrapper">
 			<div class="u-scroll-wrapper__body p-6">
 				<div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
@@ -25,7 +25,7 @@ templ NotFound(c *ctx.Ctx) {
 }
 
 templ InternalServerError(c *ctx.Ctx) {
-	@PageLayout(c, "Biblio", nil) {
+	@PageLayout(c, PageLayoutArgs{Title: "Biblio"}) {
 		<div class="w-100 u-scroll-wrapper">
 			<div class="u-scroll-wrapper__body p-6">
 				<div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
@@ -47,7 +47,7 @@ templ InternalServerError(c *ctx.Ctx) {
 }
 
 templ UserNotFound(c *ctx.Ctx) {
-	@PageLayout(c, "Biblio", nil) {
+	@PageLayout(c, PageLayoutArgs{Title: "Biblio"}) {
 		<div class="w-100 u-scroll-wrapper">
 			<div class="u-scroll-wrapper__body p-6">
 				<div class="c-blank-slate c-blank-slate-default c-blank-slate-large">

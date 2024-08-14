@@ -8,7 +8,10 @@ import (
 )
 
 templ AddDescription(c *ctx.Ctx, dataset *models.Dataset) {
-	@views.PageLayout(c, "Add - Datasets - Biblio", nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title:       "Add - Datasets - Biblio",
+		Breadcrumbs: addDatasetBreadcrumbs(c),
+	}) {
 		@datasetviews.AddSidebar(c, 2)
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bg-white">

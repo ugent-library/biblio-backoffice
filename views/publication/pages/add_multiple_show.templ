@@ -15,7 +15,10 @@ type AddMultipleShowArgs struct {
 }
 
 templ AddMultipleShow(c *ctx.Ctx, args AddMultipleShowArgs) {
-	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title:       "Add - Publications - Biblio",
+		Breadcrumbs: addPublicationBreadcrumbs(c),
+	}) {
 		@publication.AddMultipleSidebar(c, args.Step)
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bg-white" data-collapsed="true">
