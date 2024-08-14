@@ -320,8 +320,10 @@ func Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) templ.Componen
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = contributorviews.Summary(c, contributorviews.SummaryArgs{
-			Role:         "author",
-			Contributors: p.Author,
+			Role:                    "author",
+			Contributors:            p.Author,
+			CanViewMoreContributors: c.User.CanViewPublication(p),
+			CanEditContributors:     c.User.CanEditPublication(p),
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -331,8 +333,10 @@ func Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) templ.Componen
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = contributorviews.Summary(c, contributorviews.SummaryArgs{
-			Role:         "supervisor",
-			Contributors: p.Supervisor,
+			Role:                    "supervisor",
+			Contributors:            p.Supervisor,
+			CanViewMoreContributors: c.User.CanViewPublication(p),
+			CanEditContributors:     c.User.CanEditPublication(p),
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -354,7 +358,7 @@ func Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) templ.Componen
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(o.OrganizationID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/summary.templ`, Line: 113, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/summary.templ`, Line: 118, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {

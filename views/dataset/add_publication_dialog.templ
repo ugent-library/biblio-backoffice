@@ -15,13 +15,13 @@ templ AddPublicationDialog(c *ctx.Ctx, dataset *models.Dataset, publicationHits 
 				<label class="form-label" for="publication-q">Search publications</label>
 				<input
 					class="form-control mb-4"
-					type="text"
+					type="search"
 					id="publication-q"
 					name="q"
 					placeholder="Search..."
 					autofocus
 					hx-get={ c.PathTo("dataset_suggest_publications", "id", dataset.ID).String() }
-					hx-trigger="keyup changed delay:500ms"
+					hx-trigger="input changed delay:500ms, search"
 					hx-target="#publication-suggestions"
 				/>
 				<p class="text-muted">

@@ -15,13 +15,13 @@ templ AddDataset(c *ctx.Ctx, publication *models.Publication, hits *models.Datas
 				<label class="form-label" for="publication-q">Search datasets</label>
 				<input
 					class="form-control mb-4"
-					type="text"
+					type="search"
 					id="publication-q"
 					name="q"
 					placeholder="Search..."
 					autofocus
 					hx-get={ c.PathTo("publication_suggest_datasets", "id", publication.ID).String() }
-					hx-trigger="keyup changed delay:500ms"
+					hx-trigger="input changed delay:500ms, search"
 					hx-target="#dataset-suggestions"
 				/>
 				<p class="text-muted">
