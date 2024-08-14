@@ -41,6 +41,7 @@ func UpdatedBy(c *ctx.Ctx, updatedAt *time.Time, updatedBy *models.Person, lastU
 		if lastUpdatedBy != nil {
 			sb.WriteString(" Last edit by ")
 			addEditorInfo(c, sb, lastUpdatedBy)
+			sb.WriteString(".")
 		}
 	}
 

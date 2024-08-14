@@ -88,23 +88,39 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 								}
 							</ul>
 							<div class="d-inline-flex align-items-center flex-wrap">
-								<span class="badge rounded-pill badge-light me-4">Authors</span>
-								@contributorviews.Summary(c, contributorviews.SummaryArgs{
-									Role:                    "author",
-									Contributors:            p.Author,
-									CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
-									CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
-								})
+								<div class="d-inline-flex align-items-center flex-wrap">
+									@contributorviews.Summary(c, contributorviews.SummaryArgs{
+										Role:         "author",
+										Contributors: p.Author,
+										CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
+ 				  						CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
+									})
+								</div>
+								<div class="text-muted fst-italic me-5 my-1">supervised by</div>
+								<div class="d-inline-flex align-items-center flex-wrap">
+									@contributorviews.Summary(c, contributorviews.SummaryArgs{
+										Role:         "supervisor",
+										Contributors: p.Supervisor,
+										CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
+ 				  						CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
+
+									})
+								</div>
 							</div>
-							<div class="d-inline-flex align-items-center flex-wrap">
-								<span class="badge rounded-pill badge-light me-4">Supervisors</span>
-								@contributorviews.Summary(c, contributorviews.SummaryArgs{
-									Role:                    "supervisor",
-									Contributors:            p.Supervisor,
-									CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
-									CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
-								})
-							</div>
+
+							if len(p.RelatedOrganizations) > 0 {
+								<div class="d-inline-flex align-items-center flex-wrap">
+									<span class="badge rounded-pill badge-light me-4">Suggested departments</span>
+									<ul class="c-meta-list c-meta-list-inline">
+										for _, o := range p.RelatedOrganizations {
+											<li class="c-meta-item">
+												<i class="if if-building if--small if--muted pe-1"></i>
+												<span>{ o.OrganizationID }</span>
+											</li>
+										}
+									</ul>
+								</div>
+							}
 						</div>
 					</div>
 					<div class="c-button-toolbar flex-row-reverse flex-lg-row">

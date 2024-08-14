@@ -16,139 +16,212 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 	}) {
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bg-white">
-				<div class="bc-navbar bc-navbar--large bc-navbar--white">
-					<div class="bc-toolbar">
-						<div class="bc-toolbar-left">
-							<div class="bc-toolbar-item">
-								<a class="btn btn-link btn-link-muted" href={ templ.URL(redirectURL) }>
-									<i class="if if-arrow-left"></i>
-									<div class="btn-text">Datasets overview</div>
-								</a>
-							</div>
-						</div>
-						<div class="bc-toolbar-right">
-							if c.Repo.CanWithdrawDataset(c.User, dataset) {
-								<div class="bc-toolbar-item">
-									<button
-										class="btn btn-outline-danger"
-										hx-get={ views.URL(c.PathTo("dataset_confirm_withdraw", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String() }
-										hx-target="#modals"
-									>
-										<i class="if if-arrow-go-back"></i>
-										<span class="btn-text">Withdraw</span>
-									</button>
-								</div>
-							}
-							if c.Repo.CanPublishDataset(c.User, dataset) && dataset.Status == "returned" {
-								<div class="bc-toolbar-item">
-									<button
-										class="btn btn-success"
-										hx-get={ views.URL(c.PathTo("dataset_confirm_republish", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String() }
-										hx-target="#modals"
-									>
-										<div class="btn-text">Republish to Biblio</div>
-									</button>
-								</div>
-							}
-							if c.Repo.CanPublishDataset(c.User, dataset) && dataset.Status != "returned" {
-								<div class="bc-toolbar-item">
-									<button
-										class="btn btn-success"
-										hx-get={ views.URL(c.PathTo("dataset_confirm_publish", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String() }
-										hx-target="#modals"
-									>
-										<div class="btn-text">Publish to Biblio</div>
-									</button>
-								</div>
-							}
-							<div class="bc-toolbar-item">
-								if c.Repo.CanCurate(c.User) && dataset.Locked {
-									<button
-										class="btn btn-outline-secondary"
-										hx-post={ views.URL(c.PathTo("dataset_unlock", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.String()).String() }
-										hx-swap="none"
-									>
-										<i class="if if-lock-unlock"></i>
-										<span class="btn-text">Unlock record</span>
-									</button>
-								} else if c.Repo.CanCurate(c.User) {
-									<button
-										class="btn btn-outline-secondary"
-										hx-post={ views.URL(c.PathTo("dataset_lock", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.String()).String() }
-										hx-swap="none"
-									>
-										<i class="if if-lock"></i>
-										<span class="btn-text">Lock record</span>
-									</button>
-								}
-							</div>
-							if c.Repo.CanDeleteDataset(c.User, dataset) {
-								<div class="bc-toolbar-item">
-									<div class="dropdown">
-										<button
-											class="btn btn-outline-primary btn-icon-only"
-											type="button"
-											data-bs-toggle="dropdown"
-											aria-haspopup="true"
-											aria-expanded="false"
-										>
-											<i class="if if-more"></i>
-										</button>
-										<div class="dropdown-menu">
-											<button
-												class="dropdown-item"
-												hx-get={ views.URL(c.PathTo("dataset_confirm_delete", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String() }
-												hx-target="#modals"
-											>
-												<i class="if if-delete"></i>
-												<span>Delete</span>
-											</button>
-										</div>
-									</div>
-								</div>
-							}
-						</div>
-					</div>
-				</div>
-				<div class="c-divider mt-0 mx-6 mb-4"></div>
 				<div id="summary">
 					<div class="mx-6">
-						<div class="c-thumbnail-text u-min-w-0">
-							<div class="bc-toolbar bc-toolbar--auto bc-toolbar--responsive mb-3">
-								<div class="bc-toolbar-left">
-									<div class="bc-toolbar-item">
-										@views.BadgeStatus(dataset.Status)
-									</div>
+						<div class="bc-toolbar bc-toolbar-md-responsive flex-column-reverse flex-md-row w-100">
+							<div class="bc-toolbar-left">
+								<div class="d-inline-flex align-items-center flex-wrap">
+									@views.BadgeStatus(dataset.Status)
 									if dataset.Locked {
-										<div class="bc-toolbar-item" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Locked for editing">
-											@views.BadgeLocked()
+										<span class="c-subline text-nowrap me-3 pe-3 border-end" data-bs-toggle="tooltip" data-bs-title="Locked for editing" data-bs-placement="bottom">
+											<i class="if if-lock if--small if--muted"></i>
+											<span class="text-muted c-body-small ms-2">Locked</span>
+										</span>
+									}
+
+									if dataset.AccessLevel != "" {
+										<span class="c-subline pe-3">
+											if dataset.AccessLevel == "info:eu-repo/semantics/openAccess" {
+												<i class="if if-download if--small if--success"></i>
+												<span class="c-subline text-truncate ps-2">
+													{ c.Loc.Get("dataset_access_levels." + dataset.AccessLevel) }
+												</span>
+											} else if dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+												<i class="if if-time if--small if--muted"></i>
+												<span class="c-subline text-truncate ps-2">
+													{ c.Loc.Get("dataset_access_levels." + dataset.AccessLevel) }
+												</span>
+											} else if dataset.AccessLevel == "info:eu-repo/semantics/restrictedAccess" {
+												<i class="if if-ghent-university if--small if--primary"></i>
+												<span class="c-subline text-muted ps-2">
+													{ c.Loc.Get("dataset_access_levels." + dataset.AccessLevel) }
+												</span>
+											} else if dataset.AccessLevel == "info:eu-repo/semantics/closedAccess" {
+												<i class="if if-eye-off if--small if--muted"></i>
+												<span class="c-subline text-muted ps-2">
+													{ c.Loc.Get("dataset_access_levels." + dataset.AccessLevel) }
+												</span>
+											}
+										</span>
+
+										if dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+											<span class="c-subline me-3 px-3 border-end border-start">
+												<i class="if if-eye-off if--small if--muted"></i>
+												<span class="c-subline text-muted ps-2">
+													Closed access
+												</span>
+											</span>
+											<span class="c-subline me-3">
+												if dataset.AccessLevelAfterEmbargo == "info:eu-repo/semantics/openAccess" {
+													<i class="if if-download if--small if--success"></i>
+												} else {
+													<i class="if if-ghent-university if--small if--primary"></i>
+												}
+												<span class="c-subline text-truncate ps-2">
+													{ c.Loc.Get("dataset_access_levels." + dataset.AccessLevelAfterEmbargo) }
+													from
+													{ dataset.EmbargoDate }
+												</span>
+											</span>
+										}
+									}
+
+									<span class="c-subline me-3 ps-3 border-start">
+										if dataset.License != "" {
+											if dataset.License == "LicenseNotListed" {
+												Licensed
+											} else {
+												{ dataset.License }
+											}
+										} else {
+											<em>Add license</em>
+										}
+									</span>
+								</div>
+							</div>
+							<div class="bc-toolbar-right justify-content-end">
+								if c.Repo.CanDeleteDataset(c.User, dataset) {
+									<div class="bc-toolbar-item">
+										<div class="dropdown">
+											<button
+												class="btn btn-outline-secondary btn-icon-only"
+												type="button"
+												data-bs-toggle="dropdown"
+												aria-haspopup="true"
+												aria-expanded="false"
+											>
+												<i class="if if-more"></i>
+											</button>
+											<div class="dropdown-menu">
+												<button
+													class="dropdown-item"
+													hx-get={ views.URL(c.PathTo("dataset_confirm_delete", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String() }
+													hx-target="#modals"
+												>
+													<i class="if if-delete"></i>
+													<span>Delete</span>
+												</button>
+											</div>
 										</div>
+									</div>
+								}
+								<div class="bc-toolbar-item">
+									if c.Repo.CanCurate(c.User) && dataset.Locked {
+										<button
+											class="btn btn-outline-secondary"
+											hx-post={ views.URL(c.PathTo("dataset_unlock", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.String()).String() }
+											hx-swap="none"
+										>
+											<i class="if if-lock-unlock"></i>
+											<span class="btn-text d-md-none d-lg-inline">Unlock record</span>
+										</button>
+									} else if c.Repo.CanCurate(c.User) {
+										<button
+											class="btn btn-outline-secondary"
+											hx-post={ views.URL(c.PathTo("dataset_lock", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.String()).String() }
+											hx-swap="none"
+										>
+											<i class="if if-lock"></i>
+											<span class="btn-text d-md-none d-lg-inline">Lock record</span>
+										</button>
 									}
 								</div>
-								<div class="bc-toolbar-right">
-									<div class="bc-toolbar-item me-auto me-lg-0">
-										<div class="d-flex align-items-center flex-wrap justify-content-end">
-											<span class="c-subline text-truncate text-nowrap pe-5">
-												{ views.CreatedBy(c, dataset.DateCreated, dataset.Creator) }
-											</span>
-											<span class="c-subline text-truncate text-nowrap">
-												{ views.UpdatedBy(c, dataset.DateUpdated, dataset.User, dataset.LastUser) }
-											</span>
+								if c.Repo.CanWithdrawDataset(c.User, dataset) {
+									<div class="bc-toolbar-item">
+										<button
+											class="btn btn-outline-danger"
+											hx-get={ views.URL(c.PathTo("dataset_confirm_withdraw", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String() }
+											hx-target="#modals"
+										>
+											<i class="if if-arrow-go-back"></i>
+											<span class="btn-text">Withdraw</span>
+										</button>
+									</div>
+								}
+								if c.Repo.CanPublishDataset(c.User, dataset) && dataset.Status == "returned" {
+									<div class="bc-toolbar-item">
+										<button
+											class="btn btn-success"
+											hx-get={ views.URL(c.PathTo("dataset_confirm_republish", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String() }
+											hx-target="#modals"
+										>
+											<div class="btn-text">Republish <span class="d-md-none d-lg-inline">to Biblio</span></div>
+										</button>
+									</div>
+								}
+								if c.Repo.CanPublishDataset(c.User, dataset) && dataset.Status != "returned" {
+									<div class="bc-toolbar-item">
+										<button
+											class="btn btn-success"
+											hx-get={ views.URL(c.PathTo("dataset_confirm_publish", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String() }
+											hx-target="#modals"
+										>
+											<div class="btn-text">Publish <span class="d-md-none d-lg-inline">to Biblio</span></div>
+										</button>
+									</div>
+								}
+							</div>
+						</div>
+
+						<h4 class="w-100 mb-0 mb-lg-2">
+							if len(dataset.Author) == 1 && dataset.Author[0] != nil {
+								{ dataset.Author[0].LastName() }, { dataset.Author[0].FirstName() }, creator.
+							}
+							if len(dataset.Author) >= 2 {
+								{ dataset.Author[0].LastName() }, { dataset.Author[0].FirstName() }, et al., creators.
+							}
+							if dataset.Title != "" {
+								<em>"{ dataset.Title }."</em>
+							} else {
+								<em>"Untitled record."</em>
+							}
+							if dataset.Publisher !="" {
+								{ dataset.Publisher },
+							}
+							if dataset.Year !="" {
+								{ dataset.Year }.
+							}
+							if dataset.IdentifierType() !="" {
+								{ dataset.IdentifierType() }.
+							}
+						</h4>
+						<div class="bc-toolbar bc-toolbar-lg-responsive flex-md-row">
+							<div class="bc-toolbar-left">
+								<div class="bc-toolbar-item d-block">
+									<div class="d-block pe-3 my-2">
+										<div class="input-group">
+											<button type="button" class="btn btn-outline-secondary btn-sm" data-clipboard={ dataset.ID }>
+												<i class="if if-copy text-muted "></i>
+												<span class="btn-text ms-0 me-1">Biblio ID</span>
+											</button>
+											<code class="c-code">{ dataset.ID }</code>
 										</div>
 									</div>
 								</div>
 							</div>
-							<h4 class="list-group-item-title">
-								if dataset.Title != "" {
-									{ dataset.Title }
-								} else {
-									Untitled record
-								}
-							</h4>
+							<div class="bc-toolbar-right">
+								<div class="bc-toolbar-item">
+									<p class="c-body-small text-muted d-inline-block me-2 me-md-0">
+										{ views.CreatedBy(c, dataset.DateCreated, dataset.Creator) }
+									</p>
+									<p class="c-body-small text-muted d-inline-block ms-md-2">
+										{ views.UpdatedBy(c, dataset.DateUpdated, dataset.User, dataset.LastUser) }
+									</p>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="c-divider mb-2 mx-6 mt-4"></div>
 				<div class="bc-navbar bc-navbar--auto bc-navbar--white bc-navbar--bordered-bottom">
 					<div class="bc-toolbar bc-toolbar--auto">
 						<div class="bc-toolbar-left">

@@ -31,20 +31,20 @@ func AddDataset(c *ctx.Ctx, publication *models.Publication, hits *models.Datase
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Select datasets</h2></div><div class=\"modal-body\"><p class=\"text-muted\">Select one or more datasets as already registered in Biblio.</p><p class=\"text-muted\">See <a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">Documentation <i class=\"if if--small if-external-link\"></i></a></p><label class=\"visually-hidden\" for=\"publication-q\">Search</label> <input class=\"form-control\" type=\"text\" id=\"publication-q\" name=\"q\" placeholder=\"Search...\" autofocus hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Select datasets</h2></div><div class=\"p-6 border-bottom\"><label class=\"form-label\" for=\"publication-q\">Search datasets</label> <input class=\"form-control mb-4\" type=\"search\" id=\"publication-q\" name=\"q\" placeholder=\"Search...\" autofocus hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_suggest_datasets", "id", publication.ID).String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/add_dataset.templ`, Line: 29, Col: 85}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/add_dataset.templ`, Line: 23, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"keyup changed delay:500ms\" hx-target=\"#dataset-suggestions\"><div id=\"dataset-suggestions\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"input changed delay:500ms, search\" hx-target=\"#dataset-suggestions\"><p class=\"text-muted\">Select one or more datasets that are already registered in Biblio. <a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a></p></div><div class=\"modal-body\"><div id=\"dataset-suggestions\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
