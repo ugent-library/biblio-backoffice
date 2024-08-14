@@ -122,13 +122,33 @@ func PublicationsBody(c *ctx.Ctx, dataset *models.Dataset, relatedPublications [
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
-					Publication: pub,
-					URL:         c.PathTo("publication", "id", pub.ID),
-					Actions:     publicationSummaryActions(c, dataset, pub),
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
+				if c.User.CanViewPublication(pub) {
+					templ_7745c5c3_Err = publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
+						Publication: pub,
+						URL:         c.PathTo("publication", "id", pub.ID),
+						Actions:     publicationSummaryActions(c, dataset, pub),
+					}).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				} else {
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"hstack-md-responsive align-items-start gap-3 w-100\"><div class=\"vstack gap-2\"><div class=\"d-inline-flex align-items-center flex-wrap\"><span class=\"badge rounded-pill badge-danger-light me-3 my-2\"><span class=\"badge-circle\"></span> <span class=\"badge-text\">Biblio withdrawn</span></span></div><h4 class=\"mb-0 list-group-item-title\">You cannot see the metadata of linked withdrawn publications you do not own.</h4><p class=\"opacity-50\">The link will not be visible on biblio.ugent.be while withdrawn. When the publication is republished, you will see the metadata again and the link will be visible on biblio.ugent.be.</p></div><div class=\"bc-toolbar-item ms-auto ms-lg-0\"><button class=\"btn btn-tertiary\" type=\"button\" hx-get=\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var5 string
+					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("dataset_confirm_delete_publication", "id", dataset.ID, "snapshot_id", dataset.SnapshotID, "publication_id", pub.ID).String())
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/publications.templ`, Line: 89, Col: 155}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><i class=\"if if-delete\"></i> <span class=\"btn-text\">Remove link</span></button></div></div>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></li>")
 				if templ_7745c5c3_Err != nil {
@@ -162,51 +182,51 @@ func publicationSummaryActions(c *ctx.Ctx, dataset *models.Dataset, pub *models.
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var5 == nil {
-			templ_7745c5c3_Var5 = templ.NopComponent
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		if c.User.CanViewPublication(pub) || c.User.CanEditDataset(dataset) {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar-item ms-auto ms-lg-0\"><div class=\"c-button-toolbar\"><div class=\"dropdown dropleft\"><button class=\"btn btn-link btn-link-p-0 btn-icon-only\" type=\"button\" data-bs-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"><i class=\"if if-more\"></i></button><div class=\"dropdown-menu\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar-item ms-auto ms-lg-0\"><div class=\"c-button-toolbar\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if c.User.CanViewPublication(pub) {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"dropdown-item\" href=\"")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"btn btn-tertiary\" href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var6 templ.SafeURL = templ.URL(c.PathTo("publication", "id", pub.ID).String())
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var6)))
+				var templ_7745c5c3_Var7 templ.SafeURL = templ.URL(c.PathTo("publication", "id", pub.ID).String())
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var7)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-eye\"></i> <span>View publication</span></a> ")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-eye\"></i> <span class=\"btn-text\">View</span></a> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 			if c.User.CanEditDataset(dataset) {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"dropdown-item\" type=\"button\" hx-get=\"")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn btn-tertiary\" type=\"button\" hx-get=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var7 string
-				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("dataset_confirm_delete_publication", "id", dataset.ID, "snapshot_id", dataset.SnapshotID, "publication_id", pub.ID).String())
+				var templ_7745c5c3_Var8 string
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("dataset_confirm_delete_publication", "id", dataset.ID, "snapshot_id", dataset.SnapshotID, "publication_id", pub.ID).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/publications.templ`, Line: 106, Col: 151}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/publications.templ`, Line: 128, Col: 149}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><i class=\"if if-delete\"></i> <span>Remove from dataset</span></button>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><i class=\"if if-delete\"></i> <span class=\"btn-text\">Remove link</span></button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
