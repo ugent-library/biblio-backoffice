@@ -71,7 +71,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 					var templ_7745c5c3_Var3 string
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset_access_levels." + dataset.AccessLevel))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 31, Col: 72}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 37, Col: 72}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
@@ -89,7 +89,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 					var templ_7745c5c3_Var4 string
 					templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset_access_levels." + dataset.AccessLevel))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 36, Col: 72}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 42, Col: 72}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 					if templ_7745c5c3_Err != nil {
@@ -107,7 +107,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 					var templ_7745c5c3_Var5 string
 					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset_access_levels." + dataset.AccessLevel))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 41, Col: 72}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 47, Col: 72}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 					if templ_7745c5c3_Err != nil {
@@ -125,7 +125,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset_access_levels." + dataset.AccessLevel))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 46, Col: 72}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 52, Col: 72}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
@@ -163,7 +163,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset_access_levels." + dataset.AccessLevelAfterEmbargo))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 65, Col: 84}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 71, Col: 84}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -176,7 +176,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 					var templ_7745c5c3_Var8 string
 					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.EmbargoDate)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 67, Col: 34}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 73, Col: 34}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 					if templ_7745c5c3_Err != nil {
@@ -202,7 +202,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.License)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 78, Col: 29}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 84, Col: 29}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -227,7 +227,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(views.URL(c.PathTo("dataset_confirm_delete", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 102, Col: 132}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 108, Col: 132}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -250,7 +250,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(views.URL(c.PathTo("dataset_unlock", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.String()).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 116, Col: 133}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 122, Col: 133}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -268,7 +268,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(views.URL(c.PathTo("dataset_lock", "id", dataset.ID)).QuerySet("redirect-url", c.CurrentURL.String()).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 125, Col: 131}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 131, Col: 131}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -291,7 +291,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var13 string
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(views.URL(c.PathTo("dataset_confirm_withdraw", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 137, Col: 132}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 143, Col: 132}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
@@ -310,7 +310,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(views.URL(c.PathTo("dataset_confirm_republish", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 149, Col: 133}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 155, Col: 133}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -329,7 +329,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(views.URL(c.PathTo("dataset_confirm_publish", "id", dataset.ID)).QuerySet("redirect-url", redirectURL).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 160, Col: 131}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 166, Col: 131}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
@@ -348,7 +348,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.Author[0].LastName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 172, Col: 38}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 178, Col: 38}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
@@ -361,7 +361,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.Author[0].FirstName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 172, Col: 73}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 178, Col: 73}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -376,7 +376,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.Author[0].LastName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 175, Col: 38}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 181, Col: 38}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -389,7 +389,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.Author[0].FirstName())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 175, Col: 73}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 181, Col: 73}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -408,7 +408,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 178, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 184, Col: 28}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
@@ -428,7 +428,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.Publisher)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 183, Col: 27}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 189, Col: 27}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 				if templ_7745c5c3_Err != nil {
@@ -443,7 +443,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.Year)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 186, Col: 22}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 192, Col: 22}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
@@ -458,7 +458,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 				var templ_7745c5c3_Var23 string
 				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.IdentifierType())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 189, Col: 34}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 195, Col: 34}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 				if templ_7745c5c3_Err != nil {
@@ -476,7 +476,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 197, Col: 101}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 203, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -489,7 +489,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(dataset.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 201, Col: 44}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 207, Col: 44}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -502,7 +502,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(views.CreatedBy(c, dataset.DateCreated, dataset.Creator))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 209, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 215, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {
@@ -515,7 +515,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 			var templ_7745c5c3_Var27 string
 			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(views.UpdatedBy(c, dataset.DateUpdated, dataset.User, dataset.LastUser))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 212, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 218, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 			if templ_7745c5c3_Err != nil {
@@ -536,7 +536,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("dataset_"+c.SubNav, "id", dataset.ID).String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 235, Col: 70}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 241, Col: 70}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -548,7 +548,13 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = views.PageLayout(c, c.Loc.Get("dataset.page.show.title"), nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = views.PageLayout(c, views.PageLayoutArgs{
+			Title: c.Loc.Get("dataset.page.show.title"),
+			Breadcrumbs: []views.Breadcrumb{
+				{LabelID: "datasets", URL: c.PathTo("datasets")},
+				{LabelID: "dataset"},
+			},
+		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

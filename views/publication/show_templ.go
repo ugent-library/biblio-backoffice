@@ -65,7 +65,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_types." + p.Type))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 26, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 32, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -79,7 +79,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(p.Classification)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 28, Col: 29}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 34, Col: 29}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -121,7 +121,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 35, Col: 119}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 41, Col: 119}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -139,7 +139,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var8 string
 					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 38, Col: 116}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 44, Col: 116}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 					if templ_7745c5c3_Err != nil {
@@ -157,7 +157,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 41, Col: 116}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 47, Col: 116}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -175,7 +175,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var10 string
 					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels." + mainFile.AccessLevel))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 44, Col: 116}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 50, Col: 116}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
@@ -213,7 +213,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var11 string
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels_during_embargo." + mainFile.AccessLevelDuringEmbargo))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 54, Col: 147}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 60, Col: 147}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
@@ -237,7 +237,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var12 string
 					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_file_access_levels_after_embargo." + mainFile.AccessLevelAfterEmbargo))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 62, Col: 107}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 68, Col: 107}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 					if templ_7745c5c3_Err != nil {
@@ -250,7 +250,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var13 string
 					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(mainFile.EmbargoDate)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 62, Col: 137}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 68, Col: 137}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {
@@ -279,7 +279,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_confirm_delete", "id", p.ID, "redirect-url", redirectURL).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 89, Col: 110}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 95, Col: 110}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -302,7 +302,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_unlock", "id", p.ID, "redirect-url", c.CurrentURL.String()).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 103, Col: 111}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 109, Col: 111}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
@@ -320,7 +320,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_lock", "id", p.ID, "redirect-url", c.CurrentURL.String()).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 112, Col: 109}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 118, Col: 109}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
@@ -343,7 +343,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_confirm_withdraw", "id", p.ID, "redirect-url", c.CurrentURL.String()).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 124, Col: 120}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 130, Col: 120}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -362,7 +362,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_confirm_republish", "id", p.ID, "redirect-url", c.CurrentURL.String()).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 136, Col: 121}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 142, Col: 121}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -381,7 +381,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_confirm_publish", "id", p.ID, "redirect-url", c.CurrentURL.String()).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 147, Col: 119}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 153, Col: 119}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -401,7 +401,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var20 string
 					templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(p.Editor[0].LastName())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 160, Col: 33}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 166, Col: 33}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 					if templ_7745c5c3_Err != nil {
@@ -414,7 +414,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var21 string
 					templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(p.Editor[0].FirstName())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 160, Col: 62}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 166, Col: 62}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 					if templ_7745c5c3_Err != nil {
@@ -433,7 +433,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var22 string
 					templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(p.Editor[0].LastName())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 163, Col: 33}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 169, Col: 33}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 					if templ_7745c5c3_Err != nil {
@@ -446,7 +446,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var23 string
 					templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(p.Editor[0].FirstName())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 163, Col: 62}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 169, Col: 62}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 					if templ_7745c5c3_Err != nil {
@@ -462,7 +462,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var24 string
 					templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(p.Author[0].LastName())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 167, Col: 33}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 173, Col: 33}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 					if templ_7745c5c3_Err != nil {
@@ -475,7 +475,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var25 string
 					templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(p.Author[0].FirstName())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 167, Col: 62}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 173, Col: 62}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 					if templ_7745c5c3_Err != nil {
@@ -501,7 +501,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var26 string
 				templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(p.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 175, Col: 22}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 181, Col: 22}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 				if templ_7745c5c3_Err != nil {
@@ -521,7 +521,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(p.Publication)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 180, Col: 23}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 186, Col: 23}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 				if templ_7745c5c3_Err != nil {
@@ -540,7 +540,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var28 string
 				templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(p.Volume)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 183, Col: 23}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 189, Col: 23}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 				if templ_7745c5c3_Err != nil {
@@ -559,7 +559,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var29 string
 				templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(p.Issue)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 186, Col: 21}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 192, Col: 21}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 				if templ_7745c5c3_Err != nil {
@@ -579,7 +579,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var30 string
 					templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(p.PageFirst)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 190, Col: 26}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 196, Col: 26}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 					if templ_7745c5c3_Err != nil {
@@ -594,7 +594,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var31 string
 					templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(p.PageLast)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 194, Col: 21}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 200, Col: 21}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 					if templ_7745c5c3_Err != nil {
@@ -610,7 +610,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					var templ_7745c5c3_Var32 string
 					templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(p.PageCount)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 198, Col: 22}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 204, Col: 22}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 					if templ_7745c5c3_Err != nil {
@@ -626,7 +626,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var33 string
 				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(p.Publisher)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 202, Col: 21}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 208, Col: 21}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 				if templ_7745c5c3_Err != nil {
@@ -641,7 +641,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var34 string
 				templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(p.ConferenceName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 205, Col: 26}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 211, Col: 26}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 				if templ_7745c5c3_Err != nil {
@@ -656,7 +656,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 				var templ_7745c5c3_Var35 string
 				templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(p.Year)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 208, Col: 16}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 214, Col: 16}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 				if templ_7745c5c3_Err != nil {
@@ -674,7 +674,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 			var templ_7745c5c3_Var36 string
 			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(p.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 216, Col: 95}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 222, Col: 95}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 			if templ_7745c5c3_Err != nil {
@@ -687,7 +687,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 			var templ_7745c5c3_Var37 string
 			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(p.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 220, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 226, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 			if templ_7745c5c3_Err != nil {
@@ -700,7 +700,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 			var templ_7745c5c3_Var38 string
 			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(views.CreatedBy(c, p.DateCreated, p.Creator))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 228, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 234, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 			if templ_7745c5c3_Err != nil {
@@ -713,7 +713,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(views.UpdatedBy(c, p.DateUpdated, p.User, p.LastUser))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 231, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 237, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {
@@ -734,7 +734,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 			var templ_7745c5c3_Var40 string
 			templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_"+c.SubNav, "id", p.ID, "redirect-url", redirectURL).String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 254, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 260, Col: 97}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 			if templ_7745c5c3_Err != nil {
@@ -746,7 +746,13 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = views.PageLayout(c, c.Loc.Get("publication.page.show.title"), nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = views.PageLayout(c, views.PageLayoutArgs{
+			Title: c.Loc.Get("publication.page.show.title"),
+			Breadcrumbs: []views.Breadcrumb{
+				{LabelID: "publications", URL: c.PathTo("publications")},
+				{LabelID: "publication"},
+			},
+		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
