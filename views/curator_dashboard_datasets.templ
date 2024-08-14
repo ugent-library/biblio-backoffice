@@ -10,7 +10,12 @@ type CuratorDashboardDatasetsArgs struct {
 }
 
 templ CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) {
-	@PageLayout(c, "Dashboard - Datasets - Biblio", nil) {
+	@PageLayout(c, PageLayoutArgs{
+		Title: "Dashboard - Datasets - Biblio",
+		Breadcrumbs: []Breadcrumb{
+			{LabelID: "dashboard"},
+		},
+	}) {
 		<div class="c-sub-sidebar c-sidebar--bordered">
 			<div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom">
 				<div class="bc-toolbar">
