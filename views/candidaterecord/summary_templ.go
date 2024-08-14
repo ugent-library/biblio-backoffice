@@ -320,8 +320,10 @@ func Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) templ.Componen
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = contributorviews.Summary(c, contributorviews.SummaryArgs{
-			Role:         "author",
-			Contributors: p.Author,
+			Role:                    "author",
+			Contributors:            p.Author,
+			CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
+			CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -331,8 +333,10 @@ func Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) templ.Componen
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = contributorviews.Summary(c, contributorviews.SummaryArgs{
-			Role:         "supervisor",
-			Contributors: p.Supervisor,
+			Role:                    "supervisor",
+			Contributors:            p.Supervisor,
+			CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
+			CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

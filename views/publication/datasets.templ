@@ -60,11 +60,43 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 					<li class="list-group-item">
 						<div class="d-flex w-100">
 							<div class="w-100">
-								@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
-									Dataset: d,
-									URL:     c.PathTo("dataset", "id", d.ID),
-									Actions: datasetSummaryActions(c, p, d),
-								})
+								if c.Repo.CanViewDataset(c.User, d) {
+									@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
+										Dataset: d,
+										URL:     c.PathTo("dataset", "id", d.ID),
+										Actions: datasetSummaryActions(c, p, d),
+									})
+								} else {
+									<div class="hstack-md-responsive align-items-start gap-3 w-100">
+										<div class="vstack gap-2">
+											<div class="d-inline-flex align-items-center flex-wrap">
+												<span class="badge rounded-pill badge-danger-light me-3 my-2">
+													<span class="badge-circle"></span>
+													<span class="badge-text">Biblio withdrawn</span>
+												</span>
+											</div>
+											<h4 class="mb-0 list-group-item-title">
+												You cannot see the metadata of linked withdrawn datasets you do not own.
+											</h4>
+											<p class="opacity-50">
+												The link will not be visible on biblio.ugent.be while withdrawn. When the dataset is republished, you will see the metadata again and the link will be visible on biblio.ugent.be.
+											</p>
+										</div>
+										<div class="bc-toolbar-item ms-auto ms-lg-0">
+											<div class="c-button-toolbar">
+												<button
+													class="btn btn-tertiary"
+													type="button"
+													hx-get={ c.PathTo("publication_confirm_delete_dataset", "id", p.ID, "snapshot_id", p.SnapshotID, "dataset_id", d.ID).String() }
+													hx-target="#modals"
+												>
+													<i class="if if-delete"></i>
+													<span class="btn-text">Remove link</span>
+												</button>
+											</div>
+										</div>
+									</div>
+								}
 							</div>
 						</div>
 					</li>
@@ -79,36 +111,30 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 }
 
 templ datasetSummaryActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset) {
-	<div class="bc-toolbar-item ms-auto ms-lg-0">
-		<div class="c-button-toolbar">
-			<div class="dropdown dropleft">
-				<button
-					class="btn btn-link btn-link-p-0 btn-icon-only"
-					type="button"
-					data-bs-toggle="dropdown"
-					aria-haspopup="true"
-					aria-expanded="false"
-				>
-					<i class="if if-more"></i>
-				</button>
-				<div class="dropdown-menu">
-					<a class="dropdown-item" href={ templ.URL(c.PathTo("dataset", "id", d.ID).String()) }>
+	if c.Repo.CanViewDataset(c.User, d) || c.Repo.CanEditPublication(c.User, p) {
+		<div class="bc-toolbar-item ms-auto ms-lg-0">
+			<div class="c-button-toolbar">
+				if c.Repo.CanViewDataset(c.User, d) {
+					<a
+						class="btn btn-tertiary"
+						href={ templ.URL(c.PathTo("dataset", "id", d.ID).String()) }
+					>
 						<i class="if if-eye"></i>
-						<span>View dataset</span>
+						<span class="btn-text">View</span>
 					</a>
-					if c.Repo.CanEditPublication(c.User, p) {
-						<button
-							class="dropdown-item"
-							type="button"
-							hx-get={ c.PathTo("publication_confirm_delete_dataset", "id", p.ID, "snapshot_id", p.SnapshotID, "dataset_id", d.ID).String() }
-							hx-target="#modals"
-						>
-							<i class="if if-delete"></i>
-							<span>Remove from publication</span>
-						</button>
-					}
-				</div>
+				}
+				if c.Repo.CanEditPublication(c.User, p) {
+					<button
+						class="btn btn-tertiary"
+						type="button"
+						hx-get={ c.PathTo("publication_confirm_delete_dataset", "id", p.ID, "snapshot_id", p.SnapshotID, "dataset_id", d.ID).String() }
+						hx-target="#modals"
+					>
+						<i class="if if-delete"></i>
+						<span class="btn-text">Remove link</span>
+					</button>
+				}
 			</div>
 		</div>
-	</div>
+	}
 }

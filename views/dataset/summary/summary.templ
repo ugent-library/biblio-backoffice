@@ -60,7 +60,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								<span class="c-subline me-3 pe-3 border-end">
 									if args.Dataset.License != "" {
 										<span class="c-subline text-truncate ps-2">{ args.Dataset.License }</span>
-									} else {
+									} else if  c.Repo.CanEditDataset(c.User, args.Dataset) {
 										<a
 											class="c-link-muted"
 											href={ views.URL(args.URL).SetQueryParam("show", "description").SafeURL() }
@@ -71,6 +71,8 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 											<i class="if if-edit if--small"></i>
 											<em>Add license</em>
 										</a>
+									} else {
+										<em>No license</em>
 									}
 								</span>
 								<span
@@ -96,7 +98,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 										<span class="c-subline text-muted ps-2">
 											{ c.Loc.Get("dataset_access_levels." + args.Dataset.AccessLevel) }
 										</span>
-									} else {
+									} else if c.Repo.CanEditDataset(c.User, args.Dataset) {
 										<a
 											class="c-link-muted"
 											href={ views.URL(args.URL).SetQueryParam("show", "description").SafeURL() }
@@ -107,6 +109,8 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 											<i class="if if-edit if--small"></i>
 											<em>Add document access level</em>
 										</a>
+									} else {
+										<em>No document access level</em>
 									}
 								</span>
 								if args.Dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
@@ -123,27 +127,17 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								}
 							</div>
 							<h4 class="mb-0">
-								if c.UserRole == "curator" {
-									if args.Dataset.Title != "" {
-										{ args.Dataset.Title }
-									} else {
-										Untitled record
-									}
-								} else {
+								if c.UserRole != "curator" && c.Repo.CanViewDataset(c.User, args.Dataset) {
 									<a
 										href={ templ.URL(args.URL.String()) }
 										if args.Target != "" {
 											target={ args.Target }
 										}
 									>
-										<span class="list-group-item-title">
-											if args.Dataset.Title != "" {
-												{ args.Dataset.Title }
-											} else {
-												Untitled record
-											}
-										</span>
+										@datasetTitle(args.Dataset)
 									</a>
+								} else {
+									@datasetTitle(args.Dataset)
 								}
 							</h4>
 							<ul class="c-meta-list c-meta-list-inline">
@@ -162,11 +156,13 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								}
 							</ul>
 							@contributorviews.Summary(c, contributorviews.SummaryArgs{
-								Role:             "creator",
-								Contributors:     args.Dataset.Author,
-								URL:              views.URL(args.URL).SetQueryParam("show", "contributors").String(),
-								URLTarget:        args.Target,
-								CurrentUserRoles: getUserContributorRoles(args.Dataset, c.User),
+								Role:                    "creator",
+								Contributors:            args.Dataset.Author,
+								URL:                     views.URL(args.URL).SetQueryParam("show", "contributors").String(),
+								URLTarget:               args.Target,
+								CurrentUserRoles:        getUserContributorRoles(args.Dataset, c.User),
+								CanViewMoreContributors: c.Repo.CanViewDataset(c.User, args.Dataset),
+								CanEditContributors:     c.Repo.CanEditDataset(c.User, args.Dataset),
 							})
 						</div>
 						<div class="vstack gap-3">
@@ -174,7 +170,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								<i class="if if-building if--small if--muted me-2"></i>
 								if len(args.Dataset.RelatedOrganizations) > 0 {
 									@relatedorganizationviews.Summary(c, args.Dataset.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
-								} else {
+								} else if c.Repo.CanEditDataset(c.User, args.Dataset) {
 									<a
 										class="c-link-muted"
 										href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
@@ -185,6 +181,8 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 										<i class="if if-edit if--small"></i>
 										<em>Add department</em>
 									</a>
+								} else {
+									<em class="text-muted">No department(s)</em>
 								}
 							</div>
 						</div>
@@ -229,4 +227,14 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 			</div>
 		</div>
 	</div>
+}
+
+templ datasetTitle(d *models.Dataset) {
+	<span class="list-group-item-title">
+		if d.Title != "" {
+			{ d.Title }
+		} else {
+			Untitled record
+		}
+	</span>
 }
