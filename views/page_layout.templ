@@ -2,7 +2,13 @@ package views
 
 import "github.com/ugent-library/biblio-backoffice/ctx"
 
-templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
+type PageLayoutArgs struct {
+	Title       string
+	Meta        templ.Component
+	Breadcrumbs []Breadcrumb
+}
+
+templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 	<!DOCTYPE html>
 	<html class="u-maximize-height" dir="ltr" lang="en">
 		<head>
@@ -11,10 +17,10 @@ templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
 			<meta name="robots" content="noindex"/>
 			<link rel="stylesheet" href={ c.AssetPath("/css/app.css") }/>
 			<link rel="icon" href={ c.AssetPath("/favicon.ico") }/>
-			<title>{ title }</title>
+			<title>{ args.Title }</title>
 			<meta name="csrf-token" content={ c.CSRFToken }/>
-			if meta != nil {
-				@meta
+			if args.Meta != nil {
+				@args.Meta
 			}
 		</head>
 		<body class="u-maximize-height overflow-hidden u-scroll-wrapper">
@@ -46,21 +52,7 @@ templ PageLayout(c *ctx.Ctx, title string, meta templ.Component) {
 					<div class="bc-toolbar bc-toolbar-sm">
 						<div class="bc-toolbar-left">
 							<div class="bc-toolbar-item">
-								<nav aria-label="breadcrumb">
-									<ol class="breadcrumb">
-										<li class="breadcrumb-item">
-											<a href={ templ.URL(c.PathTo("home").String()) }>
-												<img class="c-logo d-none d-xl-inline-block" src={ c.AssetPath("/images/ghent-university-library-logo.svg") } alt="Ghent University Library"/>
-												<img class="c-logo d-inline-block d-xl-none" src={ c.AssetPath("/images/ghent-university-library-mark.svg") } alt="Ghent University Library"/>
-											</a>
-										</li>
-										<li class="breadcrumb-item">
-											<a href={ templ.URL(c.PathTo("home").String()) }>
-												<i class="if if-book if--small me-3"></i>Biblio
-											</a>
-										</li>
-									</ol>
-								</nav>
+								@Breadcrumbs(c, args.Breadcrumbs)
 							</div>
 						</div>
 						<div class="bc-toolbar-right">

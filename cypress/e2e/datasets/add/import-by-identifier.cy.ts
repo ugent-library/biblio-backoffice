@@ -95,30 +95,10 @@ describe("Dataset import", () => {
     const DOI = "10.48804/A76XM9";
 
     // First clean up existing datasets with the same DOI
-    cy.loginAsLibrarian("librarian1");
-    const selector =
-      ".card .card-body .list-group .list-group-item .c-button-toolbar .dropdown .dropdown-item:contains('Delete')";
-
-    deleteNextDataset();
-
-    function deleteNextDataset() {
-      cy.visit("/dataset", { qs: { q: DOI, "page-size": 1000 } }).then(() => {
-        const deleteButton = Cypress.$(selector).first();
-
-        if (deleteButton.length > 0) {
-          cy.wrap(deleteButton).click({ force: true });
-
-          cy.intercept("DELETE", "/dataset/*").as("deleteDataset");
-          cy.ensureModal("Confirm deletion").closeModal("Delete");
-          cy.wait("@deleteDataset").then(deleteNextDataset);
-        }
-      });
-    }
-
-    // Actual test starts here
-    cy.loginAsResearcher("researcher1");
+    cy.deleteDatasets(DOI);
 
     // First make and publish the first dataset manually
+    cy.loginAsLibrarian("librarian1");
     const title = getRandomText();
     cy.setUpDataset({
       title,
@@ -126,11 +106,15 @@ describe("Dataset import", () => {
         identifier_type: "DOI",
         identifier: DOI,
       },
+      shouldWaitForIndex: true,
       publish: true,
     });
 
     // Some extra time for the dataset to be indexed
     cy.wait(1000);
+
+    // Actual test starts here
+    cy.loginAsLibrarian("librarian1");
 
     // Make the second dataset (via DOI import)
     cy.visit("/add-dataset");
@@ -149,8 +133,9 @@ describe("Dataset import", () => {
           "Biblio contains another dataset with the same DOI:",
         );
 
-        cy.get(".list-group-item").should("have.length", 1);
-        cy.get(".list-group-item-title").should("contain.text", title);
+        cy.get(".list-group-item")
+          .should("have.length", 1)
+          .should("contain.text", title);
 
         cy.contains(".modal-footer .btn", "Import Anyway")
           .should("be.visible")

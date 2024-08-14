@@ -65,7 +65,7 @@ func ShowDatasets(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	p := ctx.GetPublication(r)
 
-	datasets, err := c.Repo.GetVisiblePublicationDatasets(c.User, p)
+	datasets, err := c.Repo.GetPublicationDatasets(p)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
