@@ -31,7 +31,10 @@ describe("Editing dataset publications", () => {
         "suggestPublication",
       );
 
-      cy.getLabel("Search").next("input").should("be.focused").type(title);
+      cy.getLabel("Search publications")
+        .next("input")
+        .should("be.focused")
+        .type(title);
       cy.wait("@suggestPublication");
 
       cy.contains(".list-group-item", title)

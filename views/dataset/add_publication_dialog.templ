@@ -11,16 +11,10 @@ templ AddPublicationDialog(c *ctx.Ctx, dataset *models.Dataset, publicationHits 
 			<div class="modal-header">
 				<h2 class="modal-title">Select publications</h2>
 			</div>
-			<div class="modal-body">
-				<p class="text-muted">
-					Select one or more publications as already registered in Biblio.
-				</p>
-				<p class="text-muted">
-					See <a href="https://onderzoektips.ugent.be/en/tips/00002061/" target="_blank">Documentation <i class="if if--small if-external-link"></i></a>
-				</p>
-				<label class="visually-hidden" for="publication-q">Search</label>
+			<div class="p-6 border-bottom">
+				<label class="form-label" for="publication-q">Search publications</label>
 				<input
-					class="form-control"
+					class="form-control mb-4"
 					type="search"
 					id="publication-q"
 					name="q"
@@ -30,6 +24,11 @@ templ AddPublicationDialog(c *ctx.Ctx, dataset *models.Dataset, publicationHits 
 					hx-trigger="input changed delay:500ms, search"
 					hx-target="#publication-suggestions"
 				/>
+				<p class="text-muted">
+					Select one or more publications that are already registered in Biblio. <a href="https://onderzoektips.ugent.be/en/tips/00002061/" target="_blank">View documentation <i class="if if--small if-external-link"></i></a>
+				</p>
+			</div>
+			<div class="modal-body">
 				<div id="publication-suggestions">
 					@SuggestPublications(c, dataset, publicationHits)
 				</div>

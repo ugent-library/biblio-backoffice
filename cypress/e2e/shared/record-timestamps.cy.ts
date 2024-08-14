@@ -52,8 +52,16 @@ describe("Record timestamps", () => {
       it("should display the date created and edited in the publication detail page", () => {
         cy.visitPublication();
 
-        assertTimestamp("#summary .c-subline", "Created", "Biblio Researcher1");
-        assertTimestamp("#summary .c-subline", "Edited", "Biblio Researcher2");
+        assertTimestamp(
+          "#summary .c-body-small",
+          "Created",
+          "Biblio Researcher1",
+        );
+        assertTimestamp(
+          "#summary .c-body-small",
+          "Edited",
+          "Biblio Researcher2",
+        );
       });
     });
 
@@ -83,8 +91,8 @@ describe("Record timestamps", () => {
       });
 
       cy.visitPublication();
-      assertTimestamp("#summary .c-subline", "Created", "Biblio Librarian1");
-      assertTimestamp("#summary .c-subline", "Edited", "Biblio Librarian1");
+      assertTimestamp("#summary .c-body-small", "Created", "Biblio Librarian1");
+      assertTimestamp("#summary .c-body-small", "Edited", "Biblio Librarian1");
 
       // as a non-curator
       cy.loginAsResearcher("researcher1");
@@ -105,8 +113,16 @@ describe("Record timestamps", () => {
       });
 
       cy.visitPublication();
-      assertTimestamp("#summary .c-subline", "Created", "a Biblio team member");
-      assertTimestamp("#summary .c-subline", "Edited", "a Biblio team member");
+      assertTimestamp(
+        "#summary .c-body-small",
+        "Created",
+        "a Biblio team member",
+      );
+      assertTimestamp(
+        "#summary .c-body-small",
+        "Edited",
+        "a Biblio team member",
+      );
 
       // as a different curator
       cy.loginAsLibrarian("librarian2");
@@ -127,8 +143,8 @@ describe("Record timestamps", () => {
       });
 
       cy.visitPublication();
-      assertTimestamp("#summary .c-subline", "Created", "Biblio Librarian1");
-      assertTimestamp("#summary .c-subline", "Edited", "Biblio Librarian1");
+      assertTimestamp("#summary .c-body-small", "Created", "Biblio Librarian1");
+      assertTimestamp("#summary .c-body-small", "Edited", "Biblio Librarian1");
     });
   });
 
@@ -173,8 +189,16 @@ describe("Record timestamps", () => {
       it("should display the date created and edited in the dataset detail page", () => {
         cy.visitDataset();
 
-        assertTimestamp("#summary .c-subline", "Created", "Biblio Researcher1");
-        assertTimestamp("#summary .c-subline", "Edited", "Biblio Researcher2");
+        assertTimestamp(
+          "#summary .c-body-small",
+          "Created",
+          "Biblio Researcher1",
+        );
+        assertTimestamp(
+          "#summary .c-body-small",
+          "Edited",
+          "Biblio Researcher2",
+        );
       });
     });
 
@@ -204,8 +228,8 @@ describe("Record timestamps", () => {
       });
 
       cy.visitDataset();
-      assertTimestamp("#summary .c-subline", "Created", "Biblio Librarian1");
-      assertTimestamp("#summary .c-subline", "Edited", "Biblio Librarian1");
+      assertTimestamp("#summary .c-body-small", "Created", "Biblio Librarian1");
+      assertTimestamp("#summary .c-body-small", "Edited", "Biblio Librarian1");
 
       // as a non-curator
       cy.loginAsResearcher("researcher1");
@@ -226,8 +250,16 @@ describe("Record timestamps", () => {
       });
 
       cy.visitDataset();
-      assertTimestamp("#summary .c-subline", "Created", "a Biblio team member");
-      assertTimestamp("#summary .c-subline", "Edited", "a Biblio team member");
+      assertTimestamp(
+        "#summary .c-body-small",
+        "Created",
+        "a Biblio team member",
+      );
+      assertTimestamp(
+        "#summary .c-body-small",
+        "Edited",
+        "a Biblio team member",
+      );
 
       // as a different curator
       cy.loginAsLibrarian("librarian2");
@@ -248,8 +280,8 @@ describe("Record timestamps", () => {
       });
 
       cy.visitDataset();
-      assertTimestamp("#summary .c-subline", "Created", "Biblio Librarian1");
-      assertTimestamp("#summary .c-subline", "Edited", "Biblio Librarian1");
+      assertTimestamp("#summary .c-body-small", "Created", "Biblio Librarian1");
+      assertTimestamp("#summary .c-body-small", "Edited", "Biblio Librarian1");
     });
   });
 
