@@ -92,6 +92,8 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 									@contributorviews.Summary(c, contributorviews.SummaryArgs{
 										Role:         "author",
 										Contributors: p.Author,
+										CanViewMoreContributors: c.User.CanViewPublication(p),
+ 				  						CanEditContributors:     c.User.CanEditPublication(p),
 									})
 								</div>
 								<div class="text-muted fst-italic me-5 my-1">supervised by</div>
@@ -99,6 +101,9 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 									@contributorviews.Summary(c, contributorviews.SummaryArgs{
 										Role:         "supervisor",
 										Contributors: p.Supervisor,
+										CanViewMoreContributors: c.User.CanViewPublication(p),
+ 				  						CanEditContributors:     c.User.CanEditPublication(p),
+
 									})
 								</div>
 							</div>
