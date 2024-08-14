@@ -75,7 +75,7 @@ export default function setUpDataset({
         });
 
       if (prepareForPublishing || publish) {
-        cy.addCreator("John", "Doe");
+        cy.addCreator("John", "Doe", { biblioIDAlias: `@${biblioIDAlias}` });
       }
 
       if (publish) {
