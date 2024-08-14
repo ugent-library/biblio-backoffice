@@ -51,7 +51,7 @@ describe("Login & authorization", () => {
   });
 
   it("should be able to logon as researcher", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/");
 
@@ -65,18 +65,18 @@ describe("Login & authorization", () => {
     cy.contains(".dropdown-menu .dropdown-item", "View as").should("not.exist");
     cy.contains(".dropdown-menu .dropdown-item", "Logout").should("exist");
 
+    cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
+
     cy.get(".c-sidebar button.dropdown-toggle").should("not.exist");
     cy.get(".c-sidebar-menu .c-sidebar__item").should("have.length", 3);
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
     cy.contains(".c-sidebar__item", "Batch").should("not.exist");
-
-    cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
   });
 
-  it("should be able to logon as librarian and switch to librarian mode", () => {
-    cy.login("librarian1");
+  it("should be able to logon as librarian and switch curator mode (researcher/librarian)", () => {
+    cy.loginAsLibrarian("librarian1");
 
     cy.visit("/");
 
@@ -84,6 +84,29 @@ describe("Login & authorization", () => {
     cy.contains(".dropdown-menu .dropdown-item", "View as").should("exist");
     cy.contains(".dropdown-menu .dropdown-item", "Logout").should("exist");
 
+    cy.get(".c-sidebar button.dropdown-toggle")
+      .find(".if-book")
+      .should("be.visible");
+    cy.get(".c-sidebar button.dropdown-toggle")
+      .find(".if-briefcase")
+      .should("not.exist");
+    cy.get(".c-sidebar button.dropdown-toggle").should(
+      "contain.text",
+      "Librarian",
+    );
+    cy.get(".c-sidebar")
+      .should("have.class", "c-sidebar--dark-gray")
+      .find(".c-sidebar-menu .c-sidebar__item")
+      .should("have.length", 5);
+    cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
+    cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
+    cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
+    cy.contains(".c-sidebar__item", "Batch").should("be.visible");
+    cy.contains(".c-sidebar__item", "Suggestions").should("be.visible");
+
+    cy.loginAsLibrarian("librarian1", "Researcher");
+
+    cy.visit("/");
     cy.get(".c-sidebar button.dropdown-toggle")
       .find(".if-briefcase")
       .should("be.visible");
@@ -94,15 +117,17 @@ describe("Login & authorization", () => {
       "contain.text",
       "Researcher",
     );
-    cy.get(".c-sidebar-menu .c-sidebar__item").should("have.length", 3);
+    cy.get(".c-sidebar")
+      .should("not.have.class", "c-sidebar--dark-gray")
+      .find(".c-sidebar-menu .c-sidebar__item")
+      .should("have.length", 3);
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
     cy.contains(".c-sidebar__item", "Batch").should("not.exist");
+    cy.contains(".c-sidebar__item", "Suggestions").should("not.exist");
 
-    cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
-
-    cy.switchMode("Librarian");
+    cy.loginAsLibrarian("librarian1", "Librarian");
 
     cy.visit("/");
     cy.get(".c-sidebar button.dropdown-toggle")
@@ -115,7 +140,10 @@ describe("Login & authorization", () => {
       "contain.text",
       "Librarian",
     );
-    cy.get(".c-sidebar-menu .c-sidebar__item").should("have.length", 5);
+    cy.get(".c-sidebar")
+      .should("have.class", "c-sidebar--dark-gray")
+      .find(".c-sidebar-menu .c-sidebar__item")
+      .should("have.length", 5);
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
@@ -123,53 +151,15 @@ describe("Login & authorization", () => {
     cy.contains(".c-sidebar__item", "Suggestions").should("be.visible");
 
     cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
-
-    cy.switchMode("Researcher");
-
-    cy.visit("/");
-    cy.get(".c-sidebar button.dropdown-toggle")
-      .find(".if-briefcase")
-      .should("be.visible");
-    cy.get(".c-sidebar button.dropdown-toggle")
-      .find(".if-book")
-      .should("not.exist");
-    cy.get(".c-sidebar button.dropdown-toggle").should(
-      "contain.text",
-      "Researcher",
-    );
-    cy.get(".c-sidebar-menu .c-sidebar__item").should("have.length", 3);
-    cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
-    cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
-    cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
-    cy.contains(".c-sidebar__item", "Batch").should("not.exist");
-    cy.contains(".c-sidebar__item", "Suggestions").should("not.exist");
-
-    cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
   });
 
   it("should not set the biblio-backoffice cookie twice when switching roles", () => {
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
 
     cy.visit("/");
 
-    cy.intercept({ method: "PUT", pathname: "/role/curator" }).as(
-      "role-curator",
-    );
-    cy.intercept({ method: "PUT", pathname: "/role/user" }).as("role-user");
-
-    cy.contains(".c-sidebar > .dropdown > button", "Researcher")
-      .click()
-      .next(".dropdown-menu")
-      .contains(".dropdown-item", "Librarian")
-      .click();
-
-    cy.wait("@role-curator")
-      .its("response.headers[set-cookie]")
-      .then((cookies) => {
-        expect(
-          cookies.filter((c) => c.startsWith("biblio-backoffice=")),
-        ).to.have.length(1);
-      });
+    cy.intercept("PUT", "/role/user").as("role-user");
+    cy.intercept("PUT", "/role/curator").as("role-curator");
 
     cy.contains(".c-sidebar > .dropdown > button", "Librarian")
       .click()
@@ -184,5 +174,54 @@ describe("Login & authorization", () => {
           cookies.filter((c) => c.startsWith("biblio-backoffice=")),
         ).to.have.length(1);
       });
+
+    cy.contains(".c-sidebar > .dropdown > button", "Researcher")
+      .click()
+      .next(".dropdown-menu")
+      .contains(".dropdown-item", "Librarian")
+      .click();
+
+    cy.wait("@role-curator")
+      .its("response.headers[set-cookie]")
+      .then((cookies) => {
+        expect(
+          cookies.filter((c) => c.startsWith("biblio-backoffice=")),
+        ).to.have.length(1);
+      });
+  });
+
+  // https://github.com/ugent-library/biblio-backoffice/issues/1390
+  it("should log on curators in librarian mode", () => {
+    cy.visit("/");
+    cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
+
+    cy.loginAsLibrarian("librarian1");
+    cy.visit("/");
+    cy.location("pathname").should("eq", "/dashboard/publications/faculties"); // auto redirect
+    cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
+
+    cy.contains(".dropdown-toggle", "Biblio Librarian1").click();
+    cy.contains(".dropdown-item", "Logout").click();
+    cy.location("pathname").should("eq", "/");
+    cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
+  });
+
+  it("should clear curator mode cookie on logout", () => {
+    cy.loginAsLibrarian("librarian1");
+    cy.visit("/");
+    cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
+
+    cy.loginAsLibrarian("librarian1", "Researcher");
+    cy.visit("/");
+    cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
+
+    cy.contains(".dropdown-toggle", "Biblio Librarian1").click();
+    cy.contains(".dropdown-item", "Logout").click();
+    cy.location("pathname").should("eq", "/");
+    cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
+
+    cy.loginAsLibrarian("librarian1");
+    cy.visit("/");
+    cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
   });
 });

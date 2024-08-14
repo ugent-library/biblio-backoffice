@@ -2,7 +2,7 @@
 
 describe("Issue #1414: JS error when closing toast", () => {
   it("should not error when you close a toast manually before auto dismissal", () => {
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
 
     cy.setUpPublication();
     cy.visitPublication();

@@ -7,111 +7,141 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
+func addPublicationBreadcrumbs(c *ctx.Ctx) []views.Breadcrumb {
+	return []views.Breadcrumb{
+		{LabelID: "publications", URL: c.PathTo("publications")},
+		{LabelID: "publication_add"},
+	}
+}
+
 templ Add(c *ctx.Ctx, step int) {
-	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title:       "Add - Publications - Biblio",
+		Breadcrumbs: addPublicationBreadcrumbs(c),
+	}) {
 		@publication.AddMultipleSidebar(c, step)
-		<form class="w-100" action={ templ.URL(c.PathTo("publication_add").String()) } method="GET">
-			<div class="u-scroll-wrapper">
-				<div class="bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
-					<div class="bc-toolbar">
-						<div class="bc-toolbar-left">
-							<div class="bc-toolbar-item">
-								<div class="d-flex flex-column">
-									<span class="text-muted">Step { fmt.Sprint(step) }</span>
-									<h4 class="bc-toolbar-title">Start: add publication(s)</h4>
-								</div>
-							</div>
-						</div>
-						<div class="bc-toolbar-right">
-							<div class="bc-toolbar-item">
-								<button type="submit" class="btn btn-primary">
-									<div class="btn-text">Add publication(s)</div>
-									<i class="if if-arrow-right"></i>
-								</button>
+		<div class="w-100 u-scroll-wrapper">
+			<div class="bc-navbar bc-navbar--large bc-navbar-bordered bc-navbar--white bc-navbar--bordered-bottom">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<div class="bc-toolbar-item">
+							<div class="d-flex flex-column">
+								<span class="text-muted">Step { fmt.Sprint(step) }</span>
+								<h4 class="bc-toolbar-title">Start: add publication(s)</h4>
 							</div>
 						</div>
 					</div>
-				</div>
-				<div class="p-6 u-scroll-wrapper__body">
-					<div class="card mb-6">
-						<div class="card-header">
-							<div class="bc-toolbar">
-								<div class="bc-toolbar-left">
-									<h5>Add publication(s)?</h5>
-								</div>
-							</div>
-						</div>
-						<div class="card-body radio-card-group">
-							<label class="c-radio-card">
-								<div class="c-radio-card__radio" aria-selected="false">
-									<div class="form-check">
-										<input class="form-check-input" id="add-method-wos" type="radio" name="method" value="wos"/>
-										<label class="form-check-label" for="add-method-wos"></label>
-									</div>
-								</div>
-								<div class="c-radio-card__content">
-									<h6>
-										Import from Web of Science
-										<span class="badge rounded-pill badge-success-light ms-3">Recommended for records in WoS</span>
-									</h6>
-									<p class="text-muted">Import one or more publications. This option saves you the most time.</p>
-								</div>
-							</label>
-							<label class="c-radio-card" aria-selected="false">
-								<div class="c-radio-card__radio">
-									<div class="form-check">
-										<input class="form-check-input" id="add-method-identifier" type="radio" name="method" value="identifier"/>
-										<label class="form-check-label" for="add-method-identifier"></label>
-									</div>
-								</div>
-								<div class="c-radio-card__content">
-									<h6>Import your publication via an identifier</h6>
-									<p class="text-muted">Use DOI, PubMed ID or arXiv ID. A good second option.</p>
-								</div>
-							</label>
-							<label class="c-radio-card">
-								<div class="c-radio-card__radio" aria-selected="false">
-									<div class="form-check">
-										<input class="form-check-input" id="add-method-manual" type="radio" name="method" value="manual"/>
-										<label class="form-check-label" for="add-method-manual"></label>
-									</div>
-								</div>
-								<div class="c-radio-card__content">
-									<h6>Enter a publication manually</h6>
-									<p class="text-muted">Create a publication record from scratch using a template. Recommended for publications such as dissertations.</p>
-								</div>
-							</label>
-							<label class="c-radio-card" aria-selected="false">
-								<div class="c-radio-card__radio">
-									<div class="form-check">
-										<input class="form-check-input" id="add-method-bibtex" type="radio" name="method" value="bibtex"/>
-										<label class="form-check-label" for="add-method-bibtex"></label>
-									</div>
-								</div>
-								<div class="c-radio-card__content">
-									<h6>Import via BibTeX file</h6>
-									<p class="text-muted">Import multiple publications via library files. Use this options if there is no Web of Science import or identifier import available.</p>
-								</div>
-							</label>
-						</div>
-					</div>
-					<div class="card mb-6">
-						<div class="card-header">
-							<div class="bc-toolbar">
-								<div class="bc-toolbar-left">
-									Tips for adding your publications
-								</div>
-							</div>
-						</div>
-						<div class="card-body">
-							<ol>
-								<li>Follow a <a href="https://onderzoektips.ugent.be/en/tips/00002065/" target="_blank">step by step guide</a> about deposit and registration of publications.</li>
-								<li>Read general <a href="https://onderzoektips.ugent.be/en/tips/00002064/" target="_blank">documentation</a> about deposit and registration of publications.</li>
-							</ol>
+					<div class="bc-toolbar-right">
+						<div class="bc-toolbar-item">
+							<a class="btn btn-tertiary" href={ templ.URL(c.PathTo("publications").String()) }>Cancel</a>
 						</div>
 					</div>
 				</div>
 			</div>
-		</form>
+			<div class="p-6 u-scroll-wrapper__body">
+				<div class="row">
+					<div class="col-xl-9 mb-6">
+						<div class="card mb-4">
+							<div class="card-body">
+								<div class="bc-toolbar h-auto">
+									<div class="bc-toolbar-left">
+										<div>
+											<div class="d-flex align-items-center flex-wrap">
+												<h3 class="me-3">Import from Web of Science</h3>
+												<span class="badge badge-default">Recommended for records in WoS</span>
+											</div>
+											<p class="text-muted">Import one or more publications. This option saves you the most time.</p>
+										</div>
+									</div>
+									<div class="bc-toolbar-right">
+										<a class="btn btn-primary ms-6" href={ templ.URL(c.PathTo("publication_add", "method", "wos").String()) }>
+											<i class="if if-add"></i>
+											<span class="btn-text">Add</span>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card mb-4">
+							<div class="card-body">
+								<div class="bc-toolbar h-auto">
+									<div class="bc-toolbar-left">
+										<div>
+											<div class="d-flex align-items-center flex-wrap">
+												<h3>Import your publication via an identifier</h3>
+											</div>
+											<p class="text-muted">Use DOI, PubMed ID or arXiv ID. A good second option.</p>
+										</div>
+									</div>
+									<div class="bc-toolbar-right">
+										<a class="btn btn-primary ms-6" href={ templ.URL(c.PathTo("publication_add", "method", "identifier").String()) }>
+											<i class="if if-add"></i>
+											<span class="btn-text">Add</span>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card mb-4">
+							<div class="card-body">
+								<div class="bc-toolbar h-auto">
+									<div class="bc-toolbar-left">
+										<div>
+											<div class="d-flex align-items-center flex-wrap">
+												<h3>Enter a publication manually</h3>
+											</div>
+											<p class="text-muted">Create a publication record from scratch using a template. Recommended for publications such as dissertations.</p>
+										</div>
+									</div>
+									<div class="bc-toolbar-right">
+										<a class="btn btn-primary ms-6" href={ templ.URL(c.PathTo("publication_add", "method", "manual").String()) }>
+											<i class="if if-add"></i>
+											<span class="btn-text">Add</span>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card mb-4">
+							<div class="card-body">
+								<div class="bc-toolbar h-auto">
+									<div class="bc-toolbar-left">
+										<div>
+											<div class="d-flex align-items-center flex-wrap">
+												<h3>Import via BibTeX file</h3>
+											</div>
+											<p class="text-muted">Import multiple publications via library files. Use this options if there is no Web of Science import or identifier import available.</p>
+										</div>
+									</div>
+									<div class="bc-toolbar-right">
+										<a class="btn btn-primary ms-6" href={ templ.URL(c.PathTo("publication_add", "method", "bibtex").String()) }>
+											<i class="if if-add"></i>
+											<span class="btn-text">Add</span>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-3">
+						<div class="card bg-light">
+							<div class="card-header bg-transparent">
+								<div class="card-title">
+									Tips for adding your publications
+								</div>
+							</div>
+							<div class="card-body">
+								<div class="c-content">
+									<ol>
+										<li class="mb-4">Follow a <a class="c-link" href="https://onderzoektips.ugent.be/en/tips/00002065/" target="_blank">step by step guide</a> about deposit and registration of publications.</li>
+										<li>Read general <a class="c-link" href="https://onderzoektips.ugent.be/en/tips/00002064/" target="_blank">documentation</a> about deposit and registration of publications.</li>
+									</ol>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	}
 }

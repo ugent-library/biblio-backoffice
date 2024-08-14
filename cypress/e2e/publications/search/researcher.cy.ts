@@ -5,7 +5,7 @@ describe("The publication search (for researchers)", () => {
     const randomTitleSuffix = getRandomText();
 
     // Setup
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
     cy.setUpPublication("Dissertation", {
       biblioIDAlias: "dissertation1",
       title: `Dissertation 1 ${randomTitleSuffix}`,
@@ -16,7 +16,7 @@ describe("The publication search (for researchers)", () => {
       biblioIDAlias: "@dissertation1",
     });
 
-    cy.login("researcher2");
+    cy.loginAsResearcher("researcher2");
     cy.setUpPublication("Book", {
       biblioIDAlias: "book",
       title: `Book ${randomTitleSuffix}`,

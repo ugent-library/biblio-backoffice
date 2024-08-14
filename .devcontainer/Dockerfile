@@ -11,7 +11,6 @@ FROM mcr.microsoft.com/devcontainers/go:1-1.21-bullseye
 
 USER vscode
 RUN go install github.com/jackc/tern/v2@latest
-RUN go install github.com/cespare/reflex@latest
 RUN sudo apt-get update && sudo apt-get install telnet
 USER root
 
@@ -40,7 +39,7 @@ Seed the app with dummy candidate records:\n\
     go run main.go seed candidate-records < .devcontainer/candidate_records/candidate_records.json\n\
 \n\
 Start the app:\n\
-    reflex -d none -c reflex.docker.conf\n\
+    make dev\n\
 \n\
 Happy hacking!\n"\
     > /etc/motd

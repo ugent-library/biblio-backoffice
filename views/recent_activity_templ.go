@@ -26,6 +26,7 @@ const (
 	RepublishEvent
 	WithdrawEvent
 	LockEvent
+	UnlockEvent
 	UpdateEvent
 	MessageEvent
 )
@@ -89,7 +90,12 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				case LockEvent:
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-check\"></i>")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-lock\"></i>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				case UnlockEvent:
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-lock-unlock\"></i>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -111,7 +117,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				var templ_7745c5c3_Var2 string
 				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(act.Datestamp.In(c.Timezone).Format("2006-01-02 15:04"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 66, Col: 100}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 69, Col: 100}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
@@ -126,7 +132,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-				} else if act.User != nil && act.User.CanCurate() {
+				} else if act.User != nil && act.User.CanCurate() && !c.User.CanCurate() {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("A Biblio team member")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -135,7 +141,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 					var templ_7745c5c3_Var3 string
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(act.User.FullName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 74, Col: 30}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 77, Col: 30}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
@@ -154,7 +160,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(" ")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 79, Col: 14}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 82, Col: 14}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -173,7 +179,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 					var templ_7745c5c3_Var5 string
 					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("activity_statuses." + act.Status))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 82, Col: 65}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 85, Col: 67}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 					if templ_7745c5c3_Err != nil {
@@ -203,6 +209,11 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
+				case UnlockEvent:
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("unlocked a ")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
 				case UpdateEvent:
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("edited a ")
 					if templ_7745c5c3_Err != nil {
@@ -217,7 +228,7 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(" ")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 96, Col: 14}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 101, Col: 14}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -229,31 +240,22 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 				}
 				switch act.Object {
 				case PublicationObject:
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("publication ")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("publication: ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				case DatasetObject:
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("dataset ")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("dataset: ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				var templ_7745c5c3_Var7 string
-				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(": ")
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 103, Col: 15}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"c-activity-item__link\" href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <a class=\"c-activity-item__link\" href=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var8 templ.SafeURL = templ.URL(act.URL)
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var8)))
+				var templ_7745c5c3_Var7 templ.SafeURL = templ.URL(act.URL)
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var7)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -262,12 +264,12 @@ func RecentActivity(c *ctx.Ctx, acts []Activity) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if act.Title != "" {
-					var templ_7745c5c3_Var9 string
-					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(act.Title)
+					var templ_7745c5c3_Var8 string
+					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(act.Title)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 106, Col: 22}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `recent_activity.templ`, Line: 110, Col: 22}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

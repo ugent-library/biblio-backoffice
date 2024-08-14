@@ -3,7 +3,7 @@ import { testFormAccessibility } from "support/util";
 describe("Editing dataset Biblio messages", () => {
   describe("as researcher", () => {
     beforeEach(() => {
-      cy.login("researcher1");
+      cy.loginAsResearcher("researcher1");
 
       cy.setUpDataset();
       cy.visitDataset();
@@ -53,7 +53,7 @@ describe("Editing dataset Biblio messages", () => {
 
   describe("as librarian", () => {
     beforeEach(() => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
 
       cy.setUpDataset();
       cy.visitDataset();

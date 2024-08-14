@@ -31,7 +31,7 @@ templ flashMessage(f flash.Flash) {
 						}
 						@templ.Raw(f.Body)
 					</div>
-					if f.Dismissable {
+					if f.Dismissible {
 						<button class="btn-close" type="button" data-bs-dismiss="toast" aria-label="Close">
 							<span class="visually-hidden">Close</span>
 						</button>
@@ -46,7 +46,7 @@ templ flashMessage(f flash.Flash) {
 						<span class="c-subline">{ f.Application }</span>
 						<span class="c-body-small text-muted ms-3 ps-3">3 minutes ago</span>
 					</div>
-					if f.Dismissable {
+					if f.Dismissible {
 						<button class="btn-close" type="button" data-bs-dismiss="toast" aria-label="Close">
 							<span class="visually-hidden">Close</span>
 						</button>

@@ -764,7 +764,7 @@ msgid "builder.conference.start_date"
 msgstr "Conference start date"
 
 msgid "builder.keyword.help"
-msgstr "Type keywords and separate them by <code>TAB</code>, <code>;</code> or <code>ENTER</code>. A keyword is accepted when it turns blue. Duplicates are removed. <br> e.g. <code>DNA;Health Insurance&lt;ENTER&gt;</code>"
+msgstr "Separate keywords by <span class='visually-hidden'>semicolon</span><code>;</code>, <code>TAB</code> or <code>ENTER</code>. Duplicates will be removed automatically."
 
 msgid "builder.conference.start_date.help"
 msgstr "YYYY-MM-DD"
@@ -2265,7 +2265,7 @@ msgstr "e.g. 2022"
 msgid "builder.identifier_type.help"
 msgstr ""
 "More information about <a href=\"https://onderzoektips.ugent.be/en/"
-"tips/00001743/\" target=\"_blank\">persistent identifiers.</a><br><a "
+"tips/00001743/\" target=\"_blank\">persistent identifiers</a>.<br><a "
 "href=\"mailto:rdm.support@ugent.be\">Contact us</a> if your identifier is "
 "not in the list."
 
@@ -2432,3 +2432,39 @@ msgstr "Select one or more projects as known in GISMO and Research Explorer. <a 
 
 msgid "dataset.project.add.search.help"
 msgstr "Select one or more projects as known in GISMO and Research Explorer. <a href=\"https://onderzoektips.ugent.be/en/tips/00002060/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a>"
+
+msgctxt "breadcrumbs"
+msgid "dashboard"
+msgstr "Dashboard"
+
+msgctxt "breadcrumbs"
+msgid "publications"
+msgstr "Publications"
+
+msgctxt "breadcrumbs"
+msgid "publication"
+msgstr "Publication detail"
+
+msgctxt "breadcrumbs"
+msgid "publication_add"
+msgstr "New publication"
+
+msgctxt "breadcrumbs"
+msgid "publication_batch"
+msgstr "Batch import"
+
+msgctxt "breadcrumbs"
+msgid "candidate_records"
+msgstr "Suggestions"
+
+msgctxt "breadcrumbs"
+msgid "datasets"
+msgstr "Datasets"
+
+msgctxt "breadcrumbs"
+msgid "dataset"
+msgstr "Dataset detail"
+
+msgctxt "breadcrumbs"
+msgid "dataset_add"
+msgstr "New dataset"

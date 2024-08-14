@@ -1,6 +1,5 @@
 // Parent commands
-import login from "./login";
-import switchMode from "./switch-mode";
+import { loginAsResearcher, loginAsLibrarian } from "./login";
 import ensureModal from "./ensure-modal";
 import ensureNoModal from "./ensure-no-modal";
 import visitPublication from "./visit-publication";
@@ -20,6 +19,8 @@ import {
   addSupervisor,
 } from "./add-contributor";
 import htmxRequest from "./htmx-request";
+import { deletePublications, deleteDatasets } from "./delete-many";
+import { deletePublication, deleteDataset } from "./delete-one";
 
 // Child commands
 import finishLog from "./finish-log";
@@ -33,9 +34,8 @@ import closeToast from "./close-toast";
 
 // Parent commands
 Cypress.Commands.addAll({
-  login,
-
-  switchMode,
+  loginAsResearcher,
+  loginAsLibrarian,
 
   ensureModal,
 
@@ -67,6 +67,12 @@ Cypress.Commands.addAll({
   addCreator,
 
   htmxRequest,
+
+  deletePublications,
+  deleteDatasets,
+
+  deletePublication,
+  deleteDataset,
 });
 
 // Child commands

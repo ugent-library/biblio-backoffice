@@ -116,7 +116,7 @@ func flashMessage(f flash.Flash) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if f.Dismissable {
+			if f.Dismissible {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn-close\" type=\"button\" data-bs-dismiss=\"toast\" aria-label=\"Close\"><span class=\"visually-hidden\">Close</span></button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -145,7 +145,7 @@ func flashMessage(f flash.Flash) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if f.Dismissable {
+			if f.Dismissible {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn-close\" type=\"button\" data-bs-dismiss=\"toast\" aria-label=\"Close\"><span class=\"visually-hidden\">Close</span></button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err

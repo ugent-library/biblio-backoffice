@@ -5,6 +5,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/aria"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 )
@@ -30,7 +31,10 @@ var sourceLabels = []string{
 }
 
 templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
-	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title:       "Add - Publications - Biblio",
+		Breadcrumbs: addPublicationBreadcrumbs(c),
+	}) {
 		@publicationviews.AddSingleSidebar(c, args.Step)
 		<form class="w-100 u-scroll-wrapper" action={ templ.URL(c.PathTo("publication_add_single_import_confirm").String()) } method="POST">
 			@views.CSRFTag(c)
@@ -46,10 +50,17 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 							</div>
 						</div>
 						<div class="bc-toolbar-right">
-							<div class="bc-toolbar-item">
+							<div class="c-button-toolbar">
+								<div class="border-end pe-4 me-4">
+									<a class="btn btn-tertiary" href={ templ.URL(c.PathTo("publications").String()) }>Cancel</a>
+								</div>
+								<a class="btn btn-tertiary" href={ templ.URL(c.PathTo("publication_add").String()) }>
+									<i class="if if-arrow-left"></i>
+									<span class="btn-text">Previous step</span>
+								</a>
 								<button type="submit" class="btn btn-primary">
-									<div class="btn-text">Add publication(s)</div>
-									<i class="if if-arrow-right"></i>
+									<div class="btn-text">Preview & import publication</div>
+									<i class="if if-chevron-right"></i>
 								</button>
 							</div>
 						</div>
@@ -57,43 +68,37 @@ templ AddIdentifier(c *ctx.Ctx, args AddIdentifierArgs) {
 				</div>
 				<div class="p-6 u-scroll-wrapper__body">
 					<div class="card mb-6">
-						<div class="card-header">
-							<div class="bc-toolbar">
-								<div class="bc-toolbar-left">Enter identifier of your publication</div>
-							</div>
-						</div>
 						<div class="card-body">
 							<div classp="card-body">
+								<h3 class="mb-4">Enter identifier of your publication</h3>
 								<p class="mb-4">Enter publication identifier (e.g. DOI, PubMed ID) to import the publication description from an external repository or database.</p>
-								<div class="mb-6">
-									<div class="row">
-										<div class="col-6">
-											<div class="input-group">
-												<select name="source" class="form-select" aria-label="Identifier type">
-													for i, value := range sourceValues {
-														<option
-															value={ value }
-															if value == args.Source {
-																selected
-															}
-														>{ sourceLabels[i] }</option>
-													}
-												</select>
-												<input
-													class="form-control"
-													type="text"
-													name="identifier"
-													placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K"
-													value={ args.Identifier }
-													aria-label="Identifier"
-													aria-details="file_help"
-													required
-												/>
-											</div>
+								<div class="row mb-4">
+									<div class="col-6">
+										<div class="input-group">
+											<select name="source" class="form-select" aria-label="Identifier type">
+												for i, value := range sourceValues {
+													<option
+														value={ value }
+														if value == args.Source {
+															selected
+														}
+													>{ sourceLabels[i] }</option>
+												}
+											</select>
+											<input
+												class="form-control"
+												type="text"
+												name="identifier"
+												placeholder="e.g. 10.7484/INSPIREHEP.DATA.RF5P.6M3K"
+												value={ args.Identifier }
+												aria-label="Identifier"
+												{ aria.Attributes(c.Loc.Get("publication.single_import.import_by_id.file.help"), "file-help")... }
+												required
+											/>
 										</div>
 									</div>
 								</div>
-								<small id="file_help" class="form-text my-3">
+								<small id="file-help" class="form-text">
 									@templ.Raw(c.Loc.Get("publication.single_import.import_by_id.file.help"))
 								</small>
 							</div>
