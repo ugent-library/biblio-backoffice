@@ -3,14 +3,8 @@ export default function initSearchFields(el: HTMLElement) {
     (input) => {
       const form = input.closest("form");
       if (form) {
-        input.dataset.previousValue = input.value;
-
-        input.addEventListener("change", () => {
-          input.dataset.previousValue = input.value;
-        });
-
-        input.addEventListener("input", () => {
-          if (input.dataset.previousValue && input.value === "") {
+        input.addEventListener("search", () => {
+          if (input.value === "") {
             form.submit();
           }
         });
