@@ -2,34 +2,31 @@ package models
 
 import "fmt"
 
-/*
-copy from handle-server-api
-*/
-type HandleData struct {
-	Url    string `json:"url"`
-	Format string `json:"format"`
-}
-
 type HandleValue struct {
-	Timestamp string      `json:"timestamp"`
-	Type      string      `json:"type"`
-	Index     int         `json:"index"`
-	Ttl       int         `json:"ttl"`
-	Data      *HandleData `json:"data"`
+	Timestamp string `json:"timestamp,omitempty"`
+	Type      string `json:"type"`
+	Index     int    `json:"index"`
+	Ttl       int    `json:"ttl,omitempty"`
+	Data      any    `json:"data"`
 }
 
-type Handle struct {
+type UpsertHandleRequest struct {
 	Handle       string         `json:"handle"`
 	ResponseCode int            `json:"responseCode"`
 	Values       []*HandleValue `json:"values,omitempty"`
-	Message      string         `json:"message,omitempty"`
 }
 
-func (h *Handle) IsSuccess() bool {
+type UpsertHandleResponse struct {
+	Handle       string `json:"handle"`
+	ResponseCode int    `json:"responseCode"`
+	Message      string `json:"message,omitempty"`
+}
+
+func (h *UpsertHandleResponse) IsSuccess() bool {
 	return h.ResponseCode == 1
 }
 
-func (h *Handle) GetFullHandleURL() string {
+func (h *UpsertHandleResponse) GetFullHandleURL() string {
 	if !h.IsSuccess() {
 		return ""
 	}

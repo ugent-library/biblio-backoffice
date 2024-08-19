@@ -73,11 +73,11 @@ type Config struct {
 	MongoDBURL  string `env:"MONGODB_URL"`
 	APIKey      string `env:"API_KEY"`
 	Handle      struct {
-		Enabled  bool   `env:"ENABLED"`
-		URL      string `env:"URL"`
-		Prefix   string `env:"PREFIX"`
-		Username string `env:"USERNAME"`
-		Password string `env:"PASSWORD"`
+		Enabled       bool   `env:"ENABLED"`
+		URL           string `env:"URL"`
+		Prefix        string `env:"PREFIX"`
+		ADMID         string `env:"ADM_ID"`          // e.g. 300:0.NA/1854
+		ADMPrivateKey string `env:"ADM_PRIVATE_KEY"` // rsa private key
 	} `envPrefix:"HDL_SRV_"`
 	OAI struct {
 		APIURL string `env:"API_URL"`
