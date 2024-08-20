@@ -28,6 +28,11 @@ type bindRemoveProxyPerson struct {
 func Proxies(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
+	if c.UserRole != "curator" {
+		userProxies(w, r)
+		return
+	}
+
 	var proxies [][]*models.Person
 	var proxy *models.Person
 	var person *models.Person
@@ -53,6 +58,29 @@ func Proxies(w http.ResponseWriter, r *http.Request) {
 	}
 
 	proxyviews.List(c, proxies).Render(r.Context(), w)
+}
+
+func userProxies(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	ids, err := c.Repo.ProxyPersonIDs(r.Context(), c.User.ID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	proxies := make([]*models.Person, 0, len(ids))
+	for _, id := range ids {
+		// TODO not efficient
+		p, err := c.PersonService.GetPerson(id)
+		if err != nil {
+			c.HandleError(w, r, err)
+			return
+		}
+		proxies = append(proxies, p)
+	}
+
+	proxyviews.UserList(c, proxies).Render(r.Context(), w)
 }
 
 func AddProxy(w http.ResponseWriter, r *http.Request) {

@@ -186,6 +186,7 @@ func Register(c Config) {
 			r.Group(func(r *ich.Mux) {
 				r.Use(ctx.RequireUser)
 
+				// dashboard
 				r.With(ctx.SetNav("dashboard")).Get("/dashboard", handlers.DashBoard).Name("dashboard")
 				r.Get("/dashboard-icon", handlers.DashBoardIcon).Name("dashboard_icon")
 				// dashboard action required component
@@ -194,6 +195,9 @@ func Register(c Config) {
 				r.Get("/drafts-to-complete", handlers.DraftsToComplete).Name("drafts_to_complete")
 				// dashboard recent activity component
 				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
+
+				// proxies
+				r.With(ctx.SetNav("proxies")).Get("/proxies", proxies.Proxies).Name("proxies")
 
 				// curator only routes
 				r.Group(func(r *ich.Mux) {
@@ -219,7 +223,6 @@ func Register(c Config) {
 					r.Get("/candidate-records/{id}/files/{file_id}", candidaterecords.DownloadFile).Name("candidate_record_download_file")
 
 					// proxy management
-					r.With(ctx.SetNav("proxies")).Get("/proxies", proxies.Proxies).Name("proxies")
 					r.Get("/proxies/add", proxies.AddProxy).Name("add_proxy")
 					r.Get("/proxies/suggestions", proxies.SuggestProxies).Name("suggest_proxies")
 					r.Get("/proxies/{proxy_id}/edit", proxies.Edit).Name("edit_proxy")

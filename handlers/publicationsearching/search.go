@@ -41,24 +41,33 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	args := searchArgs.Clone()
 	var currentScope string
 
+	// view publications of proxy
+	userID := c.User.ID
+	if personID := args.FilterFor("user"); personID != "" {
+		if c.Repo.IsProxyFor(userID, []string{personID}) {
+			userID = personID
+		}
+	}
+
 	switch args.FilterFor("scope") {
 	case "created":
-		searcher = searcher.WithScope("creator_id", c.User.ID)
+		searcher = searcher.WithScope("creator_id", userID)
 		currentScope = "created"
 	case "contributed":
-		searcher = searcher.WithScope("author_id", c.User.ID)
+		searcher = searcher.WithScope("author_id", userID)
 		currentScope = "contributed"
 	case "supervised":
-		searcher = searcher.WithScope("supervisor_id", c.User.ID)
+		searcher = searcher.WithScope("supervisor_id", userID)
 		currentScope = "supervised"
 	case "all":
-		searcher = searcher.WithScope("creator_id|author_id|supervisor_id", c.User.ID)
+		searcher = searcher.WithScope("creator_id|author_id|supervisor_id", userID)
 		currentScope = "all"
 	default:
 		c.HandleError(w, r, httperror.BadRequest.Wrap(fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))))
 		return
 	}
 	delete(args.Filters, "scope")
+	delete(args.Filters, "user")
 
 	hits, err := searcher.Search(args)
 	if err != nil {

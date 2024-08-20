@@ -24,7 +24,7 @@ func (s *Repo) isProxyForPublication(u *models.Person, p *models.Publication) bo
 		}
 	}
 
-	return len(personIDs) > 0 && s.isProxy(u.ID, personIDs)
+	return len(personIDs) > 0 && s.IsProxyFor(u.ID, personIDs)
 }
 
 func (s *Repo) CanViewPublication(u *models.Person, p *models.Publication) bool {
@@ -122,7 +122,7 @@ func (s *Repo) CanDeletePublication(u *models.Person, p *models.Publication) boo
 		if p.CreatorID == u.ID {
 			return true
 		}
-		if p.CreatorID != "" && s.isProxy(u.ID, []string{p.CreatorID}) {
+		if p.CreatorID != "" && s.IsProxyFor(u.ID, []string{p.CreatorID}) {
 			return true
 		}
 	}
@@ -147,7 +147,7 @@ func (s *Repo) isProxyForDataset(u *models.Person, d *models.Dataset) bool {
 		}
 	}
 
-	return len(personIDs) > 0 && s.isProxy(u.ID, personIDs)
+	return len(personIDs) > 0 && s.IsProxyFor(u.ID, personIDs)
 }
 
 func (s *Repo) CanViewDataset(u *models.Person, d *models.Dataset) bool {
@@ -232,7 +232,7 @@ func (s *Repo) CanDeleteDataset(u *models.Person, d *models.Dataset) bool {
 		if d.CreatorID == u.ID {
 			return true
 		}
-		if d.CreatorID != "" && s.isProxy(u.ID, []string{d.CreatorID}) {
+		if d.CreatorID != "" && s.IsProxyFor(u.ID, []string{d.CreatorID}) {
 			return true
 		}
 	}

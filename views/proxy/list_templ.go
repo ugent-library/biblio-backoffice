@@ -62,7 +62,7 @@ func List(c *ctx.Ctx, proxies [][]*models.Person) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, p := range proxies {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr><td class=\"text-nowrap\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr><td class=\"text-nowrap d-none d-md-table-cell\">Proxy</td><td class=\"text-nowrap\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -70,7 +70,7 @@ func List(c *ctx.Ctx, proxies [][]*models.Person) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"text-nowrap\"><div class=\"text-center\">manages <i class=\"if if-arrow-right\"></i></div></td><td class=\"text-nowrap\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"text-nowrap\"><p class=\"text-center\">manages<i class=\"if if-arrow-right if--muted if--small ms-2\"></i></p></td><td class=\"text-nowrap\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -78,7 +78,7 @@ func List(c *ctx.Ctx, proxies [][]*models.Person) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"text-nowrap\"><div class=\"c-button-toolbar flex-nowrap\"><a class=\"btn btn-link btn-link-muted\"><i class=\"if if-delete\"></i> <span class=\"btn-text d-none d-lg-inline-block\">Delete</span></a></div></td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -127,7 +127,7 @@ func tableItem(c *ctx.Ctx, p *models.Person) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(p.FullName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/list.templ`, Line: 87, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/list.templ`, Line: 82, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -145,7 +145,7 @@ func tableItem(c *ctx.Ctx, p *models.Person) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/list.templ`, Line: 92, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/list.templ`, Line: 87, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -164,7 +164,7 @@ func tableItem(c *ctx.Ctx, p *models.Person) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(p.ORCID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/list.templ`, Line: 98, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/list.templ`, Line: 93, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {

@@ -1,0 +1,40 @@
+package proxyviews
+
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+)
+
+templ UserList(c *ctx.Ctx, people []*models.Person) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title: "Biblio",
+		Breadcrumbs: []views.Breadcrumb{
+			{LabelID: "proxies"},
+		},
+	}) {
+		<div class="w-100 u-scroll-wrapper">
+			<div class="u-scroll-wrapper__body w-100 p-6">
+				<div class="table-responsive">
+					<table class="table table-sm table-bordered">
+						<tbody>
+							for _, p := range people {
+								<tr>
+									<td class="text-nowrap">
+										@tableItem(c, p)
+									</td>
+									<td class="table-col-sm-fixed table-col-sm-fixed-right text-end">
+										<a class="btn btn-outline-primary" type="button" href={ templ.SafeURL(c.PathTo("publications", "f[user]", p.ID).String()) }>
+											<span class="btn-text">Manage bibliography</span>
+											<i class="if if-arrow-right" aria-hidden="true"></i>
+										</a>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+}
