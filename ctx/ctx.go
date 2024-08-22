@@ -87,6 +87,22 @@ func Set(config Config) func(http.Handler) http.Handler {
 			c.UserRole = c.getUserRoleFromSession(session)
 			c.OriginalUser = originalUser
 
+			// user is proxying for another user
+			// TODO this feels hacky, we use a SearchArgs filter to persist the query param across search requests
+			if proxiedPersonID := r.URL.Query().Get("f[person][0]"); proxiedPersonID != "" {
+				if c.User != nil && c.Repo.IsProxyFor(c.User.ID, []string{proxiedPersonID}) {
+					proxiedPerson, err := c.PersonService.GetPerson(proxiedPersonID)
+					if err != nil {
+						c.HandleError(w, r, fmt.Errorf("can't get proxied person %s: %w", proxiedPersonID, err))
+						return
+					}
+					c.ProxiedPerson = proxiedPerson
+				} else {
+					c.HandleError(w, r, httperror.Forbidden.Wrap(fmt.Errorf("user is not a proxy for %s", proxiedPersonID)))
+					return
+				}
+			}
+
 			// load flash from cookies
 			f, err := c.getFlash(r, w)
 			if err != nil {
@@ -121,21 +137,22 @@ type Config struct {
 
 type Ctx struct {
 	Config
-	host         string
-	scheme       string
-	Log          *slog.Logger
-	Loc          *gotext.Locale
-	User         *models.Person
-	UserRole     string
-	OriginalUser *models.Person
-	Flash        []flash.Flash
-	CSRFToken    string
-	CSPNonce     string
-	Nav          string
-	SubNav       string
-	CurrentURL   *url.URL
+	host          string
+	scheme        string
+	Log           *slog.Logger
+	Loc           *gotext.Locale
+	User          *models.Person
+	UserRole      string
+	OriginalUser  *models.Person
+	ProxiedPerson *models.Person
+	Flash         []flash.Flash
+	CSRFToken     string
+	CSPNonce      string
+	Nav           string
+	SubNav        string
+	CurrentURL    *url.URL
 
-	// flagContext  *ffcontext.EvaluationContext
+	// flagContext *ffcontext.EvaluationContext
 }
 
 func (c *Ctx) HandleError(w http.ResponseWriter, r *http.Request, err error) {
@@ -275,7 +292,3 @@ func (c *Ctx) getUserRoleFromSession(session *sessions.Session) string {
 // 	}
 // 	return flag
 // }
-
-func (c *Ctx) FlagCandidateRecords() bool {
-	return true
-}

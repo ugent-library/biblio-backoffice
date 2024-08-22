@@ -124,7 +124,7 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 			</header>
 			<main>
 				<div class="d-flex u-maximize-height">
-					<div class={ "c-sidebar", templ.KV("c-sidebar--dark-gray", c.UserRole == "curator") }>
+					<div class={ "c-sidebar", templ.KV("c-sidebar--dark-gray", c.UserRole == "curator"), templ.KV("c-sidebar--green", c.ProxiedPerson != nil) }>
 						if c.User != nil && c.Repo.CanCurate(c.User) {
 							<div class="dropdown mx-lg-4 mb-6 mt-3">
 								<button class="btn btn-outline-light dropdown-toggle w-100 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -162,6 +162,16 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 												@DashboardIcon(c, false)
 											</a>
 										</li>
+										if c.UserRole == "curator" || c.Repo.IsProxy(c.User.ID) {
+										<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "proxies") }>
+												<a href={ templ.URL(c.PathTo("proxies").String()) }>
+													<span class="c-sidebar__icon">
+														<i class="if if-user-add"></i>
+													</span>
+													<span class="c-sidebar__label">Proxy dashboard [beta]</span>
+												</a>
+											</li>
+										}
 										<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "publications") }>
 											<a href={ templ.URL(c.PathTo("publications").String()) }>
 												<span class="c-sidebar__icon">
@@ -179,40 +189,21 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 											</a>
 										</li>
 										if c.UserRole == "curator" {
-											if c.FlagCandidateRecords() {
-												<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "candidate_records") }>
-													<a
-														href={ templ.URL(c.PathTo("candidate_records").String()) }
-														hx-get={ c.PathTo("candidate_records_icon").String() }
-														hx-trigger="load, every 5s"
-													>
-														@CandidateRecordsIcon(c, false)
-													</a>
-												</li>
-											}
+											<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "candidate_records") }>
+												<a
+													href={ templ.URL(c.PathTo("candidate_records").String()) }
+													hx-get={ c.PathTo("candidate_records_icon").String() }
+													hx-trigger="load, every 5s"
+												>
+													@CandidateRecordsIcon(c, false)
+												</a>
+											</li>
 											<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "batch") }>
 												<a href={ templ.URL(c.PathTo("publication_batch").String()) }>
 													<span class="c-sidebar__icon">
 														<i class="if if-tool"></i>
 													</span>
 													<span class="c-sidebar__label">Batch operations</span>
-												</a>
-											</li>
-											<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "proxies") }>
-												<a href={ templ.URL(c.PathTo("proxies").String()) }>
-													<span class="c-sidebar__icon">
-														<i class="if if-user-add"></i>
-													</span>
-													<span class="c-sidebar__label">Proxies [beta]</span>
-												</a>
-											</li>
-										} else if c.Repo.IsProxy(c.User.ID) {
-											<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "proxies") }>
-												<a href={ templ.URL(c.PathTo("proxies").String()) }>
-													<span class="c-sidebar__icon">
-														<i class="if if-user-add"></i>
-													</span>
-													<span class="c-sidebar__label">Proxies [beta]</span>
 												</a>
 											</li>
 										}

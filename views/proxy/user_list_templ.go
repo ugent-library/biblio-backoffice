@@ -44,7 +44,7 @@ func UserList(c *ctx.Ctx, people []*models.Person) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"table-responsive\"><table class=\"table table-sm table-bordered\"><tbody>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"table-responsive\"><table class=\"table table-sm table-bordered\"><thead><tr><th>Researcher</th><th>Suggestions</th><th colspan=\"3\">Publications</th><th colspan=\"3\">Datasets</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -57,16 +57,25 @@ func UserList(c *ctx.Ctx, people []*models.Person) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"table-col-sm-fixed table-col-sm-fixed-right text-end\"><a class=\"btn btn-outline-primary\" type=\"button\" href=\"")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td></td><td></td><td></td><td><a class=\"btn btn-outline-secondary btn-sm\" type=\"button\" href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(c.PathTo("publications", "f[user]", p.ID).String())
+				var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(c.PathTo("publications", "f[person][0]", p.ID).String())
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><span class=\"btn-text\">Manage bibliography</span> <i class=\"if if-arrow-right\" aria-hidden=\"true\"></i></a></td></tr>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">View all publications</a></td><td></td><td></td><td><a class=\"btn btn-outline-secondary btn-sm\" type=\"button\" href=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var4 templ.SafeURL = templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.ID).String())
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var4)))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">View all datasets</a></td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

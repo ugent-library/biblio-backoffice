@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/leonelquinteros/gotext"
 	"github.com/nics/ich"
+
 	"github.com/ory/graceful"
 	"github.com/spf13/cobra"
 	"github.com/ugent-library/biblio-backoffice/backends"
@@ -41,17 +42,23 @@ var serverStartCmd = &cobra.Command{
 		// e.LicenseSearchService.IndexAll()
 
 		// feature flags
-		// if config.FF.FilePath != "" {
-		// 	err := ffclient.Init(ffclient.Config{
-		// 		PollingInterval: 5 * time.Second,
-		// 		Context:         context.TODO(),
-		// 		Retriever: &fileretriever.Retriever{
-		// 			Path: config.FF.FilePath,
+		// if config.Flags.FilePath != "" {
+		// 	provider, err := gofeatureflaginprocess.NewProviderWithContext(context.TODO(), gofeatureflaginprocess.ProviderOptions{
+		// 		GOFeatureFlagConfig: &gofeatureflag.Config{
+		// 			PollingInterval: 10 * time.Second,
+		// 			Context:         context.TODO(),
+		// 			Retriever: &fileretriever.Retriever{
+		// 				Path: config.Flags.FilePath,
+		// 			},
 		// 		},
 		// 	})
 		// 	if err != nil {
 		// 		return err
 		// 	}
+		// 	openfeature.SetProvider(provider)
+		// }
+		// defer openfeature.Shutdown()
+
 		// 	defer ffclient.Close()
 		// } else if config.FF.GitHubRepo != "" {
 		// 	err := ffclient.Init(ffclient.Config{
