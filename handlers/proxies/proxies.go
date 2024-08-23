@@ -60,6 +60,7 @@ func Proxies(w http.ResponseWriter, r *http.Request) {
 	proxyviews.List(c, proxies).Render(r.Context(), w)
 }
 
+// TODO this makes way too many calls, all sequentially
 func userProxies(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
@@ -69,15 +70,57 @@ func userProxies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxies := make([]*models.Person, 0, len(ids))
+	proxies := make([]proxyviews.ProxiedPerson, 0, len(ids))
 	for _, id := range ids {
-		// TODO not efficient
 		p, err := c.PersonService.GetPerson(id)
 		if err != nil {
 			c.HandleError(w, r, err)
 			return
 		}
-		proxies = append(proxies, p)
+
+		withdrawnPublicationHits, err := c.PublicationSearchIndex.Search(models.NewSearchArgs().
+			WithPageSize(0).
+			WithFilter("creator_id|author_id", p.ID).
+			WithFilter("status", "returned").
+			WithFilter("locked", "false"))
+		if err != nil {
+			c.HandleError(w, r, err)
+			return
+		}
+		draftPublicationHits, err := c.PublicationSearchIndex.Search(models.NewSearchArgs().
+			WithPageSize(0).
+			WithFilter("creator_id|author_id", p.ID).
+			WithFilter("status", "private").
+			WithFilter("locked", "false"))
+		if err != nil {
+			c.HandleError(w, r, err)
+			return
+		}
+		withdrawnDatasetHits, err := c.DatasetSearchIndex.Search(models.NewSearchArgs().
+			WithPageSize(0).
+			WithFilter("creator_id|author_id", p.ID).
+			WithFilter("status", "returned").
+			WithFilter("locked", "false"))
+		if err != nil {
+			c.HandleError(w, r, err)
+			return
+		}
+		draftDatasetHits, err := c.DatasetSearchIndex.Search(models.NewSearchArgs().
+			WithPageSize(0).
+			WithFilter("creator_id|author_id", p.ID).
+			WithFilter("status", "private").
+			WithFilter("locked", "false"))
+		if err != nil {
+			c.HandleError(w, r, err)
+			return
+		}
+		proxies = append(proxies, proxyviews.ProxiedPerson{
+			Person:                     p,
+			WithdrawnPublicationsCount: withdrawnPublicationHits.Total,
+			DraftPublicationsCount:     draftPublicationHits.Total,
+			WithdrawnDatasetsCount:     withdrawnDatasetHits.Total,
+			DraftDatasetsCount:         draftDatasetHits.Total,
+		})
 	}
 
 	proxyviews.UserList(c, proxies).Render(r.Context(), w)

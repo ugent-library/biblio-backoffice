@@ -1,12 +1,21 @@
 package proxyviews
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
 )
 
-templ UserList(c *ctx.Ctx, people []*models.Person) {
+type ProxiedPerson struct {
+	Person                     *models.Person
+	DraftPublicationsCount     int
+	WithdrawnPublicationsCount int
+	DraftDatasetsCount         int
+	WithdrawnDatasetsCount     int
+}
+
+templ UserList(c *ctx.Ctx, people []ProxiedPerson) {
 	@views.PageLayout(c, views.PageLayoutArgs{
 		Title: "Biblio",
 		Breadcrumbs: []views.Breadcrumb{
@@ -20,7 +29,6 @@ templ UserList(c *ctx.Ctx, people []*models.Person) {
 						<thead>
 							<tr>
 								<th>Researcher</th>
-								<th>Suggestions</th>
 								<th colspan="3">Publications</th>
 								<th colspan="3">Datasets</th>
 							</tr>
@@ -29,25 +37,71 @@ templ UserList(c *ctx.Ctx, people []*models.Person) {
 							for _, p := range people {
 								<tr>
 									<td class="text-nowrap">
-										@tableItem(c, p)
+										@tableItem(c, p.Person)
 									</td>
 									<td>
+										<a
+											if p.DraftPublicationsCount > 0 {
+												class="badge badge-sm rounded-pill badge-warning-light"
+											} else {
+												class="badge badge-sm rounded-pill badge-white"
+											}
+											href={ templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID, "f[status][0]", "private").String()) }
+										>
+											<span class="badge-circle"></span>
+											<span class="badge-text">{ fmt.Sprint(p.DraftPublicationsCount) } draft</span>
+											<i class="if if-arrow-right"></i>
+										</a>
 									</td>
 									<td>
+										<a
+											if p.WithdrawnPublicationsCount > 0 {
+												class="badge badge-sm rounded-pill badge-danger-light"
+											} else {
+												class="badge badge-sm rounded-pill badge-white"
+											}
+											href={ templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID, "f[status][0]", "returned").String()) }
+										>
+											<span class="badge-circle"></span>
+											<span class="badge-text">{ fmt.Sprint(p.WithdrawnPublicationsCount) } withdrawn</span>
+											<i class="if if-arrow-right"></i>
+										</a>
 									</td>
 									<td>
-									</td>
-									<td>
-										<a class="btn btn-outline-secondary btn-sm" type="button" href={ templ.SafeURL(c.PathTo("publications", "f[person][0]", p.ID).String()) }>
+										<a class="btn btn-outline-secondary btn-sm" type="button" href={ templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID).String()) }>
 											View all publications
 										</a>
 									</td>
 									<td>
+										<a
+											if p.DraftDatasetsCount > 0 {
+												class="badge badge-sm rounded-pill badge-warning-light"
+											} else {
+												class="badge badge-sm rounded-pill badge-white"
+											}
+											href={ templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID, "f[status][0]", "private").String()) }
+										>
+											<span class="badge-circle"></span>
+											<span class="badge-text">{ fmt.Sprint(p.DraftDatasetsCount) } draft</span>
+											<i class="if if-arrow-right"></i>
+										</a>
 									</td>
 									<td>
+										<a
+											if p.WithdrawnDatasetsCount > 0 {
+												class="badge badge-sm rounded-pill badge-danger-light"
+											} else {
+												class="badge badge-sm rounded-pill badge-white"
+											}
+											href={ templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID, "f[status][0]", "returned").String()) }
+										>
+											<span class="badge-circle"></span>
+											<span class="badge-text">{ fmt.Sprint(p.WithdrawnDatasetsCount) } withdrawn</span>
+											<i class="if if-arrow-right"></i>
+										</a>
 									</td>
 									<td>
-										<a class="btn btn-outline-secondary btn-sm" type="button" href={ templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.ID).String()) }>
+										<a class="btn btn-outline-secondary btn-sm" type="button" href={ templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID).String()) }>
 											View all datasets
 										</a>
 									</td>
