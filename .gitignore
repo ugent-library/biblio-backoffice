@@ -36,6 +36,7 @@ cypress/cypress-record.sh
 # Docker
 tmp
 docker-compose.yaml
+docker-compose.yml
 
 # esbuild
 meta.json
