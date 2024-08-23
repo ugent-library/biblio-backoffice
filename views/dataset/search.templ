@@ -162,11 +162,13 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 				</div>
 				if len(args.Scopes) > 0 {
 					<div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white">
-						<ul class="nav nav-tabs">
+						<ul
+							class={ "nav nav-tabs", templ.KV("nav--green", c.ProxiedPerson != nil)}
+						>
 							for _, scope := range args.Scopes {
 								<li class="nav-item">
 									<a
-										class={ "nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope)), templ.KV("text-success", c.ProxiedPerson != nil) }
+										class={ "nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope)) }
 										href={ views.URL(c.PathTo("datasets")).Query(args.SearchArgs.Clone().WithFilter("scope", scope)).SafeURL() }
 									>
 										{ c.Loc.Get("dataset.search.scopes."+scope) }
