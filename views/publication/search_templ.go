@@ -633,7 +633,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var15 = []any{"nav nav-tabs", templ.KV("nav--green", c.ProxiedPerson != nil)}
+				var templ_7745c5c3_Var15 = []any{"nav nav-tabs", templ.KV("nav--success", c.ProxiedPerson != nil)}
 				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var15...)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -660,7 +660,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var17 = []any{"nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope)), templ.KV("text-success", c.ProxiedPerson != nil)}
+					var templ_7745c5c3_Var17 = []any{"nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope))}
 					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var17...)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
