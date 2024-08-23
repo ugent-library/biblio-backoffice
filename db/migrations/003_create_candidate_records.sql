@@ -10,7 +10,7 @@ create table candidate_records (
     unique(source_name, source_id)
 );
 
-create index candidate_records_source_idx on candidate_records(source_name, source_id);
+create index candidate_records_source_idx on candidate_records (source_name, source_id);
 
 ---- create above / drop below ----
 
