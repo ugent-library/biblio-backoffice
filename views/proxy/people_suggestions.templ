@@ -7,24 +7,34 @@ import (
 )
 
 templ PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person) {
-	<div id="people-suggestions">
-		<ul class="list-group me-6">
-			for  _, p := range hits {
-				<li class="list-group-item">
-					@listItem(c, p) {
-						<div
-							class="btn btn-outline-primary"
-							type="button"
-							hx-post={ c.PathTo("proxy_add_person", "proxy_id", proxy.ID).String() }
-							hx-vals={ fmt.Sprintf(`{"person_id": "%s"}`, p.ID) }
-							hx-swap="none"
-						>
-							<span class="btn-text">Select researcher</span>
-							<i class="if if-arrow-right"></i>
-						</div>
-					}
-				</li>
-			}
-		</ul>
-	</div>
+	if len(hits) > 0 {
+		<div id="people-suggestions">
+			<ul class="list-group me-6">
+				for  _, p := range hits {
+					<li class="list-group-item">
+						@listItem(c, p) {
+							<div
+								class="btn btn-outline-primary"
+								type="button"
+								hx-post={ c.PathTo("proxy_add_person", "proxy_id", proxy.ID).String() }
+								hx-vals={ fmt.Sprintf(`{"person_id": "%s"}`, p.ID) }
+								hx-swap="none"
+							>
+								<span class="btn-text">Select researcher</span>
+								<i class="if if-arrow-right"></i>
+							</div>
+						}
+					</li>
+				}
+			</ul>
+		</div>
+	} else {
+		<div class="c-blank-slate c-blank-slate-muted c-blank-slate-large">
+			<div class="bc-avatar bc-avatar--small">
+				<i class="if if-info-circle"></i>
+			</div>
+			<h3 class="c-blank-slate-title">No researchers found.</h3>
+			<p>Refine your search to see different results.</p>
+		</div>
+	}
 }
