@@ -23,6 +23,23 @@ templ UserList(c *ctx.Ctx, people []ProxiedPerson) {
 		},
 	}) {
 		<div class="w-100 u-scroll-wrapper">
+			<div class="bg-white">
+				<div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom h-auto">
+					<div class="bc-toolbar h-auto py-4">
+						<div class="bc-toolbar-left">
+							<div class="bc-toolbar-item">
+								<h2 class="bc-toolbar-title">Proxy overview</h2>
+								<p class="c-intro">See whose bibliographies you are allowed to manage.</p>
+							</div>
+						</div>
+						<div class="bc-toolbar-right">
+							<div class="bc-toolbar-item">
+								<p class="text-muted">Get in touch with&nbsp;<a class="c-link-muted" href="mailto:biblio@ugent.be">biblio@ugent.be</a>&nbsp;to add or remove proxies.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 			<div class="u-scroll-wrapper__body w-100 p-6">
 				<div class="table-responsive">
 					<table class="table table-sm table-bordered">

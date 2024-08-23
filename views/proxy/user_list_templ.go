@@ -53,7 +53,7 @@ func UserList(c *ctx.Ctx, people []ProxiedPerson) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"table-responsive\"><table class=\"table table-sm table-bordered\"><thead><tr><th>Researcher</th><th colspan=\"3\">Publications</th><th colspan=\"3\">Datasets</th></tr></thead> <tbody>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"bg-white\"><div class=\"bc-navbar bc-navbar--large bc-navbar--bordered-bottom h-auto\"><div class=\"bc-toolbar h-auto py-4\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><h2 class=\"bc-toolbar-title\">Proxy overview</h2><p class=\"c-intro\">See whose bibliographies you are allowed to manage.</p></div></div><div class=\"bc-toolbar-right\"><div class=\"bc-toolbar-item\"><p class=\"text-muted\">Get in touch with&nbsp;<a class=\"c-link-muted\" href=\"mailto:biblio@ugent.be\">biblio@ugent.be</a>&nbsp;to add or remove proxies.</p></div></div></div></div></div><div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"table-responsive\"><table class=\"table table-sm table-bordered\"><thead><tr><th>Researcher</th><th colspan=\"3\">Publications</th><th colspan=\"3\">Datasets</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -97,7 +97,7 @@ func UserList(c *ctx.Ctx, people []ProxiedPerson) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(p.DraftPublicationsCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/user_list.templ`, Line: 52, Col: 74}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/user_list.templ`, Line: 69, Col: 74}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -134,7 +134,7 @@ func UserList(c *ctx.Ctx, people []ProxiedPerson) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(p.WithdrawnPublicationsCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/user_list.templ`, Line: 66, Col: 78}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/user_list.templ`, Line: 83, Col: 78}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -180,7 +180,7 @@ func UserList(c *ctx.Ctx, people []ProxiedPerson) templ.Component {
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(p.DraftDatasetsCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/user_list.templ`, Line: 85, Col: 70}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/user_list.templ`, Line: 102, Col: 70}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -217,7 +217,7 @@ func UserList(c *ctx.Ctx, people []ProxiedPerson) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(p.WithdrawnDatasetsCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/user_list.templ`, Line: 99, Col: 74}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/user_list.templ`, Line: 116, Col: 74}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
