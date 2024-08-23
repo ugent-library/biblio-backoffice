@@ -226,7 +226,9 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 					<div class="bc-toolbar">
 						<div class="bc-toolbar-left">
 							<div class="bc-toolbar-item">
-								<p>Proxy for:<span class="badge badge-sm rounded-pill badge-success-light mb-1 ms-2">{ c.ProxiedPerson.FullName }</span></p>
+								if c.ProxiedPerson != nil {
+									<p>Proxy for:<span class="badge badge-sm rounded-pill badge-success-light mb-1 ms-2">{ c.ProxiedPerson.FullName }</span></p>
+								}
 								<h4 class="bc-toolbar-title">
 									Overview publications
 									if c.ProxiedPerson != nil {
@@ -269,7 +271,7 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 										class={ "nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope)), templ.KV("text-success", c.ProxiedPerson != nil) }
 										href={ views.URL(c.PathTo("publications")).Query(args.SearchArgs.Clone().WithFilter("scope", scope)).SafeURL() }
 									>
-											{ c.Loc.Get("publication.search.scopes."+scope) }
+										{ c.Loc.Get("publication.search.scopes."+scope) }
 									</a>
 								</li>
 							}
