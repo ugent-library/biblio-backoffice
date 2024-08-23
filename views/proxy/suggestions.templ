@@ -6,21 +6,31 @@ import (
 )
 
 templ Suggestions(c *ctx.Ctx, hits []*models.Person) {
-	<ul class="list-group">
-		for  _, p := range hits {
-			<li class="list-group-item">
-				@listItem(c, p) {
-					<button
-						class="btn btn-primary"
-						type="button"
-						hx-get={ c.PathTo("edit_proxy", "proxy_id", p.ID).String() }
-						hx-swap="none"
-					>
-						<span class="btn-text">Choose proxy</span>
-						<i class="if if-arrow-right"></i>
-					</button>
-				}
-			</li>
-		}
-	</ul>
+	if len(hits) > 0 {
+		<ul class="list-group">
+			for  _, p := range hits {
+				<li class="list-group-item">
+					@listItem(c, p) {
+						<button
+							class="btn btn-primary"
+							type="button"
+							hx-get={ c.PathTo("edit_proxy", "proxy_id", p.ID).String() }
+							hx-swap="none"
+						>
+							<span class="btn-text">Choose proxy</span>
+							<i class="if if-arrow-right"></i>
+						</button>
+					}
+				</li>
+			}
+		</ul>
+	} else {
+		<div class="c-blank-slate c-blank-slate-muted c-blank-slate-large">
+			<div class="bc-avatar bc-avatar--small">
+				<i class="if if-info-circle"></i>
+			</div>
+			<h3 class="c-blank-slate-title">No people found.</h3>
+			<p>Refine your search to see different results.</p>
+		</div>
+	}
 }
