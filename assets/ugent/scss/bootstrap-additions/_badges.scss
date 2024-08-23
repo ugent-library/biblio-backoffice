@@ -83,6 +83,20 @@ a.badge-secondary {
 .badge-light {
   background-color: $gray-50;
   color: $text-muted;
+
+  .badge-circle {
+    background: $gray-300;
+  }
+}
+
+.badge-white {
+  background-color: white;
+  color: $text-muted;
+  border: 1px solid $gray-50;
+
+  .badge-circle {
+    background: $gray-300;
+  }
 }
 
 .badge-success-light {
