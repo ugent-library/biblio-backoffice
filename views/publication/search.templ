@@ -226,6 +226,9 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 					<div class="bc-toolbar">
 						<div class="bc-toolbar-left">
 							<div class="bc-toolbar-item">
+								if c.ProxiedPerson != nil {
+									<p>Proxy for:<span class="badge badge-sm rounded-pill badge-success-light mb-1 ms-2">{ c.ProxiedPerson.FullName }</span></p>
+								}
 								<h4 class="bc-toolbar-title">
 									Overview publications
 									if c.ProxiedPerson != nil {
@@ -235,19 +238,6 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 							</div>
 						</div>
 						<div class="bc-toolbar-right">
-							if c.ProxiedPerson != nil {
-								<div class="bc-toolbar-item">
-									<span class="badge badge-sm rounded-pill badge-success-light">Proxying for: { c.ProxiedPerson.FullName }</span>
-								</div>
-								<div class="bc-toolbar-item">
-									<small>
-										<a class="btn btn-tertiary btn-sm" href={ templ.SafeURL(c.PathTo("publications").String()) } type="button">
-											<i class="if if-user"></i>
-											<span class="btn-text">Return to your profile</span>
-										</a>
-									</small>
-								</div>
-							}
 							<div class="bc-toolbar-item">
 								<a class="btn btn-primary" href={ templ.URL(c.PathTo("publication_add").String()) }>
 									<i class="if if-add"></i>
@@ -278,23 +268,10 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 							for _, scope := range args.Scopes {
 								<li class="nav-item">
 									<a
-										class={ "nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope)), templ.KV("text-success", c.ProxiedPerson != nil), templ.KV("border-success", args.SearchArgs.HasFilter("scope", scope) && c.ProxiedPerson != nil) }
+										class={ "nav-link", templ.KV("active", args.SearchArgs.HasFilter("scope", scope)), templ.KV("text-success", c.ProxiedPerson != nil) }
 										href={ views.URL(c.PathTo("publications")).Query(args.SearchArgs.Clone().WithFilter("scope", scope)).SafeURL() }
 									>
-										if c.ProxiedPerson != nil {
-											switch scope {
-												case "all":
-													All { c.ProxiedPerson.FullName } publications
-												case "contributed":
-													{ c.ProxiedPerson.FullName } publications							
-												case "supervised":
-													Supervised by { c.ProxiedPerson.FullName }							
-												case "created":
-													Registered by { c.ProxiedPerson.FullName }							
-											}
-										} else {
-											{ c.Loc.Get("publication.search.scopes."+scope) }
-										}
+										{ c.Loc.Get("publication.search.scopes."+scope) }
 									</a>
 								</li>
 							}
