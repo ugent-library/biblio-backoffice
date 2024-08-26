@@ -223,6 +223,7 @@ func Register(c Config) {
 					r.Get("/candidate-records/{id}/files/{file_id}", candidaterecords.DownloadFile).Name("candidate_record_download_file")
 
 					// proxy management
+					r.Get("/proxies/list", proxies.List).Name("proxies_list")
 					r.Get("/proxies/add", proxies.AddProxy).Name("add_proxy")
 					r.Get("/proxies/suggestions", proxies.SuggestProxies).Name("suggest_proxies")
 					r.Get("/proxies/{proxy_id}/edit", proxies.Edit).Name("edit_proxy")

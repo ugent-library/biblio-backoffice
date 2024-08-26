@@ -59,6 +59,36 @@ func Proxies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	proxyviews.Index(c, proxies).Render(r.Context(), w)
+}
+
+func List(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	var proxies [][]*models.Person
+	var proxy *models.Person
+	var person *models.Person
+	var iterErr error
+
+	err := c.Repo.EachProxy(r.Context(), func(proxyID, personID string) bool {
+		if proxy, iterErr = c.PersonService.GetPerson(proxyID); iterErr != nil {
+			return false
+		}
+		if person, iterErr = c.PersonService.GetPerson(personID); iterErr != nil {
+			return false
+		}
+		proxies = append(proxies, []*models.Person{proxy, person})
+		return true
+	})
+	if iterErr != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
 	proxyviews.List(c, proxies).Render(r.Context(), w)
 }
 
