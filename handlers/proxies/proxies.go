@@ -9,6 +9,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 	proxyviews "github.com/ugent-library/biblio-backoffice/views/proxy"
 	"github.com/ugent-library/bind"
+	"github.com/ugent-library/htmx"
 	"github.com/ugent-library/httperror"
 )
 
@@ -231,7 +232,14 @@ func SuggestPeople(w http.ResponseWriter, r *http.Request) {
 		return p.ID == c.User.ID || p.ID == proxy.ID
 	})
 
-	proxyviews.PeopleSuggestions(c, proxy, hits).Render(r.Context(), w)
+	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), b.ProxyID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	proxiedPeople := lo.Associate(peopleIDs, func(id string) (string, struct{}) { return id, struct{}{} })
+
+	proxyviews.PeopleSuggestions(c, proxy, hits, proxiedPeople).Render(r.Context(), w)
 }
 
 func AddPerson(w http.ResponseWriter, r *http.Request) {
@@ -268,6 +276,8 @@ func AddPerson(w http.ResponseWriter, r *http.Request) {
 		}
 		people[i] = person
 	}
+
+	htmx.Trigger(w, "proxyChanged")
 
 	proxyviews.RefreshEdit(c, proxy, people).Render(r.Context(), w)
 }
@@ -306,6 +316,8 @@ func DeletePerson(w http.ResponseWriter, r *http.Request) {
 		}
 		people[i] = person
 	}
+
+	htmx.Trigger(w, "proxyChanged")
 
 	proxyviews.RefreshEdit(c, proxy, people).Render(r.Context(), w)
 }
