@@ -3,6 +3,7 @@ package proxies
 import (
 	"net/http"
 
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -135,6 +136,10 @@ func AddProxy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	hits = lo.Reject(hits, func(p *models.Person, _ int) bool {
+		return p.ID == c.User.ID
+	})
+
 	views.ShowModal(proxyviews.Add(c, hits)).Render(r.Context(), w)
 }
 
@@ -148,6 +153,10 @@ func SuggestProxies(w http.ResponseWriter, r *http.Request) {
 		c.HandleError(w, r, err)
 		return
 	}
+
+	hits = lo.Reject(hits, func(p *models.Person, _ int) bool {
+		return p.ID == c.User.ID
+	})
 
 	proxyviews.Suggestions(c, hits).Render(r.Context(), w)
 }
