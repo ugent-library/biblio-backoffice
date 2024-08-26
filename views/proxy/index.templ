@@ -73,7 +73,11 @@ templ List(c *ctx.Ctx, proxies [][]*models.Person) {
 						</td>
 						<td class="text-nowrap">
 							<div class="c-button-toolbar flex-nowrap">
-								<a class="btn btn-link btn-link-muted">
+								<a
+									class="btn btn-link btn-link-muted"
+									hx-delete={ c.PathTo("proxy_remove_person", "proxy_id", p[0].ID, "person_id", p[1].ID).String() }
+									hx-swap="none"
+								>
 									<i class="if if-delete"></i>
 									<span class="btn-text d-none d-lg-inline-block">Delete</span>
 								</a>

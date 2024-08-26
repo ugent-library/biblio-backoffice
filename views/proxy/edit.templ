@@ -54,11 +54,6 @@ templ Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) {
 			</div>
 			<div class="modal-footer">
 				<div class="bc-toolbar h-auto">
-					<div class="bc-toolbar-left flex-wrap">
-						<div class="bc-toolbar-item">
-							<button class="btn btn-link modal-close">Cancel</button>
-						</div>
-					</div>
 					<div class="bc-toolbar-right flex-wrap">
 						<div class="bc-toolbar-item">
 							<button class="btn btn-primary modal-close">Done</button>
@@ -67,11 +62,5 @@ templ Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) {
 				</div>
 			</div>
 		</div>
-	</div>
-}
-
-templ RefreshEdit(c *ctx.Ctx, proxy *models.Person, people []*models.Person) {
-	<div hx-swap-oob="outerHTML:#people">
-		@People(c, proxy, people)
 	</div>
 }

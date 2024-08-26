@@ -235,6 +235,39 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 	views.ReplaceModal(proxyviews.Edit(c, proxy, people, hits)).Render(r.Context(), w)
 }
 
+func People(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	b := bindProxy{}
+	if err := bind.Request(r, &b); err != nil {
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
+		return
+	}
+
+	proxy, err := c.UserService.GetUser(b.ProxyID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), b.ProxyID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	people := make([]*models.Person, len(peopleIDs))
+	for i, id := range peopleIDs {
+		person, err := c.PersonService.GetPerson(id)
+		if err != nil {
+			c.HandleError(w, r, err)
+			return
+		}
+		people[i] = person
+	}
+
+	proxyviews.People(c, proxy, people).Render(r.Context(), w)
+}
+
 func SuggestPeople(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
@@ -286,30 +319,8 @@ func AddPerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxy, err := c.UserService.GetUser(b.ProxyID)
-	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
-
-	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), b.ProxyID)
-	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
-	people := make([]*models.Person, len(peopleIDs))
-	for i, id := range peopleIDs {
-		person, err := c.PersonService.GetPerson(id)
-		if err != nil {
-			c.HandleError(w, r, err)
-			return
-		}
-		people[i] = person
-	}
-
 	htmx.Trigger(w, "proxyChanged")
-
-	proxyviews.RefreshEdit(c, proxy, people).Render(r.Context(), w)
+	w.WriteHeader(200)
 }
 
 func DeletePerson(w http.ResponseWriter, r *http.Request) {
@@ -326,28 +337,6 @@ func DeletePerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxy, err := c.UserService.GetUser(b.ProxyID)
-	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
-
-	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), b.ProxyID)
-	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
-	people := make([]*models.Person, len(peopleIDs))
-	for i, id := range peopleIDs {
-		person, err := c.PersonService.GetPerson(id)
-		if err != nil {
-			c.HandleError(w, r, err)
-			return
-		}
-		people[i] = person
-	}
-
 	htmx.Trigger(w, "proxyChanged")
-
-	proxyviews.RefreshEdit(c, proxy, people).Render(r.Context(), w)
+	w.WriteHeader(200)
 }
