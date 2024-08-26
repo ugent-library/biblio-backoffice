@@ -183,7 +183,7 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	hits = lo.Reject(hits, func(p *models.Person, _ int) bool {
-		return p.ID == c.User.ID
+		return p.ID == c.User.ID || p.ID == proxy.ID
 	})
 
 	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), b.ProxyID)
@@ -228,7 +228,7 @@ func SuggestPeople(w http.ResponseWriter, r *http.Request) {
 	}
 
 	hits = lo.Reject(hits, func(p *models.Person, _ int) bool {
-		return p.ID == c.User.ID
+		return p.ID == c.User.ID || p.ID == proxy.ID
 	})
 
 	proxyviews.PeopleSuggestions(c, proxy, hits).Render(r.Context(), w)
