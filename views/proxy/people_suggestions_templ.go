@@ -95,7 +95,7 @@ func PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person) 
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul><p class=\"text-muted mt-4\">Refine your search to get different results.</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
