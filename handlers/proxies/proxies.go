@@ -1,6 +1,7 @@
 package proxies
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/samber/lo"
@@ -35,25 +36,7 @@ func Proxies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var proxies [][]*models.Person
-	var proxy *models.Person
-	var person *models.Person
-	var iterErr error
-
-	err := c.Repo.EachProxy(r.Context(), func(proxyID, personID string) bool {
-		if proxy, iterErr = c.PersonService.GetPerson(proxyID); iterErr != nil {
-			return false
-		}
-		if person, iterErr = c.PersonService.GetPerson(personID); iterErr != nil {
-			return false
-		}
-		proxies = append(proxies, []*models.Person{proxy, person})
-		return true
-	})
-	if iterErr != nil {
-		c.HandleError(w, r, err)
-		return
-	}
+	proxies, err := findProxies(r.Context(), c, "")
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
@@ -64,32 +47,50 @@ func Proxies(w http.ResponseWriter, r *http.Request) {
 
 func List(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-
-	var proxies [][]*models.Person
-	var proxy *models.Person
-	var person *models.Person
-	var iterErr error
-
-	err := c.Repo.EachProxy(r.Context(), func(proxyID, personID string) bool {
-		if proxy, iterErr = c.PersonService.GetPerson(proxyID); iterErr != nil {
-			return false
-		}
-		if person, iterErr = c.PersonService.GetPerson(personID); iterErr != nil {
-			return false
-		}
-		proxies = append(proxies, []*models.Person{proxy, person})
-		return true
-	})
-	if iterErr != nil {
-		c.HandleError(w, r, err)
-		return
-	}
+	proxies, err := findProxies(r.Context(), c, r.URL.Query().Get("proxies_filter"))
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
 	}
-
 	proxyviews.List(c, proxies).Render(r.Context(), w)
+}
+
+func findProxies(rc context.Context, c *ctx.Ctx, q string) ([][]*models.Person, error) {
+	var personIDs []string
+	if q != "" {
+		hits, err := c.UserSearchService.SuggestUsers(q)
+		if err != nil {
+			return nil, err
+		}
+		if len(hits) == 0 {
+			return nil, nil
+		}
+		personIDs = lo.Map(hits, func(p *models.Person, _ int) string {
+			return p.ID
+		})
+	}
+
+	var proxies [][]*models.Person
+	pairs, err := c.Repo.FindProxies(rc, personIDs)
+	if err != nil {
+		return nil, err
+	}
+	for _, pair := range pairs {
+		proxy := make([]*models.Person, 2)
+		if p, err := c.PersonService.GetPerson(pair[0]); err == nil {
+			proxy[0] = p
+		} else {
+			return nil, err
+		}
+		if p, err := c.PersonService.GetPerson(pair[1]); err == nil {
+			proxy[1] = p
+		} else {
+			return nil, err
+		}
+		proxies = append(proxies, proxy)
+	}
+
+	return proxies, nil
 }
 
 // TODO this makes way too many calls, all sequentially

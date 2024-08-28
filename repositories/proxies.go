@@ -32,29 +32,45 @@ func (s *Repo) IsProxy(proxyID string) bool {
 	return exists
 }
 
-func (r *Repo) EachProxy(ctx context.Context, fn func(string, string) bool) error {
-	q := `
-		select proxy_person_id, person_id from proxies
-		order by proxy_person_id, person_id;
-	`
-	rows, err := r.conn.Query(ctx, q)
+func (r *Repo) FindProxies(ctx context.Context, personIDs []string) ([][]string, error) {
+	var q string
+	var args []any
+
+	if len(personIDs) > 0 {
+		q = `
+			select proxy_person_id, person_id from proxies
+			where  proxy_person_id = any($1) or person_id = any($1)
+			order by proxy_person_id, person_id;
+		`
+		args = []any{personIDs}
+	} else {
+		q = `
+			select proxy_person_id, person_id from proxies
+			order by proxy_person_id, person_id;
+		`
+	}
+
+	rows, err := r.conn.Query(ctx, q, args...)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer rows.Close()
 
-	var proxyID string
-	var personID string
+	var pairs [][]string
+
 	for rows.Next() {
-		if err := rows.Scan(&proxyID, &personID); err != nil {
-			return err
+		pair := make([]string, 2)
+		if err := rows.Scan(&pair[0], &pair[1]); err != nil {
+			return nil, err
 		}
-		if !fn(proxyID, personID) {
-			break
-		}
+		pairs = append(pairs, pair)
 	}
 
-	return rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return pairs, err
 }
 
 func (r *Repo) ProxyPersonIDs(ctx context.Context, proxyID string) ([]string, error) {

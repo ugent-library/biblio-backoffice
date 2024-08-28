@@ -42,6 +42,18 @@ templ Index(c *ctx.Ctx, proxies [][]*models.Person) {
 				</div>
 			</div>
 			<div class="u-scroll-wrapper__body w-100 p-6">
+				<div class="row mb-4">
+					<div class="col">
+						<div class="input-group flex-nowrap">
+							<label class="visually-hidden" for="search">Search</label>
+							<input class="form-control" type="text" name="proxies_filter" id="proxies-filter" placeholder="Search..." value=""/>
+							<button type="button" class="btn btn-outline-primary" id="proxies-filter-button">
+								<i class="if if-search"></i>
+								<div class="btn-text">Search</div>
+							</button>
+						</div>
+					</div>
+				</div>
 				@List(c, proxies)
 			</div>
 		</div>
@@ -52,7 +64,8 @@ templ List(c *ctx.Ctx, proxies [][]*models.Person) {
 	<div
 		class="table-responsive"
 		hx-get={ c.PathTo("proxies_list").String() }
-		hx-trigger="proxyChanged from:body"
+		hx-trigger="proxyChanged from:body, click from:#proxies-filter-button"
+		hx-include="#proxies-filter"
 		hx-swap="outerHTML"
 	>
 		<table class="table table-sm table-bordered">

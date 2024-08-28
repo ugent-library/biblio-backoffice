@@ -57,7 +57,7 @@ func Index(c *ctx.Ctx, proxies [][]*models.Person) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><i class=\"if if-add\"></i><div class=\"btn-text\">Add proxy</div></button></div></div></div></div></div></div><div class=\"u-scroll-wrapper__body w-100 p-6\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><i class=\"if if-add\"></i><div class=\"btn-text\">Add proxy</div></button></div></div></div></div></div></div><div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"row mb-4\"><div class=\"col\"><div class=\"input-group flex-nowrap\"><label class=\"visually-hidden\" for=\"search\">Search</label> <input class=\"form-control\" type=\"text\" name=\"proxies_filter\" id=\"proxies-filter\" placeholder=\"Search...\" value=\"\"> <button type=\"button\" class=\"btn btn-outline-primary\" id=\"proxies-filter-button\"><i class=\"if if-search\"></i><div class=\"btn-text\">Search</div></button></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -109,13 +109,13 @@ func List(c *ctx.Ctx, proxies [][]*models.Person) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("proxies_list").String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 54, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 66, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"proxyChanged from:body\" hx-swap=\"outerHTML\"><table class=\"table table-sm table-bordered\"><tbody>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"proxyChanged from:body, click from:#proxies-filter-button\" hx-include=\"#proxies-filter\" hx-swap=\"outerHTML\"><table class=\"table table-sm table-bordered\"><tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -143,7 +143,7 @@ func List(c *ctx.Ctx, proxies [][]*models.Person) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("proxy_remove_person", "proxy_id", p[0].ID, "person_id", p[1].ID).String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 78, Col: 104}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 91, Col: 104}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -187,7 +187,7 @@ func tableItem(c *ctx.Ctx, p *models.Person) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(p.FullName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 95, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 108, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -205,7 +205,7 @@ func tableItem(c *ctx.Ctx, p *models.Person) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 100, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 113, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -224,7 +224,7 @@ func tableItem(c *ctx.Ctx, p *models.Person) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(p.ORCID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 106, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 119, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
