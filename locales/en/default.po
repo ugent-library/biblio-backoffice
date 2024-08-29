@@ -2462,6 +2462,10 @@ msgid "proxies"
 msgstr "Proxies"
 
 msgctxt "breadcrumbs"
+msgid "settings"
+msgstr "Settings"
+
+msgctxt "breadcrumbs"
 msgid "datasets"
 msgstr "Datasets"
 

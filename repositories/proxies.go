@@ -32,6 +32,19 @@ func (s *Repo) IsProxy(proxyID string) bool {
 	return exists
 }
 
+func (s *Repo) HasProxy(personID string) bool {
+	q := `
+		select exists(select 1 from proxies where person_id = $1);
+	`
+	var exists bool
+	if err := s.conn.QueryRow(context.TODO(), q, personID).Scan(&exists); err != nil {
+		// TODO log error
+		return false
+	}
+
+	return exists
+}
+
 func (r *Repo) FindProxies(ctx context.Context, personIDs []string) ([][]string, error) {
 	var q string
 	var args []any
@@ -79,6 +92,18 @@ func (r *Repo) ProxyPersonIDs(ctx context.Context, proxyID string) ([]string, er
 		where proxy_person_id = $1;
 	`
 	rows, err := r.conn.Query(ctx, q, proxyID)
+	if err != nil {
+		return nil, err
+	}
+	return pgx.CollectRows(rows, pgx.RowTo[string])
+}
+
+func (r *Repo) ProxyIDs(ctx context.Context, personID string) ([]string, error) {
+	q := `
+		select proxy_person_id from proxies
+		where person_id = $1;
+	`
+	rows, err := r.conn.Query(ctx, q, personID)
 	if err != nil {
 		return nil, err
 	}

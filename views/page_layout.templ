@@ -103,6 +103,12 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 															View as
 														</a>
 													}
+													if c.Repo.HasProxy(c.User.ID) {
+														<a class="dropdown-item" href={ templ.URL(c.PathTo("proxy_settings").String()) }>
+															<i class="if if-settings"></i>
+															<span>Settings</span>
+														</a>
+													}
 													<a class="dropdown-item" href={ templ.URL(c.PathTo("logout").String()) }>
 														<i class="if if-log-out"></i>
 														Logout

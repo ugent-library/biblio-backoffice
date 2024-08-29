@@ -37,6 +37,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationexporting"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
+	"github.com/ugent-library/biblio-backoffice/handlers/settings"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/httpx"
 	"github.com/ugent-library/oidc"
@@ -195,6 +196,9 @@ func Register(c Config) {
 				r.Get("/drafts-to-complete", handlers.DraftsToComplete).Name("drafts_to_complete")
 				// dashboard recent activity component
 				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
+
+				// settings
+				r.Get("/settings/proxy", settings.ProxySettings).Name("proxy_settings")
 
 				// proxies
 				r.With(ctx.SetNav("proxies")).Get("/proxies", proxies.Proxies).Name("proxies")
