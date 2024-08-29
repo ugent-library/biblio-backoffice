@@ -85,7 +85,7 @@ func UserList(c *ctx.Ctx, people []ProxiedPerson) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID, "f[status][0]", "private").String())
+				var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID, "f[status][0]", "private", "f[locked][0]", "false").String())
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -122,7 +122,7 @@ func UserList(c *ctx.Ctx, people []ProxiedPerson) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var5 templ.SafeURL = templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID, "f[status][0]", "returned").String())
+				var templ_7745c5c3_Var5 templ.SafeURL = templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID, "f[status][0]", "returned", "f[locked][0]", "false").String())
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var5)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -168,7 +168,7 @@ func UserList(c *ctx.Ctx, people []ProxiedPerson) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var8 templ.SafeURL = templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID, "f[status][0]", "private").String())
+				var templ_7745c5c3_Var8 templ.SafeURL = templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID, "f[status][0]", "private", "f[locked][0]", "false").String())
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var8)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -205,7 +205,7 @@ func UserList(c *ctx.Ctx, people []ProxiedPerson) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var10 templ.SafeURL = templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID, "f[status][0]", "returned").String())
+				var templ_7745c5c3_Var10 templ.SafeURL = templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID, "f[status][0]", "returned", "f[locked][0]", "false").String())
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var10)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
