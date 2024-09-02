@@ -395,7 +395,7 @@ describe("Site breadcrumbs", () => {
     it("should have breadcrumbs on the batch page", () => {
       cy.visit("/publication/batch");
 
-      verifyBreadcrumbs({ name: "Batch import" });
+      verifyBreadcrumbs({ name: "Batch operations" });
     });
 
     it("should have breadcrumbs on the suggestions page", () => {
