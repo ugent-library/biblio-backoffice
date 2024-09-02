@@ -77,7 +77,7 @@ func FormFieldContributorSuggest(c *ctx.Ctx, args FormFieldContributorSuggestArg
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" type=\"text\" value=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" type=\"search\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -113,7 +113,7 @@ func FormFieldContributorSuggest(c *ctx.Ctx, args FormFieldContributorSuggestArg
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-include=\".person-attributes input[name=&#34;first_name&#34;], .person-attributes input[name=&#34;last_name&#34;]\" hx-trigger=\"keyup changed delay:350ms, search\" hx-target=\"#person-suggestions\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-include=\".person-attributes input[name=&#39;first_name&#39;], .person-attributes input[name=&#39;last_name&#39;]\" hx-trigger=\"keyup changed delay:350ms, search\" hx-target=\"#person-suggestions\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
