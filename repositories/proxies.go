@@ -45,7 +45,7 @@ func (s *Repo) HasProxy(personID string) bool {
 	return exists
 }
 
-func (r *Repo) FindProxies(ctx context.Context, personIDs []string) ([][]string, error) {
+func (r *Repo) FindProxies(ctx context.Context, personIDs []string, limit, offset int) ([][]string, error) {
 	var q string
 	var args []any
 
@@ -53,14 +53,19 @@ func (r *Repo) FindProxies(ctx context.Context, personIDs []string) ([][]string,
 		q = `
 			select proxy_person_id, person_id from proxies
 			where  proxy_person_id = any($1) or person_id = any($1)
-			order by proxy_person_id, person_id;
+			order by proxy_person_id, person_id
+			limit $2
+			offset $3;
 		`
-		args = []any{personIDs}
+		args = []any{personIDs, limit, offset}
 	} else {
 		q = `
 			select proxy_person_id, person_id from proxies
-			order by proxy_person_id, person_id;
+			order by proxy_person_id, person_id
+			limit $1
+			offset $2;
 		`
+		args = []any{limit, offset}
 	}
 
 	rows, err := r.conn.Query(ctx, q, args...)

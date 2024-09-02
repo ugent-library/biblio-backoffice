@@ -36,7 +36,7 @@ func Proxies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxies, err := findProxies(r.Context(), c, "")
+	proxies, err := findProxies(r.Context(), c, "", 0, 20)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
@@ -47,7 +47,17 @@ func Proxies(w http.ResponseWriter, r *http.Request) {
 
 func List(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	proxies, err := findProxies(r.Context(), c, r.URL.Query().Get("proxies_filter"))
+
+	b := struct {
+		ProxiesFilter string `query:"proxies_filter"`
+		Offset        int    `query:"offset"`
+	}{}
+	if err := bind.Request(r, &b); err != nil {
+		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
+		return
+	}
+
+	proxies, err := findProxies(r.Context(), c, b.ProxiesFilter, 20, b.Offset)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
@@ -55,14 +65,15 @@ func List(w http.ResponseWriter, r *http.Request) {
 	proxyviews.List(c, proxies).Render(r.Context(), w)
 }
 
-func findProxies(rc context.Context, c *ctx.Ctx, q string) ([][]*models.Person, error) {
+func findProxies(rc context.Context, c *ctx.Ctx, q string, limit, offset int) ([][]*models.Person, error) {
 	var personIDs []string
 	if q != "" {
 		hits, err := c.UserSearchService.SuggestUsers(q)
 		if err != nil {
 			return nil, err
 		}
-		if len(hits) == 0 {
+		// only exact matches
+		if len(hits) != 1 {
 			return nil, nil
 		}
 		personIDs = lo.Map(hits, func(p *models.Person, _ int) string {
@@ -71,7 +82,7 @@ func findProxies(rc context.Context, c *ctx.Ctx, q string) ([][]*models.Person, 
 	}
 
 	var proxies [][]*models.Person
-	pairs, err := c.Repo.FindProxies(rc, personIDs)
+	pairs, err := c.Repo.FindProxies(rc, personIDs, limit, offset)
 	if err != nil {
 		return nil, err
 	}
