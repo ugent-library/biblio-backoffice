@@ -143,7 +143,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(".</label> <button type=\"submit\" class=\"btn btn-danger my-1\">return to ")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(".</label> <button type=\"submit\" class=\"btn btn-danger my-1\">Return to ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -156,7 +156,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button>.</form></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
