@@ -45,9 +45,8 @@ describe("Editing dataset publications", () => {
 
     cy.get("#publications-body")
       .contains(".list-group-item", title)
-      .find(".if-more")
+      .contains(".btn", "Remove link")
       .click();
-    cy.contains(".dropdown-item", "Remove from dataset").click();
 
     cy.ensureModal("Confirm deletion")
       .within(() => {
