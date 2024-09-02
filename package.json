@@ -14,6 +14,7 @@
     "cypress:open": "cypress open --config-file cypress/cypress.config.ts --browser electron --e2e",
     "cypress:open:bibliodev": "env-cmd --file ./cypress/.env npm run cypress:open --",
     "cypress:record": "cypress/cypress-record.sh",
+    "db:migrate": "godotenv tern migrate --config tern.docker.conf --migrations db/migrations",
     "db:reset": "go run main.go reset --force",
     "db:seed": "go run main.go seed organizations < .devcontainer/people/organizations.json && go run main.go seed people < .devcontainer/people/people.json && go run main.go seed projects < .devcontainer/projects/projects.json && go run main.go seed candidate-records < .devcontainer/candidate_records/candidate_records.json",
     "db:seed:force": "go run main.go seed organizations --force < .devcontainer/people/organizations.json && go run main.go seed people --force < .devcontainer/people/people.json && go run main.go seed projects --force < .devcontainer/projects/projects.json && go run main.go seed candidate-records --force < .devcontainer/candidate_records/candidate_records.json",
