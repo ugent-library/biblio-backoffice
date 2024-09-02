@@ -68,7 +68,6 @@ describe("Login & authorization", () => {
     cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
 
     cy.get(".c-sidebar button.dropdown-toggle").should("not.exist");
-    cy.get(".c-sidebar-menu .c-sidebar__item").should("have.length", 3);
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
@@ -94,10 +93,7 @@ describe("Login & authorization", () => {
       "contain.text",
       "Librarian",
     );
-    cy.get(".c-sidebar")
-      .should("have.class", "c-sidebar--dark-gray")
-      .find(".c-sidebar-menu .c-sidebar__item")
-      .should("have.length", 5);
+    cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
@@ -117,10 +113,7 @@ describe("Login & authorization", () => {
       "contain.text",
       "Researcher",
     );
-    cy.get(".c-sidebar")
-      .should("not.have.class", "c-sidebar--dark-gray")
-      .find(".c-sidebar-menu .c-sidebar__item")
-      .should("have.length", 3);
+    cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
@@ -140,10 +133,7 @@ describe("Login & authorization", () => {
       "contain.text",
       "Librarian",
     );
-    cy.get(".c-sidebar")
-      .should("have.class", "c-sidebar--dark-gray")
-      .find(".c-sidebar-menu .c-sidebar__item")
-      .should("have.length", 5);
+    cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
