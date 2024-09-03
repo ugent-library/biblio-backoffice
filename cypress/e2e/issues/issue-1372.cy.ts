@@ -7,7 +7,7 @@ describe("Issue #1372: Administrative support staff cannot see linked datasets/p
   const datasetTitle = getRandomText();
 
   before(() => {
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
 
     cy.setUpPublication(undefined, {
       title: publicationTitle,
@@ -72,7 +72,7 @@ describe("Issue #1372: Administrative support staff cannot see linked datasets/p
         "suggestDataset",
       );
 
-      cy.getLabel("Search")
+      cy.getLabel("Search datasets")
         .next("input")
         .should("be.focused")
         .type(datasetTitle);
@@ -86,7 +86,7 @@ describe("Issue #1372: Administrative support staff cannot see linked datasets/p
   });
 
   beforeEach(() => {
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1", "Researcher");
 
     // Refresh biblio ID aliases set in before-hook for subsequent tests
     cy.visit("/publication", { qs: { q: publicationTitle } });
@@ -109,7 +109,7 @@ describe("Issue #1372: Administrative support staff cannot see linked datasets/p
     verifyActionability("publication", true, true);
 
     // Now view this as researcher
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
     cy.get<string>("@dataset").then((datasetId) => {
       cy.request({
         url: `/dataset/${datasetId}`,
@@ -132,12 +132,12 @@ describe("Issue #1372: Administrative support staff cannot see linked datasets/p
     verifyActionability("publication", false, true);
 
     // Now lock the publication and make sure the researcher cannot add and remove datasets anymore
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
     cy.visitPublication("@publication");
     cy.contains(".btn", "Lock record").click();
     cy.closeToast();
 
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
     cy.visitPublication("@publication");
     cy.contains(".nav .nav-item", "Datasets").click();
     cy.contains(".btn", "Add dataset").should("not.exist");
@@ -158,7 +158,7 @@ describe("Issue #1372: Administrative support staff cannot see linked datasets/p
     verifyActionability("dataset", true, true);
 
     // Now view this as researcher
-    cy.login("researcher2");
+    cy.loginAsResearcher("researcher2");
     cy.get<string>("@publication").then((publicationId) => {
       cy.request({
         url: `/publication/${publicationId}`,
@@ -181,12 +181,12 @@ describe("Issue #1372: Administrative support staff cannot see linked datasets/p
     verifyActionability("dataset", false, true);
 
     // Now lock the dataset and make sure the researcher cannot add and remove publications anymore
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
     cy.visitDataset("@dataset");
     cy.contains(".btn", "Lock record").click();
     cy.closeToast();
 
-    cy.login("researcher2");
+    cy.loginAsResearcher("researcher2");
     cy.visitDataset("@dataset");
     cy.contains(".nav .nav-item", "Publications").click();
     cy.contains(".btn", "Add publication").should("not.exist");
@@ -257,25 +257,21 @@ describe("Issue #1372: Administrative support staff cannot see linked datasets/p
           );
       }
 
-      // Open context menu
-      const $dropdown = cy
-        .get(".dropdown .if-more")
-        .should(
-          isActionable || canAddAndRemoveRelatedItems
-            ? "be.visible"
-            : "not.exist",
-        );
+      // Verify button toolbar
+      cy.get(".c-button-toolbar").should(
+        isActionable || canAddAndRemoveRelatedItems
+          ? "be.visible"
+          : "not.exist",
+      );
 
       if (isActionable || canAddAndRemoveRelatedItems) {
-        $dropdown.click();
-
-        // Verify there is an/no link to "View publication/dataset" in the context menu
-        cy.contains(".dropdown-item", `View ${relatedContext}`).should(
+        // Verify there is an/no link to "View publication/dataset" in the button toolbar
+        cy.contains(".c-button-toolbar .btn", `View`).should(
           isActionable ? "be.visible" : "not.exist",
         );
 
-        // In any case, there should be a "Remove from publication/dataset" link in the context menu
-        cy.contains(".dropdown-item", `Remove from ${context}`).should(
+        // In any case, there should be a "Remove link" button in the button toolbar
+        cy.contains(".c-button-toolbar .btn", "Remove link").should(
           "be.visible",
         );
       }
