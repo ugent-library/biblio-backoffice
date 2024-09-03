@@ -14,6 +14,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/util"
 	"net/url"
 )
 
@@ -155,7 +156,7 @@ func SummaryActions(c *ctx.Ctx, pub *models.Publication, pubURL *url.URL) templ.
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(views.URL(c.PathTo("publication_confirm_delete", "id", pub.ID)).SetQueryParam("redirect-url", c.CurrentURL.String()).String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 65, Col: 140}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/search_hit.templ`, Line: 66, Col: 140}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -206,7 +207,7 @@ func SummaryFooter(c *ctx.Ctx, pub *models.Publication) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.Raw(views.Linkify(pub.Message)).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = templ.Raw(util.Linkify(pub.Message)).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

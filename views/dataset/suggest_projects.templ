@@ -5,6 +5,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/util"
 )
 
 templ SuggestProjects(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Project) {
@@ -25,7 +26,7 @@ templ SuggestProjects(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Projec
 								</div>
 								if hit.Description != "" {
 									<p class="mb-3 text-muted">
-										{ hit.Description }
+										{ util.StripHTML( hit.Description, true) }
 									</p>
 								}
 								<div class="mb-3">
