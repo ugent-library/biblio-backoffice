@@ -7,17 +7,7 @@ describe("Issue #1696: <p> and </p> tags showing in project description", () => 
     cy.setUpPublication();
     cy.visitPublication();
 
-    cy.contains(".card", "Project").contains(".btn", "Add project").click();
-
-    cy.ensureModal("Select projects").within(() => {
-      cy.setFieldByLabel("Search project", "001D07903");
-
-      cy.get("#project-suggestions .list-group-item")
-        .should("have.length", 1)
-        .find(".list-group-item-main .text-muted")
-        .should("not.contain", "<")
-        .and("not.contain", ">");
-    });
+    verifyProjectDescription();
   });
 
   it("should strip HTML from project descriptions in datasets", () => {
@@ -26,6 +16,10 @@ describe("Issue #1696: <p> and </p> tags showing in project description", () => 
     cy.setUpDataset();
     cy.visitDataset();
 
+    verifyProjectDescription();
+  });
+
+  function verifyProjectDescription() {
     cy.contains(".card", "Project").contains(".btn", "Add project").click();
 
     cy.ensureModal("Select projects").within(() => {
@@ -34,8 +28,13 @@ describe("Issue #1696: <p> and </p> tags showing in project description", () => 
       cy.get("#project-suggestions .list-group-item")
         .should("have.length", 1)
         .find(".list-group-item-main .text-muted")
-        .should("not.contain", "<")
+        .invoke("text")
+        .should(
+          "start.with",
+          "This interdisciplinary research project will try",
+        )
+        .and("not.contain", "<")
         .and("not.contain", ">");
     });
-  });
+  }
 });
