@@ -3,6 +3,7 @@ package proxyviews
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/samber/lo"
 )
 
 templ Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) {
@@ -31,7 +32,7 @@ templ Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) {
 							name="proxy_query"
 							value=""
 							hx-get={ c.PathTo("proxy_suggest_people", "proxy_id", proxy.ID).String() }
-							hx-trigger="input changed delay:250ms, proxy_query"
+							hx-trigger="input changed delay:250ms, proxy_query, proxyChanged from:body"
 							hx-target="#people-suggestions"
 							hx-swap="outerHTML"
 						/>
@@ -43,7 +44,7 @@ templ Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) {
 				<div class="row h-100 mb-8">
 					<div class="col-6 border-end">
 						<h3 class="mb-4">Search results</h3>
-						@PeopleSuggestions(c, proxy, hits)
+						@PeopleSuggestions(c, proxy, hits, lo.Associate(people, func(p *models.Person) (string, struct{}) { return p.ID, struct{}{} }))
 					</div>
 					<div class="col-6 ps-8">
 						<h3 class="mb-4">Selected researchers for { proxy.FullName }</h3>
@@ -53,11 +54,6 @@ templ Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) {
 			</div>
 			<div class="modal-footer">
 				<div class="bc-toolbar h-auto">
-					<div class="bc-toolbar-left flex-wrap">
-						<div class="bc-toolbar-item">
-							<button class="btn btn-link modal-close">Cancel</button>
-						</div>
-					</div>
 					<div class="bc-toolbar-right flex-wrap">
 						<div class="bc-toolbar-item">
 							<button class="btn btn-primary modal-close">Done</button>
@@ -66,11 +62,5 @@ templ Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) {
 				</div>
 			</div>
 		</div>
-	</div>
-}
-
-templ RefreshEdit(c *ctx.Ctx, proxy *models.Person, people []*models.Person) {
-	<div hx-swap-oob="outerHTML:#people">
-		@People(c, proxy, people)
 	</div>
 }

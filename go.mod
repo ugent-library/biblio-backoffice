@@ -164,6 +164,7 @@ require (
 	github.com/ugent-library/bibtex v0.0.0-20231218123206-c910132512fe
 	github.com/ugent-library/bind v0.0.0-20231106145128-3b6630797063
 	github.com/ugent-library/friendly v0.0.0-20230811091914-e5eb37f47072
+	github.com/ugent-library/htmx v0.0.0-20240118150818-64e3e65fb690
 	github.com/ugent-library/httperror v0.0.0-20240522041727-58d71286fb15
 	github.com/ugent-library/httpx v0.0.0-20240403070226-3cd9bcf467c1
 	github.com/ugent-library/oidc v0.0.0-20240327104830-5735182db2e5

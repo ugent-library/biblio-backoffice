@@ -63,7 +63,7 @@ templ UserList(c *ctx.Ctx, people []ProxiedPerson) {
 											} else {
 												class="badge badge-sm rounded-pill badge-white"
 											}
-											href={ templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID, "f[status][0]", "private").String()) }
+											href={ templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID, "f[status][0]", "private", "f[locked][0]", "false").String()) }
 										>
 											<span class="badge-circle"></span>
 											<span class="badge-text">{ fmt.Sprint(p.DraftPublicationsCount) } draft</span>
@@ -77,7 +77,7 @@ templ UserList(c *ctx.Ctx, people []ProxiedPerson) {
 											} else {
 												class="badge badge-sm rounded-pill badge-white"
 											}
-											href={ templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID, "f[status][0]", "returned").String()) }
+											href={ templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID, "f[status][0]", "returned", "f[locked][0]", "false").String()) }
 										>
 											<span class="badge-circle"></span>
 											<span class="badge-text">{ fmt.Sprint(p.WithdrawnPublicationsCount) } withdrawn</span>
@@ -96,7 +96,7 @@ templ UserList(c *ctx.Ctx, people []ProxiedPerson) {
 											} else {
 												class="badge badge-sm rounded-pill badge-white"
 											}
-											href={ templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID, "f[status][0]", "private").String()) }
+											href={ templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID, "f[status][0]", "private", "f[locked][0]", "false").String()) }
 										>
 											<span class="badge-circle"></span>
 											<span class="badge-text">{ fmt.Sprint(p.DraftDatasetsCount) } draft</span>
@@ -110,7 +110,7 @@ templ UserList(c *ctx.Ctx, people []ProxiedPerson) {
 											} else {
 												class="badge badge-sm rounded-pill badge-white"
 											}
-											href={ templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID, "f[status][0]", "returned").String()) }
+											href={ templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID, "f[status][0]", "returned", "f[locked][0]", "false").String()) }
 										>
 											<span class="badge-circle"></span>
 											<span class="badge-text">{ fmt.Sprint(p.WithdrawnDatasetsCount) } withdrawn</span>

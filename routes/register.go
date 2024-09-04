@@ -37,6 +37,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationexporting"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
+	"github.com/ugent-library/biblio-backoffice/handlers/settings"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/httpx"
 	"github.com/ugent-library/oidc"
@@ -196,6 +197,9 @@ func Register(c Config) {
 				// dashboard recent activity component
 				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
 
+				// settings
+				r.Get("/settings/proxy", settings.ProxySettings).Name("proxy_settings")
+
 				// proxies
 				r.With(ctx.SetNav("proxies")).Get("/proxies", proxies.Proxies).Name("proxies")
 
@@ -223,9 +227,11 @@ func Register(c Config) {
 					r.Get("/candidate-records/{id}/files/{file_id}", candidaterecords.DownloadFile).Name("candidate_record_download_file")
 
 					// proxy management
+					r.Get("/proxies/list", proxies.List).Name("proxies_list")
 					r.Get("/proxies/add", proxies.AddProxy).Name("add_proxy")
 					r.Get("/proxies/suggestions", proxies.SuggestProxies).Name("suggest_proxies")
 					r.Get("/proxies/{proxy_id}/edit", proxies.Edit).Name("edit_proxy")
+					r.Get("/proxies/{proxy_id}/people", proxies.People).Name("proxy_people")
 					r.Get("/proxies/{proxy_id}/people/suggest", proxies.SuggestPeople).Name("proxy_suggest_people")
 					r.Post("/proxies/{proxy_id}/people", proxies.AddPerson).Name("proxy_add_person")
 					r.Delete("/proxies/{proxy_id}/people/{person_id}", proxies.DeletePerson).Name("proxy_remove_person")

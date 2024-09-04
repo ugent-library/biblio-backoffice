@@ -44,7 +44,7 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 						<form action={ templ.URL(c.PathTo("delete_impersonation").String()) } method="POST">
 							@CSRFTag(c)
 							<label class="my-1 me-2 fw-bold">Viewing the perspective of { c.User.FullName }.</label>
-							<button type="submit" class="btn btn-danger my-1">return to { c.OriginalUser.FullName }</button>.
+							<button type="submit" class="btn btn-danger my-1">Return to { c.OriginalUser.FullName }</button>
 						</form>
 					</div>
 				}
@@ -101,6 +101,12 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 														>
 															<i class="if if-eye"></i>
 															View as
+														</a>
+													}
+													if c.Repo.HasProxy(c.User.ID) {
+														<a class="dropdown-item" href={ templ.URL(c.PathTo("proxy_settings").String()) }>
+															<i class="if if-settings"></i>
+															<span>Settings</span>
 														</a>
 													}
 													<a class="dropdown-item" href={ templ.URL(c.PathTo("logout").String()) }>

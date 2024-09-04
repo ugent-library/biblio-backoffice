@@ -6,12 +6,17 @@ import (
 )
 
 templ People(c *ctx.Ctx, proxy *models.Person, people []*models.Person) {
-	<div id="people">
+	<div
+		id="people"
+		hx-get={ c.PathTo("proxy_people", "proxy_id", proxy.ID).String() }
+		hx-trigger="proxyChanged from:body"
+		hx-swap="outerHTML"
+	>
 		if len(people) > 0 {
 			<ul class="list-group">
 				for  _, p := range people {
 					<li class="list-group-item">
-						@listItem(c, p) {
+						@ListItem(c, p) {
 							<btn
 								class="btn btn-default"
 								type="button"
