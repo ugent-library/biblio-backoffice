@@ -27,7 +27,7 @@ describe("User impersonation", () => {
     cy.contains("Viewing the perspective of John Doe.").should("be.visible");
     cy.get(".bc-avatar-and-text:visible").should("contain.text", "John Doe");
 
-    cy.contains(".btn", `return to ${LIBRARIAN_NAME}`).click();
+    cy.contains(".btn", `Return to ${LIBRARIAN_NAME}`).click();
 
     cy.contains("Viewing the perspective of").should("not.exist");
     cy.get(".bc-avatar-and-text:visible").should(
