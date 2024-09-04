@@ -7,6 +7,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/pagination"
 	"github.com/ugent-library/biblio-backoffice/views"
 	proxyviews "github.com/ugent-library/biblio-backoffice/views/proxy"
 	"github.com/ugent-library/bind"
@@ -36,13 +37,13 @@ func Proxies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxies, err := findProxies(r.Context(), c, "", 0, 20)
+	proxies, pagination, err := findProxies(r.Context(), c, "", 20, 0)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
 	}
 
-	proxyviews.Index(c, proxies).Render(r.Context(), w)
+	proxyviews.Index(c, proxies, pagination).Render(r.Context(), w)
 }
 
 func List(w http.ResponseWriter, r *http.Request) {
@@ -57,24 +58,24 @@ func List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxies, err := findProxies(r.Context(), c, b.ProxiesFilter, 20, b.Offset)
+	proxies, pagination, err := findProxies(r.Context(), c, b.ProxiesFilter, 20, b.Offset)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
 	}
-	proxyviews.List(c, proxies).Render(r.Context(), w)
+	proxyviews.List(c, proxies, pagination).Render(r.Context(), w)
 }
 
-func findProxies(rc context.Context, c *ctx.Ctx, q string, limit, offset int) ([][]*models.Person, error) {
+func findProxies(rc context.Context, c *ctx.Ctx, q string, limit, offset int) ([][]*models.Person, *pagination.Pagination, error) {
 	var personIDs []string
 	if q != "" {
 		hits, err := c.UserSearchService.SuggestUsers(q)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		// only exact matches
 		if len(hits) != 1 {
-			return nil, nil
+			return nil, nil, nil
 		}
 		personIDs = lo.Map(hits, func(p *models.Person, _ int) string {
 			return p.ID
@@ -82,26 +83,26 @@ func findProxies(rc context.Context, c *ctx.Ctx, q string, limit, offset int) ([
 	}
 
 	var proxies [][]*models.Person
-	pairs, err := c.Repo.FindProxies(rc, personIDs, limit, offset)
+	total, pairs, err := c.Repo.FindProxies(rc, personIDs, limit, offset)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	for _, pair := range pairs {
 		proxy := make([]*models.Person, 2)
 		if p, err := c.PersonService.GetPerson(pair[0]); err == nil {
 			proxy[0] = p
 		} else {
-			return nil, err
+			return nil, nil, err
 		}
 		if p, err := c.PersonService.GetPerson(pair[1]); err == nil {
 			proxy[1] = p
 		} else {
-			return nil, err
+			return nil, nil, err
 		}
 		proxies = append(proxies, proxy)
 	}
 
-	return proxies, nil
+	return proxies, &pagination.Pagination{Limit: limit, Offset: offset, Total: total}, nil
 }
 
 // TODO this makes way too many calls, all sequentially
