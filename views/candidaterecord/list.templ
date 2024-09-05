@@ -69,7 +69,13 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 												hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
 												hx-swap="none"
 											>
-												<div class="btn-text">Import as draft</div>
+												<div class="btn-text">
+													if c.UserRole == "curator" {
+														Import as draft
+													} else {
+														Claim
+													}
+												</div>
 											</button>
 										}
 									</li>

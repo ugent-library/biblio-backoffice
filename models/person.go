@@ -26,3 +26,19 @@ type Person struct {
 	Role       string `json:"role"`
 	ORCIDToken string `json:"orcid_token"`
 }
+
+func (p *Person) AffiliatedWith(orgID string) bool {
+	for _, aff := range p.Affiliations {
+		if aff.OrganizationID == orgID {
+			return true
+		}
+		if aff.Organization != nil {
+			for _, org := range aff.Organization.Tree {
+				if org.ID == orgID {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}

@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const addCandidateRecord = `-- name: AddCandidateRecord :one
@@ -42,17 +44,6 @@ func (q *Queries) AddCandidateRecord(ctx context.Context, arg AddCandidateRecord
 	var id string
 	err := row.Scan(&id)
 	return id, err
-}
-
-const countCandidateRecords = `-- name: CountCandidateRecords :one
-SELECT count(*) count FROM candidate_records WHERE status = 'new'
-`
-
-func (q *Queries) CountCandidateRecords(ctx context.Context) (int64, error) {
-	row := q.db.QueryRow(ctx, countCandidateRecords)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
 }
 
 const getCandidateRecord = `-- name: GetCandidateRecord :one
@@ -101,7 +92,12 @@ func (q *Queries) GetCandidateRecordBySource(ctx context.Context, arg GetCandida
 }
 
 const getCandidateRecords = `-- name: GetCandidateRecords :many
-SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created FROM candidate_records WHERE status = 'new' ORDER BY date_created ASC LIMIT $1 OFFSET $2
+SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, count(*) OVER () AS total
+FROM candidate_records
+WHERE status = 'new'
+ORDER BY date_created ASC
+LIMIT $1
+OFFSET $2
 `
 
 type GetCandidateRecordsParams struct {
@@ -109,15 +105,27 @@ type GetCandidateRecordsParams struct {
 	Offset int32
 }
 
-func (q *Queries) GetCandidateRecords(ctx context.Context, arg GetCandidateRecordsParams) ([]CandidateRecord, error) {
+type GetCandidateRecordsRow struct {
+	ID             string
+	SourceName     string
+	SourceID       string
+	SourceMetadata []byte
+	Type           string
+	Status         string
+	Metadata       []byte
+	DateCreated    pgtype.Timestamptz
+	Total          int64
+}
+
+func (q *Queries) GetCandidateRecords(ctx context.Context, arg GetCandidateRecordsParams) ([]GetCandidateRecordsRow, error) {
 	rows, err := q.db.Query(ctx, getCandidateRecords, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []CandidateRecord
+	var items []GetCandidateRecordsRow
 	for rows.Next() {
-		var i CandidateRecord
+		var i GetCandidateRecordsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.SourceName,
@@ -127,6 +135,7 @@ func (q *Queries) GetCandidateRecords(ctx context.Context, arg GetCandidateRecor
 			&i.Status,
 			&i.Metadata,
 			&i.DateCreated,
+			&i.Total,
 		); err != nil {
 			return nil, err
 		}
@@ -138,29 +147,42 @@ func (q *Queries) GetCandidateRecords(ctx context.Context, arg GetCandidateRecor
 	return items, nil
 }
 
-const getCandidateRecordsByUser = `-- name: GetCandidateRecordsByUser :many
-SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created FROM candidate_records
+const getCandidateRecordsByPersonID = `-- name: GetCandidateRecordsByPersonID :many
+SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, count(*) OVER () AS total
+FROM candidate_records
 WHERE status = 'new' AND (metadata->'author' @> $1::jsonb OR metadata->'supervisor' @> $1::jsonb)
 ORDER BY date_created ASC
 LIMIT $3
 OFFSET $2
 `
 
-type GetCandidateRecordsByUserParams struct {
+type GetCandidateRecordsByPersonIDParams struct {
 	Query  []byte
 	Offset int32
 	Limit  int32
 }
 
-func (q *Queries) GetCandidateRecordsByUser(ctx context.Context, arg GetCandidateRecordsByUserParams) ([]CandidateRecord, error) {
-	rows, err := q.db.Query(ctx, getCandidateRecordsByUser, arg.Query, arg.Offset, arg.Limit)
+type GetCandidateRecordsByPersonIDRow struct {
+	ID             string
+	SourceName     string
+	SourceID       string
+	SourceMetadata []byte
+	Type           string
+	Status         string
+	Metadata       []byte
+	DateCreated    pgtype.Timestamptz
+	Total          int64
+}
+
+func (q *Queries) GetCandidateRecordsByPersonID(ctx context.Context, arg GetCandidateRecordsByPersonIDParams) ([]GetCandidateRecordsByPersonIDRow, error) {
+	rows, err := q.db.Query(ctx, getCandidateRecordsByPersonID, arg.Query, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []CandidateRecord
+	var items []GetCandidateRecordsByPersonIDRow
 	for rows.Next() {
-		var i CandidateRecord
+		var i GetCandidateRecordsByPersonIDRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.SourceName,
@@ -170,6 +192,7 @@ func (q *Queries) GetCandidateRecordsByUser(ctx context.Context, arg GetCandidat
 			&i.Status,
 			&i.Metadata,
 			&i.DateCreated,
+			&i.Total,
 		); err != nil {
 			return nil, err
 		}
@@ -179,6 +202,28 @@ func (q *Queries) GetCandidateRecordsByUser(ctx context.Context, arg GetCandidat
 		return nil, err
 	}
 	return items, nil
+}
+
+const hasCandidateRecords = `-- name: HasCandidateRecords :one
+SELECT EXISTS(SELECT 1 FROM candidate_records WHERE status = 'new')
+`
+
+func (q *Queries) HasCandidateRecords(ctx context.Context) (bool, error) {
+	row := q.db.QueryRow(ctx, hasCandidateRecords)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
+const personHasCandidateRecords = `-- name: PersonHasCandidateRecords :one
+SELECT EXISTS(SELECT 1 FROM candidate_records WHERE status = 'new' AND (metadata->'author' @> $1::jsonb OR metadata->'supervisor' @> $1::jsonb))
+`
+
+func (q *Queries) PersonHasCandidateRecords(ctx context.Context, query []byte) (bool, error) {
+	row := q.db.QueryRow(ctx, personHasCandidateRecords, query)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
 }
 
 const setCandidateRecordStatus = `-- name: SetCandidateRecordStatus :one
