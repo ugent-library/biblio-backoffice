@@ -3,7 +3,7 @@ package publication
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/util"
 )
 
 const MessageBodySelector = "#message-body"
@@ -117,7 +117,7 @@ templ ReviewerNoteBody(c *ctx.Ctx, p *models.Publication) {
 templ MessageBody(c *ctx.Ctx, p *models.Publication) {
 	<div class="card-body">
 		<p class="pb-3">
-			@templ.Raw(views.Linkify(p.Message))
+			@templ.Raw(util.Linkify(p.Message))
 		</p>
 		<p class="text-muted">Have any questions or changes to report? Mail to <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.</p>
 	</div>

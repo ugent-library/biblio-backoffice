@@ -6,6 +6,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/util"
 )
 
 templ SummaryActions(c *ctx.Ctx, dataset *models.Dataset, url string) {
@@ -60,7 +61,7 @@ templ SummaryFooter(c *ctx.Ctx, dataset *models.Dataset) {
 			<div class="alert-content">
 				<h3 class="Biblio message">Biblio message</h3>
 				<p class="mt-2">
-					@templ.Raw(views.Linkify(dataset.Message))
+					@templ.Raw(util.Linkify(dataset.Message))
 				</p>
 			</div>
 		</div>

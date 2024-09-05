@@ -22,12 +22,12 @@ templ FormFieldContributorSuggest(c *ctx.Ctx, args FormFieldContributorSuggestAr
 		<input
 			id={ args.Name }
 			name={ args.Name }
-			type="text"
+			type="search"
 			value={ args.Value }
 			class="form-control"
 			autofocus?={ args.AutoFocus }
 			hx-get={ args.SuggestURL }
-			hx-include='.person-attributes input[name="first_name"], .person-attributes input[name="last_name"]'
+			hx-include=".person-attributes input[name='first_name'], .person-attributes input[name='last_name']"
 			hx-trigger="keyup changed delay:350ms, search"
 			hx-target="#person-suggestions"
 		/>
