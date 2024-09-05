@@ -3,13 +3,13 @@ package dataset
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/util"
 )
 
 templ MessageBody(c *ctx.Ctx, dataset *models.Dataset) {
 	<div class="card-body">
 		<p class="pb-3">
-			@templ.Raw(views.Linkify(dataset.Message))
+			@templ.Raw(util.Linkify(dataset.Message))
 		</p>
 		<p class="text-muted">
 			Have any questions or changes to report? Mail to <a href="mailto:rdm.support@ugent.be">rdm.support@ugent.be</a>.

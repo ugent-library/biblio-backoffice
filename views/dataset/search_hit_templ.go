@@ -14,6 +14,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/util"
 )
 
 func SummaryActions(c *ctx.Ctx, dataset *models.Dataset, url string) templ.Component {
@@ -85,7 +86,7 @@ func SummaryActions(c *ctx.Ctx, dataset *models.Dataset, url string) templ.Compo
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(views.URL(c.PathTo("dataset_confirm_delete", "id", dataset.ID)).AddQueryParam("redirect-url", c.CurrentURL.String()).String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search_hit.templ`, Line: 39, Col: 140}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/search_hit.templ`, Line: 40, Col: 140}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -136,7 +137,7 @@ func SummaryFooter(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.Raw(views.Linkify(dataset.Message)).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = templ.Raw(util.Linkify(dataset.Message)).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
