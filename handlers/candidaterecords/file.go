@@ -13,23 +13,7 @@ import (
 
 func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-
-	if !c.Repo.CanCurate(c.User) {
-		c.HandleError(w, r, httperror.Unauthorized)
-		return
-	}
-
-	b := bindCandidateRecord{}
-	if err := bind.Request(r, &b); err != nil {
-		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
-		return
-	}
-
-	rec, err := c.Repo.GetCandidateRecord(r.Context(), b.ID)
-	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
+	rec := ctx.GetCandidateRecord(r)
 
 	f := rec.Publication.GetFile(bind.PathValue(r, "file_id"))
 

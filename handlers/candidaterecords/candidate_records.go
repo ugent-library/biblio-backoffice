@@ -13,10 +13,6 @@ import (
 	"github.com/ugent-library/httperror"
 )
 
-type bindCandidateRecord struct {
-	ID string `path:"id" form:"id"`
-}
-
 func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
@@ -54,18 +50,7 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 
 func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-
-	b := bindCandidateRecord{}
-	if err := bind.Request(r, &b); err != nil {
-		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
-		return
-	}
-
-	rec, err := c.Repo.GetCandidateRecord(r.Context(), b.ID)
-	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
+	rec := ctx.GetCandidateRecord(r)
 
 	views.ShowModal(candidaterecordviews.Preview(c, rec)).Render(r.Context(), w)
 }
@@ -91,32 +76,16 @@ func CandidateRecordsIcon(w http.ResponseWriter, r *http.Request) {
 
 func ConfirmRejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-
-	b := bindCandidateRecord{}
-	if err := bind.Request(r, &b); err != nil {
-		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
-		return
-	}
-
-	rec, err := c.Repo.GetCandidateRecord(r.Context(), b.ID)
-	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
+	rec := ctx.GetCandidateRecord(r)
 
 	views.ShowModal(candidaterecordviews.ConfirmHide(c, rec)).Render(r.Context(), w)
 }
 
 func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
+	rec := ctx.GetCandidateRecord(r)
 
-	b := bindCandidateRecord{}
-	if err := bind.Request(r, &b); err != nil {
-		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
-		return
-	}
-
-	err := c.Repo.RejectCandidateRecord(r.Context(), b.ID)
+	err := c.Repo.RejectCandidateRecord(r.Context(), rec.ID)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
@@ -133,14 +102,9 @@ func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 
 func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
+	rec := ctx.GetCandidateRecord(r)
 
-	b := bindCandidateRecord{}
-	if err := bind.Request(r, &b); err != nil {
-		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
-		return
-	}
-
-	pubID, err := c.Repo.ImportCandidateRecordAsPublication(r.Context(), b.ID, c.User)
+	pubID, err := c.Repo.ImportCandidateRecordAsPublication(r.Context(), rec.ID, c.User)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
@@ -151,5 +115,5 @@ func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 		WithBody("<p>Suggestion was successfully imported!</p>")
 	c.PersistFlash(w, *f)
 
-	w.Header().Set("HX-Redirect", c.URLTo("publication", "id", pubID).String())
+	w.Header().Set("HX-Redirect", c.PathTo("publication", "id", pubID).String())
 }

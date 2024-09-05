@@ -8,6 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	dashboardviews "github.com/ugent-library/biblio-backoffice/views/dashboard"
 )
 
 func DashBoard(w http.ResponseWriter, r *http.Request) {
@@ -16,7 +17,7 @@ func DashBoard(w http.ResponseWriter, r *http.Request) {
 		// TODO port and render here as CuratorDashboard
 		http.Redirect(w, r, c.PathTo("dashboard_publications", "type", "faculties").String(), http.StatusSeeOther)
 	} else {
-		views.UserDashboard(c).Render(r.Context(), w)
+		dashboardviews.UserDashboard(c).Render(r.Context(), w)
 	}
 }
 
@@ -77,6 +78,16 @@ func DashBoardIcon(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	exists, err := c.Repo.PersonHasCandidateRecords(r.Context(), c.User.ID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	if exists {
+		views.DashboardIcon(c, true).Render(r.Context(), w)
+		return
+	}
+
 	views.DashboardIcon(c, false).Render(r.Context(), w)
 }
 
@@ -102,7 +113,7 @@ func DraftsToComplete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.DraftsToComplete(c, pHits.Total, dHits.Total).Render(r.Context(), w)
+	dashboardviews.DraftsToComplete(c, pHits.Total, dHits.Total).Render(r.Context(), w)
 }
 
 func ActionRequired(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +138,26 @@ func ActionRequired(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.ActionRequired(c, pHits.Total, dHits.Total).Render(r.Context(), w)
+	dashboardviews.ActionRequired(c, pHits.Total, dHits.Total).Render(r.Context(), w)
+}
+
+func CandidateRecords(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	var total int
+	var recs []*models.CandidateRecord
+	var err error
+
+	if c.FlagCandidateRecords() {
+		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.User.ID, 0, 5)
+	}
+
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	dashboardviews.CandidateRecords(c, total, recs).Render(r.Context(), w)
 }
 
 func RecentActivity(w http.ResponseWriter, r *http.Request) {

@@ -49,35 +49,7 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 							<ul class="list-group list-group-flush">
 								for _, rec := range recs {
 									<li class="list-group-item bg-transparent">
-										@Summary(c, rec.Publication, SummaryOpts{Badge: summaryBadge(rec), Thumbnail: c.AssetPath("/images/plato-logo.svg")}) {
-											<button
-												class="btn btn-link btn-link-muted"
-												hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
-												hx-target="#modals"
-											>
-												<div class="btn-text">Reject</div>
-											</button>
-											<button
-												class="btn btn-link btn-link-muted"
-												hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
-												hx-target="#modals"
-											>
-												<div class="btn-text">Preview</div>
-											</button>
-											<button
-												class="btn btn-outline-primary"
-												hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
-												hx-swap="none"
-											>
-												<div class="btn-text">
-													if c.UserRole == "curator" {
-														Import as draft
-													} else {
-														Claim
-													}
-												</div>
-											</button>
-										}
+										@Summary(c, rec)
 									</li>
 								}
 							</ul>
@@ -111,11 +83,4 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 			}
 		</div>
 	}
-}
-
-templ summaryBadge(rec *models.CandidateRecord) {
-	<span class="badge rounded-pill badge-default me-3 my-2">
-		<span class="badge-circle"></span>
-		<span class="badge-text">Biblio suggestion via { rec.SourceName }</span>
-	</span>
 }

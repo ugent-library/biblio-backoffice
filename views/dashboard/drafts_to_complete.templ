@@ -1,31 +1,31 @@
-package views
+package dashboardviews
 
 import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 )
 
-templ ActionRequired(c *ctx.Ctx, pTotal, dTotal int) {
+templ DraftsToComplete(c *ctx.Ctx, pTotal, dTotal int) {
 	<div class="d-flex flex-column h-100">
 		<div class="bc-toolbar">
 			<div class="bc-toolbar-left">
 				<div class="d-flex align-items-center">
-					<h2 class="mb-0">Action required</h2>
+					<h2 class="mb-0">Drafts to complete</h2>
 					if pTotal > 0 || dTotal > 0 {
-						<span class="badge bg-danger rounded-pill badge-sm ms-3 d-flex justify-content-center">{ fmt.Sprint(pTotal+dTotal) }</span>
+						<span class="badge bg-warning rounded-pill badge-sm ms-3 d-flex justify-content-center">{ fmt.Sprint(pTotal+dTotal) }</span>
 					}
 				</div>
 			</div>
 			<div class="bc-toolbar-right">
 				<div class="d-flex align-items-center">
-					<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover-custom" data-bs-placement="right" data-popover-content="#action-required-tooltip">
+					<a class="text-muted px-2" href="#" data-bs-container="body" data-bs-toggle="popover-custom" data-bs-placement="right" data-popover-content="#drafts-to-complete-tooltip">
 						<i class="if if-info-circle"></i>
 						<span class="visually-hidden">More info</span>
 					</a>
-					<div class="u-hidden" id="action-required-tooltip">
+					<div class="u-hidden" id="drafts-to-complete-tooltip">
 						<div class="popover-body p-0">
 							<p>
-								For items appearing in <strong>Action required</strong> the Biblio Team requested some extra information. You can complete them and make visible to the public again.
+								Items appearing in <strong>Drafts to complete</strong> are waiting to be completed and made visible to the public by you.
 								<a class="c-link" target="_blank" href="https://onderzoektips.ugent.be/en/tips/00002173/">
 									<span class="text-decoration-underline">Read the research tip</span>
 									<i class="if if--small if-external-link"></i>
@@ -45,14 +45,14 @@ templ ActionRequired(c *ctx.Ctx, pTotal, dTotal int) {
 								<div class="bc-toolbar-left">
 									<div class="d-flex align-items-center flex-wrap">
 										<h4 class="font-weight-bold me-4">Publications</h4>
-										<span class="badge badge-sm badge-pill badge-danger-light">
+										<span class="badge badge-sm badge-pill badge-warning-light">
 											<span class="badge-circle"></span>
-											<span class="badge-text">{ fmt.Sprint(pTotal) } Biblio withdrawn</span>
+											<span class="badge-text">{ fmt.Sprint(pTotal) } Biblio draft</span>
 										</span>
 									</div>
 								</div>
 								<div class="bc-toolbar-right">
-									<a class="btn btn-outline-secondary" href={ templ.URL(c.PathTo("publications", "f[status]", "returned", "f[locked]", "false").String()) }>
+									<a class="btn btn-outline-secondary" href={ templ.URL(c.PathTo("publications", "f[status]", "private", "f[locked]", "false").String()) }>
 										<span class="btn-text">Complete</span>
 									</a>
 								</div>
@@ -79,14 +79,14 @@ templ ActionRequired(c *ctx.Ctx, pTotal, dTotal int) {
 								<div class="bc-toolbar-left">
 									<div class="d-flex align-items-center flex-wrap">
 										<h4 class="font-weight-bold me-4">Datasets</h4>
-										<span class="badge badge-sm badge-pill badge-danger-light">
+										<span class="badge badge-sm badge-pill badge-warning-light">
 											<span class="badge-circle"></span>
-											<span class="badge-text">{ fmt.Sprint(dTotal) } Biblio withdrawn</span>
+											<span class="badge-text">{ fmt.Sprint(dTotal) } Biblio draft</span>
 										</span>
 									</div>
 								</div>
 								<div class="bc-toolbar-right">
-									<a class="btn btn-outline-secondary" href={ templ.URL(c.PathTo("datasets", "f[status]", "returned", "f[locked]", "false").String()) }>
+									<a class="btn btn-outline-secondary" href={ templ.URL(c.PathTo("datasets", "f[status]", "private", "f[locked]", "false").String()) }>
 										<span class="btn-text">Complete</span>
 									</a>
 								</div>
@@ -113,7 +113,7 @@ templ ActionRequired(c *ctx.Ctx, pTotal, dTotal int) {
 			<div class="card mb-6 flex-grow-1 bg-lightest shadow-none u-mix-blend-multiply">
 				<div class="c-blank-slate py-6">
 					<img class="mb-4" src={ c.AssetPath("/images/inbox-illustration.svg") } alt="" width="auto" height="32"/>
-					<p>No actions left to do.</p>
+					<p>Fully completed.</p>
 				</div>
 			</div>
 		}

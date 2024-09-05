@@ -8,7 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/views"
+	dashboardviews "github.com/ugent-library/biblio-backoffice/views/dashboard"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
 )
@@ -46,7 +46,7 @@ func CuratorDatasets(w http.ResponseWriter, r *http.Request) {
 		c.HandleError(w, r, err)
 		return
 	}
-	views.CuratorDashboardDatasets(c, &views.CuratorDashboardDatasetsArgs{
+	dashboardviews.CuratorDashboardDatasets(c, &dashboardviews.CuratorDashboardDatasetsArgs{
 		ActiveSubNav: activeSubNav,
 		PTypes:       locptypes,
 		Datasets:     datasets,
