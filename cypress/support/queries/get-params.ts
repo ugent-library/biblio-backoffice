@@ -50,19 +50,21 @@ function getParamsResult(url: string, names: string[]) {
 function getParamsObject(url: string): Record<string, string | string[]> {
   const { searchParams } = new URL(url);
 
-  return [...searchParams].reduce((previous, [name, value]) => {
-    if (name in previous) {
-      if (!Array.isArray(previous[name])) {
-        previous[name] = [previous[name]];
+  const init: Record<string, string | string[]> = {};
+
+  return Array.from(searchParams).reduce((previous, [key, value]) => {
+    if (key in previous) {
+      if (!Array.isArray(previous[key])) {
+        previous[key] = [previous[key]];
       }
 
-      previous[name].push(value);
+      previous[key].push(value);
     } else {
-      previous[name] = value;
+      previous[key] = value;
     }
 
     return previous;
-  }, {});
+  }, init);
 }
 
 declare global {

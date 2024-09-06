@@ -60,18 +60,7 @@ function doRequest(
 
   clonedOptions.failOnStatusCode = failOnStatusCode;
 
-  if (!clonedOptions.headers) {
-    clonedOptions.headers = {};
-  }
-
-  if (!clonedOptions.headers["X-CSRF-Token"]) {
-    const csrfToken = getCSRFToken();
-    if (!csrfToken) {
-      throw new Error("CSRF token has not been set");
-    }
-
-    clonedOptions.headers["X-CSRF-Token"] = csrfToken;
-  }
+  clonedOptions.headers = getHeaders(clonedOptions.headers);
 
   if (typeof clonedOptions.log === "undefined") {
     // Do not log this request, unless specified otherwise
@@ -79,6 +68,22 @@ function doRequest(
   }
 
   return cy.request<string>(clonedOptions);
+}
+function getHeaders(headers: Cypress.ObjectLike) {
+  if (!headers) {
+    headers = {};
+  }
+
+  if (!headers["X-CSRF-Token"]) {
+    const CSRFToken = getCSRFToken();
+    if (!CSRFToken) {
+      throw new Error("CSRF token has not been set");
+    }
+
+    headers["X-CSRF-Token"] = CSRFToken;
+  }
+
+  return headers;
 }
 
 declare global {

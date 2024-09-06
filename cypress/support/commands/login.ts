@@ -25,7 +25,7 @@ function login(
   // Cypress.session.clearAllSavedSessions()
   const sessionName = username + (reviewerMode ? ` (${reviewerMode})` : "");
 
-  const consoleProps = { username };
+  const consoleProps: Record<string, unknown> = { username };
   if (reviewerMode) {
     consoleProps["Reviewer mode"] = reviewerMode;
   }

@@ -157,7 +157,7 @@ export function extractSnapshotId(
   return hxHeaders["If-Match"];
 }
 
-function decodeEntities(encodedString) {
+function decodeEntities(encodedString: string) {
   var textArea = document.createElement("textarea");
 
   textArea.innerHTML = encodedString;
