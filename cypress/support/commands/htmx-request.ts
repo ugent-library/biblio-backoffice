@@ -69,6 +69,7 @@ function doRequest(
 
   return cy.request<string>(clonedOptions);
 }
+
 function getHeaders(headers: Cypress.ObjectLike) {
   if (!headers) {
     headers = {};

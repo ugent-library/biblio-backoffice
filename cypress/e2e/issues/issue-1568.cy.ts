@@ -11,426 +11,663 @@ describe("Issue #1568: Missing conflict handling when editing / adding / removin
     cy.loginAsResearcher("researcher1");
   });
 
-  it("should show a conflict error when reordering publication authors after removing one in another session", () => {
-    cy.setUpPublication();
-    cy.addAuthor("Author", "1", { external: true });
-    cy.addAuthor("Author", "2", { external: true });
-    cy.addAuthor("Author", "3", { external: true });
+  describe("Publication authors", () => {
+    beforeEach(() => {
+      cy.setUpPublication();
+      cy.addAuthor("Author", "1", { external: true });
+      cy.addAuthor("Author", "2", { external: true });
+      cy.addAuthor("Author", "3", { external: true });
 
-    cy.visitPublication();
+      cy.visitPublication();
+      cy.contains(".nav-item", "People & Affiliations").click();
 
-    cy.contains(".nav-item", "People & Affiliations").click();
+      verifyContributors("#contributors-author-table", [
+        "Author 1",
+        "Author 2",
+        "Author 3",
+      ]);
+    });
 
-    verifyContributors("#contributors-author-table", [
-      "Author 1",
-      "Author 2",
-      "Author 3",
-    ]);
+    it("should show a conflict error when reordering publication authors after reordering them in another session", () => {
+      // Perform the reorder via AJAX
+      cy.get("#contributors-author-table tbody")
+        .invoke("attr", "hx-headers")
+        .then(JSON.parse)
+        .then((htmxValues) => {
+          cy.get<string>("@biblioId").then((biblioId) => {
+            // Reverse the authors
+            const form = new URLSearchParams();
+            form.append("position", "2");
+            form.append("position", "1");
+            form.append("position", "0");
 
-    // Delete the second author by AJAX call and cancel the confirm delete dialog
-    cy.contains("tr", "Author 2").find(".btn .if-delete").click();
-    cy.ensureModal("Confirm deletion")
-      .within(() => {
-        cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
-      })
-      .closeModal("Cancel");
-    cy.ensureNoModal();
+            cy.htmxRequest({
+              method: "POST",
+              url: `/publication/${biblioId}/contributors/author/order`,
+              headers: htmxValues,
+              form: true,
+              body: form.toString(),
+              log: true,
+            });
+          });
+        });
 
-    // Page is not refreshed so we still think there are 3 authors
-    verifyContributors("#contributors-author-table", [
-      "Author 1",
-      "Author 2",
-      "Author 3",
-    ]);
+      // Page is not refreshed so we still think there are 3 authors
+      verifyContributors("#contributors-author-table", [
+        "Author 1",
+        "Author 2",
+        "Author 3",
+      ]);
 
-    cy.intercept("POST", "/publication/*/contributors/author/order").as(
-      "reorderAuthors",
-    );
+      cy.intercept("POST", "/publication/*/contributors/author/order").as(
+        "reorderAuthors",
+      );
 
-    // Perform the reorder
-    cy.get("#author-1 .sortable-handle").drag("#author-2 .sortable-handle");
+      // Perform the reorder
+      cy.get("#author-1 .sortable-handle").drag("#author-2 .sortable-handle");
 
-    verifyContributors("#contributors-author-table", [
-      "Author 1",
-      "Author 3",
-      "Author 2",
-    ]);
+      verifyContributors("#contributors-author-table", [
+        "Author 1",
+        "Author 3",
+        "Author 2",
+      ]);
 
-    cy.wait("@reorderAuthors").should(
-      "have.nested.property",
-      "response.statusCode",
-      200,
-    );
+      cy.wait("@reorderAuthors").should(
+        "have.nested.property",
+        "response.statusCode",
+        200,
+      );
 
-    verifyConflictErrorDialog("Publication");
+      verifyConflictErrorDialog("Publication");
 
-    // Verify that nothing was reordered
-    cy.reload();
+      // Verify that nothing was reordered
+      cy.reload();
 
-    verifyContributors("#contributors-author-table", ["Author 1", "Author 3"]);
+      verifyContributors("#contributors-author-table", [
+        "Author 3",
+        "Author 2",
+        "Author 1",
+      ]);
+    });
+
+    it("should show a conflict error when reordering publication authors after removing one in another session", () => {
+      // Delete the second author by AJAX call and cancel the confirm delete dialog
+      cy.contains("tr", "Author 2").find(".btn .if-delete").click();
+      cy.ensureModal("Confirm deletion")
+        .within(() => {
+          cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
+        })
+        .closeModal("Cancel");
+      cy.ensureNoModal();
+
+      // Page is not refreshed so we still think there are 3 authors
+      verifyContributors("#contributors-author-table", [
+        "Author 1",
+        "Author 2",
+        "Author 3",
+      ]);
+
+      cy.intercept("POST", "/publication/*/contributors/author/order").as(
+        "reorderAuthors",
+      );
+
+      // Perform the reorder
+      cy.get("#author-1 .sortable-handle").drag("#author-2 .sortable-handle");
+
+      verifyContributors("#contributors-author-table", [
+        "Author 1",
+        "Author 3",
+        "Author 2",
+      ]);
+
+      cy.wait("@reorderAuthors").should(
+        "have.nested.property",
+        "response.statusCode",
+        200,
+      );
+
+      verifyConflictErrorDialog("Publication");
+
+      // Verify that nothing was reordered
+      cy.reload();
+
+      verifyContributors("#contributors-author-table", [
+        "Author 1",
+        "Author 3",
+      ]);
+    });
+
+    it("should show a conflict error when reordering publication authors after adding one in another session", () => {
+      // Add a fourth author by AJAX call
+      cy.addAuthor("Author", "4", { external: true });
+
+      cy.intercept("POST", "/publication/*/contributors/author/order").as(
+        "reorderAuthors",
+      );
+
+      // Perform the reorder
+      cy.get("#author-0 .sortable-handle").drag("#author-1 .sortable-handle");
+
+      verifyContributors("#contributors-author-table", [
+        "Author 2",
+        "Author 1",
+        "Author 3",
+      ]);
+
+      cy.wait("@reorderAuthors").should(
+        "have.nested.property",
+        "response.statusCode",
+        200,
+      );
+
+      verifyConflictErrorDialog("Publication");
+
+      // Verify that nothing was reordered
+      cy.reload();
+
+      verifyContributors("#contributors-author-table", [
+        "Author 1",
+        "Author 2",
+        "Author 3",
+        "Author 4",
+      ]);
+    });
   });
 
-  it("should show a conflict error when reordering publication authors after adding one in another session", () => {
-    cy.setUpPublication();
-    cy.addAuthor("Author", "1", { external: true });
-    cy.addAuthor("Author", "2", { external: true });
+  describe("Publication editors", () => {
+    beforeEach(() => {
+      cy.setUpPublication();
+      cy.addEditor("Editor", "1", { external: true });
+      cy.addEditor("Editor", "2", { external: true });
+      cy.addEditor("Editor", "3", { external: true });
 
-    cy.visitPublication();
+      cy.visitPublication();
+      cy.contains(".nav-item", "People & Affiliations").click();
 
-    cy.contains(".nav-item", "People & Affiliations").click();
+      verifyContributors("#contributors-editor-table", [
+        "Editor 1",
+        "Editor 2",
+        "Editor 3",
+      ]);
+    });
 
-    verifyContributors("#contributors-author-table", ["Author 1", "Author 2"]);
+    it("should show a conflict error when reordering publication editors after reordering them in another session", () => {
+      // Perform the reorder via AJAX
+      cy.get("#contributors-editor-table tbody")
+        .invoke("attr", "hx-headers")
+        .then(JSON.parse)
+        .then((htmxValues) => {
+          cy.get<string>("@biblioId").then((biblioId) => {
+            // Reverse the editors
+            const form = new URLSearchParams();
+            form.append("position", "2");
+            form.append("position", "1");
+            form.append("position", "0");
 
-    // Add a third author by AJAX call
-    cy.addAuthor("Author", "3", { external: true });
+            cy.htmxRequest({
+              method: "POST",
+              url: `/publication/${biblioId}/contributors/editor/order`,
+              headers: htmxValues,
+              form: true,
+              body: form.toString(),
+              log: true,
+            });
+          });
+        });
 
-    cy.intercept("POST", "/publication/*/contributors/author/order").as(
-      "reorderAuthors",
-    );
+      // Page is not refreshed so we still think there are 3 editors
+      verifyContributors("#contributors-editor-table", [
+        "Editor 1",
+        "Editor 2",
+        "Editor 3",
+      ]);
 
-    // Perform the reorder
-    cy.get("#author-0 .sortable-handle").drag("#author-1 .sortable-handle");
+      cy.intercept("POST", "/publication/*/contributors/editor/order").as(
+        "reorderEditors",
+      );
 
-    verifyContributors("#contributors-author-table", ["Author 2", "Author 1"]);
+      // Perform the reorder
+      cy.get("#editor-1 .sortable-handle").drag("#editor-2 .sortable-handle");
 
-    cy.wait("@reorderAuthors").should(
-      "have.nested.property",
-      "response.statusCode",
-      200,
-    );
+      verifyContributors("#contributors-editor-table", [
+        "Editor 1",
+        "Editor 3",
+        "Editor 2",
+      ]);
 
-    verifyConflictErrorDialog("Publication");
+      cy.wait("@reorderEditors").should(
+        "have.nested.property",
+        "response.statusCode",
+        200,
+      );
 
-    // Verify that nothing was reordered
-    cy.reload();
+      verifyConflictErrorDialog("Publication");
 
-    verifyContributors("#contributors-author-table", [
-      "Author 1",
-      "Author 2",
-      "Author 3",
-    ]);
+      // Verify that nothing was reordered
+      cy.reload();
+
+      verifyContributors("#contributors-editor-table", [
+        "Editor 3",
+        "Editor 2",
+        "Editor 1",
+      ]);
+    });
+
+    it("should show a conflict error when reordering publication editors after removing one in another session", () => {
+      // Delete the second editor by AJAX call and cancel the confirm delete dialog
+      cy.contains("tr", "Editor 2").find(".btn .if-delete").click();
+      cy.ensureModal("Confirm deletion")
+        .within(() => {
+          cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
+        })
+        .closeModal("Cancel");
+      cy.ensureNoModal();
+
+      // Page is not refreshed so we still think there are 3 editors
+      verifyContributors("#contributors-editor-table", [
+        "Editor 1",
+        "Editor 2",
+        "Editor 3",
+      ]);
+
+      cy.intercept("POST", "/publication/*/contributors/editor/order").as(
+        "reorderEditors",
+      );
+
+      // Perform the reorder
+      cy.get("#editor-1 .sortable-handle").drag("#editor-2 .sortable-handle");
+
+      verifyContributors("#contributors-editor-table", [
+        "Editor 1",
+        "Editor 3",
+        "Editor 2",
+      ]);
+
+      cy.wait("@reorderEditors").should(
+        "have.nested.property",
+        "response.statusCode",
+        200,
+      );
+
+      verifyConflictErrorDialog("Publication");
+
+      // Verify that nothing was reordered
+      cy.reload();
+
+      verifyContributors("#contributors-editor-table", [
+        "Editor 1",
+        "Editor 3",
+      ]);
+    });
+
+    it("should show a conflict error when reordering publication editors after adding one in another session", () => {
+      // Add a fourth editor by AJAX call
+      cy.addEditor("Editor", "4", { external: true });
+
+      cy.intercept("POST", "/publication/*/contributors/editor/order").as(
+        "reorderEditors",
+      );
+
+      // Perform the reorder
+      cy.get("#editor-0 .sortable-handle").drag("#editor-1 .sortable-handle");
+
+      verifyContributors("#contributors-editor-table", [
+        "Editor 2",
+        "Editor 1",
+        "Editor 3",
+      ]);
+
+      cy.wait("@reorderEditors").should(
+        "have.nested.property",
+        "response.statusCode",
+        200,
+      );
+
+      verifyConflictErrorDialog("Publication");
+
+      // Verify that nothing was reordered
+      cy.reload();
+
+      verifyContributors("#contributors-editor-table", [
+        "Editor 1",
+        "Editor 2",
+        "Editor 3",
+        "Editor 4",
+      ]);
+    });
   });
 
-  it("should show a conflict error when reordering publication editors after removing one in another session", () => {
-    cy.setUpPublication();
-    cy.addEditor("Editor", "1", { external: true });
-    cy.addEditor("Editor", "2", { external: true });
-    cy.addEditor("Editor", "3", { external: true });
+  describe("Publication supervisors", () => {
+    beforeEach(() => {
+      cy.setUpPublication("Dissertation");
+      cy.addSupervisor("Supervisor", "1", { external: true });
+      cy.addSupervisor("Supervisor", "2", { external: true });
+      cy.addSupervisor("Supervisor", "3", { external: true });
 
-    cy.visitPublication();
+      cy.visitPublication();
+      cy.contains(".nav-item", "People & Affiliations").click();
 
-    cy.contains(".nav-item", "People & Affiliations").click();
+      verifyContributors("#contributors-supervisor-table", [
+        "Supervisor 1",
+        "Supervisor 2",
+        "Supervisor 3",
+      ]);
+    });
 
-    verifyContributors("#contributors-editor-table", [
-      "Editor 1",
-      "Editor 2",
-      "Editor 3",
-    ]);
+    it("should show a conflict error when reordering publication supervisors after reordering them in another session", () => {
+      // Perform the reorder via AJAX
+      cy.get("#contributors-supervisor-table tbody")
+        .invoke("attr", "hx-headers")
+        .then(JSON.parse)
+        .then((htmxValues) => {
+          cy.get<string>("@biblioId").then((biblioId) => {
+            // Reverse the supervisors
+            const form = new URLSearchParams();
+            form.append("position", "2");
+            form.append("position", "1");
+            form.append("position", "0");
 
-    // Delete the second editor by AJAX call and cancel the confirm delete dialog
-    cy.contains("tr", "Editor 2").find(".btn .if-delete").click();
-    cy.ensureModal("Confirm deletion")
-      .within(() => {
-        cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
-      })
-      .closeModal("Cancel");
-    cy.ensureNoModal();
+            cy.htmxRequest({
+              method: "POST",
+              url: `/publication/${biblioId}/contributors/supervisor/order`,
+              headers: htmxValues,
+              form: true,
+              body: form.toString(),
+              log: true,
+            });
+          });
+        });
 
-    // Page is not refreshed so we still think there are 3 editors
-    verifyContributors("#contributors-editor-table", [
-      "Editor 1",
-      "Editor 2",
-      "Editor 3",
-    ]);
+      // Page is not refreshed so we still think there are 3 supervisors
+      verifyContributors("#contributors-supervisor-table", [
+        "Supervisor 1",
+        "Supervisor 2",
+        "Supervisor 3",
+      ]);
 
-    cy.intercept("POST", "/publication/*/contributors/editor/order").as(
-      "reorderEditors",
-    );
+      cy.intercept("POST", "/publication/*/contributors/supervisor/order").as(
+        "reorderSupervisors",
+      );
 
-    // Perform the reorder
-    cy.get("#editor-1 .sortable-handle").drag("#editor-2 .sortable-handle");
+      // Perform the reorder
+      cy.get("#supervisor-1 .sortable-handle").drag(
+        "#supervisor-2 .sortable-handle",
+      );
 
-    verifyContributors("#contributors-editor-table", [
-      "Editor 1",
-      "Editor 3",
-      "Editor 2",
-    ]);
+      verifyContributors("#contributors-supervisor-table", [
+        "Supervisor 1",
+        "Supervisor 3",
+        "Supervisor 2",
+      ]);
 
-    cy.wait("@reorderEditors").should(
-      "have.nested.property",
-      "response.statusCode",
-      200,
-    );
+      cy.wait("@reorderSupervisors").should(
+        "have.nested.property",
+        "response.statusCode",
+        200,
+      );
 
-    verifyConflictErrorDialog("Publication");
+      verifyConflictErrorDialog("Publication");
 
-    // Verify that nothing was reordered
-    cy.reload();
+      // Verify that nothing was reordered
+      cy.reload();
 
-    verifyContributors("#contributors-editor-table", ["Editor 1", "Editor 3"]);
+      verifyContributors("#contributors-supervisor-table", [
+        "Supervisor 3",
+        "Supervisor 2",
+        "Supervisor 1",
+      ]);
+    });
+
+    it("should show a conflict error when reordering publication supervisors after removing one in another session", () => {
+      // Delete the second supervisor by AJAX call and cancel the confirm delete dialog
+      cy.contains("tr", "Supervisor 2").find(".btn .if-delete").click();
+      cy.ensureModal("Confirm deletion")
+        .within(() => {
+          cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
+        })
+        .closeModal("Cancel");
+      cy.ensureNoModal();
+
+      // Page is not refreshed so we still think there are 3 supervisors
+      verifyContributors("#contributors-supervisor-table", [
+        "Supervisor 1",
+        "Supervisor 2",
+        "Supervisor 3",
+      ]);
+
+      cy.intercept("POST", "/publication/*/contributors/supervisor/order").as(
+        "reorderSupervisors",
+      );
+
+      // Perform the reorder
+      cy.get("#supervisor-1 .sortable-handle").drag(
+        "#supervisor-2 .sortable-handle",
+      );
+
+      verifyContributors("#contributors-supervisor-table", [
+        "Supervisor 1",
+        "Supervisor 3",
+        "Supervisor 2",
+      ]);
+
+      cy.wait("@reorderSupervisors").should(
+        "have.nested.property",
+        "response.statusCode",
+        200,
+      );
+
+      verifyConflictErrorDialog("Publication");
+
+      // Verify that nothing was reordered
+      cy.reload();
+
+      verifyContributors("#contributors-supervisor-table", [
+        "Supervisor 1",
+        "Supervisor 3",
+      ]);
+    });
+
+    it("should show a conflict error when reordering publication supervisors after adding one in another session", () => {
+      // Add a fourth supervisor by AJAX call
+      cy.addSupervisor("Supervisor", "4", { external: true });
+
+      cy.intercept("POST", "/publication/*/contributors/supervisor/order").as(
+        "reorderSupervisors",
+      );
+
+      // Perform the reorder
+      cy.get("#supervisor-0 .sortable-handle").drag(
+        "#supervisor-1 .sortable-handle",
+      );
+
+      verifyContributors("#contributors-supervisor-table", [
+        "Supervisor 2",
+        "Supervisor 1",
+        "Supervisor 3",
+      ]);
+
+      cy.wait("@reorderSupervisors").should(
+        "have.nested.property",
+        "response.statusCode",
+        200,
+      );
+
+      verifyConflictErrorDialog("Publication");
+
+      // Verify that nothing was reordered
+      cy.reload();
+
+      verifyContributors("#contributors-supervisor-table", [
+        "Supervisor 1",
+        "Supervisor 2",
+        "Supervisor 3",
+        "Supervisor 4",
+      ]);
+    });
   });
 
-  it("should show a conflict error when reordering publication editors after adding one in another session", () => {
-    cy.setUpPublication();
-    cy.addEditor("Editor", "1", { external: true });
-    cy.addEditor("Editor", "2", { external: true });
+  describe("Dataset creators", () => {
+    beforeEach(() => {
+      cy.setUpDataset();
+      cy.addCreator("Creator", "1", { external: true });
+      cy.addCreator("Creator", "2", { external: true });
+      cy.addCreator("Creator", "3", { external: true });
 
-    cy.visitPublication();
+      cy.visitDataset();
 
-    cy.contains(".nav-item", "People & Affiliations").click();
+      cy.contains(".nav-item", "People & Affiliations").click();
 
-    verifyContributors("#contributors-editor-table", ["Editor 1", "Editor 2"]);
+      verifyContributors("#contributors-author-table", [
+        "Creator 1",
+        "Creator 2",
+        "Creator 3",
+      ]);
+    });
 
-    // Add a third editor by AJAX call
-    cy.addEditor("Editor", "3", { external: true });
+    it("should show a conflict error when reordering dataset creators after reordering them in another session", () => {
+      // Perform the reorder via AJAX
+      cy.get("#contributors-author-table tbody")
+        .invoke("attr", "hx-headers")
+        .then(JSON.parse)
+        .then((htmxValues) => {
+          cy.get<string>("@biblioId").then((biblioId) => {
+            // Reverse the creators
+            const form = new URLSearchParams();
+            form.append("position", "2");
+            form.append("position", "1");
+            form.append("position", "0");
 
-    cy.intercept("POST", "/publication/*/contributors/editor/order").as(
-      "reorderEditors",
-    );
+            cy.htmxRequest({
+              method: "POST",
+              url: `/dataset/${biblioId}/contributors/author/order`,
+              headers: htmxValues,
+              form: true,
+              body: form.toString(),
+              log: true,
+            });
+          });
+        });
 
-    // Perform the reorder
-    cy.get("#editor-0 .sortable-handle").drag("#editor-1 .sortable-handle");
+      // Page is not refreshed so we still think there are 3 creators
+      verifyContributors("#contributors-author-table", [
+        "Creator 1",
+        "Creator 2",
+        "Creator 3",
+      ]);
 
-    verifyContributors("#contributors-editor-table", ["Editor 2", "Editor 1"]);
+      cy.intercept("POST", "/dataset/*/contributors/author/order").as(
+        "reorderCreators",
+      );
 
-    cy.wait("@reorderEditors").should(
-      "have.nested.property",
-      "response.statusCode",
-      200,
-    );
+      // Perform the reorder
+      cy.get("#author-1 .sortable-handle").drag("#author-2 .sortable-handle");
 
-    verifyConflictErrorDialog("Publication");
+      verifyContributors("#contributors-author-table", [
+        "Creator 1",
+        "Creator 3",
+        "Creator 2",
+      ]);
 
-    // Verify that nothing was reordered
-    cy.reload();
+      cy.wait("@reorderCreators").should(
+        "have.nested.property",
+        "response.statusCode",
+        200,
+      );
 
-    verifyContributors("#contributors-editor-table", [
-      "Editor 1",
-      "Editor 2",
-      "Editor 3",
-    ]);
-  });
+      verifyConflictErrorDialog("Dataset");
 
-  it("should show a conflict error when reordering publication supervisors after removing one in another session", () => {
-    cy.setUpPublication("Dissertation");
-    cy.addSupervisor("Supervisor", "1", { external: true });
-    cy.addSupervisor("Supervisor", "2", { external: true });
-    cy.addSupervisor("Supervisor", "3", { external: true });
+      // Verify that nothing was reordered
+      cy.reload();
 
-    cy.visitPublication();
+      verifyContributors("#contributors-author-table", [
+        "Creator 3",
+        "Creator 2",
+        "Creator 1",
+      ]);
+    });
 
-    cy.contains(".nav-item", "People & Affiliations").click();
+    it("should show a conflict error when reordering dataset creators after removing one in another session", () => {
+      // Delete the second creator by AJAX call and cancel the confirm delete dialog
+      cy.contains("tr", "Creator 2").find(".btn .if-delete").click();
+      cy.ensureModal("Confirm deletion")
+        .within(() => {
+          cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
+        })
+        .closeModal("Cancel");
+      cy.ensureNoModal();
 
-    verifyContributors("#contributors-supervisor-table", [
-      "Supervisor 1",
-      "Supervisor 2",
-      "Supervisor 3",
-    ]);
+      // Page is not refreshed so we still think there are 3 creators
+      verifyContributors("#contributors-author-table", [
+        "Creator 1",
+        "Creator 2",
+        "Creator 3",
+      ]);
 
-    // Delete the second supervisor by AJAX call and cancel the confirm delete dialog
-    cy.contains("tr", "Supervisor 2").find(".btn .if-delete").click();
-    cy.ensureModal("Confirm deletion")
-      .within(() => {
-        cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
-      })
-      .closeModal("Cancel");
-    cy.ensureNoModal();
+      cy.intercept("POST", "/dataset/*/contributors/author/order").as(
+        "reorderCreators",
+      );
 
-    // Page is not refreshed so we still think there are 3 supervisors
-    verifyContributors("#contributors-supervisor-table", [
-      "Supervisor 1",
-      "Supervisor 2",
-      "Supervisor 3",
-    ]);
+      // Perform the reorder
+      cy.get("#author-1 .sortable-handle").drag("#author-2 .sortable-handle");
 
-    cy.intercept("POST", "/publication/*/contributors/supervisor/order").as(
-      "reorderSupervisors",
-    );
+      verifyContributors("#contributors-author-table", [
+        "Creator 1",
+        "Creator 3",
+        "Creator 2",
+      ]);
 
-    // Perform the reorder
-    cy.get("#supervisor-1 .sortable-handle").drag(
-      "#supervisor-2 .sortable-handle",
-    );
+      cy.wait("@reorderCreators").should(
+        "have.nested.property",
+        "response.statusCode",
+        200,
+      );
 
-    verifyContributors("#contributors-supervisor-table", [
-      "Supervisor 1",
-      "Supervisor 3",
-      "Supervisor 2",
-    ]);
+      verifyConflictErrorDialog("Dataset");
 
-    cy.wait("@reorderSupervisors").should(
-      "have.nested.property",
-      "response.statusCode",
-      200,
-    );
+      // Verify that nothing was reordered
+      cy.reload();
 
-    verifyConflictErrorDialog("Publication");
+      verifyContributors("#contributors-author-table", [
+        "Creator 1",
+        "Creator 3",
+      ]);
+    });
 
-    // Verify that nothing was reordered
-    cy.reload();
+    it("should show a conflict error when reordering dataset creators after adding one in another session", () => {
+      // Add a fourth creator by AJAX call
+      cy.addCreator("Creator", "4", { external: true });
 
-    verifyContributors("#contributors-supervisor-table", [
-      "Supervisor 1",
-      "Supervisor 3",
-    ]);
-  });
+      cy.intercept("POST", "/dataset/*/contributors/author/order").as(
+        "reorderCreators",
+      );
 
-  it("should show a conflict error when reordering publication supervisors after adding one in another session", () => {
-    cy.setUpPublication("Dissertation");
-    cy.addSupervisor("Supervisor", "1", { external: true });
-    cy.addSupervisor("Supervisor", "2", { external: true });
+      // Perform the reorder
+      cy.get("#author-0 .sortable-handle").drag("#author-1 .sortable-handle");
 
-    cy.visitPublication();
+      verifyContributors("#contributors-author-table", [
+        "Creator 2",
+        "Creator 1",
+        "Creator 3",
+      ]);
 
-    cy.contains(".nav-item", "People & Affiliations").click();
+      cy.wait("@reorderCreators").should(
+        "have.nested.property",
+        "response.statusCode",
+        200,
+      );
 
-    verifyContributors("#contributors-supervisor-table", [
-      "Supervisor 1",
-      "Supervisor 2",
-    ]);
+      verifyConflictErrorDialog("Dataset");
 
-    // Add a third supervisor by AJAX call
-    cy.addSupervisor("Supervisor", "3", { external: true });
+      // Verify that nothing was reordered
+      cy.reload();
 
-    cy.intercept("POST", "/publication/*/contributors/supervisor/order").as(
-      "reorderSupervisors",
-    );
-
-    // Perform the reorder
-    cy.get("#supervisor-0 .sortable-handle").drag(
-      "#supervisor-1 .sortable-handle",
-    );
-
-    verifyContributors("#contributors-supervisor-table", [
-      "Supervisor 2",
-      "Supervisor 1",
-    ]);
-
-    cy.wait("@reorderSupervisors").should(
-      "have.nested.property",
-      "response.statusCode",
-      200,
-    );
-
-    verifyConflictErrorDialog("Publication");
-
-    // Verify that nothing was reordered
-    cy.reload();
-
-    verifyContributors("#contributors-supervisor-table", [
-      "Supervisor 1",
-      "Supervisor 2",
-      "Supervisor 3",
-    ]);
-  });
-
-  it("should show a conflict error when reordering dataset creators after removing one in another session", () => {
-    cy.setUpDataset();
-    cy.addCreator("Creator", "1", { external: true });
-    cy.addCreator("Creator", "2", { external: true });
-    cy.addCreator("Creator", "3", { external: true });
-
-    cy.visitDataset();
-
-    cy.contains(".nav-item", "People & Affiliations").click();
-
-    verifyContributors("#contributors-author-table", [
-      "Creator 1",
-      "Creator 2",
-      "Creator 3",
-    ]);
-
-    // Delete the second creator by AJAX call and cancel the confirm delete dialog
-    cy.contains("tr", "Creator 2").find(".btn .if-delete").click();
-    cy.ensureModal("Confirm deletion")
-      .within(() => {
-        cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
-      })
-      .closeModal("Cancel");
-    cy.ensureNoModal();
-
-    // Page is not refreshed so we still think there are 3 creators
-    verifyContributors("#contributors-author-table", [
-      "Creator 1",
-      "Creator 2",
-      "Creator 3",
-    ]);
-
-    cy.intercept("POST", "/dataset/*/contributors/author/order").as(
-      "reorderCreators",
-    );
-
-    // Perform the reorder
-    cy.get("#author-1 .sortable-handle").drag("#author-2 .sortable-handle");
-
-    verifyContributors("#contributors-author-table", [
-      "Creator 1",
-      "Creator 3",
-      "Creator 2",
-    ]);
-
-    cy.wait("@reorderCreators").should(
-      "have.nested.property",
-      "response.statusCode",
-      200,
-    );
-
-    verifyConflictErrorDialog("Dataset");
-
-    // Verify that nothing was reordered
-    cy.reload();
-
-    verifyContributors("#contributors-author-table", [
-      "Creator 1",
-      "Creator 3",
-    ]);
-  });
-
-  it("should show a conflict error when reordering dataset creators after adding one in another session", () => {
-    cy.setUpDataset();
-    cy.addCreator("Creator", "1", { external: true });
-    cy.addCreator("Creator", "2", { external: true });
-
-    cy.visitDataset();
-
-    cy.contains(".nav-item", "People & Affiliations").click();
-
-    verifyContributors("#contributors-author-table", [
-      "Creator 1",
-      "Creator 2",
-    ]);
-
-    // Add a third creator by AJAX call
-    cy.addCreator("Creator", "3", { external: true });
-
-    cy.intercept("POST", "/dataset/*/contributors/author/order").as(
-      "reorderCreators",
-    );
-
-    // Perform the reorder
-    cy.get("#author-0 .sortable-handle").drag("#author-1 .sortable-handle");
-
-    verifyContributors("#contributors-author-table", [
-      "Creator 2",
-      "Creator 1",
-    ]);
-
-    cy.wait("@reorderCreators").should(
-      "have.nested.property",
-      "response.statusCode",
-      200,
-    );
-
-    verifyConflictErrorDialog("Dataset");
-
-    // Verify that nothing was reordered
-    cy.reload();
-
-    verifyContributors("#contributors-author-table", [
-      "Creator 1",
-      "Creator 2",
-      "Creator 3",
-    ]);
+      verifyContributors("#contributors-author-table", [
+        "Creator 1",
+        "Creator 2",
+        "Creator 3",
+        "Creator 4",
+      ]);
+    });
   });
 
   function verifyContributors(tableSelector: string, contributors: string[]) {
