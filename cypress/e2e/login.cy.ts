@@ -24,7 +24,7 @@ describe("Login & authorization", () => {
   it("should redirect to the login page when clicking the Login buttons", () => {
     cy.visit("/");
 
-    const assertLoginRedirection = (href) => {
+    const assertLoginRedirection = (href: string) => {
       cy.request(href).then((response) => {
         expect(response).to.have.property("isOkStatusCode", true);
         expect(response)
@@ -159,7 +159,7 @@ describe("Login & authorization", () => {
 
     cy.wait("@role-user")
       .its("response.headers[set-cookie]")
-      .then((cookies) => {
+      .then((cookies: string[]) => {
         expect(
           cookies.filter((c) => c.startsWith("biblio-backoffice=")),
         ).to.have.length(1);
@@ -173,7 +173,7 @@ describe("Login & authorization", () => {
 
     cy.wait("@role-curator")
       .its("response.headers[set-cookie]")
-      .then((cookies) => {
+      .then((cookies: string[]) => {
         expect(
           cookies.filter((c) => c.startsWith("biblio-backoffice=")),
         ).to.have.length(1);

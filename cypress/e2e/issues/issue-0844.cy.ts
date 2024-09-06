@@ -141,7 +141,7 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
       // cy.get("[data-facet-dropdown]").should("have.length", facets.length);
 
       cy.window().then((w) => {
-        return (w[DUMMY_WINDOW_PROPERTY] = DUMMY_WINDOW_PROPERTY);
+        w.DUMMY_WINDOW_PROPERTY = DUMMY_WINDOW_PROPERTY;
       });
     });
 
@@ -296,3 +296,7 @@ describe('Issue #0844: [filters] Apply filters when clicking on "apply" and when
       .value();
   }
 });
+
+declare global {
+  var DUMMY_WINDOW_PROPERTY: string;
+}
