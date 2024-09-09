@@ -130,13 +130,30 @@ class DragSimulator {
   }
 }
 
-Cypress.Commands.add(
-  "drag",
-  { prevSubject: "element" },
-  (subject, targetSelector) => {
-    return new DragSimulator().drag(subject, targetSelector);
-  },
-);
+export default function drag(
+  subject: JQuery<HTMLElement>,
+  targetSelector: string,
+) {
+  const dragSimulator = new DragSimulator();
+
+  return dragSimulator
+    .init(subject, targetSelector)
+    .then(() => dragSimulator.dragstart())
+    .then(() => dragSimulator.dragover())
+    .then((success) => {
+      if (success) {
+        return dragSimulator.drop().then(() => true);
+      } else {
+        return cy.wrap(false, NO_LOG);
+      }
+    })
+    .then((result) => {
+      dragSimulator.log.snapshot("after");
+
+      return result;
+    })
+    .finishLog(dragSimulator.log);
+}
 
 declare global {
   namespace Cypress {
