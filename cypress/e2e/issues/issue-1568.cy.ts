@@ -677,13 +677,14 @@ describe("Issue #1568: Missing conflict handling when editing / adding / removin
       .map((tr: HTMLTableRowElement) => tr.querySelector("td").textContent)
       .should("eql", contributors);
   }
+
+  function verifyConflictErrorDialog(scope: "Publication" | "Dataset") {
+    cy.ensureModal(null)
+      .within(() => {
+        cy.contains(
+          `${scope} has been modified by another user. Please reload the page.`,
+        ).should("be.visible");
+      })
+      .closeModal("Close");
+  }
 });
-function verifyConflictErrorDialog(scope: "Publication" | "Dataset") {
-  cy.ensureModal(null)
-    .within(() => {
-      cy.contains(
-        `${scope} has been modified by another user. Please reload the page.`,
-      ).should("be.visible");
-    })
-    .closeModal("Close");
-}
