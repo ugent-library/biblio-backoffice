@@ -21,6 +21,7 @@ import {
 import htmxRequest from "./htmx-request";
 import { deletePublications, deleteDatasets } from "./delete-many";
 import { deletePublication, deleteDataset } from "./delete-one";
+import verifyConflictErrorDialog from "./verify-conflict-error-dialog";
 
 // Child commands
 import finishLog from "./finish-log";
@@ -73,6 +74,8 @@ Cypress.Commands.addAll({
 
   deletePublication,
   deleteDataset,
+
+  verifyConflictErrorDialog,
 });
 
 // Child commands

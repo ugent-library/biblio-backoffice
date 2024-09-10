@@ -1,6 +1,10 @@
 export {};
 
 declare global {
+  namespace Biblio {
+    type Scope = "publication" | "dataset";
+  }
+
   namespace Cypress {
     type Alias = `@${string}`;
 

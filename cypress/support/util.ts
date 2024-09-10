@@ -165,10 +165,7 @@ function decodeEntities(encodedString: string) {
   return textArea.value;
 }
 
-export function waitForIndex(
-  scope: "publication" | "dataset",
-  biblioId: string,
-) {
+export function waitForIndex(scope: Biblio.Scope, biblioId: string) {
   let count = 0;
 
   const doCheckIndex = () => {
