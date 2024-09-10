@@ -218,7 +218,7 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 													<span class="c-sidebar__label">Biblio Datasets</span>
 												</a>
 											</li>
-											if c.UserRole == "curator" {
+											if c.UserRole == "curator" || c.FlagCandidateRecords() {
 												<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "candidate_records") }>
 													<a
 														href={ templ.URL(c.PathTo("candidate_records").String()) }
@@ -228,6 +228,8 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 														@CandidateRecordsIcon(c, false)
 													</a>
 												</li>
+											}
+											if c.UserRole == "curator" {
 												<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "batch") }>
 													<a href={ templ.URL(c.PathTo("publication_batch").String()) }>
 														<span class="c-sidebar__icon">

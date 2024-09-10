@@ -186,8 +186,8 @@ describe("Editing dataset people & affiliations", () => {
         () => {
           testFormAccessibility(
             {
-              "input[type=text][name=first_name]": "First name",
-              "input[type=text][name=last_name]": "Last name",
+              "input[name=first_name]": "First name",
+              "input[name=last_name]": "Last name",
             },
             "First name",
           );
@@ -206,8 +206,8 @@ describe("Editing dataset people & affiliations", () => {
       cy.ensureModal("Edit or change creator").within(() => {
         testFormAccessibility(
           {
-            "input[type=text][name=first_name]": "First name",
-            "input[type=text][name=last_name]": "Last name",
+            "input[name=first_name]": "First name",
+            "input[name=last_name]": "Last name",
           },
           "First name",
         );

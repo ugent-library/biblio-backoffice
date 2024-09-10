@@ -189,19 +189,41 @@ func Register(c Config) {
 
 				// dashboard
 				r.With(ctx.SetNav("dashboard")).Get("/dashboard", handlers.DashBoard).Name("dashboard")
-				r.Get("/dashboard-icon", handlers.DashBoardIcon).Name("dashboard_icon")
+				r.Get("/dashboard/icon", handlers.DashBoardIcon).Name("dashboard_icon")
 				// dashboard action required component
-				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
+				r.Get("/dashboard/action-required", handlers.ActionRequired).Name("dashboard_action_required")
 				// dashboard drafts to complete component
-				r.Get("/drafts-to-complete", handlers.DraftsToComplete).Name("drafts_to_complete")
+				r.Get("/dashboard/drafts-to-complete", handlers.DraftsToComplete).Name("dashboard_drafts_to_complete")
 				// dashboard recent activity component
-				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
+				r.Get("/dashboard/recent-activity", handlers.RecentActivity).Name("dashboard_recent_activity")
+				// dashboard recent activity component
+				r.Get("/dashboard/candidate-records", handlers.CandidateRecords).Name("dashboard_candidate_records")
 
 				// settings
 				r.Get("/settings/proxy", settings.ProxySettings).Name("proxy_settings")
 
 				// proxies
 				r.With(ctx.SetNav("proxies")).Get("/proxies", proxies.Proxies).Name("proxies")
+
+				// record suggestions
+				r.With(ctx.SetNav("candidate_records")).Get("/candidate-records", candidaterecords.CandidateRecords).Name("candidate_records")
+				r.Get("/candidate-records/icon", candidaterecords.CandidateRecordsIcon).Name("candidate_records_icon")
+				r.Group(func(r *ich.Mux) {
+					r.Use(ctx.SetCandidateRecord(c.Services.Repo))
+					r.Use(ctx.RequireViewCandidateRecord(c.Services.Repo))
+
+					r.Get("/candidate-records/{id}/preview", candidaterecords.CandidateRecordPreview).Name("candidate_records_preview")
+					r.Get("/candidate-records/{id}/files/{file_id}", candidaterecords.DownloadFile).Name("candidate_record_download_file")
+				})
+				r.Group(func(r *ich.Mux) {
+					r.Use(ctx.SetCandidateRecord(c.Services.Repo))
+					r.Use(ctx.RequireEditCandidateRecord(c.Services.Repo))
+
+					r.Get("/candidate-records/{id}/preview", candidaterecords.CandidateRecordPreview).Name("candidate_records_preview")
+					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
+					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
+					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
+				})
 
 				// curator only routes
 				r.Group(func(r *ich.Mux) {
@@ -216,15 +238,6 @@ func Register(c Config) {
 
 					r.Post("/dashboard/refresh-apublications/{type}", dashboard.RefreshAPublications).Name("dashboard_refresh_apublications")
 					r.Post("/dashboard/refresh-upublications/{type}", dashboard.RefreshUPublications).Name("dashboard_refresh_upublications")
-
-					// record suggestions
-					r.With(ctx.SetNav("candidate_records")).Get("/candidate-records", candidaterecords.CandidateRecords).Name("candidate_records")
-					r.Get("/candidate-records-icon", candidaterecords.CandidateRecordsIcon).Name("candidate_records_icon")
-					r.Get("/candidate-records/{id}/preview", candidaterecords.CandidateRecordPreview).Name("candidate_records_preview")
-					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
-					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
-					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
-					r.Get("/candidate-records/{id}/files/{file_id}", candidaterecords.DownloadFile).Name("candidate_record_download_file")
 
 					// proxy management
 					r.Get("/proxies/list", proxies.List).Name("proxies_list")

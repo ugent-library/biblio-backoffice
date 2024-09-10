@@ -25,16 +25,19 @@ func (r *Repo) AddCandidateRecord(ctx context.Context, rec *models.CandidateReco
 	return err
 }
 
-func (r *Repo) GetCandidateRecords(ctx context.Context, start int, limit int) ([]*models.CandidateRecord, error) {
+func (r *Repo) GetCandidateRecords(ctx context.Context, start int, limit int) (int, []*models.CandidateRecord, error) {
 	rows, err := r.queries.GetCandidateRecords(ctx, db.GetCandidateRecordsParams{
 		Limit:  int32(limit),
 		Offset: int32(start),
 	})
 	if err != nil {
-		return nil, err
+		return 0, nil, err
 	}
+
+	var total int
 	recs := make([]*models.CandidateRecord, len(rows))
 	for i, row := range rows {
+		total = int(row.Total)
 		rec := &models.CandidateRecord{
 			ID:          row.ID,
 			SourceName:  row.SourceName,
@@ -46,25 +49,78 @@ func (r *Repo) GetCandidateRecords(ctx context.Context, start int, limit int) ([
 			Publication: &models.Publication{},
 		}
 		if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
-			return nil, err
+			return 0, nil, err
 		}
 		for _, fn := range r.config.PublicationLoaders {
 			if err := fn(rec.Publication); err != nil {
-				return nil, err
+				return 0, nil, err
 			}
 		}
 
 		recs[i] = rec
 	}
-	return recs, err
+	return total, recs, err
 }
 
-func (r *Repo) CountCandidateRecords(ctx context.Context) (int, error) {
-	num, err := r.queries.CountCandidateRecords(ctx)
+func (r *Repo) HasCandidateRecords(ctx context.Context) (bool, error) {
+	exists, err := r.queries.HasCandidateRecords(ctx)
 	if err != nil {
-		return 0, err
+		return false, err
 	}
-	return int(num), nil
+	return exists, nil
+}
+
+func (r *Repo) GetCandidateRecordsByPersonID(ctx context.Context, personID string, start int, limit int) (int, []*models.CandidateRecord, error) {
+	query, _ := json.Marshal([]struct {
+		PersonID string `json:"person_id"`
+	}{{PersonID: personID}})
+
+	rows, err := r.queries.GetCandidateRecordsByPersonID(ctx, db.GetCandidateRecordsByPersonIDParams{
+		Query:  query,
+		Limit:  int32(limit),
+		Offset: int32(start),
+	})
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var total int
+	recs := make([]*models.CandidateRecord, len(rows))
+	for i, row := range rows {
+		total = int(row.Total)
+		rec := &models.CandidateRecord{
+			ID:          row.ID,
+			SourceName:  row.SourceName,
+			SourceID:    row.SourceID,
+			Type:        row.Type,
+			Metadata:    row.Metadata,
+			DateCreated: row.DateCreated.Time,
+			Status:      row.Status,
+			Publication: &models.Publication{},
+		}
+		if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
+			return 0, nil, err
+		}
+		for _, fn := range r.config.PublicationLoaders {
+			if err := fn(rec.Publication); err != nil {
+				return 0, nil, err
+			}
+		}
+
+		recs[i] = rec
+	}
+	return total, recs, err
+}
+
+func (r *Repo) PersonHasCandidateRecords(ctx context.Context, personID string) (bool, error) {
+	query, _ := json.Marshal([]struct {
+		PersonID string `json:"person_id"`
+	}{{PersonID: personID}})
+	exists, err := r.queries.PersonHasCandidateRecords(ctx, query)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
 }
 
 func (r *Repo) GetCandidateRecordBySource(ctx context.Context, sourceName string, sourceID string) (*models.CandidateRecord, error) {

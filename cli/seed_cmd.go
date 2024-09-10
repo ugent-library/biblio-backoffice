@@ -167,11 +167,11 @@ var seedCandidateRecordsCmd = &cobra.Command{
 		repo := newServices().Repo
 
 		if force, _ := cmd.Flags().GetBool("force"); !force {
-			count, err := repo.CountCandidateRecords(cmd.Context())
+			exists, err := repo.HasCandidateRecords(cmd.Context())
 			if err != nil {
 				return err
 			}
-			if count > 0 {
+			if exists {
 				logger.Warn("not seeding dummy data because the database is not empty")
 				return nil
 			}

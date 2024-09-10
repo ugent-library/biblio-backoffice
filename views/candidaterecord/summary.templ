@@ -12,7 +12,39 @@ type SummaryOpts struct {
 	Badge     templ.Component
 }
 
-templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
+templ Summary(c *ctx.Ctx, rec *models.CandidateRecord) {
+	@publicationSummary(c, rec.Publication, SummaryOpts{Badge: summaryBadge(rec), Thumbnail: c.AssetPath("/images/plato-logo.svg")}) {
+		<button
+			class="btn btn-link btn-link-muted"
+			hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
+			hx-target="#modals"
+		>
+			<div class="btn-text">Reject</div>
+		</button>
+		<button
+			class="btn btn-link btn-link-muted"
+			hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
+			hx-target="#modals"
+		>
+			<div class="btn-text">Preview</div>
+		</button>
+		<button
+			class="btn btn-outline-primary"
+			hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
+			hx-swap="none"
+		>
+			<div class="btn-text">
+				if c.UserRole == "curator" {
+					Import as draft
+				} else {
+					Claim
+				}
+			</div>
+		</button>
+	}
+}
+
+templ publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 	<div class="w-100">
 		<div class="c-thumbnail-and-text align-items-start w-100">
 			if opts.Thumbnail != "" {
@@ -90,24 +122,22 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 							<div class="d-inline-flex align-items-center flex-wrap">
 								<div class="d-inline-flex align-items-center flex-wrap">
 									@contributorviews.Summary(c, contributorviews.SummaryArgs{
-										Role:         "author",
-										Contributors: p.Author,
+										Role:                    "author",
+										Contributors:            p.Author,
 										CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
- 				  						CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
+										CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
 									})
 								</div>
 								<div class="text-muted fst-italic me-5 my-1">supervised by</div>
 								<div class="d-inline-flex align-items-center flex-wrap">
 									@contributorviews.Summary(c, contributorviews.SummaryArgs{
-										Role:         "supervisor",
-										Contributors: p.Supervisor,
+										Role:                    "supervisor",
+										Contributors:            p.Supervisor,
 										CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
- 				  						CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
-
+										CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
 									})
 								</div>
 							</div>
-
 							if len(p.RelatedOrganizations) > 0 {
 								<div class="d-inline-flex align-items-center flex-wrap">
 									<span class="badge rounded-pill badge-light me-4">Suggested departments</span>
@@ -130,4 +160,11 @@ templ Summary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 			</div>
 		</div>
 	</div>
+}
+
+templ summaryBadge(rec *models.CandidateRecord) {
+	<span class="badge rounded-pill badge-default me-3 my-2">
+		<span class="badge-circle"></span>
+		<span class="badge-text">Biblio suggestion via { rec.SourceName }</span>
+	</span>
 }

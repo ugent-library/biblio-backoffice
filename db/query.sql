@@ -10,10 +10,27 @@ DO
 RETURNING id;
 
 -- name: GetCandidateRecords :many
-SELECT * FROM candidate_records WHERE status = 'new' ORDER BY date_created ASC LIMIT $1 OFFSET $2;
+SELECT *, count(*) OVER () AS total
+FROM candidate_records
+WHERE status = 'new'
+ORDER BY date_created ASC
+LIMIT $1
+OFFSET $2;
 
--- name: CountCandidateRecords :one
-SELECT count(*) count FROM candidate_records WHERE status = 'new';
+-- name: GetCandidateRecordsByPersonID :many
+SELECT *, count(*) OVER () AS total
+FROM candidate_records
+WHERE status = 'new' AND (metadata->'author' @> sqlc.arg(query)::jsonb OR metadata->'supervisor' @> sqlc.arg(query)::jsonb)
+ORDER BY date_created ASC
+LIMIT sqlc.arg('limit')
+OFFSET sqlc.arg('offset');
+
+-- name: HasCandidateRecords :one
+SELECT EXISTS(SELECT 1 FROM candidate_records WHERE status = 'new');
+
+-- name: PersonHasCandidateRecords :one
+SELECT EXISTS(SELECT 1 FROM candidate_records WHERE status = 'new' AND (metadata->'author' @> sqlc.arg(query)::jsonb OR metadata->'supervisor' @> sqlc.arg(query)::jsonb));
+
 
 -- name: GetCandidateRecord :one
 SELECT * FROM candidate_records WHERE status = 'new' AND id = $1 LIMIT 1;

@@ -610,7 +610,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if c.UserRole == "curator" {
+				if c.UserRole == "curator" || c.FlagCandidateRecords() {
 					var templ_7745c5c3_Var41 = []any{"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "candidate_records")}
 					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var41...)
 					if templ_7745c5c3_Err != nil {
@@ -663,6 +663,12 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if c.UserRole == "curator" {
 					var templ_7745c5c3_Var45 = []any{"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "batch")}
 					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var45...)
 					if templ_7745c5c3_Err != nil {
@@ -708,7 +714,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 		var templ_7745c5c3_Var48 string
 		templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(c.AssetPath("/images/logo-ugent-white.svg"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `page_layout.templ`, Line: 246, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `page_layout.templ`, Line: 248, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 		if templ_7745c5c3_Err != nil {
@@ -721,7 +727,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 		var templ_7745c5c3_Var49 string
 		templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs(c.AssetPath("/images/mark-ugent-white.svg"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `page_layout.templ`, Line: 247, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `page_layout.templ`, Line: 249, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 		if templ_7745c5c3_Err != nil {
@@ -752,7 +758,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 		var templ_7745c5c3_Var50 string
 		templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(c.CSPNonce)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `page_layout.templ`, Line: 283, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `page_layout.templ`, Line: 285, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 		if templ_7745c5c3_Err != nil {
@@ -765,7 +771,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 		var templ_7745c5c3_Var51 string
 		templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(c.AssetPath("/js/app.js"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `page_layout.templ`, Line: 283, Col: 93}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `page_layout.templ`, Line: 285, Col: 93}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 		if templ_7745c5c3_Err != nil {

@@ -13,10 +13,6 @@ import (
 	"github.com/ugent-library/httperror"
 )
 
-type bindCandidateRecord struct {
-	ID string `path:"id" form:"id"`
-}
-
 func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
@@ -26,41 +22,35 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	countRecs, err := c.Repo.CountCandidateRecords(r.Context())
+	var total int
+	var recs []*models.CandidateRecord
+	var err error
+
+	if c.UserRole == "curator" {
+		total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs.Offset(), searchArgs.Limit())
+	} else {
+		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.User.ID, searchArgs.Offset(), searchArgs.Limit())
+	}
+
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
 	}
 
-	recs, err := c.Repo.GetCandidateRecords(r.Context(), searchArgs.Offset(), searchArgs.Limit())
-	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
 	searchHits := &models.SearchHits{
 		Pagination: pagination.Pagination{
 			Offset: searchArgs.Offset(),
 			Limit:  searchArgs.Limit(),
-			Total:  countRecs,
+			Total:  total,
 		},
 	}
+
 	candidaterecordviews.List(c, searchArgs, searchHits, recs).Render(r.Context(), w)
 }
 
 func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-
-	b := bindCandidateRecord{}
-	if err := bind.Request(r, &b); err != nil {
-		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
-		return
-	}
-
-	rec, err := c.Repo.GetCandidateRecord(r.Context(), b.ID)
-	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
+	rec := ctx.GetCandidateRecord(r)
 
 	views.ShowModal(candidaterecordviews.Preview(c, rec)).Render(r.Context(), w)
 }
@@ -68,42 +58,34 @@ func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
 func CandidateRecordsIcon(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-	countRecs, err := c.Repo.CountCandidateRecords(r.Context())
+	var exists bool
+	var err error
+
+	if c.UserRole == "curator" {
+		exists, err = c.Repo.HasCandidateRecords(r.Context())
+	} else {
+		exists, err = c.Repo.PersonHasCandidateRecords(r.Context(), c.User.ID)
+	}
+
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
 	}
-	views.CandidateRecordsIcon(c, countRecs > 0).Render(r.Context(), w)
+	views.CandidateRecordsIcon(c, exists).Render(r.Context(), w)
 }
 
 func ConfirmRejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-
-	b := bindCandidateRecord{}
-	if err := bind.Request(r, &b); err != nil {
-		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
-		return
-	}
-
-	rec, err := c.Repo.GetCandidateRecord(r.Context(), b.ID)
-	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
+	rec := ctx.GetCandidateRecord(r)
 
 	views.ShowModal(candidaterecordviews.ConfirmHide(c, rec)).Render(r.Context(), w)
 }
 
 func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
+	rec := ctx.GetCandidateRecord(r)
 
-	b := bindCandidateRecord{}
-	if err := bind.Request(r, &b); err != nil {
-		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
-		return
-	}
-
-	err := c.Repo.RejectCandidateRecord(r.Context(), b.ID)
+	err := c.Repo.RejectCandidateRecord(r.Context(), rec.ID)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
@@ -120,14 +102,9 @@ func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 
 func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
+	rec := ctx.GetCandidateRecord(r)
 
-	b := bindCandidateRecord{}
-	if err := bind.Request(r, &b); err != nil {
-		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
-		return
-	}
-
-	pubID, err := c.Repo.ImportCandidateRecordAsPublication(r.Context(), b.ID, c.User)
+	pubID, err := c.Repo.ImportCandidateRecordAsPublication(r.Context(), rec.ID, c.User)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
@@ -138,5 +115,5 @@ func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 		WithBody("<p>Suggestion was successfully imported!</p>")
 	c.PersistFlash(w, *f)
 
-	w.Header().Set("HX-Redirect", c.URLTo("publication", "id", pubID).String())
+	w.Header().Set("HX-Redirect", c.PathTo("publication", "id", pubID).String())
 }

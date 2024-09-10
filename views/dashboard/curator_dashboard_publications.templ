@@ -1,7 +1,8 @@
-package views
+package dashboardviews
 
 import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/views"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
@@ -19,9 +20,9 @@ type CuratorDashboardPublicationsArgs struct {
 }
 
 templ CuratorDashboardPublications(c *ctx.Ctx, args *CuratorDashboardPublicationsArgs) {
-	@PageLayout(c, PageLayoutArgs{
+	@views.PageLayout(c, views.PageLayoutArgs{
 		Title: "Dashboard - Publications - Biblio",
-		Breadcrumbs: []Breadcrumb{
+		Breadcrumbs: []views.Breadcrumb{
 			{LabelID: "dashboard"},
 		},
 	}) {

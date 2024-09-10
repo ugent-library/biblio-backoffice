@@ -1,6 +1,9 @@
-package views
+package dashboardviews
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/views"
+)
 
 type CuratorDashboardDatasetsArgs struct {
 	ActiveSubNav string
@@ -10,9 +13,9 @@ type CuratorDashboardDatasetsArgs struct {
 }
 
 templ CuratorDashboardDatasets(c *ctx.Ctx, args *CuratorDashboardDatasetsArgs) {
-	@PageLayout(c, PageLayoutArgs{
+	@views.PageLayout(c, views.PageLayoutArgs{
 		Title: "Dashboard - Datasets - Biblio",
-		Breadcrumbs: []Breadcrumb{
+		Breadcrumbs: []views.Breadcrumb{
 			{LabelID: "dashboard"},
 		},
 	}) {
