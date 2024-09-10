@@ -57,7 +57,7 @@ type PostBody = (
 };
 
 function addContributor(
-  scope: "publication" | "dataset",
+  scope: Biblio.Scope,
   contributorType: ContributorType,
   firstName: string,
   lastName: string,

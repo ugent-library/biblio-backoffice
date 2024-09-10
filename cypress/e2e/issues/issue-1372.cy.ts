@@ -195,15 +195,14 @@ describe("Issue #1372: Administrative support staff cannot see linked datasets/p
   });
 
   function verifyActionability(
-    context: "publication" | "dataset",
+    scope: Biblio.Scope,
     isActionable: boolean,
     canAddAndRemoveRelatedItems: boolean,
   ) {
     const prefix = isActionable ? "" : "not.";
-    const relatedContext =
-      context === "publication" ? "dataset" : "publication";
+    const relatedScope = scope === "publication" ? "dataset" : "publication";
     const relatedContributorType =
-      relatedContext === "publication" ? "author" : "creator";
+      relatedScope === "publication" ? "author" : "creator";
 
     cy.get("@item").within(() => {
       // Verify the title is (not) a link to the detail page
@@ -215,7 +214,7 @@ describe("Issue #1372: Administrative support staff cannot see linked datasets/p
       if (isActionable) {
         $title
           .should("have.attr", "href")
-          .should("match", new RegExp(`^/${relatedContext}/[A-Z0-9]+$`));
+          .should("match", new RegExp(`^/${relatedScope}/[A-Z0-9]+$`));
       }
 
       // Verify there is an/no "more authors/creators" link
@@ -239,7 +238,7 @@ describe("Issue #1372: Administrative support staff cannot see linked datasets/p
           .should(prefix + "have.attr", "href")
           .should(
             "match",
-            new RegExp(`^/${relatedContext}/[A-Z0-9]+\\?show=contributors$`),
+            new RegExp(`^/${relatedScope}/[A-Z0-9]+\\?show=contributors$`),
           );
       }
 
@@ -253,7 +252,7 @@ describe("Issue #1372: Administrative support staff cannot see linked datasets/p
           .should("have.attr", "href")
           .should(
             "match",
-            new RegExp(`^/${relatedContext}/[A-Z0-9]+\\?show=contributors$`),
+            new RegExp(`^/${relatedScope}/[A-Z0-9]+\\?show=contributors$`),
           );
       }
 
