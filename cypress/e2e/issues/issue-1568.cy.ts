@@ -52,7 +52,7 @@ describe("Issue #1568: Missing conflict handling when editing / adding / removin
           });
         });
 
-      // Page is not refreshed so we still think there are 3 authors
+      // Page is not refreshed so we still see the original order
       verifyContributors("#contributors-author-table", [
         "Author 1",
         "Author 2",
@@ -215,7 +215,7 @@ describe("Issue #1568: Missing conflict handling when editing / adding / removin
           });
         });
 
-      // Page is not refreshed so we still think there are 3 editors
+      // Page is not refreshed so we still see the original order
       verifyContributors("#contributors-editor-table", [
         "Editor 1",
         "Editor 2",
@@ -378,7 +378,7 @@ describe("Issue #1568: Missing conflict handling when editing / adding / removin
           });
         });
 
-      // Page is not refreshed so we still think there are 3 supervisors
+      // Page is not refreshed so we still see the original order
       verifyContributors("#contributors-supervisor-table", [
         "Supervisor 1",
         "Supervisor 2",
@@ -548,7 +548,7 @@ describe("Issue #1568: Missing conflict handling when editing / adding / removin
           });
         });
 
-      // Page is not refreshed so we still think there are 3 creators
+      // Page is not refreshed so we still see the original order
       verifyContributors("#contributors-author-table", [
         "Creator 1",
         "Creator 2",
