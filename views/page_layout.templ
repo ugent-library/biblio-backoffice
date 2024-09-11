@@ -103,7 +103,7 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 															View as
 														</a>
 													}
-													if c.Repo.HasProxy(c.User.ID) {
+													if c.Repo.HasProxy(c.User.IDs) {
 														<a class="dropdown-item" href={ templ.URL(c.PathTo("proxy_settings").String()) }>
 															<i class="if if-settings"></i>
 															<span>Settings</span>
@@ -192,7 +192,7 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 													@DashboardIcon(c, false)
 												</a>
 											</li>
-											if c.UserRole == "curator" || c.Repo.IsProxy(c.User.ID) {
+											if c.UserRole == "curator" || c.Repo.IsProxy(c.User.IDs) {
 												<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "proxies") }>
 													<a href={ templ.URL(c.PathTo("proxies").String()) }>
 														<span class="c-sidebar__icon">

@@ -77,9 +77,7 @@ func findProxies(rc context.Context, c *ctx.Ctx, q string, limit, offset int) ([
 		if len(hits) != 1 {
 			return nil, nil, nil
 		}
-		personIDs = lo.Map(hits, func(p *models.Person, _ int) string {
-			return p.ID
-		})
+		personIDs = hits[0].IDs
 	}
 
 	var proxies [][]*models.Person
@@ -109,7 +107,7 @@ func findProxies(rc context.Context, c *ctx.Ctx, q string, limit, offset int) ([
 func userProxies(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-	ids, err := c.Repo.ProxyPersonIDs(r.Context(), c.User.ID)
+	ids, err := c.Repo.ProxyPersonIDs(r.Context(), c.User.IDs)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
@@ -230,7 +228,7 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 		return p.ID == c.User.ID || p.ID == proxy.ID
 	})
 
-	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), b.ProxyID)
+	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), proxy.IDs)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
@@ -263,7 +261,7 @@ func People(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), b.ProxyID)
+	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), proxy.IDs)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
@@ -308,7 +306,7 @@ func SuggestPeople(w http.ResponseWriter, r *http.Request) {
 		return p.ID == c.User.ID || p.ID == proxy.ID
 	})
 
-	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), b.ProxyID)
+	peopleIDs, err := c.Repo.ProxyPersonIDs(r.Context(), proxy.IDs)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
