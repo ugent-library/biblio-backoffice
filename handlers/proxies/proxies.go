@@ -343,7 +343,18 @@ func DeletePerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := c.Repo.RemoveProxyPerson(r.Context(), b.ProxyID, b.PersonID); err != nil {
+	proxy, err := c.PersonService.GetPerson(b.ProxyID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+	proxiedPerson, err := c.PersonService.GetPerson(b.PersonID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	if err := c.Repo.RemoveProxyPerson(r.Context(), proxy.IDs, proxiedPerson.IDs); err != nil {
 		c.HandleError(w, r, err)
 		return
 	}

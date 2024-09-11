@@ -104,12 +104,12 @@ func (r *Repo) ProxyPersonIDs(ctx context.Context, proxyIDs []string) ([]string,
 	return pgx.CollectRows(rows, pgx.RowTo[string])
 }
 
-func (r *Repo) ProxyIDs(ctx context.Context, personID string) ([]string, error) {
+func (r *Repo) ProxyIDs(ctx context.Context, personIDs []string) ([]string, error) {
 	q := `
 		select proxy_person_id from proxies
-		where person_id = $1;
+		where person_id = any($1);
 	`
-	rows, err := r.conn.Query(ctx, q, personID)
+	rows, err := r.conn.Query(ctx, q, personIDs)
 	if err != nil {
 		return nil, err
 	}
@@ -126,11 +126,11 @@ func (r *Repo) AddProxyPerson(ctx context.Context, proxyID, personID string) err
 	return err
 }
 
-func (r *Repo) RemoveProxyPerson(ctx context.Context, proxyID, personID string) error {
+func (r *Repo) RemoveProxyPerson(ctx context.Context, proxyIDs, personIDs []string) error {
 	q := `
 		delete from proxies
-		where proxy_person_id = $1 and person_id = $2;
+		where proxy_person_id = any($1) and person_id = any($2);
 	`
-	_, err := r.conn.Exec(ctx, q, proxyID, personID)
+	_, err := r.conn.Exec(ctx, q, proxyIDs, personIDs)
 	return err
 }
