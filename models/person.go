@@ -18,6 +18,7 @@ type Person struct {
 	FirstName    string         `json:"first_name"`
 	FullName     string         `json:"full_name"`
 	ID           string         `json:"id"`
+	IDs          []string       `json:"ids"`
 	LastName     string         `json:"last_name"`
 	ORCID        string         `json:"orcid"`
 	UGentID      []string       `json:"ugent_id"`

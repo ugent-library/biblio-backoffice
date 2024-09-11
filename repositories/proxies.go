@@ -6,12 +6,12 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (s *Repo) IsProxyFor(proxyID string, personIDs []string) bool {
+func (s *Repo) IsProxyFor(proxyIDs []string, personIDs []string) bool {
 	q := `
-		select exists(select 1 from proxies where proxy_person_id = $1 and person_id = any($2));
+		select exists(select 1 from proxies where proxy_person_id = any($1) and person_id = any($2));
 	`
 	var exists bool
-	if err := s.conn.QueryRow(context.TODO(), q, proxyID, personIDs).Scan(&exists); err != nil {
+	if err := s.conn.QueryRow(context.TODO(), q, proxyIDs, personIDs).Scan(&exists); err != nil {
 		// TODO log error
 		return false
 	}
@@ -19,12 +19,12 @@ func (s *Repo) IsProxyFor(proxyID string, personIDs []string) bool {
 	return exists
 }
 
-func (s *Repo) IsProxy(proxyID string) bool {
+func (s *Repo) IsProxy(proxyIDs []string) bool {
 	q := `
-		select exists(select 1 from proxies where proxy_person_id = $1);
+		select exists(select 1 from proxies where proxy_person_id = any($1));
 	`
 	var exists bool
-	if err := s.conn.QueryRow(context.TODO(), q, proxyID).Scan(&exists); err != nil {
+	if err := s.conn.QueryRow(context.TODO(), q, proxyIDs).Scan(&exists); err != nil {
 		// TODO log error
 		return false
 	}
@@ -32,12 +32,12 @@ func (s *Repo) IsProxy(proxyID string) bool {
 	return exists
 }
 
-func (s *Repo) HasProxy(personID string) bool {
+func (s *Repo) HasProxy(personIDs []string) bool {
 	q := `
-		select exists(select 1 from proxies where person_id = $1);
+		select exists(select 1 from proxies where person_id = any($1));
 	`
 	var exists bool
-	if err := s.conn.QueryRow(context.TODO(), q, personID).Scan(&exists); err != nil {
+	if err := s.conn.QueryRow(context.TODO(), q, personIDs).Scan(&exists); err != nil {
 		// TODO log error
 		return false
 	}
@@ -52,7 +52,7 @@ func (r *Repo) FindProxies(ctx context.Context, personIDs []string, limit, offse
 	if len(personIDs) > 0 {
 		q = `
 			select count(*) over() as total, proxy_person_id, person_id from proxies
-			where  proxy_person_id = any($1) or person_id = any($1)
+			where proxy_person_id = any($1) or person_id = any($1)
 			order by proxy_person_id, person_id
 			limit $2
 			offset $3;
@@ -92,12 +92,12 @@ func (r *Repo) FindProxies(ctx context.Context, personIDs []string, limit, offse
 	return total, pairs, nil
 }
 
-func (r *Repo) ProxyPersonIDs(ctx context.Context, proxyID string) ([]string, error) {
+func (r *Repo) ProxyPersonIDs(ctx context.Context, proxyIDs []string) ([]string, error) {
 	q := `
 		select person_id from proxies
-		where proxy_person_id = $1;
+		where proxy_person_id = any($1);
 	`
-	rows, err := r.conn.Query(ctx, q, proxyID)
+	rows, err := r.conn.Query(ctx, q, proxyIDs)
 	if err != nil {
 		return nil, err
 	}
