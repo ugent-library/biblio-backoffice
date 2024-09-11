@@ -27,6 +27,7 @@ import verifyConflictErrorDialog from "./verify-conflict-error-dialog";
 import finishLog from "./finish-log";
 import setField from "./set-field";
 import triggerHtmx from "./trigger-htmx";
+import drag from "./drag";
 
 // Dual commands
 import extractBiblioId from "./extract-biblio-id";
@@ -87,6 +88,8 @@ Cypress.Commands.addAll(
     setField,
 
     triggerHtmx,
+
+    drag,
   },
 );
 
