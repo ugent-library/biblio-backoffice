@@ -37,51 +37,62 @@ func Proxies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	proxies, pagination, err := findProxies(r.Context(), c, "", 20, 0)
+	proxies, pager, err := findProxies(r.Context(), c, nil, 20, 0)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
 	}
 
-	proxyviews.Index(c, proxies, pagination).Render(r.Context(), w)
+	proxyviews.Index(c, proxies, nil, pager).Render(r.Context(), w)
+}
+
+func ListSuggestions(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+
+	hits, err := c.PersonSearchService.SuggestPeople(r.URL.Query().Get("q"))
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	proxyviews.ListSuggestions(c, hits).Render(r.Context(), w)
 }
 
 func List(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
 	b := struct {
-		ProxiesFilter string `query:"proxies_filter"`
-		Offset        int    `query:"offset"`
+		ID     string `query:"id"`
+		Offset int    `query:"offset"`
 	}{}
 	if err := bind.Request(r, &b); err != nil {
 		c.HandleError(w, r, httperror.BadRequest.Wrap(err))
 		return
 	}
 
-	proxies, pagination, err := findProxies(r.Context(), c, b.ProxiesFilter, 20, b.Offset)
+	var person *models.Person
+	var personIDs []string
+	if b.ID != "" {
+		var err error
+		person, err = c.PersonService.GetPerson(b.ID)
+		if err != nil {
+			c.HandleError(w, r, err)
+			return
+		}
+		personIDs = person.IDs
+	}
+
+	proxies, pager, err := findProxies(r.Context(), c, personIDs, 20, b.Offset)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
 	}
-	proxyviews.List(c, proxies, pagination).Render(r.Context(), w)
+	proxyviews.RefreshList(c, proxies, person, pager).Render(r.Context(), w)
 }
 
-func findProxies(rc context.Context, c *ctx.Ctx, q string, limit, offset int) ([][]*models.Person, *pagination.Pagination, error) {
-	var personIDs []string
-	if q != "" {
-		hits, err := c.UserSearchService.SuggestUsers(q)
-		if err != nil {
-			return nil, nil, err
-		}
-		// only exact matches
-		if len(hits) != 1 {
-			return nil, nil, nil
-		}
-		personIDs = hits[0].IDs
-	}
-
+func findProxies(rc context.Context, c *ctx.Ctx, ids []string, limit, offset int) ([][]*models.Person, *pagination.Pagination, error) {
 	var proxies [][]*models.Person
-	total, pairs, err := c.Repo.FindProxies(rc, personIDs, limit, offset)
+	total, pairs, err := c.Repo.FindProxies(rc, ids, limit, offset)
 	if err != nil {
 		return nil, nil, err
 	}

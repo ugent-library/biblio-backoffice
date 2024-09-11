@@ -241,6 +241,7 @@ func Register(c Config) {
 
 					// proxy management
 					r.Get("/proxies/list", proxies.List).Name("proxies_list")
+					r.Get("/proxies/list/suggestions", proxies.ListSuggestions).Name("proxies_list_suggestions")
 					r.Get("/proxies/add", proxies.AddProxy).Name("add_proxy")
 					r.Get("/proxies/suggestions", proxies.SuggestProxies).Name("suggest_proxies")
 					r.Get("/proxies/{proxy_id}/edit", proxies.Edit).Name("edit_proxy")

@@ -8,7 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 )
 
-templ Index(c *ctx.Ctx, proxies [][]*models.Person, pager *pag.Pagination) {
+templ Index(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager *pag.Pagination) {
 	@views.PageLayout(c, views.PageLayoutArgs{
 		Title: "Biblio",
 		Breadcrumbs: []views.Breadcrumb{
@@ -47,94 +47,154 @@ templ Index(c *ctx.Ctx, proxies [][]*models.Person, pager *pag.Pagination) {
 				<div class="row mb-4">
 					<div class="col">
 						<div class="input-group flex-nowrap">
-							<label class="visually-hidden" for="search">Search</label>
-							<input class="form-control" type="text" name="proxies_filter" id="proxies-filter" placeholder="Search..." value=""/>
-							<button type="button" class="btn btn-outline-primary" id="proxies-filter-button">
-								<i class="if if-search"></i>
-								<div class="btn-text">Search</div>
-							</button>
+							<label class="visually-hidden" for="proxies-list-q">Search</label>
+							<input
+								class="form-control"
+								type="search"
+								id="proxies-list-q"
+								name="q"
+								placeholder="Search..."
+								value=""
+								autocomplete="off"
+								aria-describedby="proxies-list-q-helper"
+								hx-get={ c.PathTo("proxies_list_suggestions").String() }
+								hx-trigger="input changed delay:250ms"
+								hx-target="#proxies-list-suggestions"
+							/>
 						</div>
+						<span class="form-text text-muted" id="proxies-list-q-helper">Enter first- and last name, OrcID or UGent ID.</span>
+						<div id="proxies-list-suggestions"></div>
 					</div>
 				</div>
-				@List(c, proxies, pager)
+				@List(c, proxies, person, pager)
 			</div>
 		</div>
 	}
 }
 
-templ List(c *ctx.Ctx, proxies [][]*models.Person, pager *pag.Pagination) {
+templ ListSuggestions(c *ctx.Ctx, people []*models.Person) {
+	if len(people) > 0 {
+		<div class="dropdown-menu search-suggestions py-0 border-0 show">
+			<div class="list-group">
+				for _, p := range people {
+					<div class="list-group-item">
+						@ListItem(c, p) {
+							<button
+								class="btn btn-outline-primary"
+								class="card w-100 mb-6"
+								hx-get={ c.PathTo("proxies_list").String() }
+								hx-vals={ fmt.Sprintf(`{"id": %q}`, p.ID) }
+								hx-target="#proxies-list"
+								hx-swap="outerHTML"
+							>
+								<span class="btn-text">Search this profile</span>
+								<i class="if if-arrow-right"></i>
+							</button>
+						}
+					</div>
+				}
+			</div>
+		</div>
+	}
+}
+
+templ RefreshList(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager *pag.Pagination) {
+	<div id="proxies-list-suggestions" hx-swap-oob="true"></div>
+	@List(c, proxies, person, pager)
+}
+
+templ List(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager *pag.Pagination) {
 	<div
-		class="card w-100 mb-6"
 		id="proxies-list"
 		hx-get={ c.PathTo("proxies_list").String() }
-		hx-trigger="proxyChanged from:body, click from:#proxies-filter-button"
-		hx-include="#proxies-filter"
+		hx-trigger="proxyChanged from:body"
+		if person != nil {
+			hx-vals={ fmt.Sprintf(`{"id": %q, "offset": %d}`, person.ID, pager.Offset) }
+		} else {
+			hx-vals={ fmt.Sprintf(`{"offset": %d}`, pager.Offset) }
+		}
 		hx-swap="outerHTML"
 	>
-		<div class="card-header border-bottom-0">
-			<div class="bc-toolbar">
-				<div class="bc-toolbar-left">
-					<div class="bc-toolbar-item">
-						<nav>
-							@pagination(c, *pager)
-						</nav>
-					</div>
-					<div class="bc-toolbar-item">
-						<span class="text-muted c-body-small">
-							{ views.PaginationCount(c, *pager) }
-						</span>
+		if person != nil {
+			<p class="mt-6 mb-4">
+				<span class="badge rounded-pill badge-default badge-lg">
+					<span class="badge-text">Searching for: &nbsp;</span>
+					<span class="badge-value me-2">
+						<strong>{ person.FullName }</strong>
+					</span>
+					<a href={ templ.SafeURL(c.PathTo("proxies").String()) } class="btn btn-sm btn-link btn-icon-only">
+						<i class="if if-delete"></i>
+						<div class="visually-hidden">Remove search</div>
+					</a>
+				</span>
+			</p>
+		}
+		<div class="card w-100 mb-6">
+			<div class="card-header border-bottom-0">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<div class="bc-toolbar-item">
+							<nav>
+								@pagination(c, person, *pager)
+							</nav>
+						</div>
+						<div class="bc-toolbar-item">
+							<span class="text-muted c-body-small">
+								{ views.PaginationCount(c, *pager) }
+							</span>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="card-body w-100 p-0">
-			<div class="table-responsive">
-				<table class="table table-sm table-bordered">
-					<tbody>
-						for _, p := range proxies {
-							<tr>
-								<td class="text-nowrap d-none d-md-table-cell">Proxy</td>
-								<td class="text-nowrap">
-									@tableItem(c, p[0])
-								</td>
-								<td class="text-nowrap">
-									<p class="text-center">
-										manages<i class="if if-arrow-right if--muted if--small ms-2"></i>
-									</p>
-								</td>
-								<td class="text-nowrap">
-									@tableItem(c, p[1])
-								</td>
-								<td class="text-nowrap">
-									<div class="c-button-toolbar flex-nowrap">
-										<a
-											class="btn btn-link btn-link-muted"
-											hx-delete={ c.PathTo("proxy_remove_person", "proxy_id", p[0].ID, "person_id", p[1].ID).String() }
-											hx-swap="none"
-										>
-											<i class="if if-delete"></i>
-											<span class="btn-text d-none d-lg-inline-block">Delete</span>
-										</a>
-									</div>
-								</td>
-							</tr>
-						}
-					</tbody>
-				</table>
+			<div class="card-body w-100 p-0">
+				<div class="table-responsive">
+					<table class="table table-sm table-bordered">
+						<tbody>
+							for _, p := range proxies {
+								<tr>
+									<td class="text-nowrap d-none d-md-table-cell">Proxy</td>
+									<td class="text-nowrap">
+										@tableItem(c, p[0])
+									</td>
+									<td class="text-nowrap">
+										<p class="text-center">
+											manages<i class="if if-arrow-right if--muted if--small ms-2"></i>
+										</p>
+									</td>
+									<td class="text-nowrap">
+										@tableItem(c, p[1])
+									</td>
+									<td class="text-nowrap">
+										<div class="c-button-toolbar flex-nowrap">
+											<a
+												class="btn btn-link btn-link-muted"
+												hx-delete={ c.PathTo("proxy_remove_person", "proxy_id", p[0].ID, "person_id", p[1].ID).String() }
+												hx-swap="none"
+											>
+												<i class="if if-delete"></i>
+												<span class="btn-text d-none d-lg-inline-block">Delete</span>
+											</a>
+										</div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
 			</div>
-		</div>
-		<div class="card-footer border-top-0">
-			<div class="bc-toolbar">
-				<div class="bc-toolbar-left">
-					<div class="bc-toolbar-item">
-						<nav>
-							@pagination(c, *pager)
-						</nav>
-					</div>
-					<div class="bc-toolbar-item">
-						<span class="text-muted c-body-small">
-							{ views.PaginationCount(c, *pager) }
-						</span>
+			<div class="card-footer border-top-0">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<div class="bc-toolbar-item">
+							<nav>
+								@pagination(c, person, *pager)
+							</nav>
+						</div>
+						<div class="bc-toolbar-item">
+							<span class="text-muted c-body-small">
+								{ views.PaginationCount(c, *pager) }
+							</span>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -162,15 +222,18 @@ templ tableItem(c *ctx.Ctx, p *models.Person) {
 	</div>
 }
 
-templ pagination(c *ctx.Ctx, pager pag.Pagination) {
+templ pagination(c *ctx.Ctx, person *models.Person, pager pag.Pagination) {
 	<ul class="pagination">
 		if pager.HasPreviousPage() {
 			<li class="page-item">
 				<a
 					class="page-link"
 					aria-label="Previous"
-					hx-get={ c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Offset-pager.Limit)).String() }
-					hx-include="#proxies-filter"
+					if person != nil {
+						hx-get={ c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Offset-pager.Limit), "id", person.ID).String() }
+					} else {
+						hx-get={ c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Offset-pager.Limit)).String() }
+					}
 					hx-target="#proxies-list"
 					hx-swap="outerHTML"
 				>
@@ -190,8 +253,11 @@ templ pagination(c *ctx.Ctx, pager pag.Pagination) {
 					<a
 						class="page-link"
 						aria-label={ fmt.Sprintf("Page %d", page) }
-						hx-get={ c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Limit*(page-1))).String() }
-						hx-include="#proxies-filter"
+						if person != nil {
+							hx-get={ c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Limit*(page-1)), "id", person.ID).String() }
+						} else {
+							hx-get={ c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Limit*(page-1))).String() }
+						}
 						hx-target="#proxies-list"
 						hx-swap="outerHTML"
 					>
@@ -211,8 +277,11 @@ templ pagination(c *ctx.Ctx, pager pag.Pagination) {
 				<a
 					class="page-link"
 					aria-label="Next"
-					hx-get={ c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Offset+pager.Limit)).String() }
-					hx-include="#proxies-filter"
+					if person != nil {
+						hx-get={ c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Offset+pager.Limit), "id", person.ID).String() }
+					} else {
+						hx-get={ c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Offset+pager.Limit)).String() }
+					}
 					hx-target="#proxies-list"
 					hx-swap="outerHTML"
 				>
