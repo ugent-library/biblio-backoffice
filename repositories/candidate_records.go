@@ -70,15 +70,16 @@ func (r *Repo) HasCandidateRecords(ctx context.Context) (bool, error) {
 	return exists, nil
 }
 
-func (r *Repo) GetCandidateRecordsByPersonID(ctx context.Context, personID string, start int, limit int) (int, []*models.CandidateRecord, error) {
+func (r *Repo) GetCandidateRecordsByPersonID(ctx context.Context, personID string, start int, limit int, newOnly bool) (int, []*models.CandidateRecord, error) {
 	query, _ := json.Marshal([]struct {
 		PersonID string `json:"person_id"`
 	}{{PersonID: personID}})
 
 	rows, err := r.queries.GetCandidateRecordsByPersonID(ctx, db.GetCandidateRecordsByPersonIDParams{
-		Query:  query,
-		Limit:  int32(limit),
-		Offset: int32(start),
+		Query:   query,
+		Limit:   int32(limit),
+		Offset:  int32(start),
+		NewOnly: newOnly,
 	})
 	if err != nil {
 		return 0, nil, err

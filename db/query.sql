@@ -12,15 +12,16 @@ RETURNING id;
 -- name: GetCandidateRecords :many
 SELECT *, count(*) OVER () AS total
 FROM candidate_records
-WHERE status = 'new'
+WHERE (status = 'new' OR EXTRACT(DAY FROM (current_timestamp - date_created)) <= 90)
 ORDER BY date_created ASC
-LIMIT $1
-OFFSET $2;
+LIMIT sqlc.arg('limit')
+OFFSET sqlc.arg('offset');
 
 -- name: GetCandidateRecordsByPersonID :many
 SELECT *, count(*) OVER () AS total
 FROM candidate_records
-WHERE status = 'new' AND (metadata->'author' @> sqlc.arg(query)::jsonb OR metadata->'supervisor' @> sqlc.arg(query)::jsonb)
+WHERE (status = 'new' OR (sqlc.arg('new_only')::bool = 0::bool AND EXTRACT(DAY FROM (current_timestamp - date_created)) <= 90))
+  AND (metadata->'author' @> sqlc.arg(query)::jsonb OR metadata->'supervisor' @> sqlc.arg(query)::jsonb)
 ORDER BY date_created ASC
 LIMIT sqlc.arg('limit')
 OFFSET sqlc.arg('offset');

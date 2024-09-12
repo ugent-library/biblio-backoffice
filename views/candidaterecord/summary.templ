@@ -10,37 +10,51 @@ import (
 type SummaryOpts struct {
 	Thumbnail string
 	Badge     templ.Component
+	Info      templ.Component
 }
 
 templ Summary(c *ctx.Ctx, rec *models.CandidateRecord) {
-	@publicationSummary(c, rec.Publication, SummaryOpts{Badge: summaryBadge(rec), Thumbnail: c.AssetPath("/images/plato-logo.svg")}) {
-		<button
-			class="btn btn-link btn-link-muted"
-			hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
-			hx-target="#modals"
-		>
-			<div class="btn-text">Reject</div>
-		</button>
-		<button
-			class="btn btn-link btn-link-muted"
-			hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
-			hx-target="#modals"
-		>
-			<div class="btn-text">Preview</div>
-		</button>
-		<button
-			class="btn btn-outline-primary"
-			hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
-			hx-swap="none"
-		>
-			<div class="btn-text">
-				if c.UserRole == "curator" {
-					Import as draft
-				} else {
-					Claim
-				}
-			</div>
-		</button>
+	switch rec.Status {
+		case "new":
+			@publicationSummary(c, rec.Publication, SummaryOpts{
+				Badge:     summaryBadge("badge-default", fmt.Sprintf("Biblio suggestion via %s", rec.SourceName)),
+				Thumbnail: c.AssetPath("/images/plato-logo.svg")}) {
+				<button
+					class="btn btn-link btn-link-muted"
+					hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
+					hx-target="#modals"
+				>
+					<div class="btn-text">Reject</div>
+				</button>
+				<button
+					class="btn btn-link btn-link-muted"
+					hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
+					hx-target="#modals"
+				>
+					<div class="btn-text">Preview</div>
+				</button>
+				<button
+					class="btn btn-outline-primary"
+					hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
+					hx-swap="none"
+				>
+					<div class="btn-text">
+						if c.UserRole == "curator" {
+							Import as draft
+						} else {
+							Claim
+						}
+					</div>
+				</button>
+			}
+		case "imported":
+			@publicationSummary(c, rec.Publication, SummaryOpts{
+				Badge: summaryBadge("badge-warning-light", fmt.Sprintf("Imported %s suggestion", rec.SourceName)),
+				Info:  importedInfo(rec)})
+		case "rejected":
+			@publicationSummary(c, rec.Publication, SummaryOpts{
+				Badge: summaryBadge("badge-danger-light", fmt.Sprintf("Rejected %s suggestion", rec.SourceName)),
+				Info:  rejectedInfo(rec)})
 	}
 }
 
@@ -114,57 +128,82 @@ templ publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 									}
 								</span>
 							</h4>
-							<ul class="c-meta-list c-meta-list-inline">
-								for _, summaryPart := range p.SummaryParts() {
-									<li class="c-meta-item">{ summaryPart }</li>
+							if p.Status == "new" {
+								<ul class="c-meta-list c-meta-list-inline">
+									for _, summaryPart := range p.SummaryParts() {
+										<li class="c-meta-item">{ summaryPart }</li>
+									}
+								</ul>
+								<div class="d-inline-flex align-items-center flex-wrap">
+									<div class="d-inline-flex align-items-center flex-wrap">
+										@contributorviews.Summary(c, contributorviews.SummaryArgs{
+											Role:                    "author",
+											Contributors:            p.Author,
+											CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
+											CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
+										})
+									</div>
+									<div class="text-muted fst-italic me-5 my-1">supervised by</div>
+									<div class="d-inline-flex align-items-center flex-wrap">
+										@contributorviews.Summary(c, contributorviews.SummaryArgs{
+											Role:                    "supervisor",
+											Contributors:            p.Supervisor,
+											CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
+											CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
+										})
+									</div>
+								</div>
+								if len(p.RelatedOrganizations) > 0 {
+									<div class="d-inline-flex align-items-center flex-wrap">
+										<span class="badge rounded-pill badge-light me-4">Suggested departments</span>
+										<ul class="c-meta-list c-meta-list-inline">
+											for _, o := range p.RelatedOrganizations {
+												<li class="c-meta-item">
+													<i class="if if-building if--small if--muted pe-1"></i>
+													<span>{ o.OrganizationID }</span>
+												</li>
+											}
+										</ul>
+									</div>
 								}
-							</ul>
-							<div class="d-inline-flex align-items-center flex-wrap">
-								<div class="d-inline-flex align-items-center flex-wrap">
-									@contributorviews.Summary(c, contributorviews.SummaryArgs{
-										Role:                    "author",
-										Contributors:            p.Author,
-										CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
-										CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
-									})
-								</div>
-								<div class="text-muted fst-italic me-5 my-1">supervised by</div>
-								<div class="d-inline-flex align-items-center flex-wrap">
-									@contributorviews.Summary(c, contributorviews.SummaryArgs{
-										Role:                    "supervisor",
-										Contributors:            p.Supervisor,
-										CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
-										CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
-									})
-								</div>
-							</div>
-							if len(p.RelatedOrganizations) > 0 {
-								<div class="d-inline-flex align-items-center flex-wrap">
-									<span class="badge rounded-pill badge-light me-4">Suggested departments</span>
-									<ul class="c-meta-list c-meta-list-inline">
-										for _, o := range p.RelatedOrganizations {
-											<li class="c-meta-item">
-												<i class="if if-building if--small if--muted pe-1"></i>
-												<span>{ o.OrganizationID }</span>
-											</li>
-										}
-									</ul>
-								</div>
 							}
 						</div>
 					</div>
 					<div class="c-button-toolbar flex-row-reverse flex-lg-row">
 						{ children... }
 					</div>
+					if opts.Info != nil {
+						@opts.Info
+					}
 				</div>
 			</div>
 		</div>
 	</div>
 }
 
-templ summaryBadge(rec *models.CandidateRecord) {
-	<span class="badge rounded-pill badge-default me-3 my-2">
+templ summaryBadge(colorClass string, text string) {
+	<span class={ "badge", "rounded-pill", "me-3", "my-2", colorClass }>
 		<span class="badge-circle"></span>
-		<span class="badge-text">Biblio suggestion via { rec.SourceName }</span>
+		<span class="badge-text">{ text }</span>
 	</span>
+}
+
+templ importedInfo(rec *models.CandidateRecord) {
+	<p class="text-muted text-md-end text-nowrap">
+		<span>
+			Claimed: [Researcher/reviewer name].&nbsp;<a class="c-link c-link-muted" type="button" href={ "" }>View</a>
+		</span>
+		<br/>
+		<small class="fst-italic d-inline-block pt-2">On [2024-07-29]. Reminder disappears in [90 days].</small>
+	</p>
+}
+
+templ rejectedInfo(rec *models.CandidateRecord) {
+	<p class="text-muted text-md-end text-nowrap">
+		<span>
+			Rejected: [Researcher/reviewer name].&nbsp;<a class="c-link c-link-muted" type="button" data-bs-toggle="modal" data-bs-target="#previewDissertationSuggestion">Restore</a>
+		</span>
+		<br/>
+		<small class="fst-italic d-inline-block pt-2">On [2024-07-29]. Reminder disappears in [90 days].</small>
+	</p>
 }

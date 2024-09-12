@@ -48,7 +48,7 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 						<div class="card-body w-100 p-0">
 							<ul class="list-group list-group-flush">
 								for _, rec := range recs {
-									<li class="list-group-item bg-transparent">
+									<li class={ "list-group-item", "bg-transparent", templ.KV("opacity-75", rec.Status != "new") }>
 										@Summary(c, rec)
 									</li>
 								}

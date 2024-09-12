@@ -94,15 +94,15 @@ func (q *Queries) GetCandidateRecordBySource(ctx context.Context, arg GetCandida
 const getCandidateRecords = `-- name: GetCandidateRecords :many
 SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, count(*) OVER () AS total
 FROM candidate_records
-WHERE status = 'new'
+WHERE (status = 'new' OR EXTRACT(DAY FROM (current_timestamp - date_created)) <= 90)
 ORDER BY date_created ASC
-LIMIT $1
-OFFSET $2
+LIMIT $2
+OFFSET $1
 `
 
 type GetCandidateRecordsParams struct {
-	Limit  int32
 	Offset int32
+	Limit  int32
 }
 
 type GetCandidateRecordsRow struct {
@@ -118,7 +118,7 @@ type GetCandidateRecordsRow struct {
 }
 
 func (q *Queries) GetCandidateRecords(ctx context.Context, arg GetCandidateRecordsParams) ([]GetCandidateRecordsRow, error) {
-	rows, err := q.db.Query(ctx, getCandidateRecords, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, getCandidateRecords, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -150,16 +150,18 @@ func (q *Queries) GetCandidateRecords(ctx context.Context, arg GetCandidateRecor
 const getCandidateRecordsByPersonID = `-- name: GetCandidateRecordsByPersonID :many
 SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, count(*) OVER () AS total
 FROM candidate_records
-WHERE status = 'new' AND (metadata->'author' @> $1::jsonb OR metadata->'supervisor' @> $1::jsonb)
+WHERE (status = 'new' OR ($1::bool = 0::bool AND EXTRACT(DAY FROM (current_timestamp - date_created)) <= 90))
+  AND (metadata->'author' @> $2::jsonb OR metadata->'supervisor' @> $2::jsonb)
 ORDER BY date_created ASC
-LIMIT $3
-OFFSET $2
+LIMIT $4
+OFFSET $3
 `
 
 type GetCandidateRecordsByPersonIDParams struct {
-	Query  []byte
-	Offset int32
-	Limit  int32
+	NewOnly bool
+	Query   []byte
+	Offset  int32
+	Limit   int32
 }
 
 type GetCandidateRecordsByPersonIDRow struct {
@@ -175,7 +177,12 @@ type GetCandidateRecordsByPersonIDRow struct {
 }
 
 func (q *Queries) GetCandidateRecordsByPersonID(ctx context.Context, arg GetCandidateRecordsByPersonIDParams) ([]GetCandidateRecordsByPersonIDRow, error) {
-	rows, err := q.db.Query(ctx, getCandidateRecordsByPersonID, arg.Query, arg.Offset, arg.Limit)
+	rows, err := q.db.Query(ctx, getCandidateRecordsByPersonID,
+		arg.NewOnly,
+		arg.Query,
+		arg.Offset,
+		arg.Limit,
+	)
 	if err != nil {
 		return nil, err
 	}

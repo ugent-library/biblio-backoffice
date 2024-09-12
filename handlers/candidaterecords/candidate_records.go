@@ -29,7 +29,7 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	if c.UserRole == "curator" {
 		total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs.Offset(), searchArgs.Limit())
 	} else {
-		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.User.ID, searchArgs.Offset(), searchArgs.Limit())
+		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.User.ID, searchArgs.Offset(), searchArgs.Limit(), false)
 	}
 
 	if err != nil {
