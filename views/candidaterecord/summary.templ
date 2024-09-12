@@ -8,17 +8,19 @@ import (
 )
 
 type SummaryOpts struct {
-	Thumbnail string
-	Badge     templ.Component
-	Info      templ.Component
+	Thumbnail   string
+	Badge       templ.Component
+	Info        templ.Component
+	ShowDetails bool
 }
 
 templ Summary(c *ctx.Ctx, rec *models.CandidateRecord) {
 	switch rec.Status {
 		case "new":
 			@publicationSummary(c, rec.Publication, SummaryOpts{
-				Badge:     summaryBadge("badge-default", fmt.Sprintf("Biblio suggestion via %s", rec.SourceName)),
-				Thumbnail: c.AssetPath("/images/plato-logo.svg")}) {
+				Badge:       summaryBadge("badge-default", fmt.Sprintf("Biblio suggestion via %s", rec.SourceName)),
+				ShowDetails: true,
+				Thumbnail:   c.AssetPath("/images/plato-logo.svg")}) {
 				<button
 					class="btn btn-link btn-link-muted"
 					hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
@@ -128,7 +130,7 @@ templ publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 									}
 								</span>
 							</h4>
-							if p.Status == "new" {
+							if opts.ShowDetails {
 								<ul class="c-meta-list c-meta-list-inline">
 									for _, summaryPart := range p.SummaryParts() {
 										<li class="c-meta-item">{ summaryPart }</li>
