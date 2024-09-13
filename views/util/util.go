@@ -4,6 +4,7 @@ import (
 	"html"
 	"log"
 	"strings"
+	"time"
 
 	"jaytaylor.com/html2text"
 	"mvdan.cc/xurls/v2"
@@ -52,4 +53,8 @@ func StripHTML(text string, textOnly bool) string {
 	}
 
 	return result
+}
+
+func DateOnly(date time.Time) time.Time {
+	return time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
 }

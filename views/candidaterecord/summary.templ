@@ -5,6 +5,9 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+	"github.com/ugent-library/biblio-backoffice/views/util"
+	"math"
+	"time"
 )
 
 type SummaryOpts struct {
@@ -12,6 +15,14 @@ type SummaryOpts struct {
 	Badge       templ.Component
 	Info        templ.Component
 	ShowDetails bool
+}
+
+func daysUntilDisappearanceDate(date time.Time) string {
+	disappearanceDate := util.DateOnly(date).AddDate(0, 0, 90)
+	today := util.DateOnly(time.Now())
+	daysUntil := math.Max(0, disappearanceDate.Sub(today).Hours()/24)
+
+	return fmt.Sprintf("%d", int(daysUntil))
 }
 
 templ Summary(c *ctx.Ctx, rec *models.CandidateRecord) {
@@ -193,19 +204,33 @@ templ summaryBadge(colorClass string, text string) {
 templ importedInfo(rec *models.CandidateRecord) {
 	<p class="text-muted text-md-end text-nowrap">
 		<span>
-			Claimed: [Researcher/reviewer name].&nbsp;<a class="c-link c-link-muted" type="button" href={ "" }>View</a>
+			Claimed: 
+			if rec.StatusPerson != nil {
+				{ rec.StatusPerson.FullName }.
+			} else {
+				[missing].
+			}
+			<a class="c-link c-link-muted" type="button" href={ "" }>View</a>
 		</span>
 		<br/>
-		<small class="fst-italic d-inline-block pt-2">On [2024-07-29]. Reminder disappears in [90 days].</small>
+		if rec.StatusDate != nil {
+			<small class="fst-italic d-inline-block pt-2">On { rec.StatusDate.Format("2006-01-02") }. Reminder disappears in { daysUntilDisappearanceDate(*rec.StatusDate) } day(s).</small>
+		}
 	</p>
 }
 
 templ rejectedInfo(rec *models.CandidateRecord) {
 	<p class="text-muted text-md-end text-nowrap">
 		<span>
-			Rejected: [Researcher/reviewer name].&nbsp;<a class="c-link c-link-muted" type="button" data-bs-toggle="modal" data-bs-target="#previewDissertationSuggestion">Restore</a>
+			Rejected: 
+			if rec.StatusPerson != nil {
+				{ rec.StatusPerson.FullName }.
+			} else {
+				[missing].
+			}
+			<a class="c-link c-link-muted" type="button" data-bs-toggle="modal" data-bs-target="#previewDissertationSuggestion">Restore</a>
 		</span>
 		<br/>
-		<small class="fst-italic d-inline-block pt-2">On [2024-07-29]. Reminder disappears in [90 days].</small>
+		<small class="fst-italic d-inline-block pt-2">On { rec.StatusDate.Format("2006-01-02") }. Reminder disappears in { daysUntilDisappearanceDate(*rec.StatusDate) } day(s).</small>
 	</p>
 }
