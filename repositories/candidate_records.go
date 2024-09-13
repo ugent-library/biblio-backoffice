@@ -39,14 +39,17 @@ func (r *Repo) GetCandidateRecords(ctx context.Context, start int, limit int) (i
 	for i, row := range rows {
 		total = int(row.Total)
 		rec := &models.CandidateRecord{
-			ID:          row.ID,
-			SourceName:  row.SourceName,
-			SourceID:    row.SourceID,
-			Type:        row.Type,
-			Metadata:    row.Metadata,
-			DateCreated: row.DateCreated.Time,
-			Status:      row.Status,
-			Publication: &models.Publication{},
+			ID:             row.ID,
+			SourceName:     row.SourceName,
+			SourceID:       row.SourceID,
+			Type:           row.Type,
+			Metadata:       row.Metadata,
+			DateCreated:    row.DateCreated.Time,
+			Status:         row.Status,
+			Publication:    &models.Publication{},
+			StatusDate:     &row.StatusDate.Time,
+			StatusPersonID: row.StatusPersonID,
+			ImportedID:     row.ImportedID,
 		}
 		if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
 			return 0, nil, err
@@ -90,14 +93,22 @@ func (r *Repo) GetCandidateRecordsByPersonID(ctx context.Context, personID strin
 	for i, row := range rows {
 		total = int(row.Total)
 		rec := &models.CandidateRecord{
-			ID:          row.ID,
-			SourceName:  row.SourceName,
-			SourceID:    row.SourceID,
-			Type:        row.Type,
-			Metadata:    row.Metadata,
-			DateCreated: row.DateCreated.Time,
-			Status:      row.Status,
-			Publication: &models.Publication{},
+			ID:             row.ID,
+			SourceName:     row.SourceName,
+			SourceID:       row.SourceID,
+			Type:           row.Type,
+			Metadata:       row.Metadata,
+			DateCreated:    row.DateCreated.Time,
+			Status:         row.Status,
+			Publication:    &models.Publication{},
+			StatusDate:     &row.StatusDate.Time,
+			StatusPersonID: row.StatusPersonID,
+			ImportedID:     row.ImportedID,
+		}
+		for _, fn := range r.config.CandidateRecordLoaders {
+			if err := fn(rec); err != nil {
+				return 0, nil, err
+			}
 		}
 		if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
 			return 0, nil, err
@@ -137,14 +148,17 @@ func (r *Repo) GetCandidateRecordBySource(ctx context.Context, sourceName string
 	}
 
 	rec := &models.CandidateRecord{
-		ID:          row.ID,
-		SourceName:  row.SourceName,
-		SourceID:    row.SourceID,
-		Type:        row.Type,
-		Metadata:    row.Metadata,
-		DateCreated: row.DateCreated.Time,
-		Status:      row.Status,
-		Publication: &models.Publication{},
+		ID:             row.ID,
+		SourceName:     row.SourceName,
+		SourceID:       row.SourceID,
+		Type:           row.Type,
+		Metadata:       row.Metadata,
+		DateCreated:    row.DateCreated.Time,
+		Status:         row.Status,
+		Publication:    &models.Publication{},
+		StatusDate:     &row.StatusDate.Time,
+		StatusPersonID: row.StatusPersonID,
+		ImportedID:     row.ImportedID,
 	}
 
 	if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
@@ -169,14 +183,17 @@ func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.Candi
 	}
 
 	rec := &models.CandidateRecord{
-		ID:          row.ID,
-		SourceName:  row.SourceName,
-		SourceID:    row.SourceID,
-		Type:        row.Type,
-		Metadata:    row.Metadata,
-		DateCreated: row.DateCreated.Time,
-		Status:      row.Status,
-		Publication: &models.Publication{},
+		ID:             row.ID,
+		SourceName:     row.SourceName,
+		SourceID:       row.SourceID,
+		Type:           row.Type,
+		Metadata:       row.Metadata,
+		DateCreated:    row.DateCreated.Time,
+		Status:         row.Status,
+		Publication:    &models.Publication{},
+		StatusDate:     &row.StatusDate.Time,
+		StatusPersonID: row.StatusPersonID,
+		ImportedID:     row.ImportedID,
 	}
 
 	if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
@@ -217,7 +234,12 @@ func (r *Repo) ImportCandidateRecordAsPublication(ctx context.Context, id string
 			return err
 		}
 
-		if _, err := r.queries.SetCandidateRecordStatus(ctx, db.SetCandidateRecordStatusParams{ID: rec.ID, Status: "imported"}); err != nil {
+		if _, err := r.queries.SetCandidateRecordStatus(ctx, db.SetCandidateRecordStatusParams{
+			ID:             rec.ID,
+			Status:         "imported",
+			StatusPersonID: &user.ID,
+			ImportedID:     &rec.Publication.ID,
+		}); err != nil {
 			return err
 		}
 

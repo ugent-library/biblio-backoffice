@@ -17,6 +17,9 @@ type CandidateRecord struct {
 	Status         string
 	Metadata       []byte
 	DateCreated    pgtype.Timestamptz
+	StatusDate     pgtype.Timestamptz
+	StatusPersonID *string
+	ImportedID     *string
 }
 
 type Dataset struct {

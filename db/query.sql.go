@@ -47,7 +47,7 @@ func (q *Queries) AddCandidateRecord(ctx context.Context, arg AddCandidateRecord
 }
 
 const getCandidateRecord = `-- name: GetCandidateRecord :one
-SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created FROM candidate_records WHERE status = 'new' AND id = $1 LIMIT 1
+SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, status_date, status_person_id, imported_id FROM candidate_records WHERE status = 'new' AND id = $1 LIMIT 1
 `
 
 func (q *Queries) GetCandidateRecord(ctx context.Context, id string) (CandidateRecord, error) {
@@ -62,12 +62,15 @@ func (q *Queries) GetCandidateRecord(ctx context.Context, id string) (CandidateR
 		&i.Status,
 		&i.Metadata,
 		&i.DateCreated,
+		&i.StatusDate,
+		&i.StatusPersonID,
+		&i.ImportedID,
 	)
 	return i, err
 }
 
 const getCandidateRecordBySource = `-- name: GetCandidateRecordBySource :one
-SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created FROM candidate_records WHERE source_name = $1 AND source_id = $2 LIMIT 1
+SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, status_date, status_person_id, imported_id FROM candidate_records WHERE source_name = $1 AND source_id = $2 LIMIT 1
 `
 
 type GetCandidateRecordBySourceParams struct {
@@ -87,14 +90,17 @@ func (q *Queries) GetCandidateRecordBySource(ctx context.Context, arg GetCandida
 		&i.Status,
 		&i.Metadata,
 		&i.DateCreated,
+		&i.StatusDate,
+		&i.StatusPersonID,
+		&i.ImportedID,
 	)
 	return i, err
 }
 
 const getCandidateRecords = `-- name: GetCandidateRecords :many
-SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, count(*) OVER () AS total
+SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, status_date, status_person_id, imported_id, count(*) OVER () AS total
 FROM candidate_records
-WHERE (status = 'new' OR EXTRACT(DAY FROM (current_timestamp - date_created)) <= 90)
+WHERE (status = 'new' OR  EXTRACT(DAY FROM (current_timestamp - status_date)) <= 90)
 ORDER BY date_created ASC
 LIMIT $2
 OFFSET $1
@@ -114,6 +120,9 @@ type GetCandidateRecordsRow struct {
 	Status         string
 	Metadata       []byte
 	DateCreated    pgtype.Timestamptz
+	StatusDate     pgtype.Timestamptz
+	StatusPersonID *string
+	ImportedID     *string
 	Total          int64
 }
 
@@ -135,6 +144,9 @@ func (q *Queries) GetCandidateRecords(ctx context.Context, arg GetCandidateRecor
 			&i.Status,
 			&i.Metadata,
 			&i.DateCreated,
+			&i.StatusDate,
+			&i.StatusPersonID,
+			&i.ImportedID,
 			&i.Total,
 		); err != nil {
 			return nil, err
@@ -148,9 +160,9 @@ func (q *Queries) GetCandidateRecords(ctx context.Context, arg GetCandidateRecor
 }
 
 const getCandidateRecordsByPersonID = `-- name: GetCandidateRecordsByPersonID :many
-SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, count(*) OVER () AS total
+SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, status_date, status_person_id, imported_id, count(*) OVER () AS total
 FROM candidate_records
-WHERE (status = 'new' OR ($1::bool = 0::bool AND EXTRACT(DAY FROM (current_timestamp - date_created)) <= 90))
+WHERE (status = 'new' OR ($1::bool = 0::bool AND EXTRACT(DAY FROM (current_timestamp - status_date)) <= 90))
   AND (metadata->'author' @> $2::jsonb OR metadata->'supervisor' @> $2::jsonb)
 ORDER BY date_created ASC
 LIMIT $4
@@ -173,6 +185,9 @@ type GetCandidateRecordsByPersonIDRow struct {
 	Status         string
 	Metadata       []byte
 	DateCreated    pgtype.Timestamptz
+	StatusDate     pgtype.Timestamptz
+	StatusPersonID *string
+	ImportedID     *string
 	Total          int64
 }
 
@@ -199,6 +214,9 @@ func (q *Queries) GetCandidateRecordsByPersonID(ctx context.Context, arg GetCand
 			&i.Status,
 			&i.Metadata,
 			&i.DateCreated,
+			&i.StatusDate,
+			&i.StatusPersonID,
+			&i.ImportedID,
 			&i.Total,
 		); err != nil {
 			return nil, err
@@ -234,16 +252,28 @@ func (q *Queries) PersonHasCandidateRecords(ctx context.Context, query []byte) (
 }
 
 const setCandidateRecordStatus = `-- name: SetCandidateRecordStatus :one
-UPDATE candidate_records SET status = $1 WHERE id = $2 RETURNING id
+UPDATE candidate_records 
+SET status = $1,
+    status_date = now(),
+    status_person_id = $2,
+    imported_id = $3
+WHERE id = $4 RETURNING id
 `
 
 type SetCandidateRecordStatusParams struct {
-	Status string
-	ID     string
+	Status         string
+	StatusPersonID *string
+	ImportedID     *string
+	ID             string
 }
 
 func (q *Queries) SetCandidateRecordStatus(ctx context.Context, arg SetCandidateRecordStatusParams) (string, error) {
-	row := q.db.QueryRow(ctx, setCandidateRecordStatus, arg.Status, arg.ID)
+	row := q.db.QueryRow(ctx, setCandidateRecordStatus,
+		arg.Status,
+		arg.StatusPersonID,
+		arg.ImportedID,
+		arg.ID,
+	)
 	var id string
 	err := row.Scan(&id)
 	return id, err

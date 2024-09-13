@@ -14,6 +14,11 @@ type CandidateRecord struct {
 	Metadata       json.RawMessage `json:"metadata"`
 	Status         string          `json:"status"`
 	DateCreated    time.Time       `json:"date_created"`
+	// this is the Metadata mapped to a publication in-memory, not stored in DB
 	// TODO tightly coupled with Publication for now, refactor later
-	Publication *Publication `json:"publication"`
+	Publication    *Publication `json:"publication"`
+	StatusDate     *time.Time   `json:"status_date"`
+	StatusPersonID *string      `json:"status_person_id"`
+	StatusPerson   *Person      `json:"status_person"`
+	ImportedID     *string      `json:"imported_id"`
 }
