@@ -51,6 +51,12 @@ func (r *Repo) GetCandidateRecords(ctx context.Context, start int, limit int) (i
 			StatusPersonID: row.StatusPersonID,
 			ImportedID:     row.ImportedID,
 		}
+
+		for _, fn := range r.config.CandidateRecordLoaders {
+			if err := fn(rec); err != nil {
+				return 0, nil, err
+			}
+		}
 		if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
 			return 0, nil, err
 		}
@@ -105,6 +111,7 @@ func (r *Repo) GetCandidateRecordsByPersonID(ctx context.Context, personID strin
 			StatusPersonID: row.StatusPersonID,
 			ImportedID:     row.ImportedID,
 		}
+
 		for _, fn := range r.config.CandidateRecordLoaders {
 			if err := fn(rec); err != nil {
 				return 0, nil, err
@@ -161,6 +168,11 @@ func (r *Repo) GetCandidateRecordBySource(ctx context.Context, sourceName string
 		ImportedID:     row.ImportedID,
 	}
 
+	for _, fn := range r.config.CandidateRecordLoaders {
+		if err := fn(rec); err != nil {
+			return nil, err
+		}
+	}
 	if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
 		return nil, err
 	}
@@ -196,6 +208,11 @@ func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.Candi
 		ImportedID:     row.ImportedID,
 	}
 
+	for _, fn := range r.config.CandidateRecordLoaders {
+		if err := fn(rec); err != nil {
+			return nil, err
+		}
+	}
 	if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
 		return nil, err
 	}
