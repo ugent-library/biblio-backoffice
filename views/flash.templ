@@ -2,8 +2,17 @@ package views
 
 import (
 	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views/flash"
 )
+
+templ FlashMessages(c *ctx.Ctx) {
+	<div id="flash-messages">
+		for _, f := range c.Flash {
+			@flashMessage(f)
+		}
+	</div>
+}
 
 templ flashMessage(f flash.Flash) {
 	<div

@@ -131,7 +131,16 @@ func RestoreRejectedCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	f := flash.SimpleFlash().
 		WithLevel("success").
 		WithBody("<p>Candidate record was successfully restored.</p>")
-	c.PersistFlash(w, *f)
+	c.Flash = append(c.Flash, *f)
 
-	w.Header().Set("HX-Redirect", c.URLTo("candidate_records").String())
+	rec, err = c.Repo.GetCandidateRecord(r.Context(), rec.ID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	views.Cat(
+		candidaterecordviews.ListItem(c, rec),
+		views.Replace("#flash-messages", views.FlashMessages(c)),
+	).Render(r.Context(), w)
 }

@@ -232,7 +232,8 @@ templ rejectedInfo(c *ctx.Ctx, rec *models.CandidateRecord) {
 				class="c-link c-link-muted"
 				type="button"
 				hx-put={ c.PathTo("restore_rejected_candidate_record", "id", rec.ID).String() }
-				hx-swap="none"
+				hx-target={ fmt.Sprintf("#candidate-record-%s", rec.ID) }
+				hx-swap="outerHTML"
 			>Restore</a>
 		</span>
 		<br/>
