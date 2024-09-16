@@ -94,10 +94,19 @@ func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	f := flash.SimpleFlash().
 		WithLevel("success").
 		WithBody("<p>Candidate record was successfully deleted.</p>")
+	c.Flash = append(c.Flash, *f)
 
-	c.PersistFlash(w, *f)
+	rec, err = c.Repo.GetCandidateRecord(r.Context(), rec.ID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
 
-	w.Header().Set("HX-Redirect", c.URLTo("candidate_records").String())
+	views.Cat(
+		candidaterecordviews.ListItem(c, rec),
+		views.CloseModal(),
+		views.Replace("#flash-messages", views.FlashMessages(c)),
+	).Render(r.Context(), w)
 }
 
 func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
