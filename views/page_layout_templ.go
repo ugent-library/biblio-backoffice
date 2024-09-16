@@ -245,7 +245,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			if c.Repo.HasProxy(c.User.ID) {
+			if c.Repo.HasProxy(c.User.IDs) {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"dropdown-item\" href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -511,7 +511,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if c.UserRole == "curator" || c.Repo.IsProxy(c.User.ID) {
+				if c.UserRole == "curator" || c.Repo.IsProxy(c.User.IDs) {
 					var templ_7745c5c3_Var32 = []any{"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "proxies")}
 					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var32...)
 					if templ_7745c5c3_Err != nil {
