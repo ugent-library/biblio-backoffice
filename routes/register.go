@@ -207,8 +207,8 @@ func Register(c Config) {
 
 				// record suggestions
 				r.Route("/candidate-records", func(r *ich.Mux) {
-
 					r.Use(ctx.SetNav("candidate_records"))
+
 					r.Get("/", candidaterecords.CandidateRecords).Name("candidate_records")
 					r.Get("/icon", candidaterecords.CandidateRecordsIcon).Name("candidate_records_icon")
 
