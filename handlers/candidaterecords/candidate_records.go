@@ -85,7 +85,7 @@ func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	rec := ctx.GetCandidateRecord(r)
 
-	err := c.Repo.RejectCandidateRecord(r.Context(), rec.ID)
+	err := c.Repo.RejectCandidateRecord(r.Context(), rec.ID, c.User)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return

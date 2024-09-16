@@ -225,8 +225,12 @@ func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.Candi
 	return rec, nil
 }
 
-func (r *Repo) RejectCandidateRecord(ctx context.Context, id string) error {
-	_, err := r.queries.SetCandidateRecordStatus(ctx, db.SetCandidateRecordStatusParams{Status: "rejected", ID: id})
+func (r *Repo) RejectCandidateRecord(ctx context.Context, id string, user *models.Person) error {
+	_, err := r.queries.SetCandidateRecordStatus(ctx, db.SetCandidateRecordStatusParams{
+		Status:         "rejected",
+		ID:             id,
+		StatusPersonID: &user.ID,
+	})
 
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
