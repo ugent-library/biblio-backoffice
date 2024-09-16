@@ -206,24 +206,31 @@ func Register(c Config) {
 				r.With(ctx.SetNav("proxies")).Get("/proxies", proxies.Proxies).Name("proxies")
 
 				// record suggestions
-				r.With(ctx.SetNav("candidate_records")).Get("/candidate-records", candidaterecords.CandidateRecords).Name("candidate_records")
-				r.Get("/candidate-records/icon", candidaterecords.CandidateRecordsIcon).Name("candidate_records_icon")
-				r.Group(func(r *ich.Mux) {
-					r.Use(ctx.SetCandidateRecord(c.Services.Repo))
-					r.Use(ctx.RequireViewCandidateRecord(c.Services.Repo))
+				r.Route("/candidate-records", func(r *ich.Mux) {
 
-					r.Get("/candidate-records/{id}/preview", candidaterecords.CandidateRecordPreview).Name("candidate_records_preview")
-					r.Get("/candidate-records/{id}/files/{file_id}", candidaterecords.DownloadFile).Name("candidate_record_download_file")
-				})
-				r.Group(func(r *ich.Mux) {
-					r.Use(ctx.SetCandidateRecord(c.Services.Repo))
-					r.Use(ctx.RequireEditCandidateRecord(c.Services.Repo))
+					r.Use(ctx.SetNav("candidate_records"))
+					r.Get("/", candidaterecords.CandidateRecords).Name("candidate_records")
+					r.Get("/icon", candidaterecords.CandidateRecordsIcon).Name("candidate_records_icon")
 
-					r.Get("/candidate-records/{id}/preview", candidaterecords.CandidateRecordPreview).Name("candidate_records_preview")
-					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
-					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
-					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
-					r.Put("/candidate-records/{id}/restore", candidaterecords.RestoreRejectedCandidateRecord).Name("restore_rejected_candidate_record")
+					r.Route("/{id}", func(r *ich.Mux) {
+						r.Use(ctx.SetCandidateRecord(c.Services.Repo))
+
+						r.Group(func(r *ich.Mux) {
+							r.Use(ctx.RequireViewCandidateRecord(c.Services.Repo))
+
+							r.Get("/files/{file_id}", candidaterecords.DownloadFile).Name("candidate_record_download_file")
+						})
+
+						r.Group(func(r *ich.Mux) {
+							r.Use(ctx.RequireEditCandidateRecord(c.Services.Repo))
+
+							r.Get("/preview", candidaterecords.CandidateRecordPreview).Name("candidate_records_preview")
+							r.Get("/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
+							r.Put("/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
+							r.Put("/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
+							r.Put("/restore", candidaterecords.RestoreRejectedCandidateRecord).Name("restore_rejected_candidate_record")
+						})
+					})
 				})
 
 				// curator only routes
