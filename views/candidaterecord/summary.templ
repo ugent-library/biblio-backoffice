@@ -210,7 +210,9 @@ templ importedInfo(c *ctx.Ctx, rec *models.CandidateRecord) {
 			} else {
 				[missing].
 			}
-			<a class="c-link c-link-muted" type="button" href={ templ.URL(c.PathTo("publication", "id", *rec.ImportedID).String()) }>View</a>
+			if rec.ImportedID != nil && *rec.ImportedID != "" {
+				<a class="c-link c-link-muted" type="button" href={ templ.URL(c.PathTo("publication", "id", *rec.ImportedID).String()) }>View</a>
+			}
 		</span>
 		<br/>
 		if rec.StatusDate != nil {

@@ -100,7 +100,7 @@ func (q *Queries) GetCandidateRecordBySource(ctx context.Context, arg GetCandida
 const getCandidateRecords = `-- name: GetCandidateRecords :many
 SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, status_date, status_person_id, imported_id, count(*) OVER () AS total
 FROM candidate_records
-WHERE (status = 'new' OR  EXTRACT(DAY FROM (current_timestamp - status_date)) <= 90)
+WHERE (status = 'new' OR (status_date IS NOT NULL AND EXTRACT(DAY FROM (current_timestamp - status_date)) <= 90))
 ORDER BY date_created ASC
 LIMIT $2
 OFFSET $1
@@ -162,7 +162,7 @@ func (q *Queries) GetCandidateRecords(ctx context.Context, arg GetCandidateRecor
 const getCandidateRecordsByPersonID = `-- name: GetCandidateRecordsByPersonID :many
 SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, status_date, status_person_id, imported_id, count(*) OVER () AS total
 FROM candidate_records
-WHERE (status = 'new' OR ($1::bool = 0::bool AND EXTRACT(DAY FROM (current_timestamp - status_date)) <= 90))
+WHERE (status = 'new' OR (status_date IS NOT NULL AND $1::bool = 0::bool AND EXTRACT(DAY FROM (current_timestamp - status_date)) <= 90))
   AND (metadata->'author' @> $2::jsonb OR metadata->'supervisor' @> $2::jsonb)
 ORDER BY date_created ASC
 LIMIT $4
