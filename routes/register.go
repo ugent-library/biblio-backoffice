@@ -223,6 +223,7 @@ func Register(c Config) {
 					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
 					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
 					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
+					r.Put("/candidate-records/{id}/restore", candidaterecords.RestoreRejectedCandidateRecord).Name("restore_rejected_candidate_record")
 				})
 
 				// curator only routes

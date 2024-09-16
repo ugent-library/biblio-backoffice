@@ -242,6 +242,25 @@ func (r *Repo) RejectCandidateRecord(ctx context.Context, id string, user *model
 	return nil
 }
 
+func (r *Repo) RestoreCandidateRecord(ctx context.Context, id string, user *models.Person) error {
+	_, err := r.queries.SetCandidateRecordStatus(ctx, db.SetCandidateRecordStatusParams{
+		Status:         "new",
+		ID:             id,
+		StatusPersonID: &user.ID,
+		ImportedID:     nil,
+	})
+
+	switch {
+	case errors.Is(err, pgx.ErrNoRows):
+		return models.ErrNotFound
+	case err != nil:
+		return err
+	}
+
+	return nil
+
+}
+
 func (r *Repo) ImportCandidateRecordAsPublication(ctx context.Context, id string, user *models.Person) (string, error) {
 	rec, err := r.GetCandidateRecord(ctx, id)
 	if err != nil {

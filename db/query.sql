@@ -34,7 +34,7 @@ SELECT EXISTS(SELECT 1 FROM candidate_records WHERE status = 'new' AND (metadata
 
 
 -- name: GetCandidateRecord :one
-SELECT * FROM candidate_records WHERE status = 'new' AND id = $1 LIMIT 1;
+SELECT * FROM candidate_records WHERE id = $1 LIMIT 1;
 
 -- name: SetCandidateRecordStatus :one
 UPDATE candidate_records 

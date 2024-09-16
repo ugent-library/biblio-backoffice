@@ -47,7 +47,7 @@ func (q *Queries) AddCandidateRecord(ctx context.Context, arg AddCandidateRecord
 }
 
 const getCandidateRecord = `-- name: GetCandidateRecord :one
-SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, status_date, status_person_id, imported_id FROM candidate_records WHERE status = 'new' AND id = $1 LIMIT 1
+SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, status_date, status_person_id, imported_id FROM candidate_records WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetCandidateRecord(ctx context.Context, id string) (CandidateRecord, error) {

@@ -117,3 +117,21 @@ func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("HX-Redirect", c.PathTo("publication", "id", pubID).String())
 }
+
+func RestoreRejectedCandidateRecord(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	rec := ctx.GetCandidateRecord(r)
+
+	err := c.Repo.RestoreCandidateRecord(r.Context(), rec.ID, c.User)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	f := flash.SimpleFlash().
+		WithLevel("success").
+		WithBody("<p>Candidate record was successfully restored.</p>")
+	c.PersistFlash(w, *f)
+
+	w.Header().Set("HX-Redirect", c.URLTo("candidate_records").String())
+}
