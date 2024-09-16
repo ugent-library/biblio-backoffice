@@ -63,7 +63,7 @@ templ Summary(c *ctx.Ctx, rec *models.CandidateRecord) {
 		case "imported":
 			@publicationSummary(c, rec.Publication, SummaryOpts{
 				Badge: summaryBadge("badge-warning-light", fmt.Sprintf("Imported %s suggestion", rec.SourceName)),
-				Info:  importedInfo(rec)})
+				Info:  importedInfo(c, rec)})
 		case "rejected":
 			@publicationSummary(c, rec.Publication, SummaryOpts{
 				Badge: summaryBadge("badge-danger-light", fmt.Sprintf("Rejected %s suggestion", rec.SourceName)),
@@ -201,7 +201,7 @@ templ summaryBadge(colorClass string, text string) {
 	</span>
 }
 
-templ importedInfo(rec *models.CandidateRecord) {
+templ importedInfo(c *ctx.Ctx, rec *models.CandidateRecord) {
 	<p class="text-muted text-md-end text-nowrap">
 		<span>
 			Claimed: 
@@ -210,7 +210,7 @@ templ importedInfo(rec *models.CandidateRecord) {
 			} else {
 				[missing].
 			}
-			<a class="c-link c-link-muted" type="button" href={ "" }>View</a>
+			<a class="c-link c-link-muted" type="button" href={ templ.URL(c.PathTo("publication", "id", *rec.ImportedID).String()) }>View</a>
 		</span>
 		<br/>
 		if rec.StatusDate != nil {
