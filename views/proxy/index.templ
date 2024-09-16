@@ -50,7 +50,7 @@ templ Index(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager
 							<label class="visually-hidden" for="proxies-list-q">Search</label>
 							<input
 								class="form-control"
-								type="search"
+								type="text"
 								id="proxies-list-q"
 								name="q"
 								placeholder="Search..."
@@ -147,41 +147,65 @@ templ List(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager 
 				</div>
 			</div>
 			<div class="card-body w-100 p-0">
-				<div class="table-responsive">
-					<table class="table table-sm table-bordered">
-						<tbody>
-							for _, p := range proxies {
-								<tr>
-									<td class="text-nowrap d-none d-md-table-cell">Proxy</td>
-									<td class="text-nowrap">
-										@tableItem(c, p[0])
-									</td>
-									<td class="text-nowrap">
-										<p class="text-center">
-											manages<i class="if if-arrow-right if--muted if--small ms-2"></i>
-										</p>
-									</td>
-									<td class="text-nowrap">
-										@tableItem(c, p[1])
-									</td>
-									<td class="text-nowrap">
-										<div class="c-button-toolbar flex-nowrap">
-											<a
-												class="btn btn-link btn-link-muted"
-												hx-delete={ c.PathTo("proxy_remove_person", "proxy_id", p[0].ID, "person_id", p[1].ID).String() }
-												hx-swap="none"
-											>
-												<i class="if if-delete"></i>
-												<span class="btn-text d-none d-lg-inline-block">Delete</span>
-											</a>
-										</div>
-									</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-				</div>
+				if len(proxies) > 0 {
+					<div class="table-responsive">
+						<table class="table table-sm table-bordered">
+							<tbody>
+								for _, p := range proxies {
+									<tr>
+										<td class="text-nowrap d-none d-md-table-cell">Proxy</td>
+										<td class="text-nowrap">
+											@tableItem(c, p[0])
+										</td>
+										<td class="text-nowrap">
+											<p class="text-center">
+												manages<i class="if if-arrow-right if--muted if--small ms-2"></i>
+											</p>
+										</td>
+										<td class="text-nowrap">
+											@tableItem(c, p[1])
+										</td>
+										<td class="text-nowrap">
+											<div class="c-button-toolbar flex-nowrap">
+												<a
+													class="btn btn-link btn-link-muted"
+													hx-delete={ c.PathTo("proxy_remove_person", "proxy_id", p[0].ID, "person_id", p[1].ID).String() }
+													hx-swap="none"
+												>
+													<i class="if if-delete"></i>
+													<span class="btn-text d-none d-lg-inline-block">Delete</span>
+												</a>
+											</div>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				} else {
+					<div class="border-top border-bottom">
+						<div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
+							<div class="bc-avatar bc-avatar--medium">
+								<i class="if if-info-circle"></i>
+							</div>
+							<h3 class="c-blank-slate-title">No proxies to display.</h3>
+							<p>Refine your search or add a new proxy.</p>
+							<div class="c-button-toolbar">
+								<button
+									class="btn btn-outline-primary"
+									type="button"
+									hx-get={ c.PathTo("add_proxy").String() }
+									hx-target="#modals"
+								>
+									<i class="if if-add"></i>
+									<div class="btn-text">Add proxy</div>
+								</button>
+							</div>
+						</div>
+					</div>
+				}
 			</div>
+
 			<div class="card-footer border-top-0">
 				<div class="bc-toolbar">
 					<div class="bc-toolbar-left">
