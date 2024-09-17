@@ -12,7 +12,7 @@ RETURNING id;
 -- name: GetCandidateRecords :many
 SELECT *, count(*) OVER () AS total
 FROM candidate_records
-WHERE (status = 'new' OR  EXTRACT(DAY FROM (current_timestamp - status_date)) <= 90)
+WHERE (status = 'new' OR (status_date IS NOT NULL AND EXTRACT(DAY FROM (current_timestamp - status_date)) <= 90))
 ORDER BY date_created ASC
 LIMIT sqlc.arg('limit')
 OFFSET sqlc.arg('offset');
@@ -20,7 +20,7 @@ OFFSET sqlc.arg('offset');
 -- name: GetCandidateRecordsByPersonID :many
 SELECT *, count(*) OVER () AS total
 FROM candidate_records
-WHERE (status = 'new' OR (sqlc.arg('new_only')::bool = 0::bool AND EXTRACT(DAY FROM (current_timestamp - status_date)) <= 90))
+WHERE (status = 'new' OR (status_date IS NOT NULL AND sqlc.arg('new_only')::bool = 0::bool AND EXTRACT(DAY FROM (current_timestamp - status_date)) <= 90))
   AND (metadata->'author' @> sqlc.arg(query)::jsonb OR metadata->'supervisor' @> sqlc.arg(query)::jsonb)
 ORDER BY date_created ASC
 LIMIT sqlc.arg('limit')
@@ -34,7 +34,7 @@ SELECT EXISTS(SELECT 1 FROM candidate_records WHERE status = 'new' AND (metadata
 
 
 -- name: GetCandidateRecord :one
-SELECT * FROM candidate_records WHERE status = 'new' AND id = $1 LIMIT 1;
+SELECT * FROM candidate_records WHERE id = $1 LIMIT 1;
 
 -- name: SetCandidateRecordStatus :one
 UPDATE candidate_records 

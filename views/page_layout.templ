@@ -277,11 +277,7 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 					</div>
 				</div>
 			</template>
-			<div id="flash-messages">
-				for _, f := range c.Flash {
-					@flashMessage(f)
-				}
-			</div>
+			@FlashMessages(c)
 			<script nonce={ c.CSPNonce } type="application/javascript" src={ c.AssetPath("/js/app.js") }></script>
 		</body>
 	</html>

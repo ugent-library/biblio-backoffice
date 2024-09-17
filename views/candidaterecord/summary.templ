@@ -80,11 +80,11 @@ templ Summary(c *ctx.Ctx, rec *models.CandidateRecord) {
 		case "imported":
 			@publicationSummary(c, rec.Publication, SummaryOpts{
 				Badge: summaryBadge("badge-warning-light", fmt.Sprintf("Imported %s suggestion", rec.SourceName)),
-				Info:  importedInfo(rec)})
+				Info:  importedInfo(c, rec)})
 		case "rejected":
 			@publicationSummary(c, rec.Publication, SummaryOpts{
 				Badge: summaryBadge("badge-danger-light", fmt.Sprintf("Rejected %s suggestion", rec.SourceName)),
-				Info:  rejectedInfo(rec)})
+				Info:  rejectedInfo(c, rec)})
 	}
 }
 
@@ -218,7 +218,7 @@ templ summaryBadge(colorClass string, text string) {
 	</span>
 }
 
-templ importedInfo(rec *models.CandidateRecord) {
+templ importedInfo(c *ctx.Ctx, rec *models.CandidateRecord) {
 	<p class="text-muted text-md-end text-nowrap">
 		<span>
 			Claimed:
@@ -227,7 +227,9 @@ templ importedInfo(rec *models.CandidateRecord) {
 			} else {
 				[missing].
 			}
-			<a class="c-link c-link-muted" type="button" href={ "" }>View</a>
+			if rec.ImportedID != nil && *rec.ImportedID != "" {
+				<a class="c-link c-link-muted" type="button" href={ templ.URL(c.PathTo("publication", "id", *rec.ImportedID).String()) }>View</a>
+			}
 		</span>
 		<br/>
 		if rec.StatusDate != nil {
@@ -236,7 +238,7 @@ templ importedInfo(rec *models.CandidateRecord) {
 	</p>
 }
 
-templ rejectedInfo(rec *models.CandidateRecord) {
+templ rejectedInfo(c *ctx.Ctx, rec *models.CandidateRecord) {
 	<p class="text-muted text-md-end text-nowrap">
 		<span>
 			Rejected:
@@ -245,7 +247,13 @@ templ rejectedInfo(rec *models.CandidateRecord) {
 			} else {
 				[missing].
 			}
-			<a class="c-link c-link-muted" type="button" data-bs-toggle="modal" data-bs-target="#previewDissertationSuggestion">Restore</a>
+			<a
+				class="c-link c-link-muted"
+				type="button"
+				hx-put={ c.PathTo("restore_rejected_candidate_record", "id", rec.ID).String() }
+				hx-target={ fmt.Sprintf("#candidate-record-%s", rec.ID) }
+				hx-swap="outerHTML"
+			>Restore</a>
 		</span>
 		<br/>
 		<small class="fst-italic d-inline-block pt-2">On { rec.StatusDate.Format("2006-01-02") }. Reminder disappears in { daysUntilDisappearanceDate(*rec.StatusDate) } day(s).</small>
