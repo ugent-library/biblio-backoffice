@@ -23,6 +23,21 @@ import (
 //go:embed person_settings.json
 var personSettings string
 
+type personSearchEnvelope struct {
+	Hits struct {
+		Total int `json:"total"`
+		Hits  []struct {
+			ID     string `json:"_id"`
+			Source struct {
+				*models.Person
+				Department []struct {
+					ID string `json:"_id"`
+				} `json:"department"`
+			} `json:"_source"`
+		} `json:"hits"`
+	} `json:"hits"`
+}
+
 func (c *Client) EnsurePersonSeedIndexExists() error {
 	res, err := esapi.IndicesExistsRequest{
 		Index: []string{"biblio_person"},
@@ -165,6 +180,11 @@ func (c *Client) recordToPerson(record bson.M) (*models.Person, error) {
 
 	if v, ok := record["_id"]; ok {
 		person.ID = v.(string)
+	}
+	if v, ok := record["ids"]; ok {
+		for _, i := range v.(bson.A) {
+			person.IDs = append(person.IDs, i.(string))
+		}
 	}
 	if v, ok := record["email"]; ok {
 		person.Email = strings.ToLower(v.(string))

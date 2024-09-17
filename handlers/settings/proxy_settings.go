@@ -11,7 +11,7 @@ import (
 func ProxySettings(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
-	proxyIDs, err := c.Repo.ProxyIDs(r.Context(), c.User.ID)
+	proxyIDs, err := c.Repo.ProxyIDs(r.Context(), c.User.IDs)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return

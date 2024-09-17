@@ -39,26 +39,43 @@ templ Summary(c *ctx.Ctx, rec *models.CandidateRecord) {
 				>
 					<div class="btn-text">Reject</div>
 				</button>
-				<button
-					class="btn btn-link btn-link-muted"
-					hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
-					hx-target="#modals"
-				>
-					<div class="btn-text">Preview</div>
-				</button>
-				<button
-					class="btn btn-outline-primary"
-					hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
-					hx-swap="none"
-				>
-					<div class="btn-text">
-						if c.UserRole == "curator" {
-							Import as draft
-						} else {
-							Claim
-						}
-					</div>
-				</button>
+				if c.UserRole == "curator" {
+					<button
+						class="btn btn-link btn-link-muted"
+						hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
+						hx-target="#modals"
+					>
+						<div class="btn-text">Preview</div>
+					</button>
+					<button
+						class="btn btn-outline-primary"
+						hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
+						hx-swap="none"
+					>
+						<div class="btn-text">
+							Import
+							<span class="d-lg-none d-xl-inline-block">&amp; complete</span>
+						</div>
+					</button>
+				} else {
+					<button
+						class="btn btn-link btn-link-muted"
+						hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
+						hx-swap="none"
+					>
+						<div class="btn-text">
+							Import
+							<span class="d-lg-none d-xl-inline-block">&amp; complete</span>
+						</div>
+					</button>
+					<button
+						class="btn btn-outline-primary"
+						hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
+						hx-target="#modals"
+					>
+						<div class="btn-text">Preview</div>
+					</button>
+				}
 			}
 		case "imported":
 			@publicationSummary(c, rec.Publication, SummaryOpts{
@@ -204,7 +221,7 @@ templ summaryBadge(colorClass string, text string) {
 templ importedInfo(rec *models.CandidateRecord) {
 	<p class="text-muted text-md-end text-nowrap">
 		<span>
-			Claimed: 
+			Claimed:
 			if rec.StatusPerson != nil {
 				{ rec.StatusPerson.FullName }.
 			} else {
@@ -222,7 +239,7 @@ templ importedInfo(rec *models.CandidateRecord) {
 templ rejectedInfo(rec *models.CandidateRecord) {
 	<p class="text-muted text-md-end text-nowrap">
 		<span>
-			Rejected: 
+			Rejected:
 			if rec.StatusPerson != nil {
 				{ rec.StatusPerson.FullName }.
 			} else {

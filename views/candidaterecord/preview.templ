@@ -24,7 +24,7 @@ templ actions(c *ctx.Ctx, rec *models.CandidateRecord) {
 		hx-put={ c.PathTo("import_candidate_record", "id", rec.ID).String() }
 		hx-swap="none"
 	>
-		<div class="btn-text">Import as draft</div>
+		<div class="btn-text">Import as draft &amp; complete</div>
 	</button>
 }
 

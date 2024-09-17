@@ -245,7 +245,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			if c.Repo.HasProxy(c.User.ID) {
+			if c.Repo.HasProxy(c.User.IDs) {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"dropdown-item\" href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -511,7 +511,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if c.UserRole == "curator" || c.Repo.IsProxy(c.User.ID) {
+				if c.UserRole == "curator" || c.Repo.IsProxy(c.User.IDs) {
 					var templ_7745c5c3_Var32 = []any{"c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "proxies")}
 					templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var32...)
 					if templ_7745c5c3_Err != nil {
@@ -844,22 +844,7 @@ func CandidateRecordsIcon(c *ctx.Ctx, notification bool) templ.Component {
 			templ_7745c5c3_Var53 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"c-sidebar__icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if notification {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-draft if--notification if--notification-warning\"></i>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-draft\"></i>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span class=\"c-sidebar__label\">Suggestions</span>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"c-sidebar__icon\"><i class=\"if if-draft\"></i></span> <span class=\"c-sidebar__label\">Suggestions</span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
