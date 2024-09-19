@@ -25,8 +25,24 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 					</div>
 				</div>
 			</div>
-			if searchHits.Total > 0 {
-				<div class="u-scroll-wrapper__body w-100 p-6">
+			<div class="u-scroll-wrapper__body w-100 p-6">
+				<form class="mb-4">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-right">
+							<div class="bc-toolbar-item d-flex gap-3 align-items-center">
+								<label class="text-nowrap" for="sort-suggestions">Sort by</label>
+								<select id="sort-suggestions" class="form-select">
+									<option value="to-import">To import</option>
+									<option value="added-desc">Added (newest first)</option>
+									<option value="added-asc">Added (oldest first)</option>
+									<option value="year-desc">Publication year (newest first)</option>
+									<option value="year-asc">Publication year (oldest first)</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</form>
+				if searchHits.Total > 0 {
 					<div class="card w-100 mb-6">
 						<div class="card-header">
 							<div class="bc-toolbar">
@@ -72,15 +88,15 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 							</div>
 						</div>
 					</div>
-				</div>
-			} else {
-				<div class="u-scroll-wrapper__body w-100 p-6">
-					<div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
-						<img class="mb-4" src={ c.AssetPath("/images/inbox-illustration.svg") } alt="" width="auto" height="32"/>
-						<h3 class="c-blank-slate-title">No suggestions, all caught up!</h3>
+				} else {
+					<div class="u-scroll-wrapper__body w-100 p-6">
+						<div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
+							<img class="mb-4" src={ c.AssetPath("/images/inbox-illustration.svg") } alt="" width="auto" height="32"/>
+							<h3 class="c-blank-slate-title">No suggestions, all caught up!</h3>
+						</div>
 					</div>
-				</div>
-			}
+				}
+			</div>
 		</div>
 	}
 }
