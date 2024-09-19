@@ -790,4 +790,11 @@ var Map = map[string][]string{
 		"zxx",
 		"zza",
 	},
+	"candidate_record_sorts": {
+		"default",
+		"added-desc",
+		"added-asc",
+		"year-desc",
+		"year-asc",
+	},
 }

@@ -2433,6 +2433,21 @@ msgstr "Select one or more projects as known in GISMO and Research Explorer. <a 
 msgid "dataset.project.add.search.help"
 msgstr "Select one or more projects as known in GISMO and Research Explorer. <a href=\"https://onderzoektips.ugent.be/en/tips/00002060/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a>"
 
+msgid "candidate_record_sorts.default"
+msgstr "To import"
+
+msgid "candidate_record_sorts.added-desc"
+msgstr "Added (newest first)"
+
+msgid "candidate_record_sorts.added-asc"
+msgstr "Added (oldest first)"
+
+msgid "candidate_record_sorts.year-desc"
+msgstr "Publication year (newest first)"
+
+msgid "candidate_record_sorts.year-asc"
+msgstr "Publication year (oldest first)"
+
 msgctxt "breadcrumbs"
 msgid "dashboard"
 msgstr "Dashboard"
