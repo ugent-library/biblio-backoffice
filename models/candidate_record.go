@@ -18,7 +18,7 @@ type CandidateRecord struct {
 	// TODO tightly coupled with Publication for now, refactor later
 	Publication    *Publication `json:"publication"`
 	StatusDate     *time.Time   `json:"status_date"`
-	StatusPersonID *string      `json:"status_person_id"`
+	StatusPersonID string       `json:"status_person_id"`
 	StatusPerson   *Person      `json:"status_person"`
-	ImportedID     *string      `json:"imported_id"`
+	ImportedID     string       `json:"imported_id"`
 }

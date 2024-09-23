@@ -7,6 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/oklog/ulid/v2"
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/db"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
@@ -48,8 +49,8 @@ func (r *Repo) GetCandidateRecords(ctx context.Context, start int, limit int) (i
 			Status:         row.Status,
 			Publication:    &models.Publication{},
 			StatusDate:     &row.StatusDate.Time,
-			StatusPersonID: row.StatusPersonID,
-			ImportedID:     row.ImportedID,
+			StatusPersonID: lo.FromPtr(row.StatusPersonID),
+			ImportedID:     lo.FromPtr(row.ImportedID),
 		}
 
 		for _, fn := range r.config.CandidateRecordLoaders {
@@ -108,8 +109,8 @@ func (r *Repo) GetCandidateRecordsByPersonID(ctx context.Context, personID strin
 			Status:         row.Status,
 			Publication:    &models.Publication{},
 			StatusDate:     &row.StatusDate.Time,
-			StatusPersonID: row.StatusPersonID,
-			ImportedID:     row.ImportedID,
+			StatusPersonID: lo.FromPtr(row.StatusPersonID),
+			ImportedID:     lo.FromPtr(row.ImportedID),
 		}
 
 		for _, fn := range r.config.CandidateRecordLoaders {
@@ -164,8 +165,8 @@ func (r *Repo) GetCandidateRecordBySource(ctx context.Context, sourceName string
 		Status:         row.Status,
 		Publication:    &models.Publication{},
 		StatusDate:     &row.StatusDate.Time,
-		StatusPersonID: row.StatusPersonID,
-		ImportedID:     row.ImportedID,
+		StatusPersonID: lo.FromPtr(row.StatusPersonID),
+		ImportedID:     lo.FromPtr(row.ImportedID),
 	}
 
 	for _, fn := range r.config.CandidateRecordLoaders {
@@ -204,8 +205,8 @@ func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.Candi
 		Status:         row.Status,
 		Publication:    &models.Publication{},
 		StatusDate:     &row.StatusDate.Time,
-		StatusPersonID: row.StatusPersonID,
-		ImportedID:     row.ImportedID,
+		StatusPersonID: lo.FromPtr(row.StatusPersonID),
+		ImportedID:     lo.FromPtr(row.ImportedID),
 	}
 
 	for _, fn := range r.config.CandidateRecordLoaders {

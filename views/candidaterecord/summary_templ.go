@@ -658,12 +658,12 @@ func importedInfo(c *ctx.Ctx, rec *models.CandidateRecord) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		if rec.ImportedID != nil && *rec.ImportedID != "" {
+		if rec.ImportedID != "" {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"c-link c-link-muted\" type=\"button\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var30 templ.SafeURL = templ.URL(c.PathTo("publication", "id", *rec.ImportedID).String())
+			var templ_7745c5c3_Var30 templ.SafeURL = templ.URL(c.PathTo("publication", "id", rec.ImportedID).String())
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var30)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

@@ -345,11 +345,11 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 
 		CandidateRecordLoaders: []repositories.CandidateRecordVisitor{
 			func(c *models.CandidateRecord) error {
-				if c.StatusPersonID != nil && *c.StatusPersonID != "" {
-					person, err := personService.GetPerson(*c.StatusPersonID)
+				if c.StatusPersonID != "" {
+					person, err := personService.GetPerson(c.StatusPersonID)
 					if err != nil {
-						logger.Warn("error loading status person in candidate record", "statuPersonID", *c.StatusPersonID, "id", c.ID, "error", err)
-						c.StatusPerson = backends.NewDummyPerson(*c.StatusPersonID)
+						logger.Warn("error loading status person in candidate record", "statuPersonID", c.StatusPersonID, "id", c.ID, "error", err)
+						c.StatusPerson = backends.NewDummyPerson(c.StatusPersonID)
 					} else {
 						c.StatusPerson = person
 					}
