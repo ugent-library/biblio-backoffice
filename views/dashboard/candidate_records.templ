@@ -47,9 +47,7 @@ templ CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) {
 		<div class="card">
 			<ul class="list-group list-group-flush">
 				for _, rec := range recs {
-					<li class="list-group-item bg-transparent">
-						@candidaterecordviews.Summary(c, rec)
-					</li>
+					@candidaterecordviews.ListItem(c, rec)
 				}
 			</ul>
 		</div>

@@ -7,31 +7,23 @@
 .c-button-toolbar {
   align-items: center;
   display: flex;
+  gap: 1.2rem;
 
   .btn {
-    margin: 0.4rem 1.2rem 0.4rem 0;
-  }
-
-  .btn:last-child {
-    margin-right: 0;
+    margin: 0.4rem 0;
   }
 }
 
 .c-button-toolbar--wide-spacing {
-  .btn {
-    margin: 0.4rem 1.6rem 0.4rem 0;
-  }
-
-  .btn:last-child,
-  .dropdown:last-child .btn {
-    margin-right: 0;
-  }
+  gap: 1.6rem;
 }
 
 .c-button-toolbar--vertical {
   flex-direction: column;
   align-items: flex-end;
+  gap: 0.4rem;
+
   .btn {
-    margin: 0.4rem 0.4rem 0.8rem 0.4rem;
+    margin: 0.4rem;
   }
 }

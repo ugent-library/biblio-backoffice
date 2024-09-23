@@ -149,7 +149,7 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if c.FlagCandidateRecords() {
-		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.User.ID, 0, 5)
+		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.User.ID, 0, 4, true)
 	}
 
 	if err != nil {
