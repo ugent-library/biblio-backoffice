@@ -46,6 +46,17 @@ func (q *Queries) AddCandidateRecord(ctx context.Context, arg AddCandidateRecord
 	return id, err
 }
 
+const countPersonCandidateRecords = `-- name: CountPersonCandidateRecords :one
+SELECT COUNT(*) FROM candidate_records WHERE status = 'new' AND (metadata->'author' @> $1::jsonb OR metadata->'supervisor' @> $1::jsonb)
+`
+
+func (q *Queries) CountPersonCandidateRecords(ctx context.Context, query []byte) (int64, error) {
+	row := q.db.QueryRow(ctx, countPersonCandidateRecords, query)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const getCandidateRecord = `-- name: GetCandidateRecord :one
 SELECT id, source_name, source_id, source_metadata, type, status, metadata, date_created, status_date, status_person_id, imported_id FROM candidate_records WHERE id = $1 LIMIT 1
 `

@@ -180,6 +180,16 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 													<span class="c-sidebar__label">Biblio Datasets</span>
 												</a>
 											</li>
+											if c.FlagCandidateRecords() {
+												<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "candidate_records") }>
+													<a href={ templ.URL(c.PathTo("candidate_records", "f[person][0]", c.ProxiedPerson.ID).String()) }>
+														<span class="c-sidebar__icon">
+															<i class="if if-draft"></i>
+														</span>
+														<span class="c-sidebar__label">Suggestions</span>
+													</a>
+												</li>
+											}
 										} else {
 											<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "dashboard") }>
 												<a
@@ -220,12 +230,11 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 											</li>
 											if c.UserRole == "curator" || c.FlagCandidateRecords() {
 												<li class={ "c-sidebar__item", templ.KV("c-sidebar__item--active", c.Nav == "candidate_records") }>
-													<a
-														href={ templ.URL(c.PathTo("candidate_records").String()) }
-														hx-get={ c.PathTo("candidate_records_icon").String() }
-														hx-trigger="load, every 5s"
-													>
-														@CandidateRecordsIcon(c, false)
+													<a href={ templ.URL(c.PathTo("candidate_records").String()) }>
+														<span class="c-sidebar__icon">
+															<i class="if if-draft"></i>
+														</span>
+														<span class="c-sidebar__label">Suggestions</span>
 													</a>
 												</li>
 											}
@@ -292,11 +301,4 @@ templ DashboardIcon(c *ctx.Ctx, notification bool) {
 		}
 	</span>
 	<span class="c-sidebar__label">Dashboard</span>
-}
-
-templ CandidateRecordsIcon(c *ctx.Ctx, notification bool) {
-	<span class="c-sidebar__icon">
-		<i class="if if-draft"></i>
-	</span>
-	<span class="c-sidebar__label">Suggestions</span>
 }

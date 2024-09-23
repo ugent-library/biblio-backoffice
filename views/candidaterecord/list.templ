@@ -19,6 +19,9 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 					<div class="bc-toolbar h-auto py-4">
 						<div class="bc-toolbar-left">
 							<div class="bc-toolbar-item">
+								if c.ProxiedPerson != nil {
+									<p>Proxy for:<span class="badge badge-sm rounded-pill badge-success-light mb-1 ms-2">{ c.ProxiedPerson.FullName }</span></p>
+								}
 								<h2 class="bc-toolbar-title">Suggestions</h2>
 								<p class="c-intro">Import and complete research gathered from other platforms.</p>
 							</div>
@@ -35,11 +38,15 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 								<div class="bc-toolbar h-auto">
 									<div class="bc-toolbar-left">
 										<div class="bc-toolbar-item">
-											<h3 class="alert-title">Biblio now automatically picks up dissertations from Plato.
-												<br>Preview, import and complete your research output.
+											<h3 class="alert-title">
+												Biblio now automatically picks up dissertations from Plato.
+												<br/>
+												Preview, import and complete your research output.
 											</h3>
-											<p>We are testing this new feature for the Faculty of Engineering and Architecture
-												<br>until the end of November,
+											<p>
+												We are testing this new feature for the Faculty of Engineering and Architecture
+												<br/>
+												until the end of November,
 												and would appreciate your feedback.&nbsp;<a class="c-link" target="_blank" href="https://forms.office.com/Pages/ResponsePage.aspx?id=3hyB1-_sbEmPkaF4YkG5nLzhS3gYTQlIoRZOSkcIt81UNE5UTU5ZNThPM0dJSkczOERMUThHOFgwVC4u">Give feedback</a>
 											</p>
 											<p class="mt-4">
