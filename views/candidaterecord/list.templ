@@ -1,6 +1,7 @@
 package candidaterecordviews
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
@@ -27,28 +28,60 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 				</div>
 			</div>
 			<div class="u-scroll-wrapper__body w-100 p-6">
-				<form class="mb-4" method="GET" action={ views.URL(c.CurrentURL).ClearQuery().SafeURL() }>
-					<div class="bc-toolbar">
-						<div class="bc-toolbar-right">
-							<div class="bc-toolbar-item d-flex gap-3 align-items-center">
-								<label class="text-nowrap" for="sort-suggestions">Sort by</label>
-								<select id="sort-suggestions" name="sort" class="form-select form-change-submit">
-									for _, sort := range vocabularies.Map["candidate_record_sorts"] {
-										<option
-											value={ sort }
-											if searchArgs.HasSort(sort) {
-												selected
-											}
-										>
-											{ c.Loc.Get("candidate_record_sorts." + sort) }
-										</option>
-									}
-								</select>
+				<div class="row">
+					<div class="col-xl-6 col-lg-8 col-md-10">
+						<div class="alert alert-success border border-success mb-6">
+							<span class="badge rounded-pill bg-success me-6">Beta</span>
+							<div class="alert-content">
+								<div class="bc-toolbar h-auto">
+									<div class="bc-toolbar-left">
+										<div class="bc-toolbar-item">
+											<h3 class="alert-title">
+												Biblio now automatically picks up dissertations from Plato.
+												<br/>
+												Preview, import and complete your research output.
+											</h3>
+											<p>
+												We are testing this new feature for the Faculty of Engineering and Architecture
+												<br/>
+												until the end of November,
+												and would appreciate your feedback.&nbsp;<a class="c-link" target="_blank" href="https://forms.office.com/Pages/ResponsePage.aspx?id=3hyB1-_sbEmPkaF4YkG5nLzhS3gYTQlIoRZOSkcIt81UNE5UTU5ZNThPM0dJSkczOERMUThHOFgwVC4u">Give feedback</a>
+											</p>
+											<p class="mt-4">
+												<a class="c-link text-muted" target="_blank" href="https://onderzoektips.ugent.be/en/tips/00002247/">
+													<span class="text-decoration-underline">Read the research tip for more information</span>
+													<i class="if if--small if-external-link"></i>
+												</a>
+											</p>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
-				</form>
+				</div>
 				if searchHits.Total > 0 {
+					<form class="mb-4" method="GET" action={ views.URL(c.CurrentURL).ClearQuery().SafeURL() }>
+						<div class="bc-toolbar">
+							<div class="bc-toolbar-right">
+								<div class="bc-toolbar-item d-flex gap-3 align-items-center">
+									<label class="text-nowrap" for="sort-suggestions">Sort by</label>
+									<select id="sort-suggestions" name="sort" class="form-select form-change-submit">
+										for _, sort := range vocabularies.Map["candidate_record_sorts"] {
+											<option
+												value={ sort }
+												if searchArgs.HasSort(sort) {
+													selected
+												}
+											>
+												{ c.Loc.Get("candidate_record_sorts." + sort) }
+											</option>
+										}
+									</select>
+								</div>
+							</div>
+						</div>
+					</form>
 					<div class="card w-100 mb-6">
 						<div class="card-header">
 							<div class="bc-toolbar">
@@ -61,7 +94,7 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 									<div class="bc-toolbar-item">
 										<span class="text-muted c-body-small">
 											{ views.PaginationCount(c, searchHits.Pagination) }
-											publications
+											suggestions
 										</span>
 									</div>
 								</div>
@@ -70,9 +103,7 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 						<div class="card-body w-100 p-0">
 							<ul class="list-group list-group-flush">
 								for _, rec := range recs {
-									<li class="list-group-item bg-transparent">
-										@Summary(c, rec)
-									</li>
+									@ListItem(c, rec)
 								}
 							</ul>
 						</div>
@@ -87,7 +118,7 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 									<div class="bc-toolbar-item">
 										<span class="text-muted c-body-small">
 											{ views.PaginationCount(c, searchHits.Pagination) }
-											publications
+											suggestions
 										</span>
 									</div>
 								</div>
@@ -95,14 +126,18 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 						</div>
 					</div>
 				} else {
-					<div class="u-scroll-wrapper__body w-100 p-6">
-						<div class="c-blank-slate c-blank-slate-default c-blank-slate-large">
-							<img class="mb-4" src={ c.AssetPath("/images/inbox-illustration.svg") } alt="" width="auto" height="32"/>
-							<h3 class="c-blank-slate-title">No suggestions, all caught up!</h3>
-						</div>
+					<div class="c-blank-slate c-blank-slate-default c-blank-slate-large h-50">
+						<img class="mb-4" src={ c.AssetPath("/images/inbox-illustration.svg") } alt="" width="auto" height="32"/>
+						<h3 class="c-blank-slate-title">No suggestions, all caught up!</h3>
 					</div>
 				}
 			</div>
 		</div>
 	}
+}
+
+templ ListItem(c *ctx.Ctx, rec *models.CandidateRecord) {
+	<li id={ fmt.Sprintf("candidate-record-%s", rec.ID) } class={ "list-group-item", "bg-transparent", templ.KV("opacity-75", rec.Status != "new") }>
+		@Summary(c, rec)
+	</li>
 }

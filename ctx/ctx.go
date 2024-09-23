@@ -88,8 +88,12 @@ func Set(config Config) func(http.Handler) http.Handler {
 			c.OriginalUser = originalUser
 
 			// user is proxying for another user
-			// TODO this feels hacky, we use a SearchArgs filter to persist the query param across search requests
-			if proxiedPersonID := r.URL.Query().Get("f[person][0]"); proxiedPersonID != "" {
+			// TODO this is hacky, we (ab)use a SearchArgs filter to persist the query param across search requests
+			proxiedPersonID := r.URL.Query().Get("f[person]")
+			if proxiedPersonID == "" {
+				proxiedPersonID = r.URL.Query().Get("f[person][0]")
+			}
+			if proxiedPersonID != "" {
 				proxiedPerson, err := c.PersonService.GetPerson(proxiedPersonID)
 				if c.User != nil && c.Repo.IsProxyFor(c.User.IDs, proxiedPerson.IDs) {
 					if err != nil {

@@ -9,6 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
@@ -31,20 +32,33 @@ func ConfirmHide(c *ctx.Ctx, rec *models.CandidateRecord) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-body\"><div class=\"c-blank-slate c-blank-slate-muted\"><div class=\"bc-avatar\"><i class=\"if if-alert\"></i></div><h4>Do you want to reject this suggestion for all authors, supervisors and registrators?</h4></div></div><div class=\"modal-footer\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><button class=\"btn btn-link modal-close\">No, cancel</button></div></div><div class=\"bc-toolbar-right\"><button class=\"btn btn-danger\" hx-put=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-body\"><div class=\"c-blank-slate c-blank-slate-muted\"><div class=\"bc-avatar\"><i class=\"if if-alert\"></i></div><h4>Do you want to reject this suggestion for<br>its authors and supervisors?</h4><p>Rejecting this suggestion will remove it for all involved parties.</p></div></div><div class=\"modal-footer\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><button class=\"btn btn-link modal-close\">No, cancel</button></div></div><div class=\"bc-toolbar-right\"><button class=\"btn btn-danger\" hx-put=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("reject_candidate_record", "id", rec.ID).String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/confirm_hide.templ`, Line: 29, Col: 74}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/confirm_hide.templ`, Line: 31, Col: 74}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\">Yes, reject suggestion</button></div></div></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("#candidate-record-%s", rec.ID))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/confirm_hide.templ`, Line: 32, Col: 62}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outerHTML\">Yes, reject suggestion</button></div></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

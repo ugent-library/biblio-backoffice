@@ -277,11 +277,7 @@ templ PageLayout(c *ctx.Ctx, args PageLayoutArgs) {
 					</div>
 				</div>
 			</template>
-			<div id="flash-messages">
-				for _, f := range c.Flash {
-					@flashMessage(f)
-				}
-			</div>
+			@FlashMessages(c)
 			<script nonce={ c.CSPNonce } type="application/javascript" src={ c.AssetPath("/js/app.js") }></script>
 		</body>
 	</html>
@@ -300,11 +296,7 @@ templ DashboardIcon(c *ctx.Ctx, notification bool) {
 
 templ CandidateRecordsIcon(c *ctx.Ctx, notification bool) {
 	<span class="c-sidebar__icon">
-		if notification {
-			<i class="if if-draft if--notification if--notification-warning"></i>
-		} else {
-			<i class="if if-draft"></i>
-		}
+		<i class="if if-draft"></i>
 	</span>
 	<span class="c-sidebar__label">Suggestions</span>
 }

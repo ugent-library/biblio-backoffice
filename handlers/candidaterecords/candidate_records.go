@@ -29,7 +29,7 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	if c.UserRole == "curator" {
 		total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs.Offset(), searchArgs.Limit())
 	} else {
-		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.User.ID, searchArgs.Offset(), searchArgs.Limit())
+		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.User.ID, searchArgs.Offset(), searchArgs.Limit(), false)
 	}
 
 	if err != nil {
@@ -85,7 +85,7 @@ func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	rec := ctx.GetCandidateRecord(r)
 
-	err := c.Repo.RejectCandidateRecord(r.Context(), rec.ID)
+	err := c.Repo.RejectCandidateRecord(r.Context(), rec.ID, c.User)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
@@ -93,11 +93,20 @@ func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 
 	f := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody("<p>Candidate record was successfully deleted.</p>")
+		WithBody("<p>Candidate record was successfully rejected.</p>")
+	c.Flash = append(c.Flash, *f)
 
-	c.PersistFlash(w, *f)
+	rec, err = c.Repo.GetCandidateRecord(r.Context(), rec.ID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
 
-	w.Header().Set("HX-Redirect", c.URLTo("candidate_records").String())
+	views.Cat(
+		candidaterecordviews.ListItem(c, rec),
+		views.CloseModal(),
+		views.Replace("#flash-messages", views.FlashMessages(c)),
+	).Render(r.Context(), w)
 }
 
 func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
@@ -116,4 +125,31 @@ func ImportCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c.PersistFlash(w, *f)
 
 	w.Header().Set("HX-Redirect", c.PathTo("publication", "id", pubID).String())
+}
+
+func RestoreRejectedCandidateRecord(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	rec := ctx.GetCandidateRecord(r)
+
+	err := c.Repo.RestoreCandidateRecord(r.Context(), rec.ID, c.User)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	f := flash.SimpleFlash().
+		WithLevel("success").
+		WithBody("<p>Candidate record was successfully restored.</p>")
+	c.Flash = append(c.Flash, *f)
+
+	rec, err = c.Repo.GetCandidateRecord(r.Context(), rec.ID)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	views.Cat(
+		candidaterecordviews.ListItem(c, rec),
+		views.Replace("#flash-messages", views.FlashMessages(c)),
+	).Render(r.Context(), w)
 }

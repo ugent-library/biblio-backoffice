@@ -741,24 +741,22 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></main><div id=\"modals\"></div><template class=\"template-modal-error\"><div class=\"d-block modal-backdrop fade show\"></div><div class=\"d-block modal show\" tabindex=\"-1\" aria-modal=\"true\" role=\"dialog\"><div class=\"modal-dialog modal-dialog-centered\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-body\"><div class=\"c-blank-slate c-blank-slate-danger\"><div class=\"bc-avatar\"><i class=\"if if-error-circle\"></i></div><p class=\"msg\"></p></div></div><div class=\"modal-footer\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><button class=\"btn btn-link modal-close\">Close</button></div></div></div></div></div></div></template><div id=\"flash-messages\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></main><div id=\"modals\"></div><template class=\"template-modal-error\"><div class=\"d-block modal-backdrop fade show\"></div><div class=\"d-block modal show\" tabindex=\"-1\" aria-modal=\"true\" role=\"dialog\"><div class=\"modal-dialog modal-dialog-centered\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-body\"><div class=\"c-blank-slate c-blank-slate-danger\"><div class=\"bc-avatar\"><i class=\"if if-error-circle\"></i></div><p class=\"msg\"></p></div></div><div class=\"modal-footer\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><button class=\"btn btn-link modal-close\">Close</button></div></div></div></div></div></div></template>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, f := range c.Flash {
-			templ_7745c5c3_Err = flashMessage(f).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
+		templ_7745c5c3_Err = FlashMessages(c).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><script nonce=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script nonce=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var50 string
 		templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(c.CSPNonce)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `page_layout.templ`, Line: 285, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `page_layout.templ`, Line: 281, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 		if templ_7745c5c3_Err != nil {
@@ -771,7 +769,7 @@ func PageLayout(c *ctx.Ctx, args PageLayoutArgs) templ.Component {
 		var templ_7745c5c3_Var51 string
 		templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(c.AssetPath("/js/app.js"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `page_layout.templ`, Line: 285, Col: 93}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `page_layout.templ`, Line: 281, Col: 93}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 		if templ_7745c5c3_Err != nil {
@@ -844,22 +842,7 @@ func CandidateRecordsIcon(c *ctx.Ctx, notification bool) templ.Component {
 			templ_7745c5c3_Var53 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"c-sidebar__icon\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if notification {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-draft if--notification if--notification-warning\"></i>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<i class=\"if if-draft\"></i>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span class=\"c-sidebar__label\">Suggestions</span>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"c-sidebar__icon\"><i class=\"if if-draft\"></i></span> <span class=\"c-sidebar__label\">Suggestions</span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

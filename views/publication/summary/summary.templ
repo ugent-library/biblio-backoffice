@@ -21,7 +21,7 @@ type SummaryArgs struct {
 	Links       templ.Component
 }
 
-func getUserContributorRoles(p *models.Publication, user *models.Person) string {
+func GetUserContributorRoles(p *models.Publication, user *models.Person) string {
 	roles := make([]string, 0)
 
 	if p.HasContributor("author", user) {
@@ -158,16 +158,16 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									Contributors:            args.Publication.Author,
 									URL:                     views.URL(args.URL).SetQueryParam("show", "contributors").String(),
 									URLTarget:               args.Target,
-									CurrentUserRoles:        getUserContributorRoles(args.Publication, c.User),
+									CurrentUserRoles:        GetUserContributorRoles(args.Publication, c.User),
 									CanViewMoreContributors: c.Repo.CanViewPublication(c.User, args.Publication),
 									CanEditContributors:     c.Repo.CanEditPublication(c.User, args.Publication),
 								})
-							} else if getUserContributorRoles(args.Publication, c.User) != "" && c.UserRole != "curator" {
+							} else if GetUserContributorRoles(args.Publication, c.User) != "" && c.UserRole != "curator" {
 								<div class="d-flex align-items-center">
 									<i class="if if-user if--small if--muted me-2"></i>
 									<ul class="c-meta-list c-meta-list-inline">
 										<li class="c-meta-item">
-											<span class="badge badge-light">Your role: { getUserContributorRoles(args.Publication, c.User) }</span>
+											<span class="badge badge-light">Your role: { GetUserContributorRoles(args.Publication, c.User) }</span>
 										</li>
 									</ul>
 								</div>

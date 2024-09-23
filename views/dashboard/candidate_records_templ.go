@@ -34,20 +34,30 @@ func CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) tem
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(recs) > 0 {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center\"><h2 class=\"mb-0\">Research that might belong to you</h2><span class=\"badge badge-primary rounded-pill badge-sm ms-3\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center\"><label class=\"badge badge-sm rounded-pill bg-success me-3\">New &mdash; in beta</label><h2 class=\"mb-0\">Research that might belong to you</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 string
-			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(total))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dashboard/candidate_records.templ`, Line: 16, Col: 85}
+			if total > 0 {
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"badge badge-primary rounded-pill badge-sm ms-3\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var2 string
+				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(total))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dashboard/candidate_records.templ`, Line: 20, Col: 86}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span></div></div><div class=\"bc-toolbar-right\"><a class=\"btn btn-tertiary\" href=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"bc-toolbar-right\"><div class=\"d-flex align-items-center\"><a class=\"btn btn-tertiary\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -56,20 +66,12 @@ func CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) tem
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><span class=\"btn-text\">View all</span> <i class=\"if if-chevron-right\"></i></a></div></div><div class=\"card\"><ul class=\"list-group list-group-flush\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><span class=\"btn-text\">View all suggestions</span></a> <a class=\"text-muted px-2\" href=\"\" data-bs-container=\"body\" data-bs-toggle=\"popover-custom\" data-bs-placement=\"right\" data-popover-content=\"#suggestions-tooltip\"><i class=\"if if-info-circle\"></i> <span class=\"visually-hidden\">More info</span></a><div class=\"u-hidden\" id=\"suggestions-tooltip\"><div class=\"popover-body p-0\"><p>Biblio automatically picks up all you dissertations and all their metadata from Plato, for you to preview, import and complete. <a class=\"c-link\" target=\"_blank\" href=\"https://onderzoektips.ugent.be/en/tips/00002247/\"><span class=\"text-decoration-underline\">Read the research tip</span> <i class=\"if if--small if-external-link\"></i></a></p></div></div></div></div></div><div class=\"card\"><ul class=\"list-group list-group-flush\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for _, rec := range recs {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item bg-transparent\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = candidaterecordviews.Summary(c, rec).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li>")
+				templ_7745c5c3_Err = candidaterecordviews.ListItem(c, rec).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -79,14 +81,14 @@ func CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) tem
 				return templ_7745c5c3_Err
 			}
 		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<img class=\"mt-8 mb-4\" src=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex flex-column align-items-center justify-content-center h-100\"><img class=\"mt-8 mb-4\" src=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(c.AssetPath("/images/book-illustration.svg"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dashboard/candidate_records.templ`, Line: 36, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dashboard/candidate_records.templ`, Line: 56, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -110,7 +112,7 @@ func CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) tem
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-database\"></i> <span>Add dataset</span></a></div></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><i class=\"if if-database\"></i> <span>Add dataset</span></a></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

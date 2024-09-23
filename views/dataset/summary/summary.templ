@@ -19,7 +19,7 @@ type SummaryArgs struct {
 	Links   templ.Component
 }
 
-func getUserContributorRoles(d *models.Dataset, user *models.Person) string {
+func GetUserContributorRoles(d *models.Dataset, user *models.Person) string {
 	if d.HasContributor("author", user) {
 		return "creator"
 	}
@@ -107,7 +107,6 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 										</span>
 									</span>
 								}
-
 								<span class="c-subline ps-2 border-start">
 									if args.Dataset.License != "" && args.Dataset.License != "LicenseNotListed" {
 										<span class="c-subline text-truncate ps-2">{ args.Dataset.License }</span>
@@ -128,7 +127,6 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 										<em class="c-subline text-truncate ps-2">No license</em>
 									}
 								</span>
-
 							</div>
 							<h4 class="mb-0">
 								if c.UserRole != "curator" && c.Repo.CanViewDataset(c.User, args.Dataset) {
@@ -164,7 +162,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								Contributors:            args.Dataset.Author,
 								URL:                     views.URL(args.URL).SetQueryParam("show", "contributors").String(),
 								URLTarget:               args.Target,
-								CurrentUserRoles:        getUserContributorRoles(args.Dataset, c.User),
+								CurrentUserRoles:        GetUserContributorRoles(args.Dataset, c.User),
 								CanViewMoreContributors: c.Repo.CanViewDataset(c.User, args.Dataset),
 								CanEditContributors:     c.Repo.CanEditDataset(c.User, args.Dataset),
 							})
