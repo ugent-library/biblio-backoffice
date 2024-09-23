@@ -26,7 +26,9 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	var recs []*models.CandidateRecord
 	var err error
 
-	if c.UserRole == "curator" {
+	if c.ProxiedPerson != nil {
+		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.ProxiedPerson.ID, searchArgs.Offset(), searchArgs.Limit(), false)
+	} else if c.UserRole == "curator" {
 		total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs.Offset(), searchArgs.Limit())
 	} else {
 		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.User.ID, searchArgs.Offset(), searchArgs.Limit(), false)
@@ -53,25 +55,6 @@ func CandidateRecordPreview(w http.ResponseWriter, r *http.Request) {
 	rec := ctx.GetCandidateRecord(r)
 
 	views.ShowModal(candidaterecordviews.Preview(c, rec)).Render(r.Context(), w)
-}
-
-func CandidateRecordsIcon(w http.ResponseWriter, r *http.Request) {
-	c := ctx.Get(r)
-
-	var exists bool
-	var err error
-
-	if c.UserRole == "curator" {
-		exists, err = c.Repo.HasCandidateRecords(r.Context())
-	} else {
-		exists, err = c.Repo.PersonHasCandidateRecords(r.Context(), c.User.ID)
-	}
-
-	if err != nil {
-		c.HandleError(w, r, err)
-		return
-	}
-	views.CandidateRecordsIcon(c, exists).Render(r.Context(), w)
 }
 
 func ConfirmRejectCandidateRecord(w http.ResponseWriter, r *http.Request) {

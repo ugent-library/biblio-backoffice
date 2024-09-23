@@ -168,12 +168,18 @@ func userProxies(w http.ResponseWriter, r *http.Request) {
 			c.HandleError(w, r, err)
 			return
 		}
+		candidateRecordsCount, err := c.Repo.CountPersonCandidateRecords(r.Context(), p.ID)
+		if err != nil {
+			c.HandleError(w, r, err)
+			return
+		}
 		proxies = append(proxies, proxyviews.ProxiedPerson{
 			Person:                     p,
 			WithdrawnPublicationsCount: withdrawnPublicationHits.Total,
 			DraftPublicationsCount:     draftPublicationHits.Total,
 			WithdrawnDatasetsCount:     withdrawnDatasetHits.Total,
 			DraftDatasetsCount:         draftDatasetHits.Total,
+			CandidateRecordsCount:      candidateRecordsCount,
 		})
 	}
 

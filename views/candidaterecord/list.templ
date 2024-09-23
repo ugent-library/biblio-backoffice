@@ -20,6 +20,9 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 					<div class="bc-toolbar h-auto py-4">
 						<div class="bc-toolbar-left">
 							<div class="bc-toolbar-item">
+								if c.ProxiedPerson != nil {
+									<p>Proxy for:<span class="badge badge-sm rounded-pill badge-success-light mb-1 ms-2">{ c.ProxiedPerson.FullName }</span></p>
+								}
 								<h2 class="bc-toolbar-title">Suggestions</h2>
 								<p class="c-intro">Import and complete research gathered from other platforms.</p>
 							</div>

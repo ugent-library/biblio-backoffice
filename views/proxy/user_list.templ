@@ -13,6 +13,7 @@ type ProxiedPerson struct {
 	WithdrawnPublicationsCount int
 	DraftDatasetsCount         int
 	WithdrawnDatasetsCount     int
+	CandidateRecordsCount      int
 }
 
 templ UserList(c *ctx.Ctx, people []ProxiedPerson) {
@@ -46,6 +47,7 @@ templ UserList(c *ctx.Ctx, people []ProxiedPerson) {
 						<thead>
 							<tr>
 								<th>Researcher</th>
+								<th>Suggestions</th>
 								<th colspan="3">Publications</th>
 								<th colspan="3">Datasets</th>
 							</tr>
@@ -55,6 +57,20 @@ templ UserList(c *ctx.Ctx, people []ProxiedPerson) {
 								<tr>
 									<td class="text-nowrap">
 										@tableItem(c, p.Person)
+									</td>
+									<td>
+										<a
+											if p.CandidateRecordsCount > 0 {
+												class="badge badge-sm rounded-pill badge-default"
+											} else {
+												class="badge badge-sm rounded-pill badge-white"
+											}
+											href={ templ.SafeURL(c.PathTo("candidate_records", "f[person][0]", p.Person.ID).String()) }
+										>
+											<span class="badge-circle"></span>
+											<span class="badge-text">{ fmt.Sprint(p.CandidateRecordsCount) } suggestions</span>
+											<i class="if if-arrow-right"></i>
+										</a>
 									</td>
 									<td>
 										<a

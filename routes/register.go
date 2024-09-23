@@ -210,7 +210,6 @@ func Register(c Config) {
 					r.Use(ctx.SetNav("candidate_records"))
 
 					r.Get("/", candidaterecords.CandidateRecords).Name("candidate_records")
-					r.Get("/icon", candidaterecords.CandidateRecordsIcon).Name("candidate_records_icon")
 
 					r.Route("/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetCandidateRecord(c.Services.Repo))

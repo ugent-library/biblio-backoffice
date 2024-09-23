@@ -143,6 +143,17 @@ func (r *Repo) PersonHasCandidateRecords(ctx context.Context, personID string) (
 	return exists, nil
 }
 
+func (r *Repo) CountPersonCandidateRecords(ctx context.Context, personID string) (int, error) {
+	query, _ := json.Marshal([]struct {
+		PersonID string `json:"person_id"`
+	}{{PersonID: personID}})
+	n, err := r.queries.CountPersonCandidateRecords(ctx, query)
+	if err != nil {
+		return 0, err
+	}
+	return int(n), nil
+}
+
 func (r *Repo) GetCandidateRecordBySource(ctx context.Context, sourceName string, sourceID string) (*models.CandidateRecord, error) {
 	row, err := r.queries.GetCandidateRecordBySource(ctx, db.GetCandidateRecordBySourceParams{
 		SourceName: sourceName,

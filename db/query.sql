@@ -32,6 +32,8 @@ SELECT EXISTS(SELECT 1 FROM candidate_records WHERE status = 'new');
 -- name: PersonHasCandidateRecords :one
 SELECT EXISTS(SELECT 1 FROM candidate_records WHERE status = 'new' AND (metadata->'author' @> sqlc.arg(query)::jsonb OR metadata->'supervisor' @> sqlc.arg(query)::jsonb));
 
+-- name: CountPersonCandidateRecords :one
+SELECT COUNT(*) FROM candidate_records WHERE status = 'new' AND (metadata->'author' @> sqlc.arg(query)::jsonb OR metadata->'supervisor' @> sqlc.arg(query)::jsonb);
 
 -- name: GetCandidateRecord :one
 SELECT * FROM candidate_records WHERE id = $1 LIMIT 1;
