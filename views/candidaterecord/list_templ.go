@@ -44,12 +44,12 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"bg-white\"><div class=\"bc-navbar bc-navbar--large bc-navbar--bordered-bottom h-auto\"><div class=\"bc-toolbar h-auto py-4\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><h2 class=\"bc-toolbar-title\">Suggestions</h2><p class=\"c-intro\">Import and complete research gathered from other platforms.</p></div></div></div></div></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-100 u-scroll-wrapper\"><div class=\"bg-white\"><div class=\"bc-navbar bc-navbar--large bc-navbar--bordered-bottom h-auto\"><div class=\"bc-toolbar h-auto py-4\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><h2 class=\"bc-toolbar-title\">Suggestions</h2><p class=\"c-intro\">Import and complete research gathered from other platforms.</p></div></div></div></div></div><div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"row\"><div class=\"col-xl-6 col-lg-8 col-md-10\"><div class=\"alert alert-success border border-success mb-6\"><span class=\"badge rounded-pill bg-success me-6\">Beta</span><div class=\"alert-content\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><h3 class=\"alert-title\">Biblio now automatically picks up dissertations from Plato.<br>Preview, import and complete your research output.</h3><p>We are testing this new feature for the Faculty of Engineering and Architecture<br>until the end of November, and would appreciate your feedback.&nbsp;<a class=\"c-link\" target=\"_blank\" href=\"https://forms.office.com/Pages/ResponsePage.aspx?id=3hyB1-_sbEmPkaF4YkG5nLzhS3gYTQlIoRZOSkcIt81UNE5UTU5ZNThPM0dJSkczOERMUThHOFgwVC4u\">Give feedback</a></p><p class=\"mt-4\"><a class=\"c-link text-muted\" target=\"_blank\" href=\"https://onderzoektips.ugent.be/en/tips/00002247/\"><span class=\"text-decoration-underline\">Read the research tip for more information</span> <i class=\"if if--small if-external-link\"></i></a></p></div></div></div></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if searchHits.Total > 0 {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"card w-100 mb-6\"><div class=\"card-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><nav>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"card w-100 mb-6\"><div class=\"card-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><nav>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -64,13 +64,13 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, searchHits.Pagination))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 41, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 69, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" publications</span></div></div></div></div><div class=\"card-body w-100 p-0\"><ul class=\"list-group list-group-flush\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" suggestions</span></div></div></div></div><div class=\"card-body w-100 p-0\"><ul class=\"list-group list-group-flush\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -103,36 +103,36 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, searchHits.Pagination))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 67, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 95, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" publications</span></div></div></div></div></div></div>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" suggestions</span></div></div></div></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"c-blank-slate c-blank-slate-default c-blank-slate-large\"><img class=\"mb-4\" src=\"")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-blank-slate c-blank-slate-default c-blank-slate-large h-50\"><img class=\"mb-4\" src=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.AssetPath("/images/inbox-illustration.svg"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 79, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 105, Col: 75}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"\" width=\"auto\" height=\"32\"><h3 class=\"c-blank-slate-title\">No suggestions, all caught up!</h3></div></div>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" alt=\"\" width=\"auto\" height=\"32\"><h3 class=\"c-blank-slate-title\">No suggestions, all caught up!</h3></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

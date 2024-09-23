@@ -300,11 +300,7 @@ templ DashboardIcon(c *ctx.Ctx, notification bool) {
 
 templ CandidateRecordsIcon(c *ctx.Ctx, notification bool) {
 	<span class="c-sidebar__icon">
-		if notification {
-			<i class="if if-draft if--notification if--notification-warning"></i>
-		} else {
-			<i class="if if-draft"></i>
-		}
+		<i class="if if-draft"></i>
 	</span>
 	<span class="c-sidebar__label">Suggestions</span>
 }
