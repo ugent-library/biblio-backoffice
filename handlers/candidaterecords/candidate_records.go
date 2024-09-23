@@ -93,7 +93,7 @@ func RejectCandidateRecord(w http.ResponseWriter, r *http.Request) {
 
 	f := flash.SimpleFlash().
 		WithLevel("success").
-		WithBody("<p>Candidate record was successfully deleted.</p>")
+		WithBody("<p>Candidate record was successfully rejected.</p>")
 	c.Flash = append(c.Flash, *f)
 
 	rec, err = c.Repo.GetCandidateRecord(r.Context(), rec.ID)
