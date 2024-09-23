@@ -5,6 +5,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	contributorviews "github.com/ugent-library/biblio-backoffice/views/contributor"
+	publicationsummaryviews "github.com/ugent-library/biblio-backoffice/views/publication/summary"
 	"github.com/ugent-library/biblio-backoffice/views/util"
 	"math"
 	"time"
@@ -178,6 +179,7 @@ templ publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) {
 										@contributorviews.Summary(c, contributorviews.SummaryArgs{
 											Role:                    "supervisor",
 											Contributors:            p.Supervisor,
+											CurrentUserRoles:        publicationsummaryviews.GetUserContributorRoles(p, c.User),
 											CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
 											CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
 										})
