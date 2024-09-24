@@ -1236,7 +1236,7 @@ func (s *Repo) datasetToSnapshot(d *models.Dataset) (*snapstore.Snapshot, error)
 	return snap, nil
 }
 
-func queryRows[T any](r *Repo, ctx context.Context, query sq.SelectBuilder) (result []T, err error) {
+func queryRows[T any](r *Repo, ctx context.Context, query sq.SelectBuilder) ([]T, error) {
 	sql, args, err := query.ToSql()
 	if err != nil {
 		return nil, err
@@ -1248,6 +1248,5 @@ func queryRows[T any](r *Repo, ctx context.Context, query sq.SelectBuilder) (res
 	}
 	defer rows.Close()
 
-	result, err = pgx.CollectRows(rows, pgx.RowToStructByName[T])
-	return
+	return pgx.CollectRows(rows, pgx.RowToStructByName[T])
 }
