@@ -299,6 +299,5 @@ func (c *Ctx) getUserRoleFromSession(session *sessions.Session) string {
 
 // TODO temporary flag implementation
 func (c *Ctx) FlagCandidateRecords() bool {
-	// return c.User != nil && c.User.AffiliatedWith("TW")
-	return true
+	return c.User != nil && c.User.AffiliatedWith("TW")
 }
