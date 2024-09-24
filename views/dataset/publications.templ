@@ -60,13 +60,7 @@ templ PublicationsBody(c *ctx.Ctx, dataset *models.Dataset, relatedPublications 
 					<li class="list-group-item">
 						<div class="d-flex w-100">
 							<div class="w-100">
-								if c.Repo.CanViewPublication(c.User, pub) {
-									@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
-										Publication: pub,
-										URL:         c.PathTo("publication", "id", pub.ID),
-										Actions:     publicationSummaryActions(c, dataset, pub),
-									})
-								} else {
+								if !c.Repo.CanViewPublication(c.User, pub) && pub.Status == "returned" {
 									<div class="hstack-md-responsive align-items-start gap-3 w-100">
 										<div class="vstack gap-2">
 											<div class="d-inline-flex align-items-center flex-wrap">
@@ -94,6 +88,12 @@ templ PublicationsBody(c *ctx.Ctx, dataset *models.Dataset, relatedPublications 
 											</button>
 										</div>
 									</div>
+								} else {
+									@publicationsummaryviews.Summary(c, publicationsummaryviews.SummaryArgs{
+										Publication: pub,
+										URL:         c.PathTo("publication", "id", pub.ID),
+										Actions:     publicationSummaryActions(c, dataset, pub),
+									})
 								}
 							</div>
 						</div>
