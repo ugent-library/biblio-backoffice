@@ -9,23 +9,6 @@ DO
   UPDATE SET source_metadata = EXCLUDED.source_metadata, type = EXCLUDED.type, metadata = EXCLUDED.metadata
 RETURNING id;
 
--- name: GetCandidateRecords :many
-SELECT *, count(*) OVER () AS total
-FROM candidate_records
-WHERE (status = 'new' OR (status_date IS NOT NULL AND EXTRACT(DAY FROM (current_timestamp - status_date)) <= 90))
-ORDER BY date_created ASC
-LIMIT sqlc.arg('limit')
-OFFSET sqlc.arg('offset');
-
--- name: GetCandidateRecordsByPersonID :many
-SELECT *, count(*) OVER () AS total
-FROM candidate_records
-WHERE (status = 'new' OR (status_date IS NOT NULL AND sqlc.arg('new_only')::bool = 0::bool AND EXTRACT(DAY FROM (current_timestamp - status_date)) <= 90))
-  AND (metadata->'author' @> sqlc.arg(query)::jsonb OR metadata->'supervisor' @> sqlc.arg(query)::jsonb)
-ORDER BY date_created ASC
-LIMIT sqlc.arg('limit')
-OFFSET sqlc.arg('offset');
-
 -- name: HasCandidateRecords :one
 SELECT EXISTS(SELECT 1 FROM candidate_records WHERE status = 'new');
 

@@ -3,6 +3,7 @@ module github.com/ugent-library/biblio-backoffice
 go 1.23.0
 
 require (
+	github.com/Masterminds/squirrel v1.5.4
 	github.com/a-h/templ v0.2.747
 	github.com/alexliesenfeld/health v0.7.0
 	github.com/aws/aws-sdk-go-v2 v1.30.3
@@ -81,6 +82,8 @@ require (
 	github.com/hashicorp/hcl/v2 v2.18.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.8 // indirect
+	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
+	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

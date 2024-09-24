@@ -7,7 +7,8 @@
       "request": "launch",
       "mode": "auto",
       "program": "${workspaceFolder}/main.go",
-      "args": ["server", "start"]
+      "args": ["server", "start"],
+      "debugAdapter": "dlv-dap"
     }
   ]
 }

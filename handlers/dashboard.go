@@ -144,12 +144,17 @@ func ActionRequired(w http.ResponseWriter, r *http.Request) {
 func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 
+	searchArgs := models.NewSearchArgs().
+		WithFilter("Status", "new").
+		WithFilter("PersonID", c.User.ID)
+	searchArgs.PageSize = 4
+
 	var total int
 	var recs []*models.CandidateRecord
 	var err error
 
 	if c.FlagCandidateRecords() {
-		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.User.ID, 0, 4, true)
+		total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs)
 	}
 
 	if err != nil {
