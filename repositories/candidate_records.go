@@ -230,10 +230,7 @@ func buildQuery(searchArgs *models.SearchArgs) sq.SelectBuilder {
 				sq.Expr("status_date IS NOT NULL"),
 				sq.LtOrEq{"EXTRACT(DAY FROM (current_timestamp - status_date))": "90"},
 			},
-		}).
-		OrderBy("date_created DESC").
-		Limit(uint64(searchArgs.Limit())).
-		Offset(uint64(searchArgs.Offset()))
+		})
 
 	for field, filterValue := range searchArgs.Filters {
 		switch field {
@@ -246,7 +243,30 @@ func buildQuery(searchArgs *models.SearchArgs) sq.SelectBuilder {
 		}
 	}
 
-	return query
+	sort := "default"
+	if len(searchArgs.Sort) > 0 {
+		sort = searchArgs.Sort[0]
+	}
+	switch sort {
+	case "added-desc":
+		query = query.OrderBy("date_created DESC")
+
+	case "added-asc":
+		query = query.OrderBy("date_created ASC")
+
+	case "year-desc":
+		query = query.OrderBy("metadata->'year' DESC")
+
+	case "year-asc":
+		query = query.OrderBy("metadata->'year' ASC")
+
+	default:
+		query = query.OrderBy("array_position(ARRAY['new', 'imported', 'rejected'], status)", "date_created DESC")
+	}
+
+	return query.
+		Limit(uint64(searchArgs.Limit())).
+		Offset(uint64(searchArgs.Offset()))
 }
 
 func getPersonFilter(personID string) []byte {
