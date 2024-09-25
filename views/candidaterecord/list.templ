@@ -64,10 +64,15 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 					</div>
 				</div>
 				if searchHits.Total > 0 {
-					<form class="mb-4" method="GET" action={ views.URL(c.CurrentURL).ClearQuery().SafeURL() }>
-						<div class="bc-toolbar">
-							<div class="bc-toolbar-right">
-								<div class="bc-toolbar-item d-flex gap-3 align-items-center">
+					<div class="bc-toolbar">
+						<div class="bc-toolbar-left">
+							@views.Facets(c, searchArgs) {
+								@facets(c, searchArgs, searchHits.Facets)
+							}
+						</div>
+						<div class="bc-toolbar-right">
+							<div class="bc-toolbar-item">
+								<form class="d-flex gap-3 align-items-center" method="GET" action={ views.URL(c.CurrentURL).ClearQuery().SafeURL() }>
 									<label class="text-nowrap" for="sort-suggestions">Sort by</label>
 									<select id="sort-suggestions" name="sort" class="form-select form-change-submit">
 										for _, sort := range vocabularies.Map["candidate_record_sorts"] {
@@ -81,10 +86,10 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 											</option>
 										}
 									</select>
-								</div>
+								</form>
 							</div>
 						</div>
-					</form>
+					</div>
 					<div class="card w-100 mb-6">
 						<div class="card-header">
 							<div class="bc-toolbar">
@@ -136,6 +141,32 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 				}
 			</div>
 		</div>
+	}
+}
+
+templ facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models.FacetValues) {
+	@views.FacetLine() {
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "status",
+			Title:          "Suggestion status",
+			LocPrefix:      "candidate_record_statuses",
+			LocPrefixShort: "candidate_record_statuses",
+			FacetValues:    facets["status"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "faculty_id",
+			Title:          "Faculty",
+			LocPrefix:      "organization",
+			LocPrefixShort: "organization",
+			FacetValues:    facets["faculty_id"],
+		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "year",
+			Title:          "Publication year",
+			LocPrefix:      "",
+			LocPrefixShort: "",
+			FacetValues:    facets["year"],
+		}, searchArgs)
 	}
 }
 
