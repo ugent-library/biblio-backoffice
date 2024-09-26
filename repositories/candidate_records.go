@@ -219,29 +219,35 @@ func (r *Repo) ImportCandidateRecordAsPublication(ctx context.Context, id string
 	return rec.Publication.ID, nil
 }
 
-func buildQuery(searchArgs *models.SearchArgs) sq.SelectBuilder {
+func (r *Repo) GetCandidateRecordsStatusFacet(ctx context.Context, searchArgs *models.SearchArgs) (models.FacetValues, error) {
+	query := getBaseQuery("status AS Value", "COUNT(*) AS Count").
+		OrderBy("array_position(ARRAY['new', 'imported', 'rejected'], status)").
+		GroupBy("status")
+
+	query = addQueryFilters(query, searchArgs, "status")
+
+	result, err := queryRows[models.Facet](r, ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func getBaseQuery(selectColumns ...string) sq.SelectBuilder {
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 
-	query := psql.Select("*", "COUNT(*) OVER() AS total").
-		From("candidate_records").
-		Where(sq.Or{
-			sq.Eq{"status": "new"},
-			sq.And{
-				sq.Expr("status_date IS NOT NULL"),
-				sq.LtOrEq{"EXTRACT(DAY FROM (current_timestamp - status_date))": "90"},
-			},
-		})
-
-	for field, filterValue := range searchArgs.Filters {
-		switch field {
-		case "Status":
-			query = query.Where(sq.Eq{"status": filterValue[0]})
-
-		case "PersonID":
-			personFilter := getPersonFilter(filterValue[0])
-			query = query.Where("(metadata->'author' @> ?::jsonb OR metadata->'supervisor' @> ?::jsonb)", personFilter, personFilter)
-		}
+	if len(selectColumns) == 0 {
+		selectColumns = []string{"*"}
 	}
+
+	return psql.Select(selectColumns...).From("candidate_records")
+}
+
+func buildQuery(searchArgs *models.SearchArgs) sq.SelectBuilder {
+	query := getBaseQuery("*", "COUNT(*) OVER() AS total")
+
+	query = addQueryFilters(query, searchArgs)
 
 	sort := "default"
 	if len(searchArgs.Sort) > 0 {
@@ -267,6 +273,35 @@ func buildQuery(searchArgs *models.SearchArgs) sq.SelectBuilder {
 	return query.
 		Limit(uint64(searchArgs.Limit())).
 		Offset(uint64(searchArgs.Offset()))
+}
+
+func addQueryFilters(query sq.SelectBuilder, searchArgs *models.SearchArgs, omitFilters ...string) sq.SelectBuilder {
+	query = query.
+		Where(sq.Or{
+			sq.Eq{"status": "new"},
+			sq.And{
+				sq.Expr("status_date IS NOT NULL"),
+				sq.LtOrEq{"EXTRACT(DAY FROM (current_timestamp - status_date))": "90"},
+			},
+		})
+
+	filters := searchArgs.Filters
+	if len(omitFilters) > 0 {
+		filters = lo.OmitByKeys(filters, omitFilters)
+	}
+
+	for field, filterValue := range filters {
+		switch field {
+		case "status":
+			query = query.Where(sq.Eq{"status": filterValue})
+
+		case "person_id":
+			personFilter := getPersonFilter(filterValue[0])
+			query = query.Where("(metadata->'author' @> ?::jsonb OR metadata->'supervisor' @> ?::jsonb)", personFilter, personFilter)
+		}
+	}
+
+	return query
 }
 
 func getPersonFilter(personID string) []byte {
