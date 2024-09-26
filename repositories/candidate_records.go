@@ -222,9 +222,24 @@ func (r *Repo) ImportCandidateRecordAsPublication(ctx context.Context, id string
 func (r *Repo) GetCandidateRecordsStatusFacet(ctx context.Context, searchArgs *models.SearchArgs) (models.FacetValues, error) {
 	query := getBaseQuery("status AS Value", "COUNT(*) AS Count").
 		OrderBy("array_position(ARRAY['new', 'imported', 'rejected'], status)").
-		GroupBy("status")
+		GroupBy("Value")
 
 	query = addQueryFilters(query, searchArgs, "status")
+
+	result, err := queryRows[models.Facet](r, ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *Repo) GetCandidateRecordsPublicationYearFacet(ctx context.Context, searchArgs *models.SearchArgs) (models.FacetValues, error) {
+	query := getBaseQuery("metadata->>'year' AS Value", "COUNT(*) AS Count").
+		OrderBy("Value DESC").
+		GroupBy("Value")
+
+	query = addQueryFilters(query, searchArgs, "year")
 
 	result, err := queryRows[models.Facet](r, ctx, query)
 	if err != nil {
@@ -294,6 +309,9 @@ func addQueryFilters(query sq.SelectBuilder, searchArgs *models.SearchArgs, omit
 		switch field {
 		case "status":
 			query = query.Where(sq.Eq{"status": filterValue})
+
+		case "year":
+			query = query.Where(sq.Eq{"metadata->>'year'": filterValue})
 
 		case "person_id":
 			personFilter := getPersonFilter(filterValue[0])

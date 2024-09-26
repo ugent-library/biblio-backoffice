@@ -46,8 +46,15 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	publicationYearFacet, err := c.Repo.GetCandidateRecordsPublicationYearFacet(r.Context(), searchArgs)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
 	facets := map[string]models.FacetValues{
 		"status": statusFacet,
+		"year":   publicationYearFacet,
 	}
 
 	searchHits := &models.SearchHits{
