@@ -2,20 +2,19 @@
 
 describe('Issue #1125: Add "locked" message when record is locked', () => {
   it('should display "locked" message when record is locked', () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.setUpPublication("Book");
 
     // Lock the publication
-    cy.login("librarian1");
-    cy.switchMode("Librarian");
+    cy.loginAsLibrarian("librarian1");
 
     cy.visitPublication();
 
     cy.contains(".btn", "Lock record").click();
 
     // Verify the locked message
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visitPublication();
 

@@ -6,7 +6,7 @@ type Flash struct {
 	Level        string
 	Title        string
 	Body         string
-	Dismissable  bool
+	Dismissible  bool
 	DismissAfter uint
 }
 
@@ -15,7 +15,7 @@ func SimpleFlash() *Flash {
 		Type:         "simple",
 		Application:  "Biblio",
 		Level:        "info",
-		Dismissable:  true,
+		Dismissible:  true,
 		DismissAfter: 5000,
 	}
 }
@@ -25,7 +25,7 @@ func ComplexFlash() *Flash {
 		Type:         "complex",
 		Application:  "Biblio",
 		Level:        "info",
-		Dismissable:  true,
+		Dismissible:  true,
 		DismissAfter: 5000,
 	}
 }
@@ -45,8 +45,8 @@ func (f *Flash) WithBody(body string) *Flash {
 	return f
 }
 
-func (f *Flash) IsDismissable(dismissable bool) *Flash {
-	f.Dismissable = dismissable
+func (f *Flash) IsDismissible(dismissible bool) *Flash {
+	f.Dismissible = dismissible
 	return f
 }
 

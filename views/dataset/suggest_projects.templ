@@ -5,6 +5,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/util"
 )
 
 templ SuggestProjects(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Project) {
@@ -25,7 +26,7 @@ templ SuggestProjects(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Projec
 								</div>
 								if hit.Description != "" {
 									<p class="mb-3 text-muted">
-										{ hit.Description }
+										{ util.StripHTML( hit.Description, true) }
 									</p>
 								}
 								<div class="mb-3">
@@ -60,6 +61,12 @@ templ SuggestProjects(c *ctx.Ctx, dataset *models.Dataset, hits []*models.Projec
 												<div class="ps-4 border-left">
 													<span>IWETO ID</span>
 													<code class="c-code d-inline-block">{ hit.IWETOID }</code>
+												</div>
+											}
+											if hit.EUProject != nil && hit.EUProject.Acronym != "" {
+												<div class="ps-4 border-left">
+													<span>EU Acronym</span>
+													<code class="c-code d-inline-block">{ hit.EUProject.Acronym }</code>
 												</div>
 											}
 											if hit.EUProject != nil && hit.EUProject.ID != "" {

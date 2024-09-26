@@ -7,6 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/oklog/ulid/v2"
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/db"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
@@ -25,46 +26,132 @@ func (r *Repo) AddCandidateRecord(ctx context.Context, rec *models.CandidateReco
 	return err
 }
 
-func (r *Repo) GetCandidateRecords(ctx context.Context, start int, limit int) ([]*models.CandidateRecord, error) {
+func (r *Repo) GetCandidateRecords(ctx context.Context, start int, limit int) (int, []*models.CandidateRecord, error) {
 	rows, err := r.queries.GetCandidateRecords(ctx, db.GetCandidateRecordsParams{
 		Limit:  int32(limit),
 		Offset: int32(start),
 	})
 	if err != nil {
-		return nil, err
+		return 0, nil, err
 	}
+
+	var total int
 	recs := make([]*models.CandidateRecord, len(rows))
 	for i, row := range rows {
+		total = int(row.Total)
 		rec := &models.CandidateRecord{
-			ID:          row.ID,
-			SourceName:  row.SourceName,
-			SourceID:    row.SourceID,
-			Type:        row.Type,
-			Metadata:    row.Metadata,
-			DateCreated: row.DateCreated.Time,
-			Status:      row.Status,
-			Publication: &models.Publication{},
+			ID:             row.ID,
+			SourceName:     row.SourceName,
+			SourceID:       row.SourceID,
+			Type:           row.Type,
+			Metadata:       row.Metadata,
+			DateCreated:    row.DateCreated.Time,
+			Status:         row.Status,
+			Publication:    &models.Publication{},
+			StatusDate:     &row.StatusDate.Time,
+			StatusPersonID: lo.FromPtr(row.StatusPersonID),
+			ImportedID:     lo.FromPtr(row.ImportedID),
+		}
+
+		for _, fn := range r.config.CandidateRecordLoaders {
+			if err := fn(rec); err != nil {
+				return 0, nil, err
+			}
 		}
 		if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
-			return nil, err
+			return 0, nil, err
 		}
 		for _, fn := range r.config.PublicationLoaders {
 			if err := fn(rec.Publication); err != nil {
-				return nil, err
+				return 0, nil, err
 			}
 		}
 
 		recs[i] = rec
 	}
-	return recs, err
+	return total, recs, err
 }
 
-func (r *Repo) CountCandidateRecords(ctx context.Context) (int, error) {
-	num, err := r.queries.CountCandidateRecords(ctx)
+func (r *Repo) HasCandidateRecords(ctx context.Context) (bool, error) {
+	exists, err := r.queries.HasCandidateRecords(ctx)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
+}
+
+func (r *Repo) GetCandidateRecordsByPersonID(ctx context.Context, personID string, start int, limit int, newOnly bool) (int, []*models.CandidateRecord, error) {
+	query, _ := json.Marshal([]struct {
+		PersonID string `json:"person_id"`
+	}{{PersonID: personID}})
+
+	rows, err := r.queries.GetCandidateRecordsByPersonID(ctx, db.GetCandidateRecordsByPersonIDParams{
+		Query:   query,
+		Limit:   int32(limit),
+		Offset:  int32(start),
+		NewOnly: newOnly,
+	})
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var total int
+	recs := make([]*models.CandidateRecord, len(rows))
+	for i, row := range rows {
+		total = int(row.Total)
+		rec := &models.CandidateRecord{
+			ID:             row.ID,
+			SourceName:     row.SourceName,
+			SourceID:       row.SourceID,
+			Type:           row.Type,
+			Metadata:       row.Metadata,
+			DateCreated:    row.DateCreated.Time,
+			Status:         row.Status,
+			Publication:    &models.Publication{},
+			StatusDate:     &row.StatusDate.Time,
+			StatusPersonID: lo.FromPtr(row.StatusPersonID),
+			ImportedID:     lo.FromPtr(row.ImportedID),
+		}
+
+		for _, fn := range r.config.CandidateRecordLoaders {
+			if err := fn(rec); err != nil {
+				return 0, nil, err
+			}
+		}
+		if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
+			return 0, nil, err
+		}
+		for _, fn := range r.config.PublicationLoaders {
+			if err := fn(rec.Publication); err != nil {
+				return 0, nil, err
+			}
+		}
+
+		recs[i] = rec
+	}
+	return total, recs, err
+}
+
+func (r *Repo) PersonHasCandidateRecords(ctx context.Context, personID string) (bool, error) {
+	query, _ := json.Marshal([]struct {
+		PersonID string `json:"person_id"`
+	}{{PersonID: personID}})
+	exists, err := r.queries.PersonHasCandidateRecords(ctx, query)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
+}
+
+func (r *Repo) CountPersonCandidateRecords(ctx context.Context, personID string) (int, error) {
+	query, _ := json.Marshal([]struct {
+		PersonID string `json:"person_id"`
+	}{{PersonID: personID}})
+	n, err := r.queries.CountPersonCandidateRecords(ctx, query)
 	if err != nil {
 		return 0, err
 	}
-	return int(num), nil
+	return int(n), nil
 }
 
 func (r *Repo) GetCandidateRecordBySource(ctx context.Context, sourceName string, sourceID string) (*models.CandidateRecord, error) {
@@ -80,16 +167,24 @@ func (r *Repo) GetCandidateRecordBySource(ctx context.Context, sourceName string
 	}
 
 	rec := &models.CandidateRecord{
-		ID:          row.ID,
-		SourceName:  row.SourceName,
-		SourceID:    row.SourceID,
-		Type:        row.Type,
-		Metadata:    row.Metadata,
-		DateCreated: row.DateCreated.Time,
-		Status:      row.Status,
-		Publication: &models.Publication{},
+		ID:             row.ID,
+		SourceName:     row.SourceName,
+		SourceID:       row.SourceID,
+		Type:           row.Type,
+		Metadata:       row.Metadata,
+		DateCreated:    row.DateCreated.Time,
+		Status:         row.Status,
+		Publication:    &models.Publication{},
+		StatusDate:     &row.StatusDate.Time,
+		StatusPersonID: lo.FromPtr(row.StatusPersonID),
+		ImportedID:     lo.FromPtr(row.ImportedID),
 	}
 
+	for _, fn := range r.config.CandidateRecordLoaders {
+		if err := fn(rec); err != nil {
+			return nil, err
+		}
+	}
 	if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
 		return nil, err
 	}
@@ -112,16 +207,24 @@ func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.Candi
 	}
 
 	rec := &models.CandidateRecord{
-		ID:          row.ID,
-		SourceName:  row.SourceName,
-		SourceID:    row.SourceID,
-		Type:        row.Type,
-		Metadata:    row.Metadata,
-		DateCreated: row.DateCreated.Time,
-		Status:      row.Status,
-		Publication: &models.Publication{},
+		ID:             row.ID,
+		SourceName:     row.SourceName,
+		SourceID:       row.SourceID,
+		Type:           row.Type,
+		Metadata:       row.Metadata,
+		DateCreated:    row.DateCreated.Time,
+		Status:         row.Status,
+		Publication:    &models.Publication{},
+		StatusDate:     &row.StatusDate.Time,
+		StatusPersonID: lo.FromPtr(row.StatusPersonID),
+		ImportedID:     lo.FromPtr(row.ImportedID),
 	}
 
+	for _, fn := range r.config.CandidateRecordLoaders {
+		if err := fn(rec); err != nil {
+			return nil, err
+		}
+	}
 	if err := json.Unmarshal(rec.Metadata, rec.Publication); err != nil {
 		return nil, err
 	}
@@ -134,8 +237,12 @@ func (r *Repo) GetCandidateRecord(ctx context.Context, id string) (*models.Candi
 	return rec, nil
 }
 
-func (r *Repo) RejectCandidateRecord(ctx context.Context, id string) error {
-	_, err := r.queries.SetCandidateRecordStatus(ctx, db.SetCandidateRecordStatusParams{Status: "rejected", ID: id})
+func (r *Repo) RejectCandidateRecord(ctx context.Context, id string, user *models.Person) error {
+	_, err := r.queries.SetCandidateRecordStatus(ctx, db.SetCandidateRecordStatusParams{
+		Status:         "rejected",
+		ID:             id,
+		StatusPersonID: &user.ID,
+	})
 
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
@@ -145,6 +252,25 @@ func (r *Repo) RejectCandidateRecord(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func (r *Repo) RestoreCandidateRecord(ctx context.Context, id string, user *models.Person) error {
+	_, err := r.queries.SetCandidateRecordStatus(ctx, db.SetCandidateRecordStatusParams{
+		Status:         "new",
+		ID:             id,
+		StatusPersonID: &user.ID,
+		ImportedID:     nil,
+	})
+
+	switch {
+	case errors.Is(err, pgx.ErrNoRows):
+		return models.ErrNotFound
+	case err != nil:
+		return err
+	}
+
+	return nil
+
 }
 
 func (r *Repo) ImportCandidateRecordAsPublication(ctx context.Context, id string, user *models.Person) (string, error) {
@@ -160,7 +286,12 @@ func (r *Repo) ImportCandidateRecordAsPublication(ctx context.Context, id string
 			return err
 		}
 
-		if _, err := r.queries.SetCandidateRecordStatus(ctx, db.SetCandidateRecordStatusParams{ID: rec.ID, Status: "imported"}); err != nil {
+		if _, err := r.queries.SetCandidateRecordStatus(ctx, db.SetCandidateRecordStatusParams{
+			ID:             rec.ID,
+			Status:         "imported",
+			StatusPersonID: &user.ID,
+			ImportedID:     &rec.Publication.ID,
+		}); err != nil {
 			return err
 		}
 

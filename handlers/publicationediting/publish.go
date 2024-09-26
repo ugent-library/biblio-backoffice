@@ -25,7 +25,7 @@ func Publish(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	publication := ctx.GetPublication(r)
 
-	if !c.User.CanEditPublication(publication) {
+	if !c.Repo.CanEditPublication(c.User, publication) {
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}

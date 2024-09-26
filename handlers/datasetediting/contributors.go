@@ -561,13 +561,11 @@ func OrderContributors(w http.ResponseWriter, r *http.Request) {
 	}
 
 	contributors := dataset.Contributors(b.Role)
-	if len(b.Positions) != len(contributors) {
-		c.HandleError(w, r, httperror.BadRequest.Wrap(errors.New("positions don't match number of contributors")))
-		return
-	}
-	newContributors := make([]*models.Contributor, len(contributors))
+	newContributors := make([]*models.Contributor, len(b.Positions))
 	for i, pos := range b.Positions {
-		newContributors[i] = contributors[pos]
+		if pos < len(contributors) {
+			newContributors[i] = contributors[pos]
+		}
 	}
 	dataset.SetContributors(b.Role, newContributors)
 
@@ -575,6 +573,8 @@ func OrderContributors(w http.ResponseWriter, r *http.Request) {
 
 	var conflict *snapstore.Conflict
 	if errors.As(err, &conflict) {
+		w.Header().Add("HX-Retarget", "#modals")
+		w.Header().Add("HX-Reswap", "innerHTML")
 		views.ShowModal(views.ErrorDialog(c.Loc.Get("dataset.conflict_error_reload"))).Render(r.Context(), w)
 		return
 	}

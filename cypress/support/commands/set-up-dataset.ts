@@ -45,7 +45,7 @@ export default function setUpDataset({
         .then(extractSnapshotId)
         .then((snapshotId) => {
           // Then update details
-          const body = {
+          const body: Record<string, unknown> = {
             title,
             identifier_type: "DOI",
             identifier: "10.7202/1041023ar",
@@ -75,7 +75,7 @@ export default function setUpDataset({
         });
 
       if (prepareForPublishing || publish) {
-        cy.addCreator("John", "Doe");
+        cy.addCreator("John", "Doe", { biblioIDAlias: `@${biblioIDAlias}` });
       }
 
       if (publish) {

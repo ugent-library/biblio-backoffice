@@ -2,7 +2,7 @@ describe("User impersonation", () => {
   it("should be possible for a librarian to use the app as another user and to return to their own profile afterwards", () => {
     const LIBRARIAN_NAME = "Biblio Librarian1";
 
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
 
     cy.visit("/");
 
@@ -27,7 +27,7 @@ describe("User impersonation", () => {
     cy.contains("Viewing the perspective of John Doe.").should("be.visible");
     cy.get(".bc-avatar-and-text:visible").should("contain.text", "John Doe");
 
-    cy.contains(".btn", `return to ${LIBRARIAN_NAME}`).click();
+    cy.contains(".btn", `Return to ${LIBRARIAN_NAME}`).click();
 
     cy.contains("Viewing the perspective of").should("not.exist");
     cy.get(".bc-avatar-and-text:visible").should(

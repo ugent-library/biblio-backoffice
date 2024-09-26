@@ -2,12 +2,13 @@
 
 describe("Issue #1123:  WoS import cuts keywords up because of newlines in import", () => {
   it("should not split up keywords by newlines", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/add-publication");
 
-    cy.contains("Import from Web of Science").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import from Web of Science")
+      .contains(".btn", "Add")
+      .click();
 
     cy.get("input[name=file]").selectFile(
       "cypress/fixtures/wos-000963572100001.txt",

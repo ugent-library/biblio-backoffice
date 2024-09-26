@@ -8,143 +8,176 @@ import (
 )
 
 templ AddManual(c *ctx.Ctx, step int) {
-	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title:       "Add - Publications - Biblio",
+		Breadcrumbs: addPublicationBreadcrumbs(c),
+	}) {
 		@publication.AddSingleSidebar(c, step)
-		<form class="w-100 u-scroll-wrapper" action={ templ.URL(c.PathTo("publication_add_single_import_confirm").String()) } method="POST">
-			@views.CSRFTag(c)
-			<div class="w-100 u-scroll-wrapper">
-				<div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
-					<div class="bc-toolbar">
-						<div class="bc-toolbar-left">
-							<div class="bc-toolbar-item">
-								<div class="d-flex flex-column">
-									<span class="text-muted">Step { fmt.Sprint(step) }</span>
-									<h4 class="bc-toolbar-title">Add publication(s)</h4>
-								</div>
-							</div>
-						</div>
-						<div class="bc-toolbar-right">
-							<div class="bc-toolbar-item">
-								<button type="submit" class="btn btn-primary">
-									<div class="btn-text">Add publication(s)</div>
-									<i class="if if-arrow-right"></i>
-								</button>
+		<div class="w-100 u-scroll-wrapper">
+			<div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<div class="bc-toolbar-item">
+							<div class="d-flex flex-column">
+								<span class="text-muted">Step { fmt.Sprint(step) }</span>
+								<h4 class="bc-toolbar-title">Enter a publication manually</h4>
 							</div>
 						</div>
 					</div>
+					<div class="bc-toolbar-right">
+						<div class="c-button-toolbar">
+							<div class="border-end pe-4 me-4">
+								<a class="btn btn-tertiary" href={ templ.URL(c.PathTo("publications").String()) }>Cancel</a>
+							</div>
+							<a class="btn btn-tertiary" href={ templ.URL(c.PathTo("publication_add").String()) }>
+								<i class="if if-arrow-left"></i>
+								<span class="btn-text">Previous step</span>
+							</a>
+						</div>
+					</div>
 				</div>
-				<div class="p-6 u-scroll-wrapper__body">
-					<div class="card mb-6">
-						<div class="card-header">
-							<div class="bc-toolbar">
-								<div class="bc-toolbar-left">
-									Publication does not have an identifier. Enter manually
+			</div>
+			<div class="p-6 u-scroll-wrapper__body">
+				<div class="container-sm">
+					<h2 class="mb-6">Choose publication type</h2>
+					<div class="mb-6">
+						<h3 class="mb-4">As author</h3>
+						<div class="row">
+							<div class="col-lg-6">
+								<div class="card mb-3">
+									<div class="card-body py-5">
+										<div class="bc-toolbar h-auto">
+											<div class="bc-toolbar-left">
+												<p>Journal article</p>
+											</div>
+											<div class="bc-toolbar-right">
+												@addButton(c, "journal_article")
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<div class="card mb-3">
+									<div class="card-body py-5">
+										<div class="bc-toolbar h-auto">
+											<div class="bc-toolbar-left">
+												<p>Book chapter</p>
+											</div>
+											<div class="bc-toolbar-right">
+												@addButton(c, "book_chapter")
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<div class="card mb-3">
+									<div class="card-body py-5">
+										<div class="bc-toolbar h-auto">
+											<div class="bc-toolbar-left">
+												<p>Book</p>
+											</div>
+											<div class="bc-toolbar-right">
+												@addButton(c, "book")
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<div class="card mb-3">
+									<div class="card-body py-5">
+										<div class="bc-toolbar h-auto">
+											<div class="bc-toolbar-left">
+												<p>Conference contribution</p>
+											</div>
+											<div class="bc-toolbar-right">
+												@addButton(c, "conference")
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<div class="card mb-3">
+									<div class="card-body py-5">
+										<div class="bc-toolbar h-auto">
+											<div class="bc-toolbar-left">
+												<p>Dissertation</p>
+											</div>
+											<div class="bc-toolbar-right">
+												@addButton(c, "dissertation")
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-6">
+								<div class="card mb-3">
+									<div class="card-body py-5">
+										<div class="bc-toolbar h-auto">
+											<div class="bc-toolbar-left">
+												<p>Miscellaneous</p>
+											</div>
+											<div class="bc-toolbar-right">
+												@addButton(c, "miscellaneous")
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
-						<div class="card-body radio-card-group">
-							<h4 class="mb-5">As author</h4>
-							<div class="row mb-5">
-								<div class="col">
-									<label class="c-radio-card c-radio-card--selected" aria-selected="true">
-										<div class="c-radio-card__radio">
-											<div class="form-check">
-												<input class="form-check-input" id="radio-journal-article" type="radio" name="publication_type" value="journal_article" checked="checked"/>
-												<label class="form-check-label" for="radio-journal-article"></label>
+					</div>
+					<div class="c-or">
+						<span>Or</span>
+					</div>
+					<div class="mb-6">
+						<h3 class="mb-4">As editor</h3>
+						<div class="row">
+							<div class="col-lg-6">
+								<div class="card mb-3">
+									<div class="card-body py-5">
+										<div class="bc-toolbar h-auto">
+											<div class="bc-toolbar-left">
+												<p>Book</p>
+											</div>
+											<div class="bc-toolbar-right">
+												@addButton(c, "book_editor")
 											</div>
 										</div>
-										<div class="c-radio-card__content">Journal Article</div>
-									</label>
-								</div>
-								<div class="col">
-									<label class="c-radio-card" aria-selected="false">
-										<div class="c-radio-card__radio">
-											<div class="form-check">
-												<input class="form-check-input" id="radio-book-chapter" type="radio" name="publication_type" value="book_chapter"/>
-												<label class="form-check-label" for="radio-book-chapter"></label>
-											</div>
-										</div>
-										<div class="c-radio-card__content">Book Chapter</div>
-									</label>
+									</div>
 								</div>
 							</div>
-							<div class="row mb-5">
-								<div class="col">
-									<label class="c-radio-card" aria-selected="false">
-										<div class="c-radio-card__radio">
-											<div class="form-check">
-												<input class="form-check-input" id="radio-book" type="radio" name="publication_type" value="book"/>
-												<label class="form-check-label" for="radio-book"></label>
+							<div class="col-lg-6">
+								<div class="card mb-3">
+									<div class="card-body py-5">
+										<div class="bc-toolbar h-auto">
+											<div class="bc-toolbar-left">
+												<p>Issue</p>
+											</div>
+											<div class="bc-toolbar-right">
+												@addButton(c, "issue_editor")
 											</div>
 										</div>
-										<div class="c-radio-card__content">Book</div>
-									</label>
-								</div>
-								<div class="col">
-									<label class="c-radio-card" aria-selected="false">
-										<div class="c-radio-card__radio">
-											<div class="form-check">
-												<input class="form-check-input" id="radio-conference" type="radio" name="publication_type" value="conference"/>
-												<label class="form-check-label" for="radio-conference"></label>
-											</div>
-										</div>
-										<div class="c-radio-card__content">Conference contribution</div>
-									</label>
-								</div>
-							</div>
-							<div class="row mb-5">
-								<div class="col">
-									<label class="c-radio-card" aria-selected="false">
-										<div class="c-radio-card__radio">
-											<div class="form-check">
-												<input class="form-check-input" id="radio-dissertation" type="radio" name="publication_type" value="dissertation"/>
-												<label class="form-check-label" for="radio-dissertation"></label>
-											</div>
-										</div>
-										<div class="c-radio-card__content">Dissertation</div>
-									</label>
-								</div>
-								<div class="col">
-									<label class="c-radio-card" aria-selected="false">
-										<div class="c-radio-card__radio">
-											<div class="form-check">
-												<input class="form-check-input" id="radio-miscellaneous" type="radio" name="publication_type" value="miscellaneous"/>
-												<label class="form-check-label" for="radio-miscellaneous"></label>
-											</div>
-										</div>
-										<div class="c-radio-card__content">Miscellaneous</div>
-									</label>
-								</div>
-							</div>
-							<h4 class="mb-5">As editor</h4>
-							<div class="row">
-								<div class="col">
-									<label class="c-radio-card" aria-selected="false">
-										<div class="c-radio-card__radio">
-											<div class="form-check">
-												<input class="form-check-input" id="radio-book-editor" type="radio" name="publication_type" value="book_editor"/>
-												<label class="form-check-label" for="radio-book-editor"></label>
-											</div>
-										</div>
-										<div class="c-radio-card__content">Book</div>
-									</label>
-								</div>
-								<div class="col">
-									<label class="c-radio-card" aria-selected="false">
-										<div class="c-radio-card__radio">
-											<div class="form-check">
-												<input class="form-check-input" id="radio-issue-editor" type="radio" name="publication_type" value="issue_editor"/>
-												<label class="form-check-label" for="radio-issue-editor"></label>
-											</div>
-										</div>
-										<div class="c-radio-card__content">Issue</div>
-									</label>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</form>
+		</div>
 	}
+}
+
+templ addButton(c *ctx.Ctx, publicationType string) {
+	<form action={ templ.URL(c.PathTo("publication_add_single_import_confirm").String()) } method="POST">
+		@views.CSRFTag(c)
+		<input type="hidden" name="publication_type" value={ publicationType }/>
+		<button type="submit" class="btn btn-primary ms-6">
+			<i class="if if-add"></i>
+			<span class="btn-text">Add</span>
+		</button>
+	</form>
 }

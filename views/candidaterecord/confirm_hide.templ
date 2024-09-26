@@ -1,6 +1,7 @@
 package candidaterecordviews
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 )
@@ -13,8 +14,8 @@ templ ConfirmHide(c *ctx.Ctx, rec *models.CandidateRecord) {
 					<div class="bc-avatar">
 						<i class="if if-alert"></i>
 					</div>
-					<h4>Are you sure you want to hide this suggestion?</h4>
-					<p>You cannot undo this action.</p>
+					<h4>Do you want to reject this suggestion for<br>its authors and supervisors?</h4>
+					<p>Rejecting this suggestion will remove it for all involved parties.</p>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -28,8 +29,9 @@ templ ConfirmHide(c *ctx.Ctx, rec *models.CandidateRecord) {
 						<button
 							class="btn btn-danger"
 							hx-put={ c.PathTo("reject_candidate_record", "id", rec.ID).String() }
-							hx-swap="none"
-						>Yes, hide suggestion</button>
+							hx-target={ fmt.Sprintf("#candidate-record-%s", rec.ID) }
+							hx-swap="outerHTML"
+						>Yes, reject suggestion</button>
 					</div>
 				</div>
 			</div>

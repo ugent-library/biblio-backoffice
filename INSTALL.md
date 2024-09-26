@@ -187,7 +187,6 @@ Next, copy these configuration files:
 
 ```
 cp .env.example .env
-cp reflex.example.conf reflex.conf
 ```
 
 Configure the `.env` file accordingly:
@@ -259,29 +258,41 @@ npm install
 ## Step 2: Boot the application, start developing
 
 Development involves re-compiling and running the codebase via `go run`. Repeatedly executing this
-command is cumbersome. The `reflex` utility solves this. It watches the codebase for any changes to
+command is cumbersome. The `wgo` utility solves this. It watches the codebase for any changes to
 files and will re-compile and restart the application.
-
-Install reflex:
-
-```
-go install github.com/cespare/reflex@latest
-```
 
 Starting the application:
 
+```sh
+$ make dev
+# or
+$ npm run dev
 ```
-reflex -d none -c reflex.conf
+
+or if you want to use the [live reload](https://templ.guide/commands-and-tools/live-reload) (auto-refresh) version:
+
+```sh
+$ make live
+# or
+$ npm run dev:live
 ```
 
 If the configuration in `.env` contains no errors, you should see this output:
 
 ```
-Starting service
-2023-04-20T11:28:23.537+0200    INFO    commands/server.go:151  starting server at localhost:3001
+time=2024-07-11T11:57:05.993+02:00 level=INFO msg="starting server at localhost:3001"
 ```
 
 Open your browser and navigate to `http://localhost:3001`. You should see the application.
+
+> **IMPORTANT!**
+>
+> When running in live reload mode, Templ will generate different .go files along with a .txt file for every .templ file.
+> The .txt files are ignored via .gitignore but the .go files cannot be ignored. Make sure to never commit these
+> and shut down the live reload server before you commit any changes to .templ files.
+
+> **Note:** if you run the dev server in live-mode, it will run the webserver at port 3011 which templ will proxy to port 3001 for maximum convenience.  
+> In this mode the log message will read `starting server at localhost:3011` but to use the auto-reload functionality you do need to open the site on port 3001.
 
 ## Step 3: setup the authority backend
 

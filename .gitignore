@@ -21,14 +21,11 @@ node_modules
 go.work
 go.work.sum
 
-# Reflex live reloading
-reflex.conf
-
 # Dotenv
 *.env
 
 # Local feature flags config
-feature-flags.yml
+flags.*
 
 # Cypress
 cypress.env.json
@@ -38,7 +35,11 @@ cypress/cypress-record.sh
 
 # Docker
 tmp
+docker-compose.yaml
 docker-compose.yml
 
 # esbuild
 meta.json
+
+# templ live server
+views/**/*.txt

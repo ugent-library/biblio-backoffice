@@ -1,6 +1,6 @@
 describe("Media type suggestions", () => {
   it("should provide format type suggestions", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("media_type/suggestions", {
       qs: { input: "format", format: "earth" },

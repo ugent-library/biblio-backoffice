@@ -28,7 +28,7 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	dataset := ctx.GetDataset(r)
 
-	if !c.User.CanDeleteDataset(dataset) {
+	if !c.Repo.CanDeleteDataset(c.User, dataset) {
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}

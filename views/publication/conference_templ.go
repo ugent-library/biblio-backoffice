@@ -38,7 +38,7 @@ func Conference(c *ctx.Ctx, p *models.Publication) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditPublication(p) {
+		if c.Repo.CanEditPublication(c.User, p) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-button-toolbar\" data-panel-state=\"read\"><button class=\"btn btn-outline-primary\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

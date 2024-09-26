@@ -13,6 +13,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/aria"
 	"github.com/ugent-library/biblio-backoffice/views/display"
 	"github.com/ugent-library/biblio-backoffice/views/form"
 	"github.com/ugent-library/okay"
@@ -54,7 +55,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanChangeType(p) {
+		if c.Repo.CanChangeType(c.User, p) {
 			templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -85,14 +86,22 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" name=\"type\" id=\"type\" autofocus aria-details=\"type-help\" hx-get=\"")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" name=\"type\" id=\"type\" autofocus")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templ.RenderAttributes(ctx, templ_7745c5c3_Buffer, aria.Attributes(c.Loc.Get("builder.type.help"), form.FieldHelpID("type")))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" hx-get=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_confirm_update_type", "id", p.ID).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 43, Col: 82}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 44, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -105,7 +114,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 44, Col: 69}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 45, Col: 69}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -123,7 +132,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(o.Value)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 48, Col: 33}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 49, Col: 33}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -146,7 +155,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 					var templ_7745c5c3_Var8 string
 					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 48, Col: 77}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 49, Col: 77}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 					if templ_7745c5c3_Err != nil {
@@ -246,7 +255,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 				return templ_7745c5c3_Err
 			}
 		}
-		if c.User.CanCurate() {
+		if c.Repo.CanCurate(c.User) {
 			templ_7745c5c3_Err = form.Select(form.SelectArgs{
 				FieldArgs: form.FieldArgs{
 					Label:    c.Loc.Get("builder.classification"),
@@ -271,7 +280,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 				return templ_7745c5c3_Err
 			}
 		}
-		if c.User.CanCurate() {
+		if c.Repo.CanCurate(c.User) {
 			templ_7745c5c3_Err = form.Checkbox(form.CheckboxArgs{
 				FieldArgs: form.FieldArgs{
 					Label: c.Loc.Get("builder.legacy"),
@@ -704,7 +713,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 			return templ_7745c5c3_Err
 		}
 		if p.UsesWOS() {
-			if c.User.CanCurate() {
+			if c.Repo.CanCurate(c.User) {
 				templ_7745c5c3_Err = form.Text(form.TextArgs{
 					FieldArgs: form.FieldArgs{
 						Label:   c.Loc.Get("builder.wos_type"),
@@ -868,7 +877,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_update_details", "id", p.ID).String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 568, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 569, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -881,7 +890,7 @@ func EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors 
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 569, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_details.templ`, Line: 570, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {

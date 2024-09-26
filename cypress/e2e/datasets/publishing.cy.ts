@@ -1,7 +1,7 @@
 describe("Publishing datasets", () => {
   describe("as researcher", () => {
     beforeEach(() => {
-      cy.login("researcher1");
+      cy.loginAsResearcher("researcher1");
     });
 
     it("should be possible to publish, withdraw and republish a dataset", () => {
@@ -150,7 +150,7 @@ describe("Publishing datasets", () => {
 
   describe("as librarian", () => {
     beforeEach(() => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
     });
 
     it("should be possible to lock and unlock a dataset", () => {

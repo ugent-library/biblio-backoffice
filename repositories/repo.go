@@ -37,13 +37,14 @@ type Repo struct {
 }
 
 type Config struct {
-	Conn                 *pgxpool.Pool
-	PublicationListeners []PublicationListener
-	DatasetListeners     []DatasetListener
-	PublicationMutators  map[string]PublicationMutator
-	DatasetMutators      map[string]DatasetMutator
-	PublicationLoaders   []PublicationVisitor
-	DatasetLoaders       []DatasetVisitor
+	Conn                   *pgxpool.Pool
+	PublicationListeners   []PublicationListener
+	DatasetListeners       []DatasetListener
+	PublicationMutators    map[string]PublicationMutator
+	DatasetMutators        map[string]DatasetMutator
+	PublicationLoaders     []PublicationVisitor
+	DatasetLoaders         []DatasetVisitor
+	CandidateRecordLoaders []CandidateRecordVisitor
 }
 
 type PublicationListener = func(*models.Publication)
@@ -52,6 +53,7 @@ type PublicationMutator = func(*models.Publication, []string) error
 type DatasetMutator = func(*models.Dataset, []string) error
 type PublicationVisitor = func(*models.Publication) error
 type DatasetVisitor = func(*models.Dataset) error
+type CandidateRecordVisitor = func(*models.CandidateRecord) error
 
 func New(c Config) (*Repo, error) {
 	client := snapstore.New(c.Conn, []string{"publications", "datasets"},
@@ -1082,7 +1084,7 @@ func (s *Repo) GetVisiblePublicationDatasets(u *models.Person, p *models.Publica
 	}
 	filteredDatasets := make([]*models.Dataset, 0, len(datasets))
 	for _, dataset := range datasets {
-		if u.CanViewDataset(dataset) {
+		if s.CanViewDataset(u, dataset) {
 			filteredDatasets = append(filteredDatasets, dataset)
 		}
 	}
@@ -1110,7 +1112,7 @@ func (s *Repo) GetVisibleDatasetPublications(u *models.Person, d *models.Dataset
 	}
 	filteredPublications := make([]*models.Publication, 0, len(publications))
 	for _, publication := range publications {
-		if u.CanViewPublication(publication) {
+		if s.CanViewPublication(u, publication) {
 			filteredPublications = append(filteredPublications, publication)
 		}
 	}

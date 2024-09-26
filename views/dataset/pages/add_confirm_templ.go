@@ -58,7 +58,7 @@ func AddConfirm(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("dataset_add_save_draft", "id", dataset.ID).String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_confirm.templ`, Line: 30, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_confirm.templ`, Line: 33, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -71,7 +71,7 @@ func AddConfirm(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("dataset_add_publish", "id", dataset.ID).String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_confirm.templ`, Line: 38, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_confirm.templ`, Line: 41, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -84,7 +84,7 @@ func AddConfirm(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf(`{"If-Match": "%s"}`, dataset.SnapshotID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_confirm.templ`, Line: 39, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_confirm.templ`, Line: 42, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -129,7 +129,7 @@ func AddConfirm(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("dataset.subnav.contributors"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_confirm.templ`, Line: 94, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/pages/add_confirm.templ`, Line: 97, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -141,7 +141,10 @@ func AddConfirm(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = views.PageLayout(c, "Add - Datasets - Biblio", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = views.PageLayout(c, views.PageLayoutArgs{
+			Title:       "Add - Datasets - Biblio",
+			Breadcrumbs: addDatasetBreadcrumbs(c),
+		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

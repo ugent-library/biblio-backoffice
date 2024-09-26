@@ -2,19 +2,23 @@
   "name": "biblio-backoffice",
   "private": true,
   "scripts": {
-    "dev": "reflex -d none -c reflex.docker.conf",
+    "dev": "make dev",
+    "dev:live": "make live",
     "build": "go build -o app -v",
     "build:assets": "node esbuild.mjs",
     "build:assets:watch": "node esbuild.mjs --watch",
+    "build:templ": "templ generate --path views",
     "start": "./app server start",
     "test": "cypress run --config-file cypress/cypress.config.ts --config retries=2",
     "test:bibliodev": "env-cmd --file ./cypress/.env npm test --",
     "cypress:open": "cypress open --config-file cypress/cypress.config.ts --browser electron --e2e",
     "cypress:open:bibliodev": "env-cmd --file ./cypress/.env npm run cypress:open --",
     "cypress:record": "cypress/cypress-record.sh",
+    "db:migrate": "godotenv tern migrate --config tern.docker.conf --migrations db/migrations",
     "db:reset": "go run main.go reset --force",
     "db:seed": "go run main.go seed organizations < .devcontainer/people/organizations.json && go run main.go seed people < .devcontainer/people/people.json && go run main.go seed projects < .devcontainer/projects/projects.json && go run main.go seed candidate-records < .devcontainer/candidate_records/candidate_records.json",
     "db:seed:force": "go run main.go seed organizations --force < .devcontainer/people/organizations.json && go run main.go seed people --force < .devcontainer/people/people.json && go run main.go seed projects --force < .devcontainer/projects/projects.json && go run main.go seed candidate-records --force < .devcontainer/candidate_records/candidate_records.json",
+    "lint:ts": "nlx tsc -p . && nlx tsc -p cypress/",
     "precommit": "node node_modules/js-precommit-hook",
     "generate-issue-test": "node ./cypress/scripts/generate-issue-test.mjs"
   },
@@ -30,7 +34,7 @@
     "sortablejs": "^1.15.0"
   },
   "devDependencies": {
-    "cypress": "^13.13.0",
+    "cypress": "^13.15.0",
     "cypress-common": "github:ugent-library/cypress-common#3.17.1",
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
@@ -45,6 +49,6 @@
     "resolve-url-loader": "^5.0.0",
     "sass": "^1.68.0",
     "sass-loader": "^12.6.0",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.4"
   }
 }

@@ -114,7 +114,7 @@ func UpdateDetails(w http.ResponseWriter, r *http.Request) {
 	p.WOSID = b.WOSID
 	p.Year = b.Year
 
-	if c.User.CanCurate() {
+	if c.Repo.CanCurate(c.User) {
 		p.Classification = b.Classification
 		p.Legacy = b.Legacy
 		p.WOSType = b.WOSType

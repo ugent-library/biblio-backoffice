@@ -5,6 +5,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/aria"
 	"github.com/ugent-library/biblio-backoffice/views/display"
 	"github.com/ugent-library/biblio-backoffice/views/form"
 	"github.com/ugent-library/okay"
@@ -26,7 +27,7 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 				@form.Errors(localize.ValidationErrors(c.Loc, errors))
 				<ul class="list-group list-group-flush" data-panel-state="edit">
 					<li class="list-group-item">
-						if c.User.CanChangeType(p) {
+						if c.Repo.CanChangeType(c.User, p) {
 							@form.Field(form.FieldArgs{
 								Label: c.Loc.Get("builder.type"),
 								Name:  "type",
@@ -39,7 +40,7 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 									name="type"
 									id="type"
 									autofocus
-									aria-details="type-help"
+									{ aria.Attributes(c.Loc.Get("builder.type.help"), form.FieldHelpID("type"))... }
 									hx-get={ c.PathTo("publication_confirm_update_type", "id", p.ID).String() }
 									hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID) }
 									hx-target="#modals"
@@ -107,7 +108,7 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 								Value: p.DOI,
 							})
 						}
-						if c.User.CanCurate() {
+						if c.Repo.CanCurate(c.User) {
 							@form.Select(form.SelectArgs{
 								FieldArgs: form.FieldArgs{
 									Label:    c.Loc.Get("builder.classification"),
@@ -126,7 +127,7 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 								Tooltip: c.Loc.Get("tooltip.publication.classification"),
 							})
 						}
-						if c.User.CanCurate() {
+						if c.Repo.CanCurate(c.User) {
 							@form.Checkbox(form.CheckboxArgs{
 								FieldArgs: form.FieldArgs{
 									Label: c.Loc.Get("builder.legacy"),
@@ -442,7 +443,7 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 					}
 					<li class="list-group-item">
 						if p.UsesWOS() {
-							if c.User.CanCurate() {
+							if c.Repo.CanCurate(c.User) {
 								@form.Text(form.TextArgs{
 									FieldArgs: form.FieldArgs{
 										Label:   c.Loc.Get("builder.wos_type"),

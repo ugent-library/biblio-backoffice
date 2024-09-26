@@ -19,7 +19,7 @@ templ Details(c *ctx.Ctx, p *models.Publication) {
 					<h1 class="bc-toolbar-title">Publication details</h1>
 				</div>
 				<div class="bc-toolbar-right">
-					if c.User.CanEditPublication(p) {
+					if c.Repo.CanEditPublication(c.User, p) {
 						<div class="c-button-toolbar" data-panel-state="read">
 							<button
 								class="btn btn-outline-primary"
@@ -82,7 +82,7 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 					Label: c.Loc.Get("builder.classification"),
 					Value: c.Loc.Get("publication_classifications." + p.Classification),
 				})
-				if c.User.CanCurate() {
+				if c.Repo.CanCurate(c.User) {
 					@display.Field(display.FieldArgs{
 						Label:   c.Loc.Get("builder.legacy"),
 						Content: display.Boolean(p.Legacy),

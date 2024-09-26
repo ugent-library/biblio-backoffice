@@ -18,6 +18,7 @@ import fileUpload from "./ui/file_upload.js";
 import tags from "./ui/tags.js";
 import facetDropdowns from "./ui/facet_dropdowns.js";
 import initSidebarMenu from "./ui/sidebar_menu.js";
+import initSearchFields from "./ui/search";
 
 // configure htmx
 htmx.config.defaultFocusScroll = true;
@@ -51,4 +52,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
 htmx.onLoad(function (el) {
   clipboard(el);
+  initSearchFields(el);
 });

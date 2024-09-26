@@ -2,7 +2,7 @@ import { testFormAccessibility } from "support/util";
 
 describe("Editing dataset description", () => {
   beforeEach(() => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.setUpDataset();
     cy.visitDataset();
@@ -260,35 +260,17 @@ describe("Editing dataset description", () => {
           cy.contains(".btn", "Delete").triggerHtmx("hx-delete");
         })
         .closeModal("Delete");
-      cy.ensureModal(null)
-        .within(() => {
-          cy.get(".modal-body").should(
-            "contain",
-            "Dataset has been modified by another user. Please reload the page.",
-          );
-        })
-        .closeModal("Close");
+      cy.verifyConflictErrorDialog("dataset").closeModal("Close");
       cy.ensureNoModal();
 
       cy.get("#abstracts-body .if-more").click();
       cy.contains("#abstracts-body .dropdown-item", "Edit").click();
-      cy.ensureModal(null)
-        .within(() => {
-          cy.get(".modal-body").should(
-            "contain",
-            "Dataset has been modified by another user. Please reload the page.",
-          );
-        })
-        .closeModal("Close");
+      cy.verifyConflictErrorDialog("dataset").closeModal("Close");
+      cy.ensureNoModal();
 
       cy.get("#abstracts-body .if-more").click();
       cy.contains("#abstracts-body .dropdown-item", "Delete").click();
-      cy.ensureModal(null).within(() => {
-        cy.get(".modal-body").should(
-          "contain",
-          "Dataset has been modified by another user. Please reload the page.",
-        );
-      });
+      cy.verifyConflictErrorDialog("dataset").closeModal("Close");
     });
 
     it("should have clickable labels in the Abstract dialog", () => {

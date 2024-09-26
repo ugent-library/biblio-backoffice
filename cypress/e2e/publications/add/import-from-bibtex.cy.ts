@@ -1,6 +1,6 @@
 describe("Publication import", () => {
   it("should be possible to import publications from BibTeX and save as draft", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/");
 
@@ -18,8 +18,9 @@ describe("Publication import", () => {
     cy.get("@steps").eq(1).should("not.have.class", "c-stepper__step--active");
     cy.get("@steps").eq(2).should("not.have.class", "c-stepper__step--active");
 
-    cy.contains("Import via BibTeX file").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import via BibTeX file")
+      .contains(".btn", "Add")
+      .click();
 
     // Upload BibTeX file
     cy.get(".c-file-upload").should(
@@ -153,12 +154,13 @@ describe("Publication import", () => {
   });
 
   it("should show an error toast if the import file contains an error", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.visit("/add-publication");
 
-    cy.contains("Import via BibTeX file").click();
-    cy.contains(".btn", "Add publication(s)").click();
+    cy.contains(".card", "Import via BibTeX file")
+      .contains(".btn", "Add")
+      .click();
 
     cy.get("input[name=file]").selectFile(
       "cypress/fixtures/import-from-bibtex-error.bib",

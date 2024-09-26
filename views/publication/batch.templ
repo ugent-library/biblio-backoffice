@@ -4,11 +4,17 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/aria"
 	"github.com/ugent-library/biblio-backoffice/views/form"
 )
 
 templ Batch(c *ctx.Ctx) {
-	@views.PageLayout(c, "Batch", nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title: "Batch",
+		Breadcrumbs: []views.Breadcrumb{
+			{LabelID: "publication_batch"},
+		},
+	}) {
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bg-white">
 				<div class="bc-navbar bc-navbar--xlarge bc-navbar--white bc-navbar--bordered-bottom">
@@ -53,7 +59,15 @@ templ BatchBody(c *ctx.Ctx, formValue string, done int, errors []string) {
 					</div>
 				}
 				@form.Errors(errors)
-				<textarea class="form-control" id="mutations" name="mutations" rows="8" spellcheck="false" autofocus aria-details="mutations-help">{ formValue }</textarea>
+				<textarea
+					class="form-control"
+					id="mutations"
+					name="mutations"
+					rows="8"
+					spellcheck="false"
+					autofocus
+					{ aria.Attributes(c.Loc.Get("publication.batch.mutations.help"), "mutations-help")... }
+				>{ formValue }</textarea>
 				<div id="mutations-help" class="form-text">
 					@templ.Raw(c.Loc.Get("publication.batch.mutations.help"))
 				</div>

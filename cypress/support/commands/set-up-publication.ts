@@ -69,7 +69,7 @@ export default function setUpPublication(
         .then((snapshotId) => {
           // Then update details
 
-          const body = {
+          const body: Record<string, unknown> = {
             title,
             classification: "U",
           };
@@ -94,7 +94,7 @@ export default function setUpPublication(
         });
 
       if (prepareForPublishing || publish) {
-        cy.addAuthor("John", "Doe");
+        cy.addAuthor("John", "Doe", { biblioIDAlias: `@${biblioIDAlias}` });
       }
 
       if (publish) {

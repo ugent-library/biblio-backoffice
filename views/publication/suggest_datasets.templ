@@ -8,7 +8,7 @@ import (
 )
 
 templ SuggestDatasets(c *ctx.Ctx, publication *models.Publication, hits *models.DatasetHits) {
-	<ul class="list-group mt-6">
+	<ul class="list-group">
 		for _, h := range hits.Hits {
 			<li class="list-group-item">
 				@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{

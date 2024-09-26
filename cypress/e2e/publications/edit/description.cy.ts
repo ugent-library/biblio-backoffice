@@ -2,7 +2,7 @@ import { testFormAccessibility } from "support/util";
 
 describe("Editing publication description", () => {
   beforeEach(() => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
   });
 
   describe("Publication details", () => {
@@ -96,15 +96,11 @@ describe("Editing publication description", () => {
         })
         .closeModal("Proceed");
 
-      cy.ensureModal(null).within(() => {
-        cy.contains(
-          "Publication has been modified by another user. Please reload the page.",
-        ).should("be.visible");
-      });
+      cy.verifyConflictErrorDialog("publication");
     });
 
     it("should have clickable labels in the Journal Article form", () => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
       cy.setUpPublication("Journal Article");
       cy.visitPublication();
 
@@ -154,7 +150,7 @@ describe("Editing publication description", () => {
     });
 
     it("should have clickable labels in the Book Chapter form", () => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
       cy.setUpPublication("Book Chapter");
 
       cy.visitPublication();
@@ -198,7 +194,7 @@ describe("Editing publication description", () => {
     });
 
     it("should have clickable labels in the Book form", () => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
       cy.setUpPublication("Book");
 
       cy.visitPublication();
@@ -239,7 +235,7 @@ describe("Editing publication description", () => {
     });
 
     it("should have clickable labels in the Conference contribution form", () => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
       cy.setUpPublication("Conference contribution");
 
       cy.visitPublication();
@@ -288,7 +284,7 @@ describe("Editing publication description", () => {
     });
 
     it("should have clickable labels in the Dissertation form", () => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
       cy.setUpPublication("Dissertation");
 
       cy.visitPublication();
@@ -338,7 +334,7 @@ describe("Editing publication description", () => {
     });
 
     it("should have clickable labels in the Miscellaneous form", () => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
       cy.setUpPublication("Miscellaneous");
 
       cy.visitPublication();
@@ -392,7 +388,7 @@ describe("Editing publication description", () => {
     });
 
     it("should have clickable labels in the Book editor form", () => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
       cy.setUpPublication("Book editor");
 
       cy.visitPublication();
@@ -433,7 +429,7 @@ describe("Editing publication description", () => {
     });
 
     it("should have clickable labels in the Issue editor form", () => {
-      cy.login("librarian1");
+      cy.loginAsLibrarian("librarian1");
       cy.setUpPublication("Issue editor");
 
       cy.visitPublication();

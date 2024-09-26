@@ -1,4 +1,5 @@
 import "cypress-common";
+import { type CyHttpMessages } from "cypress/types/net-stubbing";
 
 import "./commands";
 import "./queries";
@@ -39,7 +40,9 @@ function installCSRFTokenCaptureScript() {
   cy.state("aliases", aliases);
 }
 
-export function extractCSRFTokenFromResponse(res) {
+export function extractCSRFTokenFromResponse(
+  res: Cypress.Response<unknown> | CyHttpMessages.IncomingResponse,
+) {
   if (typeof res.body === "string") {
     const match = res.body.match(
       /<meta name="csrf-token" content="(?<csrfToken>[^"]+)"\/?>/,

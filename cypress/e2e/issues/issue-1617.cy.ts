@@ -2,7 +2,7 @@
 
 describe("Issue #1617: Librarian tags field does not work when you hit save before blurring the field", () => {
   beforeEach(() => {
-    cy.login("librarian1");
+    cy.loginAsLibrarian("librarian1");
   });
 
   describe("for publications", () => {

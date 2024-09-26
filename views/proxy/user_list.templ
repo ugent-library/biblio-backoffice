@@ -1,0 +1,149 @@
+package proxyviews
+
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
+)
+
+type ProxiedPerson struct {
+	Person                     *models.Person
+	DraftPublicationsCount     int
+	WithdrawnPublicationsCount int
+	DraftDatasetsCount         int
+	WithdrawnDatasetsCount     int
+	CandidateRecordsCount      int
+}
+
+templ UserList(c *ctx.Ctx, people []ProxiedPerson) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title: "Biblio",
+		Breadcrumbs: []views.Breadcrumb{
+			{LabelID: "proxies"},
+		},
+	}) {
+		<div class="w-100 u-scroll-wrapper">
+			<div class="bg-white">
+				<div class="bc-navbar bc-navbar--large bc-navbar--bordered-bottom h-auto">
+					<div class="bc-toolbar h-auto py-4">
+						<div class="bc-toolbar-left">
+							<div class="bc-toolbar-item">
+								<h2 class="bc-toolbar-title">Proxy overview</h2>
+								<p class="c-intro">See whose bibliographies you are allowed to manage.</p>
+							</div>
+						</div>
+						<div class="bc-toolbar-right">
+							<div class="bc-toolbar-item">
+								<p class="text-muted">Get in touch with&nbsp;<a class="c-link-muted" href="mailto:biblio@ugent.be">biblio@ugent.be</a>&nbsp;to add or remove proxies.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="u-scroll-wrapper__body w-100 p-6">
+				<div class="table-responsive">
+					<table class="table table-sm table-bordered">
+						<thead>
+							<tr>
+								<th>Researcher</th>
+								<th>Suggestions</th>
+								<th colspan="3">Publications</th>
+								<th colspan="3">Datasets</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, p := range people {
+								<tr>
+									<td class="text-nowrap">
+										@tableItem(c, p.Person)
+									</td>
+									<td>
+										<a
+											if p.CandidateRecordsCount > 0 {
+												class="badge badge-sm rounded-pill badge-default"
+											} else {
+												class="badge badge-sm rounded-pill badge-white"
+											}
+											href={ templ.SafeURL(c.PathTo("candidate_records", "f[person][0]", p.Person.ID).String()) }
+										>
+											<span class="badge-circle"></span>
+											<span class="badge-text">{ fmt.Sprint(p.CandidateRecordsCount) } suggestions</span>
+											<i class="if if-arrow-right"></i>
+										</a>
+									</td>
+									<td>
+										<a
+											if p.DraftPublicationsCount > 0 {
+												class="badge badge-sm rounded-pill badge-warning-light"
+											} else {
+												class="badge badge-sm rounded-pill badge-white"
+											}
+											href={ templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID, "f[status][0]", "private", "f[locked][0]", "false").String()) }
+										>
+											<span class="badge-circle"></span>
+											<span class="badge-text">{ fmt.Sprint(p.DraftPublicationsCount) } draft</span>
+											<i class="if if-arrow-right"></i>
+										</a>
+									</td>
+									<td>
+										<a
+											if p.WithdrawnPublicationsCount > 0 {
+												class="badge badge-sm rounded-pill badge-danger-light"
+											} else {
+												class="badge badge-sm rounded-pill badge-white"
+											}
+											href={ templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID, "f[status][0]", "returned", "f[locked][0]", "false").String()) }
+										>
+											<span class="badge-circle"></span>
+											<span class="badge-text">{ fmt.Sprint(p.WithdrawnPublicationsCount) } withdrawn</span>
+											<i class="if if-arrow-right"></i>
+										</a>
+									</td>
+									<td>
+										<a class="btn btn-outline-secondary btn-sm" type="button" href={ templ.SafeURL(c.PathTo("publications", "f[person][0]", p.Person.ID).String()) }>
+											View all publications
+										</a>
+									</td>
+									<td>
+										<a
+											if p.DraftDatasetsCount > 0 {
+												class="badge badge-sm rounded-pill badge-warning-light"
+											} else {
+												class="badge badge-sm rounded-pill badge-white"
+											}
+											href={ templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID, "f[status][0]", "private", "f[locked][0]", "false").String()) }
+										>
+											<span class="badge-circle"></span>
+											<span class="badge-text">{ fmt.Sprint(p.DraftDatasetsCount) } draft</span>
+											<i class="if if-arrow-right"></i>
+										</a>
+									</td>
+									<td>
+										<a
+											if p.WithdrawnDatasetsCount > 0 {
+												class="badge badge-sm rounded-pill badge-danger-light"
+											} else {
+												class="badge badge-sm rounded-pill badge-white"
+											}
+											href={ templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID, "f[status][0]", "returned", "f[locked][0]", "false").String()) }
+										>
+											<span class="badge-circle"></span>
+											<span class="badge-text">{ fmt.Sprint(p.WithdrawnDatasetsCount) } withdrawn</span>
+											<i class="if if-arrow-right"></i>
+										</a>
+									</td>
+									<td>
+										<a class="btn btn-outline-secondary btn-sm" type="button" href={ templ.SafeURL(c.PathTo("datasets", "f[person][0]", p.Person.ID).String()) }>
+											View all datasets
+										</a>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+}

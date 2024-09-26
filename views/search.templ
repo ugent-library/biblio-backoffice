@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views/aria"
+	"github.com/ugent-library/biblio-backoffice/views/form"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"io"
 )
@@ -171,9 +173,9 @@ templ FacetSince(c *ctx.Ctx, fieldName string, title string, description string,
 					id={ fmt.Sprintf("f-%s", fieldName) }
 					name={ fmt.Sprintf("f[%s]", fieldName) }
 					value={ searchArgs.FilterFor(fieldName) }
-					aria-details={ fmt.Sprintf("f-%s-help", fieldName) }
+					{ aria.Attributes(c.Loc.Get("facets.facet_since.help"), form.FieldHelpID(fieldName))... }
 				/>
-				<small id={ fmt.Sprintf("f-%s-help", fieldName) } class="form-text">{ c.Loc.Get("facets.facet_since.help") }</small>
+				<small id={ form.FieldHelpID(fieldName) } class="form-text">{ c.Loc.Get("facets.facet_since.help") }</small>
 			</div>
 			<div class="bc-navbar bc-navbar--large">
 				<button class="btn btn-primary d-grid w-100" type="submit">Apply filter</button>
@@ -201,7 +203,7 @@ templ FacetLine() {
 
 templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 	<div
-		class={ "bc-toolbar", "bc-toolbar--auto", "mb-4", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2) }
+		class={ "bc-toolbar", "bc-toolbar-lg-responsive", "bc-toolbar--auto", "mb-6", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2) }
 	>
 		<div class="bc-toolbar-left">
 			<div class="bc-toolbar-item">
@@ -212,7 +214,7 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 			<div class="bc-toolbar-item">
 				<div class="c-button-toolbar">
 					if len(searchArgs.FacetLines) > 2 {
-						<div class="form-check">
+						<div class="form-chec ps-0">
 							<input
 								type="checkbox"
 								id="show-all-facet-filters-toggle"
@@ -225,25 +227,28 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 							<label for="show-all-facet-filters-toggle" class="btn btn-link toggle-off">
 								<i class="if if-chevron-down u-no-transition"></i>
 								<span class="btn-text">
-									<span class="u-no-transition">Show all filters</span>
+									<span class="u-no-transition">Show more <span class="d-none d-xl-inline-block">filters</span></span>
 								</span>
 							</label>
 							<label for="show-all-facet-filters-toggle" class="btn btn-link toggle-on">
 								<i class="if if-chevron-up u-no-transition"></i>
 								<span class="btn-text">
-									<span class="u-no-transition">Show less filters</span>
+									<span class="u-no-transition">Show less <span class="d-none d-xl-inline-block">filters</span></span>
 								</span>
 							</label>
 						</div>
 					}
 					<form method="GET" action={ URL(c.CurrentURL).ClearQuery().SafeURL() }>
+						if scope := searchArgs.FilterFor("scope"); scope != "" {
+							<input type="hidden" name="f[scope]" value={ scope }/>
+						}
 						<input type="hidden" name="q" value={ searchArgs.Query }/>
 						for _, sort := range searchArgs.Sort {
 							<input type="hidden" name="sort" value={ sort }/>
 						}
 						<button class="btn btn-link btn-muted text-muted" type="submit">
 							<i class="if if-close"></i>
-							<span class="btn-text">Reset filters</span>
+							<span class="btn-text">Reset <span class="d-none d-xl-inline-block">filters</span></span>
 						</button>
 					</form>
 				</div>
@@ -253,7 +258,7 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 }
 
 templ Query(c *ctx.Ctx, searchArgs *models.SearchArgs) {
-	<form class="mb-6" method="GET" action={ URL(c.CurrentURL).ClearQuery().SafeURL() }>
+	<form class="mb-4" method="GET" action={ URL(c.CurrentURL).ClearQuery().SafeURL() }>
 		for field, values := range searchArgs.Filters {
 			for _, val := range values {
 				<input type="hidden" name={ fmt.Sprintf("f[%s]", field) } value={ val }/>
@@ -263,7 +268,7 @@ templ Query(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 			<div class="col">
 				<div class="input-group flex-nowrap">
 					<label class="visually-hidden" for="q">Search</label>
-					<input class="form-control" type="text" id="q" name="q" value={ searchArgs.Query } placeholder="Search..." autocomplete="off"/>
+					<input class="form-control" type="search" id="q" name="q" value={ searchArgs.Query } placeholder="Search..." autocomplete="off" data-submit-on-clear/>
 					<button type="submit" class="btn btn-outline-primary" type="button">
 						<i class="if if-search"></i>
 						<span class="btn-text">Search</span>

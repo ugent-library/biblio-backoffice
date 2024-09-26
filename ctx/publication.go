@@ -35,28 +35,32 @@ func SetPublication(repo *repositories.Repo) func(http.Handler) http.Handler {
 	}
 }
 
-func RequireViewPublication(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		c := Get(r)
+func RequireViewPublication(repo *repositories.Repo) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			c := Get(r)
 
-		if !c.User.CanViewPublication(GetPublication(r)) {
-			c.HandleError(w, r, httperror.Forbidden)
-			return
-		}
+			if !repo.CanViewPublication(c.User, GetPublication(r)) {
+				c.HandleError(w, r, httperror.Forbidden)
+				return
+			}
 
-		next.ServeHTTP(w, r)
-	})
+			next.ServeHTTP(w, r)
+		})
+	}
 }
 
-func RequireEditPublication(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		c := Get(r)
+func RequireEditPublication(repo *repositories.Repo) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			c := Get(r)
 
-		if !c.User.CanEditPublication(GetPublication(r)) {
-			c.HandleError(w, r, httperror.Forbidden)
-			return
-		}
+			if !repo.CanEditPublication(c.User, GetPublication(r)) {
+				c.HandleError(w, r, httperror.Forbidden)
+				return
+			}
 
-		next.ServeHTTP(w, r)
-	})
+			next.ServeHTTP(w, r)
+		})
+	}
 }

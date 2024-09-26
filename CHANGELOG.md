@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.59] - 2024-09-24
+
+### Added
+
+- Proxies
+- Plato suggestions for users
+- Add publication and dataset wizard redesign
+
+### Fixed
+
+- Various bugfixes
+
 ## [v1.0.58] - 2024-06-27
 
 ### Added
@@ -602,7 +614,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.58...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.59...HEAD
+[v1.0.59]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.58...v1.0.59
 [v1.0.58]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.56...v1.0.58
 [v1.0.56]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.55...v1.0.56
 [v1.0.55]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.54...v1.0.55

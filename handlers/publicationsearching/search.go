@@ -41,23 +41,30 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	args := searchArgs.Clone()
 	var currentScope string
 
+	// view publications of proxy
+	personID := c.User.ID
+	if proxiedPersonID := args.FilterFor("person"); proxiedPersonID != "" {
+		personID = proxiedPersonID
+	}
+
 	switch args.FilterFor("scope") {
 	case "created":
-		searcher = searcher.WithScope("creator_id", c.User.ID)
+		searcher = searcher.WithScope("creator_id", personID)
 		currentScope = "created"
 	case "contributed":
-		searcher = searcher.WithScope("author_id", c.User.ID)
+		searcher = searcher.WithScope("author_id", personID)
 		currentScope = "contributed"
 	case "supervised":
-		searcher = searcher.WithScope("supervisor_id", c.User.ID)
+		searcher = searcher.WithScope("supervisor_id", personID)
 		currentScope = "supervised"
 	case "all":
-		searcher = searcher.WithScope("creator_id|author_id|supervisor_id", c.User.ID)
+		searcher = searcher.WithScope("creator_id|author_id|supervisor_id", personID)
 		currentScope = "all"
 	default:
 		c.HandleError(w, r, httperror.BadRequest.Wrap(fmt.Errorf("unknown scope: %s", args.FilterFor("scope"))))
 		return
 	}
+	delete(args.Filters, "person")
 	delete(args.Filters, "scope")
 
 	hits, err := searcher.Search(args)
@@ -118,7 +125,7 @@ func globalSearch(searcher backends.PublicationIndex) (*models.PublicationHits, 
 
 func CurationSearch(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	if !c.User.CanCurate() {
+	if !c.Repo.CanCurate(c.User) {
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}

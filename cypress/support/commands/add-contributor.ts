@@ -57,15 +57,15 @@ type PostBody = (
 };
 
 function addContributor(
-  scope: "publication" | "dataset",
+  scope: Biblio.Scope,
   contributorType: ContributorType,
   firstName: string,
   lastName: string,
-  { external, role, biblioIdAlias = "@biblioId" }: AddAuthorOptions = {},
+  { external, role, biblioIDAlias = "@biblioId" }: AddAuthorOptions = {},
 ): void {
-  cy.get<string>(biblioIdAlias, NO_LOG).then((biblioId) => {
+  cy.get<string>(biblioIDAlias, NO_LOG).then((biblioId) => {
     const log = prepareLog({
-      biblioIdAlias,
+      biblioIDAlias,
       biblioId,
       contributorType,
       firstName,
@@ -135,7 +135,7 @@ function addContributor(
 }
 
 function prepareLog({
-  biblioIdAlias,
+  biblioIDAlias,
   biblioId,
   contributorType,
   firstName,
@@ -143,7 +143,7 @@ function prepareLog({
   external,
   role,
 }: {
-  biblioIdAlias: Cypress.Alias;
+  biblioIDAlias: Cypress.Alias;
   biblioId: string;
   contributorType: string;
   firstName: string;
@@ -151,8 +151,8 @@ function prepareLog({
   external: boolean;
   role: string;
 }) {
-  const consoleProps = {
-    "Biblio ID alias": biblioIdAlias,
+  const consoleProps: Record<string, unknown> = {
+    "Biblio ID alias": biblioIDAlias,
     "Biblio ID": biblioId,
     "Contributor type": contributorType,
     "First name": firstName,
@@ -181,7 +181,7 @@ function extractHxValues(response: Cypress.Response<string>) {
 
 type AddContributorOptions = {
   external?: boolean;
-  biblioIdAlias?: Cypress.Alias;
+  biblioIDAlias?: Cypress.Alias;
 };
 
 type AddAuthorOptions = AddContributorOptions & {

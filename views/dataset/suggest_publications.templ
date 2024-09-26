@@ -9,7 +9,7 @@ import (
 )
 
 templ SuggestPublications(c *ctx.Ctx, dataset *models.Dataset, publicationHits *models.PublicationHits) {
-	<ul class="list-group mt-6">
+	<ul class="list-group">
 		for _, hit := range publicationHits.Hits {
 			<li class="list-group-item">
 				@publicationsummaryviews.Summary(c,

@@ -8,7 +8,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/backends"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/ugent-library/biblio-backoffice/views"
+	dashboardviews "github.com/ugent-library/biblio-backoffice/views/dashboard"
 	"github.com/ugent-library/biblio-backoffice/vocabularies"
 	"github.com/ugent-library/bind"
 	"github.com/ugent-library/httperror"
@@ -119,7 +119,7 @@ func CuratorPublications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.CuratorDashboardPublications(c, &views.CuratorDashboardPublicationsArgs{
+	dashboardviews.CuratorDashboardPublications(c, &dashboardviews.CuratorDashboardPublicationsArgs{
 		Type:                 typ,
 		ActiveSubNav:         activeSubNav,
 		UPublications:        uPublications,
@@ -193,7 +193,7 @@ func RefreshAPublications(w http.ResponseWriter, r *http.Request) {
 		).String(),
 	)
 
-	views.CuratorDashboardTblPublications(c, facultyCols, publications).Render(r.Context(), w)
+	dashboardviews.CuratorDashboardTblPublications(c, facultyCols, publications).Render(r.Context(), w)
 }
 
 func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
@@ -250,7 +250,7 @@ func RefreshUPublications(w http.ResponseWriter, r *http.Request) {
 		c.URLTo("dashboard_publications", "type", typ, "uyear", bindPublications.UYear, "ayear", bindPublications.AYear).String(),
 	)
 
-	views.CuratorDashboardTblPublications(c, facultyCols, publications).Render(r.Context(), w)
+	dashboardviews.CuratorDashboardTblPublications(c, facultyCols, publications).Render(r.Context(), w)
 }
 
 func generatePublicationsDashboard(faculties []string, ptypes []string, searcher backends.PublicationIndex, baseSearchUrl *url.URL, fn func(fac string, args *models.SearchArgs) *models.SearchArgs) (map[string]map[string][]string, error) {

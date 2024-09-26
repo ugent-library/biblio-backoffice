@@ -244,7 +244,7 @@ func Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction 
 				}
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"bc-toolbar-right mb-3 mb-lg-0\"><div class=\"bc-toolbar-item\"><div class=\"d-flex align-items-center my-2\"><div class=\"c-button-toolbar\"><button class=\"btn btn-tertiary modal-close\" data-bs-dismiss=\"modal\"><i class=\"if if-close\"></i> <span class=\"btn-text\">Close</span></button> ")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"bc-toolbar-right mb-3 mb-lg-0\"><div class=\"bc-toolbar-item\"><div class=\"d-flex align-items-center my-2\"><div class=\"c-button-toolbar\"><button class=\"btn btn-link btn-link-muted modal-close\" data-bs-dismiss=\"modal\"><i class=\"if if-close\"></i> <span class=\"btn-text\">Close</span></button> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -757,7 +757,7 @@ func Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction 
 						return templ_7745c5c3_Err
 					}
 					if a.Person != nil {
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--muted\"></i> <span class=\"text-muted\">UGent</span></li>")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><i class=\"if if-ghent-university if--small if--primary\"></i> <span class=\"text-muted\">UGent</span></li>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -893,7 +893,7 @@ func Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction 
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-group\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><label class=\"form-label form-label-top\">Departments</label></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-group\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><label class=\"form-label form-label-top\">Suggested departments</label></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -2,7 +2,7 @@
 
 describe("Issue #1140: External contributor info is empty in the suggest box", () => {
   it("should display the external contributor name in the suggestions", () => {
-    cy.login("researcher1");
+    cy.loginAsResearcher("researcher1");
 
     cy.setUpPublication("Book");
     cy.visitPublication();

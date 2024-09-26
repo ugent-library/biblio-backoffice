@@ -10,11 +10,13 @@ import (
 )
 
 type SummaryArgs struct {
-	Role             string
-	Contributors     []*models.Contributor
-	URL              string
-	URLTarget        string
-	CurrentUserRoles string
+	Role                    string
+	Contributors            []*models.Contributor
+	URL                     string
+	URLTarget               string
+	CurrentUserRoles        string
+	CanViewMoreContributors bool
+	CanEditContributors     bool
 }
 
 templ Summary(c *ctx.Ctx, args SummaryArgs) {
@@ -33,7 +35,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 			}
 			if len(args.Contributors) > 3 {
 				<div class="c-author">
-					if args.URL != "" {
+					if args.URL != "" && args.CanViewMoreContributors {
 						<a
 							class="c-link c-link-muted"
 							href={ templ.URL(args.URL) }
@@ -48,7 +50,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 					}
 				</div>
 			}
-		} else {
+		} else if args.CanEditContributors {
 			<div class="c-author">
 				<i class="if if-user if--small if--muted me-2"></i>
 				<a
@@ -61,6 +63,11 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 					<i class="if if-edit if--small"></i>
 					<em>Add UGent { args.Role }</em>
 				</a>
+			</div>
+		} else {
+			<div class="c-author">
+				<i class="if if-user if--small if--muted me-2"></i>
+				<em>No { args.Role }(s)</em>
 			</div>
 		}
 		if args.CurrentUserRoles != "" && c.UserRole != "curator" {

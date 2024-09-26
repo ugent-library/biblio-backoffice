@@ -16,7 +16,10 @@ type AddSingleFinishArgs struct {
 }
 
 templ AddSingleFinish(c *ctx.Ctx, args AddSingleFinishArgs) {
-	@views.PageLayout(c, "Add - Publications - Biblio", nil) {
+	@views.PageLayout(c, views.PageLayoutArgs{
+		Title:       "Add - Publications - Biblio",
+		Breadcrumbs: addPublicationBreadcrumbs(c),
+	}) {
 		@publicationviews.AddSingleSidebar(c, args.Step)
 		<div class="w-100 u-scroll-wrapper">
 			<div class="bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom">
