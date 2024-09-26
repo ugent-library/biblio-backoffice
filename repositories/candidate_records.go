@@ -234,6 +234,21 @@ func (r *Repo) GetCandidateRecordsStatusFacet(ctx context.Context, searchArgs *m
 	return result, nil
 }
 
+func (r *Repo) GetCandidateRecordsFacultyFacet(ctx context.Context, searchArgs *models.SearchArgs) (models.FacetValues, error) {
+	query := getBaseQuery("jsonb_path_query(metadata, '$.related_organizations.organization_id')->>0 AS Value", "COUNT(*) AS Count").
+		OrderBy("Value").
+		GroupBy("Value")
+
+	query = addQueryFilters(query, searchArgs, "faculty_id")
+
+	result, err := queryRows[models.Facet](r, ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (r *Repo) GetCandidateRecordsPublicationYearFacet(ctx context.Context, searchArgs *models.SearchArgs) (models.FacetValues, error) {
 	query := getBaseQuery("metadata->>'year' AS Value", "COUNT(*) AS Count").
 		OrderBy("Value DESC").
@@ -310,6 +325,12 @@ func addQueryFilters(query sq.SelectBuilder, searchArgs *models.SearchArgs, omit
 		case "status":
 			query = query.Where(sq.Eq{"status": filterValue})
 
+		case "faculty_id":
+			conditions := lo.Map(filterValue, func(facultyID string, _ int) sq.Sqlizer {
+				return sq.Expr("metadata->'related_organizations' @> ?::jsonb", getFacultyFilter(facultyID))
+			})
+			query = query.Where(sq.Or(conditions))
+
 		case "year":
 			query = query.Where(sq.Eq{"metadata->>'year'": filterValue})
 
@@ -328,6 +349,12 @@ func getPersonFilter(personID string) []byte {
 	}{{PersonID: personID}})
 
 	return personFilter
+}
+
+func getFacultyFilter(facultyID string) []byte {
+	facultyFilter, _ := json.Marshal([]models.RelatedOrganization{{OrganizationID: facultyID}})
+
+	return facultyFilter
 }
 
 func (r *Repo) mapRows(rows []candidateRecordRow, iteratee func(candidateRecordRow) *models.CandidateRecord) (int, []*models.CandidateRecord, error) {
