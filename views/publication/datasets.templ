@@ -60,13 +60,7 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 					<li class="list-group-item">
 						<div class="d-flex w-100">
 							<div class="w-100">
-								if c.Repo.CanViewDataset(c.User, d) {
-									@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
-										Dataset: d,
-										URL:     c.PathTo("dataset", "id", d.ID),
-										Actions: datasetSummaryActions(c, p, d),
-									})
-								} else {
+								if !c.Repo.CanViewDataset(c.User, d) && d.Status == "returned" {
 									<div class="hstack-md-responsive align-items-start gap-3 w-100">
 										<div class="vstack gap-2">
 											<div class="d-inline-flex align-items-center flex-wrap">
@@ -96,6 +90,12 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 											</div>
 										</div>
 									</div>
+								} else {
+									@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
+										Dataset: d,
+										URL:     c.PathTo("dataset", "id", d.ID),
+										Actions: datasetSummaryActions(c, p, d),
+									})
 								}
 							</div>
 						</div>

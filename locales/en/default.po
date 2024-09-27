@@ -2457,6 +2457,21 @@ msgstr "Publication year (newest first)"
 msgid "candidate_record_sorts.year-asc"
 msgstr "Publication year (oldest first)"
 
+msgid "candidate_record_sorts.default"
+msgstr "To import"
+
+msgid "candidate_record_sorts.added-desc"
+msgstr "Added (newest first)"
+
+msgid "candidate_record_sorts.added-asc"
+msgstr "Added (oldest first)"
+
+msgid "candidate_record_sorts.year-desc"
+msgstr "Publication year (newest first)"
+
+msgid "candidate_record_sorts.year-asc"
+msgstr "Publication year (oldest first)"
+
 msgctxt "breadcrumbs"
 msgid "dashboard"
 msgstr "Dashboard"

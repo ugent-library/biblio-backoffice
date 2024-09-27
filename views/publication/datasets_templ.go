@@ -122,16 +122,7 @@ func DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if c.Repo.CanViewDataset(c.User, d) {
-					templ_7745c5c3_Err = datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
-						Dataset: d,
-						URL:     c.PathTo("dataset", "id", d.ID),
-						Actions: datasetSummaryActions(c, p, d),
-					}).Render(ctx, templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-				} else {
+				if !c.Repo.CanViewDataset(c.User, d) && d.Status == "returned" {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"hstack-md-responsive align-items-start gap-3 w-100\"><div class=\"vstack gap-2\"><div class=\"d-inline-flex align-items-center flex-wrap\"><span class=\"badge rounded-pill badge-danger-light me-3 my-2\"><span class=\"badge-circle\"></span> <span class=\"badge-text\">Biblio withdrawn</span></span></div><h4 class=\"mb-0 list-group-item-title\">You cannot see the metadata of linked withdrawn datasets you do not own.</h4><p class=\"opacity-50\">The link will not be visible on biblio.ugent.be while withdrawn. When the dataset is republished, you will see the metadata again and the link will be visible on biblio.ugent.be.</p></div><div class=\"bc-toolbar-item ms-auto ms-lg-0\"><div class=\"c-button-toolbar\"><button class=\"btn btn-tertiary\" type=\"button\" hx-get=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -139,13 +130,22 @@ func DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset)
 					var templ_7745c5c3_Var5 string
 					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_confirm_delete_dataset", "id", p.ID, "snapshot_id", p.SnapshotID, "dataset_id", d.ID).String())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/datasets.templ`, Line: 90, Col: 138}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/datasets.templ`, Line: 84, Col: 138}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#modals\"><i class=\"if if-delete\"></i> <span class=\"btn-text\">Remove link</span></button></div></div></div>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				} else {
+					templ_7745c5c3_Err = datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
+						Dataset: d,
+						URL:     c.PathTo("dataset", "id", d.ID),
+						Actions: datasetSummaryActions(c, p, d),
+					}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
