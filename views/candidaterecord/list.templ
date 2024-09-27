@@ -73,6 +73,11 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 						<div class="bc-toolbar-right">
 							<div class="bc-toolbar-item">
 								<form class="d-flex gap-3 align-items-center" method="GET" action={ views.URL(c.CurrentURL).ClearQuery().SafeURL() }>
+									for f, vals := range searchArgs.Filters {
+										for _, val := range vals {
+											<input type="hidden" name={ fmt.Sprintf("f[%s]", f) } value={ val }/>
+										}
+									}
 									<label class="text-nowrap" for="sort-suggestions">Sort by</label>
 									<select id="sort-suggestions" name="sort" class="form-select form-change-submit">
 										for _, sort := range vocabularies.Map["candidate_record_sorts"] {
