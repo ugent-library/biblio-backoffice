@@ -149,7 +149,12 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if c.FlagCandidateRecords() {
-		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.User.ID, 0, 4, true)
+		searchArgs := models.NewSearchArgs().
+			WithPageSize(4).
+			WithFilter("Status", "new").
+			WithFilter("PersonID", c.User.ID)
+
+		total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs)
 	}
 
 	if err != nil {

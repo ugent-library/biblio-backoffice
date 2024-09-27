@@ -26,13 +26,14 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	var recs []*models.CandidateRecord
 	var err error
 
-	if c.ProxiedPerson != nil {
-		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.ProxiedPerson.ID, searchArgs.Offset(), searchArgs.Limit(), false)
-	} else if c.UserRole == "curator" {
-		total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs.Offset(), searchArgs.Limit())
-	} else {
-		total, recs, err = c.Repo.GetCandidateRecordsByPersonID(r.Context(), c.User.ID, searchArgs.Offset(), searchArgs.Limit(), false)
+	if c.UserRole != "curator" {
+		if c.ProxiedPerson != nil {
+			searchArgs.WithFilter("PersonID", c.ProxiedPerson.ID)
+		} else {
+			searchArgs.WithFilter("PersonID", c.User.ID)
+		}
 	}
+	total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs)
 
 	if err != nil {
 		c.HandleError(w, r, err)
