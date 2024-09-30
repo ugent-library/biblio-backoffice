@@ -18,9 +18,10 @@ type DetailsSidebarStepArgs struct {
 	Icon         string
 	Title        string
 	Notification bool
+	Component    templ.Component
 }
 
-func DetailsSidebar(c *ctx.Ctx) templ.Component {
+func DetailsSidebar(c *ctx.Ctx, steps ...DetailsSidebarStepArgs) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -38,103 +39,41 @@ func DetailsSidebar(c *ctx.Ctx) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-
-		messagePaneArgs := DetailsSidebarStepArgs{
-			ID:    "sidebar-message",
-			Icon:  "if-message",
-			Title: "Biblio messages",
-		}
-		historyPaneArgs := DetailsSidebarStepArgs{
-			ID:    "history",
-			Icon:  "if-time",
-			Title: "Activity history",
-		}
-		infoPaneArgs := DetailsSidebarStepArgs{
-			ID:    "info",
-			Icon:  "if-info-circle",
-			Title: "Details",
-		}
-		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-			if !templ_7745c5c3_IsBuffer {
-				defer func() {
-					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err == nil {
-						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+		for _, step := range steps {
+			templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+				if !templ_7745c5c3_IsBuffer {
+					defer func() {
+						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err == nil {
+							templ_7745c5c3_Err = templ_7745c5c3_BufErr
+						}
+					}()
+				}
+				ctx = templ.InitializeContext(ctx)
+				if step.Component != nil {
+					templ_7745c5c3_Err = step.Component.Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
 					}
-				}()
-			}
-			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"form-group\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><label class=\"col-form-label\">Messages from and for Biblio team</label></div><div class=\"bc-toolbar-right\"><button class=\"btn btn-primary btn-sm\">Save</button></div></div><textarea class=\"form-control\" rows=\"15\">The language-edited version of the PhD will be published in the forthcoming weeks as a book with ISBN number, which will be fully open access (based on the contract with the publisher) and uploaded in biblio. Dr Depauw prefers the language-edited book version to be published in full open access instead of the original dissertation, which therefore has been limited to author/admin only</textarea><p class=\"text-muted mt-2\">Have any questions or changes to report? Mail to <a href=\"mailto:biblio@ugent.be\">biblio@ugent.be</a>.</p></div><div class=\"form-group\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><label class=\"col-form-label\">Librarian tags</label></div><div class=\"bc-toolbar-right\"><button class=\"btn btn-primary btn-sm\">Save</button></div></div><textarea class=\"form-control\" id=\"tags\" placeholder=\"tags\" autofocus></textarea><p class=\"text-muted mt-2\">For internal use only.</p></div><div class=\"form-group\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><label class=\"col-form-label\">Librarian note</label></div><div class=\"bc-toolbar-right\"><button class=\"btn btn-primary btn-sm\">Save</button></div></div><textarea class=\"form-control\" rows=\"15\">The language-edited version of the PhD will be published in the forthcoming weeks as a book with ISBN number, which will be fully open access (based on the contract with the publisher) and uploaded in biblio. Dr Depauw prefers the language-edited book version to be published in full open access instead of the original dissertation, which therefore has been limited to author/admin only</textarea><p class=\"text-muted mt-2\">For internal use only.</p></div>")
+				}
+				return templ_7745c5c3_Err
+			})
+			templ_7745c5c3_Err = DetailsSidebarStep(c, step).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			return templ_7745c5c3_Err
-		})
-		templ_7745c5c3_Err = DetailsSidebarStep(c, messagePaneArgs).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var3 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-			if !templ_7745c5c3_IsBuffer {
-				defer func() {
-					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err == nil {
-						templ_7745c5c3_Err = templ_7745c5c3_BufErr
-					}
-				}()
-			}
-			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul class=\"c-activity-list\"><li class=\"c-activity-item\"><div class=\"c-activity-item__avatar-wrapper\"><div class=\"bc-avatar bc-avatar--muted bc-avatar--small\"><i class=\"if if-edit\"></i></div></div><div class=\"c-activity-item__content\"><div class=\"c-activity-item__activity\"><div class=\"c-activity-item__date\">21 maart 2022 at 18:34</div><div class=\"c-activity-item__text\"><span class=\"fw-bold\">Wouter Bosmans</span> edited the access level questions</div></div></div></li><li class=\"c-activity-item\"><div class=\"c-activity-item__avatar-wrapper\"><div class=\"bc-avatar bc-avatar--muted bc-avatar--small\"><i class=\"if if-edit\"></i></div></div><div class=\"c-activity-item__content\"><div class=\"c-activity-item__activity\"><div class=\"c-activity-item__date\">21 maart 2022 at 18:34</div><div class=\"c-activity-item__text\"><span class=\"fw-bold\">Wouter Bosmans</span> started completing the draft publication.</div></div></div></li></ul>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			return templ_7745c5c3_Err
-		})
-		templ_7745c5c3_Err = DetailsSidebarStep(c, historyPaneArgs).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Var4 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-			if !templ_7745c5c3_IsBuffer {
-				defer func() {
-					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err == nil {
-						templ_7745c5c3_Err = templ_7745c5c3_BufErr
-					}
-				}()
-			}
-			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul class=\"c-activity-list\"><div class=\"form-group\"><label class=\"form-label form-label-top\">Created by</label><p>Jane Cooper</p></div><div class=\"form-group\"><label class=\"form-label form-label-top\">Creation date</label><p>2023-06-02</p></div><div class=\"form-group\"><label class=\"form-label form-label-top\">Source</label> <a class=\"c-link\" href=\"#\">Plato</a></div><div class=\"form-group\"><label class=\"form-label form-label-top\">DOI</label> <a class=\"c-link\" href=\"#\">10.1016/j.apergo.2023.104214</a></div><div class=\"form-group\"><label class=\"form-label form-label-top\">Web of Science</label> <a class=\"c-link\" href=\"#\">001155148400001</a></div></ul>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			return templ_7745c5c3_Err
-		})
-		templ_7745c5c3_Err = DetailsSidebarStep(c, infoPaneArgs).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-sub-sidebar c-sub-sidebar--small bg-light\"><div class=\"c-sub-sidebar__content\"><div class=\"d-flex justify-content-center py-3\"><nav class=\"nav nav-sidebar flex-column gap-2\" data-sidebar-menu>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = DetailsSidebarStepButton(c, messagePaneArgs).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = DetailsSidebarStepButton(c, historyPaneArgs).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = DetailsSidebarStepButton(c, infoPaneArgs).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
+		for _, step := range steps {
+			templ_7745c5c3_Err = DetailsSidebarStepButton(c, step).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</nav></div></div></div>")
 		if templ_7745c5c3_Err != nil {
@@ -157,21 +96,21 @@ func DetailsSidebarStepButton(c *ctx.Ctx, args DetailsSidebarStepArgs) templ.Com
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var5 == nil {
-			templ_7745c5c3_Var5 = templ.NopComponent
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"nav-link\" type=\"button\" data-target-id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("sidebar-%s", args.ID))
+		var templ_7745c5c3_Var4 string
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("sidebar-%s", args.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `shared/details-sidebar.templ`, Line: 145, Col: 91}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `shared/details-sidebar.templ`, Line: 38, Col: 91}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -179,12 +118,12 @@ func DetailsSidebarStepButton(c *ctx.Ctx, args DetailsSidebarStepArgs) templ.Com
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(args.Title)
+		var templ_7745c5c3_Var5 string
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(args.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `shared/details-sidebar.templ`, Line: 145, Col: 112}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `shared/details-sidebar.templ`, Line: 38, Col: 112}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -192,8 +131,8 @@ func DetailsSidebarStepButton(c *ctx.Ctx, args DetailsSidebarStepArgs) templ.Com
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var8 = []any{"if", args.Icon, templ.KV("if--notification", args.Notification)}
-		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var8...)
+		var templ_7745c5c3_Var6 = []any{"if", args.Icon, templ.KV("if--notification", args.Notification)}
+		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -201,12 +140,12 @@ func DetailsSidebarStepButton(c *ctx.Ctx, args DetailsSidebarStepArgs) templ.Com
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var8).String())
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var6).String())
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `shared/details-sidebar.templ`, Line: 1, Col: 0}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -231,21 +170,21 @@ func DetailsSidebarStep(c *ctx.Ctx, args DetailsSidebarStepArgs) templ.Component
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var10 == nil {
-			templ_7745c5c3_Var10 = templ.NopComponent
+		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var8 == nil {
+			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var11 string
-		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("sidebar-%s", args.ID))
+		var templ_7745c5c3_Var9 string
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("sidebar-%s", args.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `shared/details-sidebar.templ`, Line: 151, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `shared/details-sidebar.templ`, Line: 44, Col: 45}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -253,12 +192,12 @@ func DetailsSidebarStep(c *ctx.Ctx, args DetailsSidebarStepArgs) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var12 string
-		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(args.Title)
+		var templ_7745c5c3_Var10 string
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(args.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `shared/details-sidebar.templ`, Line: 156, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `shared/details-sidebar.templ`, Line: 49, Col: 22}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -266,7 +205,7 @@ func DetailsSidebarStep(c *ctx.Ctx, args DetailsSidebarStepArgs) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ_7745c5c3_Var10.Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = templ_7745c5c3_Var8.Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
