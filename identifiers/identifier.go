@@ -10,6 +10,7 @@ var (
 	Handle        = &HandleType{}
 	PubMed        = &PubMedType{}
 	WebOfScience  = &WebOfScienceType{}
+	SourceDB      = &SourceDBType{}
 )
 
 var types = map[string]Type{
@@ -22,6 +23,7 @@ var types = map[string]Type{
 	"Handle":        Handle,
 	"PubMed":        PubMed,
 	"WebOfScience":  WebOfScience,
+	"SourceDB":      SourceDB,
 }
 
 type Type interface {

@@ -1,9 +1,12 @@
 package publication
 
 import (
+	"fmt"
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/display"
 	"github.com/ugent-library/biblio-backoffice/views/shared"
 )
 
@@ -277,7 +280,7 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 						ID:        "info",
 						Icon:      "if-info-circle",
 						Title:     "Details",
-						Component: infoPane(),
+						Component: infoPane(c, p),
 					})
 			</div>
 		</div>
@@ -360,27 +363,56 @@ templ historyPane() {
 	</ul>
 }
 
-templ infoPane() {
+templ infoPane(c *ctx.Ctx, p *models.Publication) {
 	<ul class="c-activity-list">
 		<div class="form-group">
 			<label class="form-label form-label-top">Created by</label>
-			<p>Jane Cooper</p>
+			<p>
+				if p.Creator != nil {
+					{ p.Creator.FullName }
+				} else {
+					[missing]
+				}
+			</p>
 		</div>
 		<div class="form-group">
 			<label class="form-label form-label-top">Creation date</label>
-			<p>2023-06-02</p>
+			<p>{ p.DateCreated.Format("2006-01-02") }</p>
 		</div>
-		<div class="form-group">
-			<label class="form-label form-label-top">Source</label>
-			<a class="c-link" href="#">Plato</a>
-		</div>
-		<div class="form-group">
-			<label class="form-label form-label-top">DOI</label>
-			<a class="c-link" href="#">10.1016/j.apergo.2023.104214</a>
-		</div>
-		<div class="form-group">
-			<label class="form-label form-label-top">Web of Science</label>
-			<a class="c-link" href="#">001155148400001</a>
-		</div>
+		if p.SourceDB != "" {
+			<div class="form-group">
+				<label class="form-label form-label-top">Source</label>
+				@display.Link(p.SourceDB, identifiers.SourceDB.Resolve)
+			</div>
+		}
+		if p.DOI != "" {
+			<div class="form-group">
+				<label class="form-label form-label-top">DOI</label>
+				@display.Link(p.DOI, identifiers.DOI.Resolve)
+			</div>
+		}
+		if p.WOSID != "" {
+			<div class="form-group">
+				<label class="form-label form-label-top">Web of Science</label>
+				@display.Link(p.WOSID, identifiers.WebOfScience.Resolve)
+			</div>
+		}
+		if p.PubMedID != "" {
+			<div class="form-group">
+				<label class="form-label form-label-top">PubMed</label>
+				@display.Link(p.PubMedID, identifiers.PubMed.Resolve)
+			</div>
+		}
+		if p.Status =="public" {
+			<div class="form-group">
+				<label class="form-label form-label-top">Public Biblio Location</label>
+				<p>
+					<a href={ templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, p.ID)) } target="_blank">
+						{ p.ID }
+						<i class="if if--small if-external-link"></i>
+					</a>
+				</p>
+			</div>
+		}
 	</ul>
 }
