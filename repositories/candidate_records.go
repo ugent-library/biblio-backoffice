@@ -280,6 +280,8 @@ func (r *Repo) ImportCandidateRecordAsPublication(ctx context.Context, id string
 	}
 
 	rec.Publication.ID = ulid.Make().String()
+	rec.Publication.CreatorID = user.ID
+	rec.Publication.Creator = user
 
 	err = r.tx(ctx, func(r *Repo) error {
 		if err := r.SavePublication(rec.Publication, user); err != nil {
