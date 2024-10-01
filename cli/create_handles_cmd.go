@@ -38,7 +38,7 @@ func createPublicationHandles(services *backends.Services) {
 
 	repo.EachPublicationWithoutHandle(func(p *models.Publication) bool {
 		h, e := services.HandleService.UpsertHandle(p.ID)
-		if err != nil {
+		if e != nil {
 			err = fmt.Errorf("error adding handle for publication %s: %w", p.ID, e)
 			return false
 		} else if !h.IsSuccess() {
@@ -71,7 +71,7 @@ func createDatasetHandles(services *backends.Services) {
 
 	repo.EachDatasetWithoutHandle(func(d *models.Dataset) bool {
 		h, e := services.HandleService.UpsertHandle(d.ID)
-		if err != nil {
+		if e != nil {
 			err = fmt.Errorf("error adding handle for dataset %s: %w", d.ID, e)
 			return false
 		} else if !h.IsSuccess() {
