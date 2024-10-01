@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"time"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/oklog/ulid/v2"
@@ -1233,4 +1234,19 @@ func (s *Repo) datasetToSnapshot(d *models.Dataset) (*snapstore.Snapshot, error)
 	snap.SnapshotID = d.SnapshotID
 
 	return snap, nil
+}
+
+func queryRows[T any](r *Repo, ctx context.Context, query sq.SelectBuilder) ([]T, error) {
+	sql, args, err := query.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := r.conn.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return pgx.CollectRows(rows, pgx.RowToStructByName[T])
 }

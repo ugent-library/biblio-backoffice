@@ -5,6 +5,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/vocabularies"
 )
 
 templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHits, recs []*models.CandidateRecord) {
@@ -63,6 +64,27 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 					</div>
 				</div>
 				if searchHits.Total > 0 {
+					<form class="mb-4" method="GET" action={ views.URL(c.CurrentURL).ClearQuery().SafeURL() }>
+						<div class="bc-toolbar">
+							<div class="bc-toolbar-right">
+								<div class="bc-toolbar-item d-flex gap-3 align-items-center">
+									<label class="text-nowrap" for="sort-suggestions">Sort by</label>
+									<select id="sort-suggestions" name="sort" class="form-select form-change-submit">
+										for _, sort := range vocabularies.Map["candidate_record_sorts"] {
+											<option
+												value={ sort }
+												if searchArgs.HasSort(sort) {
+													selected
+												}
+											>
+												{ c.Loc.Get("candidate_record_sorts." + sort) }
+											</option>
+										}
+									</select>
+								</div>
+							</div>
+						</div>
+					</form>
 					<div class="card w-100 mb-6">
 						<div class="card-header">
 							<div class="bc-toolbar">
