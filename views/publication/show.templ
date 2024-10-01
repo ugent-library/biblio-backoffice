@@ -2,6 +2,7 @@ package publication
 
 import (
 	"fmt"
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -382,7 +383,7 @@ templ infoPane(c *ctx.Ctx, p *models.Publication) {
 		if p.SourceDB != "" {
 			<div class="form-group">
 				<label class="form-label form-label-top">Source</label>
-				@display.Link(p.SourceDB, identifiers.SourceDB.Resolve)
+				<p>{ lo.Capitalize(p.SourceDB) }</p>
 			</div>
 		}
 		if p.DOI != "" {
