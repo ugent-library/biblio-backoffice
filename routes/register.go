@@ -315,6 +315,7 @@ func Register(c Config) {
 							r.With(ctx.SetSubNav("datasets")).Get("/datasets", publicationviewing.ShowDatasets).Name("publication_datasets")
 							r.With(ctx.SetSubNav("activity")).Get("/activity", publicationviewing.ShowActivity).Name("publication_activity")
 							r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
+							r.Get("/details/recent-activity", publicationviewing.RecentActivity).Name("publication_details_recent_activity")
 						})
 
 						// edit only

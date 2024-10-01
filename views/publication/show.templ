@@ -275,7 +275,7 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 						ID:        "history",
 						Icon:      "if-time",
 						Title:     "Activity history",
-						Component: historyPane(),
+						Component: historyPane(c, p),
 					},
 					shared.DetailsSidebarStepArgs{
 						ID:        "info",
@@ -327,41 +327,14 @@ templ messagesPane() {
 	</div>
 }
 
-templ historyPane() {
-	<ul class="c-activity-list">
-		<li class="c-activity-item">
-			<div class="c-activity-item__avatar-wrapper">
-				<div class="bc-avatar bc-avatar--muted bc-avatar--small">
-					<i class="if if-edit"></i>
-				</div>
-			</div>
-			<div class="c-activity-item__content">
-				<div class="c-activity-item__activity">
-					<div class="c-activity-item__date">21 maart 2022 at 18:34</div>
-					<div class="c-activity-item__text">
-						<span class="fw-bold">Wouter Bosmans</span>
-						edited the access level questions
-					</div>
-				</div>
-			</div>
-		</li>
-		<li class="c-activity-item">
-			<div class="c-activity-item__avatar-wrapper">
-				<div class="bc-avatar bc-avatar--muted bc-avatar--small">
-					<i class="if if-edit"></i>
-				</div>
-			</div>
-			<div class="c-activity-item__content">
-				<div class="c-activity-item__activity">
-					<div class="c-activity-item__date">21 maart 2022 at 18:34</div>
-					<div class="c-activity-item__text">
-						<span class="fw-bold">Wouter Bosmans</span>
-						started completing the draft publication.
-					</div>
-				</div>
-			</div>
-		</li>
-	</ul>
+templ historyPane(c *ctx.Ctx, p *models.Publication) {
+	<div hx-get={ c.PathTo("publication_details_recent_activity", "id", p.ID).String() } hx-trigger="load delay:100ms">
+		Loading recent activity&hellip;
+	</div>
+}
+
+templ RecentActivity(c *ctx.Ctx, acts []views.Activity, p *models.Publication) {
+	@views.ActivityList(c, acts, lo.ToPtr(p.ID))
 }
 
 templ infoPane(c *ctx.Ctx, p *models.Publication) {

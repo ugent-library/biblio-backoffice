@@ -4,6 +4,9 @@ import (
 	"net/http"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/handlers"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
 	publicationviews "github.com/ugent-library/biblio-backoffice/views/publication"
 )
 
@@ -84,4 +87,32 @@ func ShowActivity(w http.ResponseWriter, r *http.Request) {
 	}
 
 	publicationviews.Activity(c, p, redirectURL).Render(r.Context(), w)
+}
+
+func RecentActivity(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	p := ctx.GetPublication(r)
+
+	var (
+		acts         []views.Activity
+		nextSnapshot *models.Publication
+	)
+
+	err := c.Repo.PublicationHistory(p.ID, func(snapshot *models.Publication) bool {
+		if nextSnapshot != nil {
+			acts = append(acts, handlers.GetPublicationActivity(c, nextSnapshot, snapshot))
+		}
+
+		nextSnapshot = snapshot
+
+		return true
+	})
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	acts = append(acts, handlers.GetPublicationActivity(c, nextSnapshot, nil))
+
+	publicationviews.RecentActivity(c, acts, p).Render(r.Context(), w)
 }

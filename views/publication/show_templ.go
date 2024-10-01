@@ -760,7 +760,7 @@ func Show(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component
 					ID:        "history",
 					Icon:      "if-time",
 					Title:     "Activity history",
-					Component: historyPane(),
+					Component: historyPane(c, p),
 				},
 				shared.DetailsSidebarStepArgs{
 					ID:        "info",
@@ -817,7 +817,7 @@ func messagesPane() templ.Component {
 	})
 }
 
-func historyPane() templ.Component {
+func historyPane(c *ctx.Ctx, p *models.Publication) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -835,7 +835,46 @@ func historyPane() templ.Component {
 			templ_7745c5c3_Var42 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul class=\"c-activity-list\"><li class=\"c-activity-item\"><div class=\"c-activity-item__avatar-wrapper\"><div class=\"bc-avatar bc-avatar--muted bc-avatar--small\"><i class=\"if if-edit\"></i></div></div><div class=\"c-activity-item__content\"><div class=\"c-activity-item__activity\"><div class=\"c-activity-item__date\">21 maart 2022 at 18:34</div><div class=\"c-activity-item__text\"><span class=\"fw-bold\">Wouter Bosmans</span> edited the access level questions</div></div></div></li><li class=\"c-activity-item\"><div class=\"c-activity-item__avatar-wrapper\"><div class=\"bc-avatar bc-avatar--muted bc-avatar--small\"><i class=\"if if-edit\"></i></div></div><div class=\"c-activity-item__content\"><div class=\"c-activity-item__activity\"><div class=\"c-activity-item__date\">21 maart 2022 at 18:34</div><div class=\"c-activity-item__text\"><span class=\"fw-bold\">Wouter Bosmans</span> started completing the draft publication.</div></div></div></li></ul>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div hx-get=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var43 string
+		templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_details_recent_activity", "id", p.ID).String())
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 331, Col: 83}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"load delay:100ms\">Loading recent activity&hellip;</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func RecentActivity(c *ctx.Ctx, acts []views.Activity, p *models.Publication) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var44 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var44 == nil {
+			templ_7745c5c3_Var44 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = views.ActivityList(c, acts, lo.ToPtr(p.ID)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -856,9 +895,9 @@ func infoPane(c *ctx.Ctx, p *models.Publication) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var43 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var43 == nil {
-			templ_7745c5c3_Var43 = templ.NopComponent
+		templ_7745c5c3_Var45 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var45 == nil {
+			templ_7745c5c3_Var45 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul class=\"c-activity-list\"><div class=\"form-group\"><label class=\"form-label form-label-top\">Created by</label><p>")
@@ -866,12 +905,12 @@ func infoPane(c *ctx.Ctx, p *models.Publication) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if p.Creator != nil {
-			var templ_7745c5c3_Var44 string
-			templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(p.Creator.FullName)
+			var templ_7745c5c3_Var46 string
+			templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(p.Creator.FullName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 373, Col: 25}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 346, Col: 25}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -885,12 +924,12 @@ func infoPane(c *ctx.Ctx, p *models.Publication) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var45 string
-		templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(p.DateCreated.Format("2006-01-02"))
+		var templ_7745c5c3_Var47 string
+		templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.JoinStringErrs(p.DateCreated.Format("2006-01-02"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 381, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 354, Col: 42}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var47))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -903,12 +942,12 @@ func infoPane(c *ctx.Ctx, p *models.Publication) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var46 string
-			templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(lo.Capitalize(p.SourceDB))
+			var templ_7745c5c3_Var48 string
+			templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(lo.Capitalize(p.SourceDB))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 386, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 359, Col: 34}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -964,8 +1003,8 @@ func infoPane(c *ctx.Ctx, p *models.Publication) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var47 templ.SafeURL = templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, p.ID))
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var47)))
+			var templ_7745c5c3_Var49 templ.SafeURL = templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, p.ID))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var49)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -973,12 +1012,12 @@ func infoPane(c *ctx.Ctx, p *models.Publication) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var48 string
-			templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(p.ID)
+			var templ_7745c5c3_Var50 string
+			templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(p.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 412, Col: 12}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/show.templ`, Line: 385, Col: 12}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
