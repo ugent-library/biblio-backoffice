@@ -377,6 +377,10 @@ templ infoPane(c *ctx.Ctx, p *models.Publication) {
 				@display.Link(p.PubMedID, identifiers.PubMed.Resolve)
 			</div>
 		}
+		@infoList("ISSN", p.ISSN)
+		@infoList("E-ISSN", p.EISSN)
+		@infoList("ISBN", p.ISBN)
+		@infoList("E-ISBN", p.EISBN)
 		if p.Status =="public" {
 			<div class="form-group">
 				<label class="form-label form-label-top">Public Biblio Location</label>
@@ -389,4 +393,15 @@ templ infoPane(c *ctx.Ctx, p *models.Publication) {
 			</div>
 		}
 	</ul>
+}
+
+templ infoList(label string, list []string) {
+	if len(list) > 0 {
+		<div class="form-group">
+			<label class="form-label form-label-top">{ label }</label>
+			for _, item := range list {
+				<p>{ item }</p>
+			}
+		</div>
+	}
 }
