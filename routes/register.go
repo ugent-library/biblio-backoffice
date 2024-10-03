@@ -471,11 +471,14 @@ func Register(c Config) {
 						r.Use(ctx.RequireViewDataset(c.Services.Repo))
 
 						// view only functions
-						r.Get("/", datasetviewing.Show).Name("dataset")
-						r.With(ctx.SetSubNav("description")).Get("/description", datasetviewing.ShowDescription).Name("dataset_description")
-						r.With(ctx.SetSubNav("contributors")).Get("/contributors", datasetviewing.ShowContributors).Name("dataset_contributors")
-						r.With(ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
-						r.With(ctx.SetSubNav("activity")).Get("/activity", datasetviewing.ShowActivity).Name("dataset_activity")
+						r.Group(func(r *ich.Mux) {
+							r.Get("/", datasetviewing.Show).Name("dataset")
+							r.With(ctx.SetSubNav("description")).Get("/description", datasetviewing.ShowDescription).Name("dataset_description")
+							r.With(ctx.SetSubNav("contributors")).Get("/contributors", datasetviewing.ShowContributors).Name("dataset_contributors")
+							r.With(ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
+							r.With(ctx.SetSubNav("activity")).Get("/activity", datasetviewing.ShowActivity).Name("dataset_activity")
+							r.Get("/details/recent-activity", datasetviewing.RecentActivity).Name("dataset_details_recent_activity")
+						})
 
 						// edit only
 						r.Group(func(r *ich.Mux) {

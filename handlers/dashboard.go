@@ -203,32 +203,8 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 			c.HandleError(w, r, err)
 			return
 		}
-		act := views.Activity{
-			Object:    views.DatasetObject,
-			User:      d.User,
-			Datestamp: *d.DateUpdated,
-			URL:       c.PathTo("dataset", "id", d.ID).String(),
-			Status:    d.Status,
-			Title:     d.Title,
-		}
-		if prevD == nil {
-			act.Event = views.CreateEvent
-		} else if d.Status == "public" && prevD.Status == "returned" {
-			act.Event = views.RepublishEvent
-		} else if d.Status == "public" && prevD.Status != "public" {
-			act.Event = views.PublishEvent
-		} else if d.Status == "returned" && prevD.Status != "returned" {
-			act.Event = views.WithdrawEvent
-		} else if d.Locked && !prevD.Locked {
-			act.Event = views.LockEvent
-		} else if !d.Locked && prevD.Locked {
-			act.Event = views.UnlockEvent
-		} else if d.Message != "" && d.Message != prevD.Message {
-			act.Event = views.MessageEvent
-		} else {
-			act.Event = views.UpdateEvent
-		}
-		acts = append(acts, act)
+
+		acts = append(acts, GetDatasetActivity(c, d, prevD))
 	}
 
 	sort.Slice(acts, func(i, j int) bool {
@@ -262,6 +238,38 @@ func GetPublicationActivity(c *ctx.Ctx, p *models.Publication, prevP *models.Pub
 	} else if !p.Locked && prevP.Locked {
 		act.Event = views.UnlockEvent
 	} else if p.Message != "" && p.Message != prevP.Message {
+		act.Event = views.MessageEvent
+	} else {
+		act.Event = views.UpdateEvent
+	}
+
+	return act
+}
+
+func GetDatasetActivity(c *ctx.Ctx, d *models.Dataset, prevD *models.Dataset) views.Activity {
+	act := views.Activity{
+		Object:    views.DatasetObject,
+		User:      d.User,
+		Datestamp: *d.DateUpdated,
+		URL:       c.PathTo("dataset", "id", d.ID).String(),
+		Status:    d.Status,
+		RecordID:  d.ID,
+		Title:     d.Title,
+	}
+
+	if prevD == nil {
+		act.Event = views.CreateEvent
+	} else if d.Status == "public" && prevD.Status == "returned" {
+		act.Event = views.RepublishEvent
+	} else if d.Status == "public" && prevD.Status != "public" {
+		act.Event = views.PublishEvent
+	} else if d.Status == "returned" && prevD.Status != "returned" {
+		act.Event = views.WithdrawEvent
+	} else if d.Locked && !prevD.Locked {
+		act.Event = views.LockEvent
+	} else if !d.Locked && prevD.Locked {
+		act.Event = views.UnlockEvent
+	} else if d.Message != "" && d.Message != prevD.Message {
 		act.Event = views.MessageEvent
 	} else {
 		act.Event = views.UpdateEvent

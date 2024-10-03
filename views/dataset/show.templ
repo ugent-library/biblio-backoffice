@@ -1,9 +1,14 @@
 package dataset
 
 import (
+	"fmt"
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/identifiers"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/display"
+	"github.com/ugent-library/biblio-backoffice/views/shared"
 )
 
 templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
@@ -28,7 +33,6 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 											<span class="text-muted c-body-small ms-2">Locked</span>
 										</span>
 									}
-
 									if dataset.AccessLevel != "" {
 										<span class="c-subline pe-3">
 											if dataset.AccessLevel == "info:eu-repo/semantics/openAccess" {
@@ -53,7 +57,6 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 												</span>
 											}
 										</span>
-
 										if dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
 											<span class="c-subline me-3 px-3 border-end border-start">
 												<i class="if if-eye-off if--small if--muted"></i>
@@ -75,7 +78,6 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 											</span>
 										}
 									}
-
 									<span class="c-subline me-3 ps-3 border-start">
 										if dataset.License != "" {
 											if dataset.License == "LicenseNotListed" {
@@ -172,7 +174,6 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 								}
 							</div>
 						</div>
-
 						<h4 class="w-100 mb-0 mb-lg-2">
 							if len(dataset.Author) == 1 && dataset.Author[0] != nil {
 								{ dataset.Author[0].LastName() }, { dataset.Author[0].FirstName() }, creator.
@@ -242,7 +243,113 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 					hx-trigger="load delay:100ms"
 					hx-target="#show-content"
 				></div>
+				@shared.DetailsSidebar(c,
+					shared.DetailsSidebarStepArgs{
+						ID:        "sidebar-message",
+						Icon:      "if-message",
+						Title:     "Biblio messages",
+						Component: messagesPane(),
+					},
+					shared.DetailsSidebarStepArgs{
+						ID:        "history",
+						Icon:      "if-time",
+						Title:     "Activity history",
+						Component: historyPane(c, dataset),
+					},
+					shared.DetailsSidebarStepArgs{
+						ID:        "info",
+						Icon:      "if-info-circle",
+						Title:     "Details",
+						Component: infoPane(c, dataset),
+					})
 			</div>
 		</div>
 	}
+}
+
+templ messagesPane() {
+	<div class="form-group">
+		<div class="bc-toolbar">
+			<div class="bc-toolbar-left">
+				<label class="col-form-label">Messages from and for Biblio team</label>
+			</div>
+			<div class="bc-toolbar-right">
+				<button class="btn btn-primary btn-sm">Save</button>
+			</div>
+		</div>
+		<textarea class="form-control" rows="15">The language-edited version of the PhD will be published in the forthcoming weeks as a book with ISBN number, which will be fully open access (based on the contract with the publisher) and uploaded in biblio. Dr Depauw prefers the language-edited book version to be published in full open access instead of the original dissertation, which therefore has been limited to author/admin only</textarea>
+		<p class="text-muted mt-2">Have any questions or changes to report? Mail to <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.</p>
+	</div>
+	<div class="form-group">
+		<div class="bc-toolbar">
+			<div class="bc-toolbar-left">
+				<label class="col-form-label">Librarian tags</label>
+			</div>
+			<div class="bc-toolbar-right">
+				<button class="btn btn-primary btn-sm">Save</button>
+			</div>
+		</div>
+		<textarea class="form-control" id="tags" placeholder="tags" autofocus></textarea>
+		<p class="text-muted mt-2">For internal use only.</p>
+	</div>
+	<div class="form-group">
+		<div class="bc-toolbar">
+			<div class="bc-toolbar-left">
+				<label class="col-form-label">Librarian note</label>
+			</div>
+			<div class="bc-toolbar-right">
+				<button class="btn btn-primary btn-sm">Save</button>
+			</div>
+		</div>
+		<textarea class="form-control" rows="15">The language-edited version of the PhD will be published in the forthcoming weeks as a book with ISBN number, which will be fully open access (based on the contract with the publisher) and uploaded in biblio. Dr Depauw prefers the language-edited book version to be published in full open access instead of the original dissertation, which therefore has been limited to author/admin only</textarea>
+		<p class="text-muted mt-2">For internal use only.</p>
+	</div>
+}
+
+templ historyPane(c *ctx.Ctx, d *models.Dataset) {
+	<div hx-get={ c.PathTo("dataset_details_recent_activity", "id", d.ID).String() } hx-trigger="load delay:100ms">
+		Loading recent activity&hellip;
+	</div>
+}
+
+templ RecentActivity(c *ctx.Ctx, acts []views.Activity, d *models.Dataset) {
+	@views.ActivityList(c, acts, lo.ToPtr(d.ID))
+}
+
+templ infoPane(c *ctx.Ctx, d *models.Dataset) {
+	<ul class="c-activity-list">
+		<div class="form-group">
+			<label class="form-label form-label-top">Created by</label>
+			<p>
+				if d.Creator != nil {
+					{ d.Creator.FullName }
+				} else {
+					[missing]
+				}
+			</p>
+		</div>
+		<div class="form-group">
+			<label class="form-label form-label-top">Creation date</label>
+			<p>{ d.DateCreated.Format("2006-01-02") }</p>
+		</div>
+		for key, v := range d.Identifiers {
+			<div class="form-group">
+				<label class="form-label form-label-top">{ key }</label>
+				for _, i := range v {
+					@display.Link(i, func(id string) string { return identifiers.Resolve(key, id) })
+				}
+			</div>
+		}
+		if d.Status =="public" {
+			<div class="form-group">
+				<label class="form-label form-label-top">Public Biblio Location</label>
+				<p>
+					<a href={ templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, d.ID)) } target="_blank">
+						{ d.ID }
+						<i class="if if--small if-external-link"></i>
+					</a>
+				</p>
+			</div>
+		}
+	</ul>
 }
