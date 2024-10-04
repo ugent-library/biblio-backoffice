@@ -34,7 +34,7 @@ func CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) tem
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(recs) > 0 {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center\"><label class=\"badge badge-sm rounded-pill bg-success me-3\">New &mdash; in beta</label><h2 class=\"mb-0\">Research that might belong to you</h2>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center\"><label class=\"badge badge-sm rounded-pill bg-success me-3\">New &mdash; in beta</label><h2 class=\"mb-0\">Suggestions</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -46,7 +46,7 @@ func CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) tem
 				var templ_7745c5c3_Var2 string
 				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(total))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dashboard/candidate_records.templ`, Line: 20, Col: 86}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dashboard/candidate_records.templ`, Line: 18, Col: 86}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
@@ -66,7 +66,15 @@ func CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) tem
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><span class=\"btn-text\">View all suggestions</span></a> <a class=\"text-muted px-2\" href=\"\" data-bs-container=\"body\" data-bs-toggle=\"popover-custom\" data-bs-placement=\"right\" data-popover-content=\"#suggestions-tooltip\"><i class=\"if if-info-circle\"></i> <span class=\"visually-hidden\">More info</span></a><div class=\"u-hidden\" id=\"suggestions-tooltip\"><div class=\"popover-body p-0\"><p>Biblio automatically picks up all you dissertations and all their metadata from Plato, for you to preview, import and complete. <a class=\"c-link\" target=\"_blank\" href=\"https://onderzoektips.ugent.be/en/tips/00002247/\"><span class=\"text-decoration-underline\">Read the research tip</span> <i class=\"if if--small if-external-link\"></i></a></p></div></div></div></div></div><div class=\"card\"><ul class=\"list-group list-group-flush\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><span class=\"btn-text\">View all suggestions</span></a> <a class=\"text-muted px-2\" href=\"\" data-bs-container=\"body\" data-bs-toggle=\"popover-custom\" data-bs-placement=\"right\" data-popover-content=\"#suggestions-tooltip\"><i class=\"if if-info-circle\"></i> <span class=\"visually-hidden\">More info</span></a><div class=\"u-hidden\" id=\"suggestions-tooltip\"><div class=\"popover-body p-0\"><p>Biblio automatically picks up all you dissertations and all their metadata from Plato, for you to preview, import and complete. <a class=\"c-link\" target=\"_blank\" href=\"https://onderzoektips.ugent.be/en/tips/00002247/\"><span class=\"text-decoration-underline\">Read the research tip</span> <i class=\"if if--small if-external-link\"></i></a></p></div></div></div></div></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = candidaterecordviews.CandidateRecordInfo().Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <div class=\"card\"><ul class=\"list-group list-group-flush\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -88,7 +96,7 @@ func CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) tem
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(c.AssetPath("/images/book-illustration.svg"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dashboard/candidate_records.templ`, Line: 56, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dashboard/candidate_records.templ`, Line: 55, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {

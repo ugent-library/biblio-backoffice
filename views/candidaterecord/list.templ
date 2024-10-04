@@ -33,34 +33,7 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 			<div class="u-scroll-wrapper__body w-100 p-6">
 				<div class="row">
 					<div class="col-xl-6 col-lg-8 col-md-10">
-						<div class="alert alert-success border border-success mb-6">
-							<span class="badge rounded-pill bg-success me-6">Beta</span>
-							<div class="alert-content">
-								<div class="bc-toolbar h-auto">
-									<div class="bc-toolbar-left">
-										<div class="bc-toolbar-item">
-											<h3 class="alert-title">
-												Biblio now automatically picks up dissertations from Plato.
-												<br/>
-												Preview, import and complete your research output.
-											</h3>
-											<p>
-												We are testing this new feature for the Faculty of Engineering and Architecture
-												<br/>
-												until the end of November,
-												and would appreciate your feedback.&nbsp;<a class="c-link" target="_blank" href="https://forms.office.com/Pages/ResponsePage.aspx?id=3hyB1-_sbEmPkaF4YkG5nLzhS3gYTQlIoRZOSkcIt81UNE5UTU5ZNThPM0dJSkczOERMUThHOFgwVC4u">Give feedback</a>
-											</p>
-											<p class="mt-4">
-												<a class="c-link text-muted" target="_blank" href="https://onderzoektips.ugent.be/en/tips/00002247/">
-													<span class="text-decoration-underline">Read the research tip for more information</span>
-													<i class="if if--small if-external-link"></i>
-												</a>
-											</p>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+						@CandidateRecordInfo()
 					</div>
 				</div>
 				if searchHits.Total > 0 {
@@ -143,4 +116,35 @@ templ ListItem(c *ctx.Ctx, rec *models.CandidateRecord) {
 	<li id={ fmt.Sprintf("candidate-record-%s", rec.ID) } class={ "list-group-item", "bg-transparent", templ.KV("opacity-75", rec.Status != "new") }>
 		@Summary(c, rec)
 	</li>
+}
+
+templ CandidateRecordInfo() {
+	<div class="alert alert-success border border-success mb-6">
+		<span class="badge rounded-pill bg-success me-6">Beta</span>
+		<div class="alert-content">
+			<div class="bc-toolbar h-auto">
+				<div class="bc-toolbar-left">
+					<div class="bc-toolbar-item">
+						<h3 class="alert-title">
+							Biblio now automatically picks up dissertations from Plato.
+							<br/>
+							Preview, import and complete your research output.
+						</h3>
+						<p>
+							We are testing this new feature for the Faculty of Engineering and Architecture
+							<br/>
+							until the end of November,
+							and would appreciate your feedback.&nbsp;<a class="c-link" target="_blank" href="https://forms.office.com/Pages/ResponsePage.aspx?id=3hyB1-_sbEmPkaF4YkG5nLzhS3gYTQlIoRZOSkcIt81UNE5UTU5ZNThPM0dJSkczOERMUThHOFgwVC4u">Give feedback</a>
+						</p>
+						<p class="mt-4">
+							<a class="c-link text-muted" target="_blank" href="https://onderzoektips.ugent.be/en/tips/00002247/">
+								<span class="text-decoration-underline">Read the research tip for more information</span>
+								<i class="if if--small if-external-link"></i>
+							</a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 }
