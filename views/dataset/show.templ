@@ -245,7 +245,7 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 				></div>
 				@shared.DetailsSidebar(c,
 					shared.DetailsSidebarStepArgs{
-						ID:        "sidebar-message",
+						ID:        "message",
 						Icon:      "if-message",
 						Title:     "Biblio messages",
 						Component: messagesPane(),
@@ -307,7 +307,7 @@ templ messagesPane() {
 }
 
 templ historyPane(c *ctx.Ctx, d *models.Dataset) {
-	<div hx-get={ c.PathTo("dataset_details_recent_activity", "id", d.ID).String() } hx-trigger="load delay:100ms">
+	<div hx-get={ c.PathTo("dataset_recent_activity", "id", d.ID).String() } hx-trigger="load delay:100ms">
 		Loading recent activity&hellip;
 	</div>
 }

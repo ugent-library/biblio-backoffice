@@ -201,7 +201,7 @@ func DetailsSidebarStep(c *ctx.Ctx, args DetailsSidebarStepArgs) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3></div><div class=\"bc-toolbar-right\"><button class=\"btn btn-muted btn-icon-only\" type=\"button\" data-sidebar-close><i class=\"if if-close\"></i><div class=\"visually-hidden\">Close</div></button></div></div></div><div class=\"u-scroll-wrapper__body p-6\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3></div><div class=\"bc-toolbar-right\"><button class=\"btn btn-muted btn-icon-only\" type=\"button\" data-sidebar-close><i class=\"if if-close\"></i><div class=\"visually-hidden\">Close</div></button></div></div></div><div class=\"u-scroll-wrapper__body p-6 sidebar-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

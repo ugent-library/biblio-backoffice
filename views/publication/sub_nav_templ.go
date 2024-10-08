@@ -14,7 +14,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 )
 
-var SubNavs = []string{"description", "files", "contributors", "datasets", "activity"}
+var SubNavs = []string{"description", "files", "contributors", "datasets"}
 
 func SubNav(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {

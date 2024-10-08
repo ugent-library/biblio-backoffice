@@ -77,16 +77,13 @@ func ShowDatasets(w http.ResponseWriter, r *http.Request) {
 	publicationviews.Datasets(c, p, datasets).Render(r.Context(), w)
 }
 
-func ShowActivity(w http.ResponseWriter, r *http.Request) {
+func BiblioMessages(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	p := ctx.GetPublication(r)
 
-	redirectURL := r.URL.Query().Get("redirect-url")
-	if redirectURL == "" {
-		redirectURL = c.PathTo("publications").String()
-	}
-
-	publicationviews.Activity(c, p, redirectURL).Render(r.Context(), w)
+	publicationviews.Messages(c, publicationviews.MessagesArgs{
+		Publication: p,
+	}).Render(r.Context(), w)
 }
 
 func RecentActivity(w http.ResponseWriter, r *http.Request) {

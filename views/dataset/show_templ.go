@@ -553,7 +553,7 @@ func Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ.Compone
 			}
 			templ_7745c5c3_Err = shared.DetailsSidebar(c,
 				shared.DetailsSidebarStepArgs{
-					ID:        "sidebar-message",
+					ID:        "message",
 					Icon:      "if-message",
 					Title:     "Biblio messages",
 					Component: messagesPane(),
@@ -642,9 +642,9 @@ func historyPane(c *ctx.Ctx, d *models.Dataset) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var31 string
-		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("dataset_details_recent_activity", "id", d.ID).String())
+		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("dataset_recent_activity", "id", d.ID).String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 310, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `dataset/show.templ`, Line: 310, Col: 71}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {

@@ -313,9 +313,9 @@ func Register(c Config) {
 							r.With(ctx.SetSubNav("contributors")).Get("/contributors", publicationviewing.ShowContributors).Name("publication_contributors")
 							r.With(ctx.SetSubNav("files")).Get("/files", publicationviewing.ShowFiles).Name("publication_files")
 							r.With(ctx.SetSubNav("datasets")).Get("/datasets", publicationviewing.ShowDatasets).Name("publication_datasets")
-							r.With(ctx.SetSubNav("activity")).Get("/activity", publicationviewing.ShowActivity).Name("publication_activity")
 							r.Get("/files/{file_id}", publicationviewing.DownloadFile).Name("publication_download_file")
-							r.Get("/details/recent-activity", publicationviewing.RecentActivity).Name("publication_details_recent_activity")
+							r.Get("/messages", publicationviewing.BiblioMessages).Name("publication_messages")
+							r.Get("/recent-activity", publicationviewing.RecentActivity).Name("publication_recent_activity")
 						})
 
 						// edit only
@@ -418,9 +418,8 @@ func Register(c Config) {
 							r.Get("/{snapshot_id}/datasets/{dataset_id}/confirm-delete", publicationediting.ConfirmDeleteDataset).Name("publication_confirm_delete_dataset")
 							r.Delete("/datasets/{dataset_id}", publicationediting.DeleteDataset).Name("publication_delete_dataset")
 
-							// activity
-							r.Get("/message/edit", publicationediting.EditMessage).Name("publication_edit_message")
-							r.Put("/message", publicationediting.UpdateMessage).Name("publication_update_message")
+							// details sidebar
+							r.Put("/messages/biblio", publicationediting.UpdateBiblioMessage).Name("publication_messages_update_biblio_message")
 
 							// publish
 							r.Get("/publish/confirm", publicationediting.ConfirmPublish).Name("publication_confirm_publish")
@@ -439,11 +438,9 @@ func Register(c Config) {
 						r.Group(func(r *ich.Mux) {
 							r.Use(ctx.RequireCurator)
 
-							// activity
-							r.Get("/reviewer-tags/edit", publicationediting.EditReviewerTags).Name("publication_edit_reviewer_tags")
-							r.Put("/reviewer-tags", publicationediting.UpdateReviewerTags).Name("publication_update_reviewer_tags")
-							r.Get("/reviewer-note/edit", publicationediting.EditReviewerNote).Name("publication_edit_reviewer_note")
-							r.Put("/reviewer-note", publicationediting.UpdateReviewerNote).Name("publication_update_reviewer_note")
+							// details sidebar
+							r.Put("/reviewer-tags", publicationediting.UpdateReviewerTags).Name("publication_messages_update_reviewer_tags")
+							r.Put("/reviewer-note", publicationediting.UpdateReviewerNote).Name("publication_messages_update_reviewer_note")
 
 							// (un)lock publication
 							r.Post("/lock", publicationediting.Lock).Name("publication_lock")
@@ -477,7 +474,7 @@ func Register(c Config) {
 							r.With(ctx.SetSubNav("contributors")).Get("/contributors", datasetviewing.ShowContributors).Name("dataset_contributors")
 							r.With(ctx.SetSubNav("publications")).Get("/publications", datasetviewing.ShowPublications).Name("dataset_publications")
 							r.With(ctx.SetSubNav("activity")).Get("/activity", datasetviewing.ShowActivity).Name("dataset_activity")
-							r.Get("/details/recent-activity", datasetviewing.RecentActivity).Name("dataset_details_recent_activity")
+							r.Get("/recent-activity", datasetviewing.RecentActivity).Name("dataset_recent_activity")
 						})
 
 						// edit only
