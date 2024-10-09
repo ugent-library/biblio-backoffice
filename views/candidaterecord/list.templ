@@ -66,9 +66,11 @@ templ List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchH
 				if searchHits.Total > 0 {
 					<div class="bc-toolbar">
 						<div class="bc-toolbar-left">
-							@views.Facets(c, searchArgs) {
-								@facets(c, searchArgs, searchHits.Facets)
-							}
+							<div class="bc-toolbar-item">
+								@views.Facets(c, searchArgs) {
+									@facets(c, searchArgs, searchHits.Facets)
+								}
+							</div>
 						</div>
 						<div class="bc-toolbar-right">
 							<div class="bc-toolbar-item">
@@ -158,13 +160,15 @@ templ facets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[string]models
 			LocPrefixShort: "candidate_record_statuses",
 			FacetValues:    facets["status"],
 		}, searchArgs)
-		@views.Facet(c, views.FacetArgs{
-			FieldName:      "faculty_id",
-			Title:          "Faculty",
-			LocPrefix:      "organization",
-			LocPrefixShort: "organization",
-			FacetValues:    facets["faculty_id"],
-		}, searchArgs)
+		if c.UserRole == "curator" {
+			@views.Facet(c, views.FacetArgs{
+				FieldName:      "faculty_id",
+				Title:          "Faculty",
+				LocPrefix:      "organization",
+				LocPrefixShort: "organization",
+				FacetValues:    facets["faculty_id"],
+			}, searchArgs)
+		}
 		@views.Facet(c, views.FacetArgs{
 			FieldName:      "year",
 			Title:          "Publication year",
