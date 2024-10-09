@@ -151,8 +151,8 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 	if c.FlagCandidateRecords() {
 		searchArgs := models.NewSearchArgs().
 			WithPageSize(4).
-			WithFilter("Status", "new").
-			WithFilter("PersonID", c.User.ID)
+			WithFilter("status", "new").
+			WithFilter("person_id", c.User.ID)
 
 		total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs)
 	}
