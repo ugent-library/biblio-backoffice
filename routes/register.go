@@ -439,8 +439,8 @@ func Register(c Config) {
 							r.Use(ctx.RequireCurator)
 
 							// details sidebar
-							r.Put("/reviewer-tags", publicationediting.UpdateReviewerTags).Name("publication_messages_update_reviewer_tags")
-							r.Put("/reviewer-note", publicationediting.UpdateReviewerNote).Name("publication_messages_update_reviewer_note")
+							r.Put("/messages/reviewer-tags", publicationediting.UpdateReviewerTags).Name("publication_messages_update_reviewer_tags")
+							r.Put("/messages/reviewer-note", publicationediting.UpdateReviewerNote).Name("publication_messages_update_reviewer_note")
 
 							// (un)lock publication
 							r.Post("/lock", publicationediting.Lock).Name("publication_lock")

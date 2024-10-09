@@ -17,7 +17,9 @@ describe("Authorization", () => {
     testForbiddenPublicationRoute("/files");
     testForbiddenPublicationRoute("/contributors");
     testForbiddenPublicationRoute("/datasets");
-    testForbiddenPublicationRoute("/activity");
+    testForbiddenPublicationRoute("/messages");
+    testForbiddenPublicationRoute("/messages/biblio", "PUT");
+    testForbiddenPublicationRoute("/recent-activity");
     testForbiddenPublicationRoute("/files/file-123");
 
     testForbiddenPublicationRoute("/confirm-delete");
@@ -30,9 +32,6 @@ describe("Authorization", () => {
     testForbiddenPublicationRoute("/withdraw", "POST");
     testForbiddenPublicationRoute("/republish/confirm");
     testForbiddenPublicationRoute("/republish", "POST");
-
-    testForbiddenPublicationRoute("/message/edit", "GET", "PUT");
-    testForbiddenPublicationRoute("/message", "PUT");
 
     testForbiddenPublicationRoute("/details/edit", "GET", "PUT");
     testForbiddenPublicationRoute("/type/confirm");
@@ -140,6 +139,8 @@ describe("Authorization", () => {
     testForbiddenDatasetRoute("/description");
     testForbiddenDatasetRoute("/contributors");
     testForbiddenDatasetRoute("/publications");
+    testForbiddenDatasetRoute("/messages");
+    testForbiddenDatasetRoute("/recent-activity");
     testForbiddenDatasetRoute("/activity");
 
     testForbiddenDatasetRoute("/confirm-delete");
@@ -224,10 +225,8 @@ describe("Authorization", () => {
 
     cy.setUpPublication();
 
-    testUnauthorizedPublicationRoute("/reviewer-tags/edit");
-    testUnauthorizedPublicationRoute("/reviewer-tags", "PUT");
-    testUnauthorizedPublicationRoute("/reviewer-note/edit");
-    testUnauthorizedPublicationRoute("/reviewer-note", "PUT");
+    testUnauthorizedPublicationRoute("/messages/reviewer-tags", "PUT");
+    testUnauthorizedPublicationRoute("/messages/reviewer-note", "PUT");
   });
 
   it("should not be possible to edit dataset reviewer tags and notes as a regular user", () => {
