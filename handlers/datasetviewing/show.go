@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	subNavs = []string{"description", "contributors", "publications", "activity"}
+	subNavs = []string{"description", "contributors", "publications"}
 )
 
 func Show(w http.ResponseWriter, r *http.Request) {
@@ -61,13 +61,13 @@ func ShowPublications(w http.ResponseWriter, r *http.Request) {
 	datasetviews.Publications(c, dataset, relatedPublications).Render(r.Context(), w)
 }
 
-func ShowActivity(w http.ResponseWriter, r *http.Request) {
+func BiblioMessages(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	redirectURL := r.URL.Query().Get("redirect-url")
-	if redirectURL == "" {
-		redirectURL = c.PathTo("datasets").String()
-	}
-	datasetviews.Activity(ctx.Get(r), ctx.GetDataset(r), redirectURL).Render(r.Context(), w)
+	d := ctx.GetDataset(r)
+
+	datasetviews.Messages(c, datasetviews.MessagesArgs{
+		Dataset: d,
+	}).Render(r.Context(), w)
 }
 
 func RecentActivity(w http.ResponseWriter, r *http.Request) {
