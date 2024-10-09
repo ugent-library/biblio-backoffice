@@ -6,6 +6,7 @@ describe("Authorization", () => {
     cy.setUpPublication();
 
     cy.loginAsResearcher("researcher2");
+    cy.visit("/"); // Fetch CSRF token
 
     testForbiddenPublicationRoute("/add/description");
     testForbiddenPublicationRoute("/add/confirm");
@@ -17,7 +18,9 @@ describe("Authorization", () => {
     testForbiddenPublicationRoute("/files");
     testForbiddenPublicationRoute("/contributors");
     testForbiddenPublicationRoute("/datasets");
-    testForbiddenPublicationRoute("/activity");
+    testForbiddenPublicationRoute("/messages");
+    testForbiddenPublicationRoute("/messages/biblio", "PUT");
+    testForbiddenPublicationRoute("/recent-activity");
     testForbiddenPublicationRoute("/files/file-123");
 
     testForbiddenPublicationRoute("/confirm-delete");
@@ -30,9 +33,6 @@ describe("Authorization", () => {
     testForbiddenPublicationRoute("/withdraw", "POST");
     testForbiddenPublicationRoute("/republish/confirm");
     testForbiddenPublicationRoute("/republish", "POST");
-
-    testForbiddenPublicationRoute("/message/edit", "GET", "PUT");
-    testForbiddenPublicationRoute("/message", "PUT");
 
     testForbiddenPublicationRoute("/details/edit", "GET", "PUT");
     testForbiddenPublicationRoute("/type/confirm");
@@ -129,6 +129,7 @@ describe("Authorization", () => {
     cy.setUpDataset();
 
     cy.loginAsResearcher("researcher2");
+    cy.visit("/"); // Fetch CSRF token
 
     testForbiddenDatasetRoute("/add/description");
     testForbiddenDatasetRoute("/add/confirm");
@@ -140,7 +141,9 @@ describe("Authorization", () => {
     testForbiddenDatasetRoute("/description");
     testForbiddenDatasetRoute("/contributors");
     testForbiddenDatasetRoute("/publications");
-    testForbiddenDatasetRoute("/activity");
+    testForbiddenDatasetRoute("/messages");
+    testForbiddenDatasetRoute("/messages/biblio", "PUT");
+    testForbiddenDatasetRoute("/recent-activity");
 
     testForbiddenDatasetRoute("/confirm-delete");
     testForbiddenDatasetRoute("", "DELETE");
@@ -224,10 +227,8 @@ describe("Authorization", () => {
 
     cy.setUpPublication();
 
-    testUnauthorizedPublicationRoute("/reviewer-tags/edit");
-    testUnauthorizedPublicationRoute("/reviewer-tags", "PUT");
-    testUnauthorizedPublicationRoute("/reviewer-note/edit");
-    testUnauthorizedPublicationRoute("/reviewer-note", "PUT");
+    testUnauthorizedPublicationRoute("/messages/reviewer-tags", "PUT");
+    testUnauthorizedPublicationRoute("/messages/reviewer-note", "PUT");
   });
 
   it("should not be possible to edit dataset reviewer tags and notes as a regular user", () => {
@@ -235,17 +236,20 @@ describe("Authorization", () => {
 
     cy.setUpDataset();
 
-    testUnauthorizedDatasetRoute("/reviewer-tags/edit");
-    testUnauthorizedDatasetRoute("/reviewer-tags", "PUT");
-    testUnauthorizedDatasetRoute("/reviewer-note/edit");
-    testUnauthorizedDatasetRoute("/reviewer-note", "PUT");
+    testUnauthorizedDatasetRoute("/messages/reviewer-tags", "PUT");
+    testUnauthorizedDatasetRoute("/messages/reviewer-note", "PUT");
   });
 
   type HttpMethods = ("GET" | "PUT" | "POST" | "DELETE")[];
 
   function testForbiddenDatasetRoute(route: string, ...methods: HttpMethods) {
     cy.then(function () {
-      testRouteHttpStatus(403, `/dataset/${this.biblioId}${route}`, ...methods);
+      testRouteHttpStatus(
+        403,
+        "Forbidden",
+        `/dataset/${this.biblioId}${route}`,
+        ...methods,
+      );
     });
   }
 
@@ -254,7 +258,12 @@ describe("Authorization", () => {
     ...methods: HttpMethods
   ) {
     cy.then(function () {
-      testRouteHttpStatus(401, `/dataset/${this.biblioId}${route}`, ...methods);
+      testRouteHttpStatus(
+        401,
+        "Unauthorized",
+        `/dataset/${this.biblioId}${route}`,
+        ...methods,
+      );
     });
   }
 
@@ -265,6 +274,7 @@ describe("Authorization", () => {
     cy.then(function () {
       testRouteHttpStatus(
         403,
+        "Forbidden",
         `/publication/${this.biblioId}${route}`,
         ...methods,
       );
@@ -278,6 +288,7 @@ describe("Authorization", () => {
     cy.then(function () {
       testRouteHttpStatus(
         401,
+        "Unauthorized",
         `/publication/${this.biblioId}${route}`,
         ...methods,
       );
@@ -286,6 +297,7 @@ describe("Authorization", () => {
 
   function testRouteHttpStatus(
     httpStatus: number,
+    statusText: string,
     url: string,
     ...methods: HttpMethods
   ) {
@@ -307,6 +319,8 @@ describe("Authorization", () => {
           })
           .should((response) => {
             expect(response.status).to.equal(httpStatus);
+            expect(response.statusText).to.equal(statusText);
+            expect(response.body.trim()).to.equal(statusText);
           });
       }
     });

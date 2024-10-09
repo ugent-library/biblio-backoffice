@@ -6,11 +6,14 @@ import (
 	"slices"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/handlers"
+	"github.com/ugent-library/biblio-backoffice/models"
+	"github.com/ugent-library/biblio-backoffice/views"
 	datasetviews "github.com/ugent-library/biblio-backoffice/views/dataset"
 )
 
 var (
-	subNavs = []string{"description", "contributors", "publications", "activity"}
+	subNavs = []string{"description", "contributors", "publications"}
 )
 
 func Show(w http.ResponseWriter, r *http.Request) {
@@ -58,11 +61,39 @@ func ShowPublications(w http.ResponseWriter, r *http.Request) {
 	datasetviews.Publications(c, dataset, relatedPublications).Render(r.Context(), w)
 }
 
-func ShowActivity(w http.ResponseWriter, r *http.Request) {
+func BiblioMessages(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
-	redirectURL := r.URL.Query().Get("redirect-url")
-	if redirectURL == "" {
-		redirectURL = c.PathTo("datasets").String()
+	d := ctx.GetDataset(r)
+
+	datasetviews.Messages(c, datasetviews.MessagesArgs{
+		Dataset: d,
+	}).Render(r.Context(), w)
+}
+
+func RecentActivity(w http.ResponseWriter, r *http.Request) {
+	c := ctx.Get(r)
+	d := ctx.GetDataset(r)
+
+	var (
+		acts         []views.Activity
+		nextSnapshot *models.Dataset
+	)
+
+	err := c.Repo.DatasetHistory(d.ID, func(snapshot *models.Dataset) bool {
+		if nextSnapshot != nil {
+			acts = append(acts, handlers.GetDatasetActivity(c, nextSnapshot, snapshot))
+		}
+
+		nextSnapshot = snapshot
+
+		return true
+	})
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
 	}
-	datasetviews.Activity(ctx.Get(r), ctx.GetDataset(r), redirectURL).Render(r.Context(), w)
+
+	acts = append(acts, handlers.GetDatasetActivity(c, nextSnapshot, nil))
+
+	datasetviews.RecentActivity(c, acts, d).Render(r.Context(), w)
 }
