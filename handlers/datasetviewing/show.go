@@ -75,25 +75,33 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 	d := ctx.GetDataset(r)
 
 	var (
-		acts         []views.Activity
-		nextSnapshot *models.Dataset
+		snapshots []*models.Dataset
+		acts      []views.Activity
 	)
 
+	// First take the (max) 21 most recent snapshots
 	err := c.Repo.DatasetHistory(d.ID, func(snapshot *models.Dataset) bool {
-		if nextSnapshot != nil {
-			acts = append(acts, handlers.GetDatasetActivity(c, nextSnapshot, snapshot))
-		}
-
-		nextSnapshot = snapshot
-
-		return true
+		snapshots = append(snapshots, snapshot)
+		return len(snapshots) <= 21
 	})
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
 	}
 
-	acts = append(acts, handlers.GetDatasetActivity(c, nextSnapshot, nil))
+	// Convert the 20 most recent snapshots to activities
+	for i := 0; i < len(snapshots); i++ {
+		var prevSnapshot *models.Dataset
+		if len(snapshots) > i+1 {
+			prevSnapshot = snapshots[i+1]
+		}
+		acts = append(acts, handlers.GetDatasetActivity(c, snapshots[i], prevSnapshot))
+
+		// Ignore the 21st snapshot, only used for comparison with the 20th
+		if len(acts) >= 20 {
+			break
+		}
+	}
 
 	datasetviews.RecentActivity(c, acts, d).Render(r.Context(), w)
 }

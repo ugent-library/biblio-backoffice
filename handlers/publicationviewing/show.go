@@ -91,25 +91,33 @@ func RecentActivity(w http.ResponseWriter, r *http.Request) {
 	p := ctx.GetPublication(r)
 
 	var (
-		acts         []views.Activity
-		nextSnapshot *models.Publication
+		snapshots []*models.Publication
+		acts      []views.Activity
 	)
 
+	// First take the (max) 21 most recent snapshots
 	err := c.Repo.PublicationHistory(p.ID, func(snapshot *models.Publication) bool {
-		if nextSnapshot != nil {
-			acts = append(acts, handlers.GetPublicationActivity(c, nextSnapshot, snapshot))
-		}
-
-		nextSnapshot = snapshot
-
-		return true
+		snapshots = append(snapshots, snapshot)
+		return len(snapshots) <= 21
 	})
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
 	}
 
-	acts = append(acts, handlers.GetPublicationActivity(c, nextSnapshot, nil))
+	// Convert the 20 most recent snapshots to activities
+	for i := 0; i < len(snapshots); i++ {
+		var prevSnapshot *models.Publication
+		if len(snapshots) > i+1 {
+			prevSnapshot = snapshots[i+1]
+		}
+		acts = append(acts, handlers.GetPublicationActivity(c, snapshots[i], prevSnapshot))
+
+		// Ignore the 21st snapshot, only used for comparison with the 20th
+		if len(acts) >= 20 {
+			break
+		}
+	}
 
 	publicationviews.RecentActivity(c, acts, p).Render(r.Context(), w)
 }
