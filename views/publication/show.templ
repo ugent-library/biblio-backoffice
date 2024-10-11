@@ -461,12 +461,11 @@ templ infoPane(c *ctx.Ctx, p *models.Publication) {
 		if p.Status =="public" {
 			<div class="form-group">
 				<label class="form-label form-label-top">Public Biblio Location</label>
-				<p>
-					<a href={ templ.URL(fmt.Sprintf("%s/publication/%s", c.FrontendURL, p.ID)) } target="_blank">
-						{ p.ID }
-						<i class="if if--small if-external-link"></i>
-					</a>
-				</p>
+				{{ handleURL := identifiers.Handle.Resolve("1854/LU-" + p.ID) }}
+				<a href={ templ.SafeURL(handleURL) } target="_blank">
+					{ handleURL }
+					<i class="if if--small if-external-link"></i>
+				</a>
 			</div>
 		}
 	</ul>
