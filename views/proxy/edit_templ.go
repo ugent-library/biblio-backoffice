@@ -45,7 +45,7 @@ func Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</strong> will be responsible for. You can only add UGent researchers.</p></div></div></div></div></div><div class=\"p-6 border-bottom\"><form class=\"row\"><div class=\"form-group col-6\"><label class=\"col-form-label\">Search researchers</label> <input class=\"form-control\" type=\"search\" id=\"proxy-query\" name=\"proxy_query\" value=\"\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</strong> will be responsible for. You can only add UGent researchers.</p></div></div></div></div></div><div class=\"p-6 border-bottom\"><form class=\"row\"><div class=\"form-group col-6\"><label class=\"col-form-label\" for=\"proxy-query\">Search researchers</label> <input class=\"form-control\" type=\"search\" id=\"proxy-query\" name=\"proxy_query\" value=\"\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
