@@ -1,10 +1,9 @@
 const LOCAL_STORAGE_KEY = "detail-sidebar-state";
 const DEFAULT_SIDEBAR_STATE = "sidebar-message";
 
-export default function initSidebarMenu() {
-  const menuButtons = document.querySelectorAll("[data-sidebar-menu] button");
-  const contents = document.querySelectorAll("[data-sidebar-content]");
-  const closeButtons = document.querySelectorAll("[data-sidebar-close]");
+export default function initSidebarMenu(el) {
+  const menuButtons = el.querySelectorAll("[data-sidebar-menu] button");
+  const closeButtons = el.querySelectorAll("[data-sidebar-close]");
 
   menuButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -20,12 +19,10 @@ export default function initSidebarMenu() {
         setActiveSidebar(null);
       } else {
         // If not, hide all contents and show the target content.
-        contents.forEach((content) => {
-          content.classList.remove("open");
-        });
-        menuButtons.forEach((btn) => {
-          btn.classList.remove("active");
-        });
+        document
+          .querySelectorAll("[data-sidebar-content]")
+          .forEach((c) => c.classList.remove("open"));
+        menuButtons.forEach((btn) => btn.classList.remove("active"));
 
         targetContent.classList.add("open");
         button.classList.add("active");
@@ -42,25 +39,25 @@ export default function initSidebarMenu() {
         parentContent.classList.remove("open");
 
         // Find the corresponding menu button and remove active class.
-        const correspondingButton = document.querySelector(
-          `[data-sidebar-menu] button[data-target="${parentContent.id}"]`,
-        );
-        if (correspondingButton) {
-          correspondingButton.classList.remove("active");
-        }
+        getSidebarNavLink(parentContent.id)?.classList.remove("active");
+
+        setActiveSidebar(null);
       }
     });
   });
 
+  // Set initial active sidebar
   const activeSidebar = getActiveSidebar();
   if (activeSidebar) {
     document.getElementById(activeSidebar)?.classList.add("open");
-    document
-      .querySelector(
-        `[data-sidebar-menu] .nav-link[data-target-id="${activeSidebar}"]`,
-      )
-      ?.classList.add("active");
+    getSidebarNavLink(activeSidebar)?.classList.add("active");
   }
+}
+
+function getSidebarNavLink(targetId: string): HTMLAnchorElement | null {
+  return document.querySelector(
+    `[data-sidebar-menu] .nav-link[data-target-id="${targetId}"]`,
+  );
 }
 
 function getActiveSidebar(): string | undefined {

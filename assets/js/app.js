@@ -47,10 +47,10 @@ document.addEventListener("DOMContentLoaded", function () {
   fileUpload();
   tags();
   facetDropdowns();
-  initSidebarMenu();
 });
 
 htmx.onLoad(function (el) {
   clipboard(el);
   initSearchFields(el);
+  initSidebarMenu(el);
 });
