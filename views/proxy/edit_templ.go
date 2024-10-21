@@ -45,14 +45,14 @@ func Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</strong> will be responsible for. You can only add UGent researchers.</p></div></div></div></div></div><div class=\"p-6 border-bottom\"><form class=\"row\"><div class=\"form-group col-6\"><label class=\"col-form-label\" for=\"proxy-query\">Search researchers</label> <input class=\"form-control\" type=\"search\" id=\"proxy-query\" name=\"proxy_query\" value=\"\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</strong> will be responsible for. You can only add UGent researchers.</p></div></div></div></div></div><div class=\"p-6 border-bottom\"><form class=\"row\"><div class=\"form-group col-6\"><label class=\"col-form-label\" for=\"proxy-query\">Search researchers</label> <input class=\"form-control\" type=\"search\" id=\"proxy-query\" name=\"proxy_query\" value=\"\" autofocus hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("proxy_suggest_people", "proxy_id", proxy.ID).String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/edit.templ`, Line: 34, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/edit.templ`, Line: 35, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -73,7 +73,7 @@ func Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) templ
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(proxy.FullName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/edit.templ`, Line: 50, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/edit.templ`, Line: 51, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {

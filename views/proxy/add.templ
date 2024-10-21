@@ -29,6 +29,7 @@ templ Add(c *ctx.Ctx, hits []*models.Person) {
 						id="proxy-query"
 						name="proxy_query"
 						value=""
+						autofocus
 						hx-get={ c.PathTo("suggest_proxies").String() }
 						hx-trigger="input changed delay:250ms, proxy_query"
 						hx-target=".modal-body"
