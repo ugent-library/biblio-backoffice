@@ -1,9 +1,17 @@
 package publication
 
 import (
+	"fmt"
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/identifiers"
+	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/display"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/shared"
+	"github.com/ugent-library/okay"
 )
 
 templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
@@ -160,7 +168,6 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 							</div>
 						</div>
 						<h4 class="w-100 mb-0 mb-lg-2">
-
 							if (p.Type == "issue_editor") || (p.Type == "book_editor") {
 								if len(p.Editor) == 1 {
 									{ p.Editor[0].LastName() }, { p.Editor[0].FirstName() }, editor.
@@ -176,7 +183,6 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 									et al.
 								}
 							}
-
 							if p.Title != "" {
 								<em>"{ p.Title }."</em>
 							} else {
@@ -261,7 +267,217 @@ templ Show(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 					hx-trigger="load delay:100ms"
 					hx-target="#show-content"
 				></div>
+				@shared.DetailsSidebar(c,
+					shared.DetailsSidebarStepArgs{
+						ID:           "message",
+						Icon:         "if-message",
+						Title:        "Biblio messages",
+						Component:    messagesPane(c, p),
+						Notification: p.Message != "",
+					},
+					shared.DetailsSidebarStepArgs{
+						ID:        "history",
+						Icon:      "if-time",
+						Title:     "Activity history",
+						Component: historyPane(c, p),
+					},
+					shared.DetailsSidebarStepArgs{
+						ID:        "info",
+						Icon:      "if-info-circle",
+						Title:     "Details",
+						Component: infoPane(c, p),
+					})
 			</div>
+		</div>
+	}
+}
+
+templ messagesPane(c *ctx.Ctx, p *models.Publication) {
+	<div hx-get={ c.PathTo("publication_messages", "id", p.ID).String() } hx-trigger="load delay:100ms">
+		Loading messages&hellip;
+	</div>
+}
+
+type MessagesArgs struct {
+	Publication *models.Publication
+	Errors      *okay.Errors
+	Conflict    bool
+}
+
+templ Messages(c *ctx.Ctx, args MessagesArgs) {
+	<div class="form-group">
+		if args.Conflict {
+			<div class="alert alert-danger mb-4" role="alert">
+				<i class="if if--error if-error-circle-fill"></i>
+				The publication you are editing has been changed by someone else. Please copy your edits, then refresh this form.
+			</div>
+		}
+		@form.Errors(localize.ValidationErrors(c.Loc, args.Errors))
+		<div class="bc-toolbar gap-2">
+			<div class="bc-toolbar-left">
+				<label class="col-form-label">Messages from and for Biblio team</label>
+			</div>
+			<div class="bc-toolbar-right">
+				if !args.Conflict && c.Repo.CanEditPublication(c.User, args.Publication) {
+					<button
+						class="btn btn-primary btn-sm"
+						hx-put={ c.PathTo("publication_messages_update_biblio_message", "id", args.Publication.ID).String() }
+						hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.Publication.SnapshotID) }
+						hx-include="closest .form-group"
+						hx-target="closest .sidebar-content"
+						hx-swap="innerHTML"
+					>Save</button>
+				}
+			</div>
+		</div>
+		@form.TextArea(form.TextAreaArgs{
+			FieldArgs: form.FieldArgs{
+				Name:     "message",
+				Error:    localize.ValidationErrorAt(c.Loc, args.Errors, "/message"),
+				Theme:    form.ThemeVertical,
+				Readonly: !c.Repo.CanEditPublication(c.User, args.Publication),
+			},
+			Value: args.Publication.Message,
+			Rows:  15,
+		})
+		<p class="text-muted mt-2">Have any questions or changes to report? Mail to <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.</p>
+	</div>
+	if c.Repo.CanCurate(c.User) {
+		<div class="form-group">
+			<div class="bc-toolbar gap-2">
+				<div class="bc-toolbar-left">
+					<label class="col-form-label">Librarian tags</label>
+				</div>
+				<div class="bc-toolbar-right">
+					if !args.Conflict {
+						<button
+							class="btn btn-primary btn-sm"
+							hx-put={ c.PathTo("publication_messages_update_reviewer_tags", "id", args.Publication.ID).String() }
+							hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.Publication.SnapshotID) }
+							hx-include="closest .form-group"
+							hx-target="closest .sidebar-content"
+							hx-swap="innerHTML"
+						>Save</button>
+					}
+				</div>
+			</div>
+			@form.Tags(form.TagsArgs{
+				FieldArgs: form.FieldArgs{
+					Name:  "reviewer_tags",
+					Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/message"),
+					Theme: form.ThemeVertical,
+					Help:  c.Loc.Get("builder.keyword.help"),
+				},
+				Values: args.Publication.ReviewerTags,
+			})
+			<p class="text-muted mt-2">For internal use only.</p>
+		</div>
+		<div class="form-group">
+			<div class="bc-toolbar gap-2">
+				<div class="bc-toolbar-left">
+					<label class="col-form-label">Librarian note</label>
+				</div>
+				<div class="bc-toolbar-right">
+					if !args.Conflict {
+						<button
+							class="btn btn-primary btn-sm"
+							hx-put={ c.PathTo("publication_messages_update_reviewer_note", "id", args.Publication.ID).String() }
+							hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.Publication.SnapshotID) }
+							hx-include="closest .form-group"
+							hx-target="closest .sidebar-content"
+							hx-swap="innerHTML"
+						>Save</button>
+					}
+				</div>
+			</div>
+			@form.TextArea(form.TextAreaArgs{
+				FieldArgs: form.FieldArgs{
+					Name:  "reviewer_note",
+					Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/reviewer_note"),
+					Theme: form.ThemeVertical,
+				},
+				Value: args.Publication.ReviewerNote,
+				Rows:  15,
+			})
+			<p class="text-muted mt-2">For internal use only.</p>
+		</div>
+	}
+}
+
+templ historyPane(c *ctx.Ctx, p *models.Publication) {
+	<div hx-get={ c.PathTo("publication_recent_activity", "id", p.ID).String() } hx-trigger="load delay:100ms">
+		Loading recent activity&hellip;
+	</div>
+}
+
+templ RecentActivity(c *ctx.Ctx, acts []views.Activity, p *models.Publication) {
+	@views.ActivityList(c, acts, lo.ToPtr(p.ID))
+}
+
+templ infoPane(c *ctx.Ctx, p *models.Publication) {
+	<ul class="c-activity-list">
+		<div class="form-group">
+			<label class="form-label form-label-top">Created by</label>
+			<p>
+				if p.Creator != nil {
+					{ p.Creator.FullName }
+				} else {
+					[missing]
+				}
+			</p>
+		</div>
+		<div class="form-group">
+			<label class="form-label form-label-top">Creation date</label>
+			<p>{ p.DateCreated.Format("2006-01-02") }</p>
+		</div>
+		if p.SourceDB != "" {
+			<div class="form-group">
+				<label class="form-label form-label-top">Source</label>
+				<p>{ lo.Capitalize(p.SourceDB) }</p>
+			</div>
+		}
+		if p.DOI != "" {
+			<div class="form-group">
+				<label class="form-label form-label-top">DOI</label>
+				@display.Link(p.DOI, identifiers.DOI.Resolve)
+			</div>
+		}
+		if p.WOSID != "" {
+			<div class="form-group">
+				<label class="form-label form-label-top">Web of Science</label>
+				@display.Link(p.WOSID, identifiers.WebOfScience.Resolve)
+			</div>
+		}
+		if p.PubMedID != "" {
+			<div class="form-group">
+				<label class="form-label form-label-top">PubMed</label>
+				@display.Link(p.PubMedID, identifiers.PubMed.Resolve)
+			</div>
+		}
+		@infoList("ISSN", p.ISSN)
+		@infoList("E-ISSN", p.EISSN)
+		@infoList("ISBN", p.ISBN)
+		@infoList("E-ISBN", p.EISBN)
+		if p.Status =="public" {
+			<div class="form-group">
+				<label class="form-label form-label-top">Public Biblio Location</label>
+				{{ handleURL := identifiers.Handle.Resolve("1854/LU-" + p.ID) }}
+				<a href={ templ.SafeURL(handleURL) } target="_blank">
+					{ handleURL }
+					<i class="if if--small if-external-link"></i>
+				</a>
+			</div>
+		}
+	</ul>
+}
+
+templ infoList(label string, list []string) {
+	if len(list) > 0 {
+		<div class="form-group">
+			<label class="form-label form-label-top">{ label }</label>
+			for _, item := range list {
+				<p>{ item }</p>
+			}
 		</div>
 	}
 }

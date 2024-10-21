@@ -1,0 +1,64 @@
+package shared
+
+import (
+	"fmt"
+	"github.com/ugent-library/biblio-backoffice/ctx"
+)
+
+type DetailsSidebarStepArgs struct {
+	ID           string
+	Icon         string
+	Title        string
+	Notification bool
+	Component    templ.Component
+}
+
+templ DetailsSidebar(c *ctx.Ctx, steps ...DetailsSidebarStepArgs) {
+	for _, step := range steps {
+		@DetailsSidebarStep(c, step) {
+			if step.Component != nil {
+				@step.Component
+			}
+		}
+	}
+	<div class="c-sub-sidebar c-sub-sidebar--small bg-light">
+		<div class="c-sub-sidebar__content">
+			<div class="d-flex justify-content-center py-3">
+				<nav class="nav nav-sidebar flex-column gap-2" data-sidebar-menu>
+					for _, step := range steps {
+						@DetailsSidebarStepButton(c, step)
+					}
+				</nav>
+			</div>
+		</div>
+	</div>
+}
+
+templ DetailsSidebarStepButton(c *ctx.Ctx, args DetailsSidebarStepArgs) {
+	<button class="nav-link" type="button" data-target-id={ fmt.Sprintf("sidebar-%s", args.ID) } title={ args.Title }>
+		<i class={ "if", args.Icon, templ.KV("if--notification", args.Notification) }></i>
+	</button>
+}
+
+templ DetailsSidebarStep(c *ctx.Ctx, args DetailsSidebarStepArgs) {
+	<div id={ fmt.Sprintf("sidebar-%s", args.ID) } data-sidebar-content class="c-sub-sidebar c-sub-sidebar--large h-100 u-z-reset bg-white border-start">
+		<div class="overflow-hidden u-scroll-wrapper">
+			<div class="bc-navbar bc-navbar--bordered-bottom">
+				<div class="bc-toolbar">
+					<div class="bc-toolbar-left">
+						<h3>{ args.Title }</h3>
+					</div>
+					<div class="bc-toolbar-right">
+						<button class="btn btn-muted btn-icon-only" type="button" data-sidebar-close>
+							<i class="if if-close"></i>
+							<div class="visually-hidden">Close</div>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="u-scroll-wrapper__body p-6 sidebar-content">
+				{ children... }
+			</div>
+		</div>
+	</div>
+}

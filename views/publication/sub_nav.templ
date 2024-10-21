@@ -6,7 +6,7 @@ import (
 	"github.com/ugent-library/biblio-backoffice/views"
 )
 
-var SubNavs = []string{"description", "files", "contributors", "datasets", "activity"}
+var SubNavs = []string{"description", "files", "contributors", "datasets"}
 
 templ SubNav(c *ctx.Ctx, p *models.Publication, redirectURL string) {
 	<ul class="nav nav-tabs" role="tablist">
