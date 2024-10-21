@@ -358,7 +358,7 @@ func List(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager *
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = tableItem(c, p[0]).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = tableItem(p[0]).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -366,7 +366,7 @@ func List(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager *
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = tableItem(c, p[1]).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = tableItem(p[1]).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -426,7 +426,7 @@ func List(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager *
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, *pager))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 219, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 218, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {
@@ -440,7 +440,7 @@ func List(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager *
 	})
 }
 
-func tableItem(c *ctx.Ctx, p *models.Person) templ.Component {
+func tableItem(p *models.Person) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -465,7 +465,7 @@ func tableItem(c *ctx.Ctx, p *models.Person) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(p.FullName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 231, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 230, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -483,7 +483,7 @@ func tableItem(c *ctx.Ctx, p *models.Person) templ.Component {
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 236, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 235, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
@@ -502,7 +502,7 @@ func tableItem(c *ctx.Ctx, p *models.Person) templ.Component {
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(p.ORCID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 242, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 241, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -556,7 +556,7 @@ func pagination(c *ctx.Ctx, person *models.Person, pager pag.Pagination) templ.C
 				var templ_7745c5c3_Var25 string
 				templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Offset-pager.Limit), "id", person.ID).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 257, Col: 113}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 256, Col: 113}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 				if templ_7745c5c3_Err != nil {
@@ -574,7 +574,7 @@ func pagination(c *ctx.Ctx, person *models.Person, pager pag.Pagination) templ.C
 				var templ_7745c5c3_Var26 string
 				templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Offset-pager.Limit)).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 259, Col: 96}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 258, Col: 96}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 				if templ_7745c5c3_Err != nil {
@@ -622,7 +622,7 @@ func pagination(c *ctx.Ctx, person *models.Person, pager pag.Pagination) templ.C
 				var templ_7745c5c3_Var29 string
 				templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Page %d", page))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 279, Col: 47}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 278, Col: 47}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 				if templ_7745c5c3_Err != nil {
@@ -640,7 +640,7 @@ func pagination(c *ctx.Ctx, person *models.Person, pager pag.Pagination) templ.C
 					var templ_7745c5c3_Var30 string
 					templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Limit*(page-1)), "id", person.ID).String())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 281, Col: 110}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 280, Col: 110}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 					if templ_7745c5c3_Err != nil {
@@ -658,7 +658,7 @@ func pagination(c *ctx.Ctx, person *models.Person, pager pag.Pagination) templ.C
 					var templ_7745c5c3_Var31 string
 					templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Limit*(page-1))).String())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 283, Col: 93}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 282, Col: 93}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 					if templ_7745c5c3_Err != nil {
@@ -676,7 +676,7 @@ func pagination(c *ctx.Ctx, person *models.Person, pager pag.Pagination) templ.C
 				var templ_7745c5c3_Var32 string
 				templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(page))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 288, Col: 24}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 287, Col: 24}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 				if templ_7745c5c3_Err != nil {
@@ -706,7 +706,7 @@ func pagination(c *ctx.Ctx, person *models.Person, pager pag.Pagination) templ.C
 				var templ_7745c5c3_Var33 string
 				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Offset+pager.Limit), "id", person.ID).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 305, Col: 113}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 304, Col: 113}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 				if templ_7745c5c3_Err != nil {
@@ -724,7 +724,7 @@ func pagination(c *ctx.Ctx, person *models.Person, pager pag.Pagination) templ.C
 				var templ_7745c5c3_Var34 string
 				templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("proxies_list", "offset", fmt.Sprint(pager.Offset+pager.Limit)).String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 307, Col: 96}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/index.templ`, Line: 306, Col: 96}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 				if templ_7745c5c3_Err != nil {

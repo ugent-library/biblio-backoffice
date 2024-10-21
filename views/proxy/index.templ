@@ -155,7 +155,7 @@ templ List(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager 
 									<tr>
 										<td class="text-nowrap d-none d-md-table-cell">Proxy</td>
 										<td class="text-nowrap">
-											@tableItem(c, p[0])
+											@tableItem(p[0])
 										</td>
 										<td class="text-nowrap">
 											<p class="text-center">
@@ -163,7 +163,7 @@ templ List(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager 
 											</p>
 										</td>
 										<td class="text-nowrap">
-											@tableItem(c, p[1])
+											@tableItem(p[1])
 										</td>
 										<td class="text-nowrap">
 											<div class="c-button-toolbar flex-nowrap">
@@ -205,7 +205,6 @@ templ List(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager 
 					</div>
 				}
 			</div>
-
 			<div class="card-footer border-top-0">
 				<div class="bc-toolbar">
 					<div class="bc-toolbar-left">
@@ -226,7 +225,7 @@ templ List(c *ctx.Ctx, proxies [][]*models.Person, person *models.Person, pager 
 	</div>
 }
 
-templ tableItem(c *ctx.Ctx, p *models.Person) {
+templ tableItem(p *models.Person) {
 	<div class="my-3">
 		<p class="mb-2">{ p.FullName }</p>
 		<ul class="c-meta-list c-meta-list-horizontal">
