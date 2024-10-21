@@ -33,7 +33,7 @@ templ Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) {
 							value=""
 							autofocus
 							hx-get={ c.PathTo("proxy_suggest_people", "proxy_id", proxy.ID).String() }
-							hx-trigger="input changed delay:250ms, proxy_query, proxyChanged from:body"
+							hx-trigger="input changed delay:250ms, proxyChanged from:body"
 							hx-target="#people-suggestions"
 							hx-swap="outerHTML"
 						/>

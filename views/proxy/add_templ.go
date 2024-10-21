@@ -44,7 +44,7 @@ func Add(c *ctx.Ctx, hits []*models.Person) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"input changed delay:250ms, proxy_query\" hx-target=\".modal-body\"> <span class=\"form-text text-muted\" for=\"proxy-query\">Enter first- and last name, OrcID or UGent ID.</span></div></div><div class=\"modal-body\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"input changed delay:250ms\" hx-target=\".modal-body\"> <span class=\"form-text text-muted\" for=\"proxy-query\">Enter first- and last name, OrcID or UGent ID.</span></div></div><div class=\"modal-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

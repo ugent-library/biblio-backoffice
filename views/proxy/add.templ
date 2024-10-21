@@ -31,7 +31,7 @@ templ Add(c *ctx.Ctx, hits []*models.Person) {
 						value=""
 						autofocus
 						hx-get={ c.PathTo("suggest_proxies").String() }
-						hx-trigger="input changed delay:250ms, proxy_query"
+						hx-trigger="input changed delay:250ms"
 						hx-target=".modal-body"
 					/>
 					<span class="form-text text-muted" for="proxy-query">Enter first- and last name, OrcID or UGent ID.</span>

@@ -58,7 +58,7 @@ func Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"input changed delay:250ms, proxy_query, proxyChanged from:body\" hx-target=\"#people-suggestions\" hx-swap=\"outerHTML\"> <span class=\"form-text text-muted\" for=\"proxy-query\">Enter first- and last name, OrcID or UGent ID.</span></div></form></div><div class=\"modal-body\"><div class=\"row h-100 mb-8\"><div class=\"col-6 border-end\"><h3 class=\"mb-4\">Search results</h3>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"input changed delay:250ms, proxyChanged from:body\" hx-target=\"#people-suggestions\" hx-swap=\"outerHTML\"> <span class=\"form-text text-muted\" for=\"proxy-query\">Enter first- and last name, OrcID or UGent ID.</span></div></form></div><div class=\"modal-body\"><div class=\"row h-100 mb-8\"><div class=\"col-6 border-end\"><h3 class=\"mb-4\">Search results</h3>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
