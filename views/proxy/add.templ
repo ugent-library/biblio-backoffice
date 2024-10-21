@@ -1,7 +1,9 @@
 package proxyviews
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
-import "github.com/ugent-library/biblio-backoffice/models"
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
 
 templ Add(c *ctx.Ctx, hits []*models.Person) {
 	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen" role="document">
@@ -20,17 +22,23 @@ templ Add(c *ctx.Ctx, hits []*models.Person) {
 			</div>
 			<div class="p-6 border-bottom">
 				<div class="form-group col-5">
-					<label class="col-form-label">Search a proxy</label>
-					<input class="form-control" type="search" id="proxy-query" name="proxy_query" value=""
-                        hx-get={ c.PathTo("suggest_proxies").String() } 
-                        hx-trigger="input changed delay:250ms, proxy_query"
-                        hx-target=".modal-body" 
-                    />
+					<label class="col-form-label" for="proxy-query">Search a proxy</label>
+					<input
+						class="form-control"
+						type="search"
+						id="proxy-query"
+						name="proxy_query"
+						value=""
+						autofocus
+						hx-get={ c.PathTo("suggest_proxies").String() }
+						hx-trigger="input changed delay:250ms"
+						hx-target=".modal-body"
+					/>
 					<span class="form-text text-muted" for="proxy-query">Enter first- and last name, OrcID or UGent ID.</span>
 				</div>
 			</div>
 			<div class="modal-body">
-                @Suggestions(c, hits)
+				@Suggestions(c, hits)
 			</div>
 			<div class="modal-footer h-auto py-4">
 				<div class="bc-toolbar h-auto">
