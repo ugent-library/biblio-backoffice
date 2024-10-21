@@ -1,7 +1,5 @@
 package cli
 
-import "time"
-
 // Version info
 type Version struct {
 	Branch string `env:"SOURCE_BRANCH"`
@@ -84,14 +82,11 @@ type Config struct {
 		APIKey string `env:"API_KEY"`
 	} `envPrefix:"OAI_"`
 	// Feature flags
-	// FF struct {
+	// Flags struct {
 	// 	FilePath     string `env:"FILE_PATH"`
-	// 	GitHubToken  string `env:"GITHUB_TOKEN"`
-	// 	GitHubRepo   string `env:"GITHUB_REPO"`
-	// 	GitHubBranch string `env:"GITHUB_BRANCH" envDefault:"main"`
-	// 	GitHubPath   string `env:"GITHUB_PATH"`
-	// } `envPrefix:"FF_"`
-	People struct {
-		DeactivationPeriod time.Duration `env:"DEACTIVATION_PERIOD"`
-	} `envPrefix:"PEOPLE_"`
+	// 	GitHubToken  string `env:"GH_TOKEN"`
+	// 	GitHubRepo   string `env:"GH_REPO"`
+	// 	GitHubBranch string `env:"GH_BRANCH" envDefault:"main"`
+	// 	GitHubPath   string `env:"GH_PATH"`
+	// } `envPrefix:"FLAGS_"`
 }

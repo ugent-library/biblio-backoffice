@@ -721,7 +721,7 @@ func Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) templ.Component {
 			templ_7745c5c3_Var38 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var39 = []any{"bc-toolbar", "bc-toolbar-lg-responsive", "bc-toolbar--auto", "mb-4", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2)}
+		var templ_7745c5c3_Var39 = []any{"bc-toolbar", "bc-toolbar-lg-responsive", "bc-toolbar--auto", "mb-6", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var39...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -861,7 +861,7 @@ func Query(c *ctx.Ctx, searchArgs *models.SearchArgs) templ.Component {
 			templ_7745c5c3_Var45 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"mb-6\" method=\"GET\" action=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"mb-4\" method=\"GET\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

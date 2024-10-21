@@ -25,7 +25,7 @@ func Republish(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	publication := ctx.GetPublication(r)
 
-	if !c.User.CanPublishPublication(publication) {
+	if !c.Repo.CanPublishPublication(c.User, publication) {
 		c.HandleError(w, r, httperror.Forbidden)
 		return
 	}

@@ -566,14 +566,11 @@ func OrderContributors(w http.ResponseWriter, r *http.Request) {
 	}
 
 	contributors := p.Contributors(b.Role)
-	if len(b.Positions) != len(contributors) {
-		c.HandleError(w, r, httperror.BadRequest.Wrap(errors.New("positions don't match number of contributors")))
-		return
-	}
-
-	newContributors := make([]*models.Contributor, len(contributors))
+	newContributors := make([]*models.Contributor, len(b.Positions))
 	for i, pos := range b.Positions {
-		newContributors[i] = contributors[pos]
+		if pos < len(contributors) {
+			newContributors[i] = contributors[pos]
+		}
 	}
 	p.SetContributors(b.Role, newContributors)
 

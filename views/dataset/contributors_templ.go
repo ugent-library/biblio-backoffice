@@ -72,7 +72,7 @@ func Contributors(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditDataset(dataset) {
+		if c.Repo.CanEditDataset(c.User, dataset) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button type=\"button\" class=\"btn btn-outline-primary\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -116,7 +116,7 @@ func Contributors(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditDataset(dataset) {
+		if c.Repo.CanEditDataset(c.User, dataset) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn btn-outline-primary\" type=\"button\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -187,7 +187,7 @@ func ContributorsBody(c *ctx.Ctx, dataset *models.Dataset, role string) templ.Co
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if c.User.CanEditDataset(dataset) {
+			if c.Repo.CanEditDataset(c.User, dataset) {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" class=\"sortable\" hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -312,7 +312,7 @@ func ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, positi
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditDataset(dataset) {
+		if c.Repo.CanEditDataset(c.User, dataset) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"position\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -478,7 +478,7 @@ func ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, positi
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditDataset(dataset) {
+		if c.Repo.CanEditDataset(c.User, dataset) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-button-toolbar\"><button type=\"button\" class=\"btn btn-default\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -590,7 +590,7 @@ func DepartmentsBody(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if c.User.CanEditDataset(dataset) {
+				if c.Repo.CanEditDataset(c.User, dataset) {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-button-toolbar\"><button type=\"button\" class=\"btn btn-default\" hx-get=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err

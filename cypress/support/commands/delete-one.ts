@@ -12,9 +12,9 @@ export function deleteDataset(biblioId: string) {
   deleteOne("dataset", biblioId);
 }
 
-function deleteOne(type: "publication" | "dataset", biblioId: string) {
+function deleteOne(scope: Biblio.Scope, biblioId: string) {
   cy.htmxRequest({
-    url: `/${type}/${biblioId}/confirm-delete`,
+    url: `/${scope}/${biblioId}/confirm-delete`,
   }).then((response) => {
     const dangerButton = Cypress.$(response.body).find(".btn-danger");
     cy.htmxRequest({

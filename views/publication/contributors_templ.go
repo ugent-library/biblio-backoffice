@@ -115,7 +115,7 @@ func Contributors(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.C
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if c.User.CanEditPublication(p) {
+				if c.Repo.CanEditPublication(c.User, p) {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button type=\"button\" class=\"btn btn-outline-primary\" hx-get=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -178,7 +178,7 @@ func Contributors(c *ctx.Ctx, p *models.Publication, redirectURL string) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditPublication(p) {
+		if c.Repo.CanEditPublication(c.User, p) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"btn btn-outline-primary\" type=\"button\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -259,7 +259,7 @@ func ContributorsBody(c *ctx.Ctx, p *models.Publication, role string) templ.Comp
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if c.User.CanEditPublication(p) {
+			if c.Repo.CanEditPublication(c.User, p) {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" class=\"sortable\" hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -412,7 +412,7 @@ func ContributorColumns(c *ctx.Ctx, p *models.Publication, role string, position
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditPublication(p) {
+		if c.Repo.CanEditPublication(c.User, p) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<input type=\"hidden\" name=\"position\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -626,7 +626,7 @@ func ContributorColumns(c *ctx.Ctx, p *models.Publication, role string, position
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditPublication(p) {
+		if c.Repo.CanEditPublication(c.User, p) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-button-toolbar\"><button type=\"button\" class=\"btn btn-default\" hx-get=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -738,7 +738,7 @@ func DepartmentsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if c.User.CanEditPublication(p) {
+				if c.Repo.CanEditPublication(c.User, p) {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-button-toolbar\"><button type=\"button\" class=\"btn btn-default\" hx-get=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err

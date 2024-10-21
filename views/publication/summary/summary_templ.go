@@ -29,7 +29,7 @@ type SummaryArgs struct {
 	Links       templ.Component
 }
 
-func getUserContributorRoles(p *models.Publication, user *models.Person) string {
+func GetUserContributorRoles(p *models.Publication, user *models.Person) string {
 	roles := make([]string, 0)
 
 	if p.HasContributor("author", user) {
@@ -334,7 +334,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if c.User.CanEditPublication(args.Publication) {
+			if c.Repo.CanEditPublication(c.User, args.Publication) {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -386,7 +386,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.UserRole != "curator" && c.User.CanViewPublication(args.Publication) {
+		if c.UserRole != "curator" && c.Repo.CanViewPublication(c.User, args.Publication) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -470,20 +470,20 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				Contributors:            args.Publication.Author,
 				URL:                     views.URL(args.URL).SetQueryParam("show", "contributors").String(),
 				URLTarget:               args.Target,
-				CurrentUserRoles:        getUserContributorRoles(args.Publication, c.User),
-				CanViewMoreContributors: c.User.CanViewPublication(args.Publication),
-				CanEditContributors:     c.User.CanEditPublication(args.Publication),
+				CurrentUserRoles:        GetUserContributorRoles(args.Publication, c.User),
+				CanViewMoreContributors: c.Repo.CanViewPublication(c.User, args.Publication),
+				CanEditContributors:     c.Repo.CanEditPublication(c.User, args.Publication),
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		} else if getUserContributorRoles(args.Publication, c.User) != "" && c.UserRole != "curator" {
+		} else if GetUserContributorRoles(args.Publication, c.User) != "" && c.UserRole != "curator" {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-flex align-items-center\"><i class=\"if if-user if--small if--muted me-2\"></i><ul class=\"c-meta-list c-meta-list-inline\"><li class=\"c-meta-item\"><span class=\"badge badge-light\">Your role: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var20 string
-			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(getUserContributorRoles(args.Publication, c.User))
+			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(GetUserContributorRoles(args.Publication, c.User))
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/summary/summary.templ`, Line: 170, Col: 105}
 			}
@@ -509,7 +509,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		} else if c.User.CanEditPublication(args.Publication) {
+		} else if c.Repo.CanEditPublication(c.User, args.Publication) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a class=\"c-link-muted\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -562,7 +562,7 @@ func Summary(c *ctx.Ctx, args SummaryArgs) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if vabb := args.Publication.VABB(); vabb != "" {
-				if c.User.CanCurate() {
+				if c.Repo.CanCurate(c.User) {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><i class=\"if if-bar-chart if--muted if--small\"></i> <span class=\"text-muted\">VABB: ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err

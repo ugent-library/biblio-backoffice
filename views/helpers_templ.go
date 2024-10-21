@@ -8,14 +8,7 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	"github.com/ugent-library/biblio-backoffice/ctx"
-	h "html"
-	"mvdan.cc/xurls/v2"
-	"strings"
-)
-
-var reURL, _ = xurls.StrictMatchingScheme("https")
+import "github.com/ugent-library/biblio-backoffice/ctx"
 
 func CSRFTag(c *ctx.Ctx) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -42,7 +35,7 @@ func CSRFTag(c *ctx.Ctx) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.CSRFName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `helpers.templ`, Line: 13, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `helpers.templ`, Line: 6, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -55,7 +48,7 @@ func CSRFTag(c *ctx.Ctx) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(c.CSRFToken)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `helpers.templ`, Line: 13, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `helpers.templ`, Line: 6, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -67,36 +60,6 @@ func CSRFTag(c *ctx.Ctx) templ.Component {
 		}
 		return templ_7745c5c3_Err
 	})
-}
-
-func Linkify(text string) string {
-	text = h.EscapeString(text)
-
-	matches := reURL.FindAllStringIndex(text, -1)
-
-	b := strings.Builder{}
-	pos := 0
-	for _, match := range matches {
-		before := text[pos:match[0]]
-		if len(before) > 0 {
-			b.WriteString(before)
-		}
-
-		link := text[match[0]:match[1]]
-		b.WriteString(`<a href="`)
-		b.WriteString(link)
-		b.WriteString(`" target="_blank">`)
-		b.WriteString(link)
-		b.WriteString(`</a>`)
-		pos = match[1]
-	}
-
-	after := text[pos:]
-	if len(after) > 0 {
-		b.WriteString(after)
-	}
-
-	return b.String()
 }
 
 func Cat(components ...templ.Component) templ.Component {

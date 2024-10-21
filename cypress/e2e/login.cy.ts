@@ -24,7 +24,7 @@ describe("Login & authorization", () => {
   it("should redirect to the login page when clicking the Login buttons", () => {
     cy.visit("/");
 
-    const assertLoginRedirection = (href) => {
+    const assertLoginRedirection = (href: string) => {
       cy.request(href).then((response) => {
         expect(response).to.have.property("isOkStatusCode", true);
         expect(response)
@@ -68,7 +68,6 @@ describe("Login & authorization", () => {
     cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
 
     cy.get(".c-sidebar button.dropdown-toggle").should("not.exist");
-    cy.get(".c-sidebar-menu .c-sidebar__item").should("have.length", 3);
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
@@ -94,10 +93,7 @@ describe("Login & authorization", () => {
       "contain.text",
       "Librarian",
     );
-    cy.get(".c-sidebar")
-      .should("have.class", "c-sidebar--dark-gray")
-      .find(".c-sidebar-menu .c-sidebar__item")
-      .should("have.length", 5);
+    cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
@@ -117,10 +113,7 @@ describe("Login & authorization", () => {
       "contain.text",
       "Researcher",
     );
-    cy.get(".c-sidebar")
-      .should("not.have.class", "c-sidebar--dark-gray")
-      .find(".c-sidebar-menu .c-sidebar__item")
-      .should("have.length", 3);
+    cy.get(".c-sidebar").should("not.have.class", "c-sidebar--dark-gray");
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
@@ -140,10 +133,7 @@ describe("Login & authorization", () => {
       "contain.text",
       "Librarian",
     );
-    cy.get(".c-sidebar")
-      .should("have.class", "c-sidebar--dark-gray")
-      .find(".c-sidebar-menu .c-sidebar__item")
-      .should("have.length", 5);
+    cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
@@ -169,7 +159,7 @@ describe("Login & authorization", () => {
 
     cy.wait("@role-user")
       .its("response.headers[set-cookie]")
-      .then((cookies) => {
+      .then((cookies: string[]) => {
         expect(
           cookies.filter((c) => c.startsWith("biblio-backoffice=")),
         ).to.have.length(1);
@@ -183,7 +173,7 @@ describe("Login & authorization", () => {
 
     cy.wait("@role-curator")
       .its("response.headers[set-cookie]")
-      .then((cookies) => {
+      .then((cookies: string[]) => {
         expect(
           cookies.filter((c) => c.startsWith("biblio-backoffice=")),
         ).to.have.length(1);

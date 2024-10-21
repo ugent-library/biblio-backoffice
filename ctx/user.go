@@ -23,7 +23,7 @@ func RequireCurator(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		c := Get(r)
 
-		if c.User == nil || !c.User.CanCurate() {
+		if c.User == nil || !c.Repo.CanCurate(c.User) {
 			c.HandleError(w, r, httperror.Unauthorized)
 			return
 		}

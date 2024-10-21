@@ -203,7 +203,7 @@ templ FacetLine() {
 
 templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 	<div
-		class={ "bc-toolbar", "bc-toolbar-lg-responsive", "bc-toolbar--auto", "mb-4", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2) }
+		class={ "bc-toolbar", "bc-toolbar-lg-responsive", "bc-toolbar--auto", "mb-6", templ.KV("toggle-zone", len(searchArgs.FacetLines) > 2) }
 	>
 		<div class="bc-toolbar-left">
 			<div class="bc-toolbar-item">
@@ -258,7 +258,7 @@ templ Facets(c *ctx.Ctx, searchArgs *models.SearchArgs) {
 }
 
 templ Query(c *ctx.Ctx, searchArgs *models.SearchArgs) {
-	<form class="mb-6" method="GET" action={ URL(c.CurrentURL).ClearQuery().SafeURL() }>
+	<form class="mb-4" method="GET" action={ URL(c.CurrentURL).ClearQuery().SafeURL() }>
 		for field, values := range searchArgs.Filters {
 			for _, val := range values {
 				<input type="hidden" name={ fmt.Sprintf("f[%s]", field) } value={ val }/>

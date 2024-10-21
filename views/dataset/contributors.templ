@@ -48,7 +48,7 @@ templ Contributors(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 					</a>
 				</div>
 				<div class="bc-toolbar-right">
-					if c.User.CanEditDataset(dataset) {
+					if c.Repo.CanEditDataset(c.User, dataset) {
 						<button
 							type="button"
 							class="btn btn-outline-primary"
@@ -73,7 +73,7 @@ templ Contributors(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 					<h1 class="bc-toolbar-title">Departments</h1>
 				</div>
 				<div class="bc-toolbar-right">
-					if c.User.CanEditDataset(dataset) {
+					if c.Repo.CanEditDataset(c.User, dataset) {
 						<button
 							class="btn btn-outline-primary"
 							type="button"
@@ -106,7 +106,7 @@ templ ContributorsBody(c *ctx.Ctx, dataset *models.Dataset, role string) {
 					</tr>
 				</thead>
 				<tbody
-					if c.User.CanEditDataset(dataset) {
+					if c.Repo.CanEditDataset(c.User, dataset) {
 						class="sortable"
 						hx-post={ c.PathTo("dataset_order_contributors", "id", dataset.ID, "role", role).String() }
 						hx-trigger="end"
@@ -133,7 +133,7 @@ templ ContributorsBody(c *ctx.Ctx, dataset *models.Dataset, role string) {
 
 templ ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, position int, contributor *models.Contributor) {
 	<td>
-		if c.User.CanEditDataset(dataset) {
+		if c.Repo.CanEditDataset(c.User, dataset) {
 			<input type="hidden" name="position" value={ fmt.Sprint(position) }/>
 		}
 		<div class="bc-avatar-and-text">
@@ -195,7 +195,7 @@ templ ContributorColumns(c *ctx.Ctx, dataset *models.Dataset, role string, posit
 		}
 	</td>
 	<td>
-		if c.User.CanEditDataset(dataset) {
+		if c.Repo.CanEditDataset(c.User, dataset) {
 			<div class="c-button-toolbar">
 				<button
 					type="button"
@@ -241,7 +241,7 @@ templ DepartmentsBody(c *ctx.Ctx, dataset *models.Dataset) {
 								</div>
 							</td>
 							<td class="pe-6">
-								if c.User.CanEditDataset(dataset) {
+								if c.Repo.CanEditDataset(c.User, dataset) {
 									<div class="c-button-toolbar">
 										<button
 											type="button"

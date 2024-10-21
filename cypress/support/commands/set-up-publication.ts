@@ -69,7 +69,7 @@ export default function setUpPublication(
         .then((snapshotId) => {
           // Then update details
 
-          const body = {
+          const body: Record<string, unknown> = {
             title,
             classification: "U",
           };

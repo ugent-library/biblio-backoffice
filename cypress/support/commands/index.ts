@@ -21,11 +21,13 @@ import {
 import htmxRequest from "./htmx-request";
 import { deletePublications, deleteDatasets } from "./delete-many";
 import { deletePublication, deleteDataset } from "./delete-one";
+import verifyConflictErrorDialog from "./verify-conflict-error-dialog";
 
 // Child commands
 import finishLog from "./finish-log";
 import setField from "./set-field";
 import triggerHtmx from "./trigger-htmx";
+import drag from "./drag";
 
 // Dual commands
 import extractBiblioId from "./extract-biblio-id";
@@ -73,6 +75,8 @@ Cypress.Commands.addAll({
 
   deletePublication,
   deleteDataset,
+
+  verifyConflictErrorDialog,
 });
 
 // Child commands
@@ -84,6 +88,8 @@ Cypress.Commands.addAll(
     setField,
 
     triggerHtmx,
+
+    drag,
   },
 );
 

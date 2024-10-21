@@ -14,11 +14,7 @@ export function deleteDatasets(query: string) {
   deleteMany(log, "dataset", query);
 }
 
-function deleteMany(
-  log: Cypress.Log,
-  type: "publication" | "dataset",
-  query: string,
-) {
+function deleteMany(log: Cypress.Log, scope: Biblio.Scope, query: string) {
   if (query.trim().length === 0) {
     throw new Error("Query string is empty");
   }
@@ -26,7 +22,7 @@ function deleteMany(
   cy.getAllCookies(NO_LOG).then((originalCookies) => {
     cy.loginAsLibrarian("librarian1");
 
-    cy.visit(`/${type}`, {
+    cy.visit(`/${scope}`, {
       qs: { q: query, "page-size": 1000 },
       ...NO_LOG,
     })
@@ -38,12 +34,12 @@ function deleteMany(
         updateConsoleProps(log, (cp) => (cp["Items to delete"] = items.get()));
 
         items.each((_, item) => {
-          if (type === "publication") {
+          if (scope === "publication") {
             cy.deletePublication(item);
-          } else if (type === "dataset") {
+          } else if (scope === "dataset") {
             cy.deleteDataset(item);
           } else {
-            throw new Error(`Unknown type: ${type}`);
+            throw new Error(`Unknown type: ${scope}`);
           }
         });
       })

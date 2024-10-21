@@ -157,7 +157,7 @@ export function extractSnapshotId(
   return hxHeaders["If-Match"];
 }
 
-function decodeEntities(encodedString) {
+function decodeEntities(encodedString: string) {
   var textArea = document.createElement("textarea");
 
   textArea.innerHTML = encodedString;
@@ -165,10 +165,7 @@ function decodeEntities(encodedString) {
   return textArea.value;
 }
 
-export function waitForIndex(
-  scope: "publication" | "dataset",
-  biblioId: string,
-) {
+export function waitForIndex(scope: Biblio.Scope, biblioId: string) {
   let count = 0;
 
   const doCheckIndex = () => {

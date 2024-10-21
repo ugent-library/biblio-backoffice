@@ -1,8 +1,8 @@
 export function logCommand(
-  name,
+  name: string,
   consoleProps = {},
   message: unknown = "",
-  $el = undefined,
+  $el: JQuery<HTMLElement> = undefined,
 ) {
   return Cypress.log({
     $el,
@@ -26,7 +26,7 @@ export function updateLogMessage(log: Cypress.Log, append: unknown) {
 
 export function updateConsoleProps(
   log: Cypress.Log,
-  callback: (ObjectLike) => void,
+  callback: (args: Cypress.ObjectLike) => void,
 ) {
   const consoleProps = log.get("consoleProps")();
 

@@ -27,7 +27,7 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 				@form.Errors(localize.ValidationErrors(c.Loc, errors))
 				<ul class="list-group list-group-flush" data-panel-state="edit">
 					<li class="list-group-item">
-						if c.User.CanChangeType(p) {
+						if c.Repo.CanChangeType(c.User, p) {
 							@form.Field(form.FieldArgs{
 								Label: c.Loc.Get("builder.type"),
 								Name:  "type",
@@ -108,7 +108,7 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 								Value: p.DOI,
 							})
 						}
-						if c.User.CanCurate() {
+						if c.Repo.CanCurate(c.User) {
 							@form.Select(form.SelectArgs{
 								FieldArgs: form.FieldArgs{
 									Label:    c.Loc.Get("builder.classification"),
@@ -127,7 +127,7 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 								Tooltip: c.Loc.Get("tooltip.publication.classification"),
 							})
 						}
-						if c.User.CanCurate() {
+						if c.Repo.CanCurate(c.User) {
 							@form.Checkbox(form.CheckboxArgs{
 								FieldArgs: form.FieldArgs{
 									Label: c.Loc.Get("builder.legacy"),
@@ -443,7 +443,7 @@ templ EditDetailsDialog(c *ctx.Ctx, p *models.Publication, conflict bool, errors
 					}
 					<li class="list-group-item">
 						if p.UsesWOS() {
-							if c.User.CanCurate() {
+							if c.Repo.CanCurate(c.User) {
 								@form.Text(form.TextArgs{
 									FieldArgs: form.FieldArgs{
 										Label:   c.Loc.Get("builder.wos_type"),

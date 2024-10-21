@@ -21,7 +21,7 @@ type SummaryArgs struct {
 	Links       templ.Component
 }
 
-func getUserContributorRoles(p *models.Publication, user *models.Person) string {
+func GetUserContributorRoles(p *models.Publication, user *models.Person) string {
 	roles := make([]string, 0)
 
 	if p.HasContributor("author", user) {
@@ -116,7 +116,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									}
 								} else if !args.Publication.Extern {
 									<span class="c-subline ps-2 me-3 pe-3">
-										if c.User.CanEditPublication(args.Publication) {
+										if c.Repo.CanEditPublication(c.User, args.Publication) {
 											<a
 												href={ views.URL(args.URL).SetQueryParam("show", "files").SafeURL() }
 												class="c-link-muted"
@@ -134,7 +134,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								}
 							</div>
 							<h4 class="mb-0">
-								if c.UserRole != "curator" && c.User.CanViewPublication(args.Publication) {
+								if c.UserRole != "curator" && c.Repo.CanViewPublication(c.User, args.Publication) {
 									<a
 										href={ templ.URL(args.URL.String()) }
 										if args.Target != "" {
@@ -158,16 +158,16 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 									Contributors:            args.Publication.Author,
 									URL:                     views.URL(args.URL).SetQueryParam("show", "contributors").String(),
 									URLTarget:               args.Target,
-									CurrentUserRoles:        getUserContributorRoles(args.Publication, c.User),
-									CanViewMoreContributors: c.User.CanViewPublication(args.Publication),
-									CanEditContributors:     c.User.CanEditPublication(args.Publication),
+									CurrentUserRoles:        GetUserContributorRoles(args.Publication, c.User),
+									CanViewMoreContributors: c.Repo.CanViewPublication(c.User, args.Publication),
+									CanEditContributors:     c.Repo.CanEditPublication(c.User, args.Publication),
 								})
-							} else if getUserContributorRoles(args.Publication, c.User) != "" && c.UserRole != "curator" {
+							} else if GetUserContributorRoles(args.Publication, c.User) != "" && c.UserRole != "curator" {
 								<div class="d-flex align-items-center">
 									<i class="if if-user if--small if--muted me-2"></i>
 									<ul class="c-meta-list c-meta-list-inline">
 										<li class="c-meta-item">
-											<span class="badge badge-light">Your role: { getUserContributorRoles(args.Publication, c.User) }</span>
+											<span class="badge badge-light">Your role: { GetUserContributorRoles(args.Publication, c.User) }</span>
 										</li>
 									</ul>
 								</div>
@@ -179,7 +179,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 								if len(args.Publication.RelatedOrganizations) > 0 {
 									// TODO: pass on args.Target
 									@relatedorganizationviews.Summary(c, args.Publication.RelatedOrganizations, views.URL(args.URL).SetQueryParam("show", "contributors").String())
-								} else if c.User.CanEditPublication(args.Publication) {
+								} else if c.Repo.CanEditPublication(c.User, args.Publication) {
 									<a
 										class="c-link-muted"
 										href={ views.URL(args.URL).SetQueryParam("show", "contributors").SafeURL() }
@@ -199,7 +199,7 @@ templ Summary(c *ctx.Ctx, args SummaryArgs) {
 							<div class="vstack gap-3">
 								<ul class="c-meta-list c-meta-list-inline">
 									if vabb := args.Publication.VABB(); vabb != "" {
-										if c.User.CanCurate() {
+										if c.Repo.CanCurate(c.User) {
 											<li class="c-meta-item">
 												<i class="if if-bar-chart if--muted if--small"></i>
 												<span class="text-muted">VABB: { vabb }</span>

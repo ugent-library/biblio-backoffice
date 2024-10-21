@@ -25,7 +25,7 @@ go.work.sum
 *.env
 
 # Local feature flags config
-feature-flags.yml
+flags.*
 
 # Cypress
 cypress.env.json
@@ -35,6 +35,7 @@ cypress/cypress-record.sh
 
 # Docker
 tmp
+docker-compose.yaml
 docker-compose.yml
 
 # esbuild

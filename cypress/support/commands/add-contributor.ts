@@ -57,7 +57,7 @@ type PostBody = (
 };
 
 function addContributor(
-  scope: "publication" | "dataset",
+  scope: Biblio.Scope,
   contributorType: ContributorType,
   firstName: string,
   lastName: string,
@@ -151,7 +151,7 @@ function prepareLog({
   external: boolean;
   role: string;
 }) {
-  const consoleProps = {
+  const consoleProps: Record<string, unknown> = {
     "Biblio ID alias": biblioIDAlias,
     "Biblio ID": biblioId,
     "Contributor type": contributorType,

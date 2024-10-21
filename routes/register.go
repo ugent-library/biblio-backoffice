@@ -30,12 +30,14 @@ import (
 	"github.com/ugent-library/biblio-backoffice/handlers/frontoffice"
 	"github.com/ugent-library/biblio-backoffice/handlers/impersonating"
 	"github.com/ugent-library/biblio-backoffice/handlers/mediatypes"
+	"github.com/ugent-library/biblio-backoffice/handlers/proxies"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationbatch"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationcreating"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationediting"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationexporting"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationsearching"
 	"github.com/ugent-library/biblio-backoffice/handlers/publicationviewing"
+	"github.com/ugent-library/biblio-backoffice/handlers/settings"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/httpx"
 	"github.com/ugent-library/oidc"
@@ -185,14 +187,50 @@ func Register(c Config) {
 			r.Group(func(r *ich.Mux) {
 				r.Use(ctx.RequireUser)
 
+				// dashboard
 				r.With(ctx.SetNav("dashboard")).Get("/dashboard", handlers.DashBoard).Name("dashboard")
-				r.Get("/dashboard-icon", handlers.DashBoardIcon).Name("dashboard_icon")
+				r.Get("/dashboard/icon", handlers.DashBoardIcon).Name("dashboard_icon")
 				// dashboard action required component
-				r.Get("/action-required", handlers.ActionRequired).Name("action_required")
+				r.Get("/dashboard/action-required", handlers.ActionRequired).Name("dashboard_action_required")
 				// dashboard drafts to complete component
-				r.Get("/drafts-to-complete", handlers.DraftsToComplete).Name("drafts_to_complete")
+				r.Get("/dashboard/drafts-to-complete", handlers.DraftsToComplete).Name("dashboard_drafts_to_complete")
 				// dashboard recent activity component
-				r.Get("/recent-activity", handlers.RecentActivity).Name("recent_activity")
+				r.Get("/dashboard/recent-activity", handlers.RecentActivity).Name("dashboard_recent_activity")
+				// dashboard recent activity component
+				r.Get("/dashboard/candidate-records", handlers.CandidateRecords).Name("dashboard_candidate_records")
+
+				// settings
+				r.Get("/settings/proxy", settings.ProxySettings).Name("proxy_settings")
+
+				// proxies
+				r.With(ctx.SetNav("proxies")).Get("/proxies", proxies.Proxies).Name("proxies")
+
+				// record suggestions
+				r.Route("/candidate-records", func(r *ich.Mux) {
+					r.Use(ctx.SetNav("candidate_records"))
+
+					r.Get("/", candidaterecords.CandidateRecords).Name("candidate_records")
+
+					r.Route("/{id}", func(r *ich.Mux) {
+						r.Use(ctx.SetCandidateRecord(c.Services.Repo))
+
+						r.Group(func(r *ich.Mux) {
+							r.Use(ctx.RequireViewCandidateRecord(c.Services.Repo))
+
+							r.Get("/files/{file_id}", candidaterecords.DownloadFile).Name("candidate_record_download_file")
+						})
+
+						r.Group(func(r *ich.Mux) {
+							r.Use(ctx.RequireEditCandidateRecord(c.Services.Repo))
+
+							r.Get("/preview", candidaterecords.CandidateRecordPreview).Name("candidate_records_preview")
+							r.Get("/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
+							r.Put("/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
+							r.Put("/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
+							r.Put("/restore", candidaterecords.RestoreRejectedCandidateRecord).Name("restore_rejected_candidate_record")
+						})
+					})
+				})
 
 				// curator only routes
 				r.Group(func(r *ich.Mux) {
@@ -208,13 +246,16 @@ func Register(c Config) {
 					r.Post("/dashboard/refresh-apublications/{type}", dashboard.RefreshAPublications).Name("dashboard_refresh_apublications")
 					r.Post("/dashboard/refresh-upublications/{type}", dashboard.RefreshUPublications).Name("dashboard_refresh_upublications")
 
-					r.With(ctx.SetNav("candidate_records")).Get("/candidate-records", candidaterecords.CandidateRecords).Name("candidate_records")
-					r.Get("/candidate-records-icon", candidaterecords.CandidateRecordsIcon).Name("candidate_records_icon")
-					r.Get("/candidate-records/{id}/preview", candidaterecords.CandidateRecordPreview).Name("candidate_records_preview")
-					r.Get("/candidate-records/{id}/confirm-reject", candidaterecords.ConfirmRejectCandidateRecord).Name("confirm_reject_candidate_record")
-					r.Put("/candidate-records/{id}/reject", candidaterecords.RejectCandidateRecord).Name("reject_candidate_record")
-					r.Put("/candidate-records/{id}/import", candidaterecords.ImportCandidateRecord).Name("import_candidate_record")
-					r.Get("/candidate-records/{id}/files/{file_id}", candidaterecords.DownloadFile).Name("candidate_record_download_file")
+					// proxy management
+					r.Get("/proxies/list", proxies.List).Name("proxies_list")
+					r.Get("/proxies/list/suggestions", proxies.ListSuggestions).Name("proxies_list_suggestions")
+					r.Get("/proxies/add", proxies.AddProxy).Name("add_proxy")
+					r.Get("/proxies/suggestions", proxies.SuggestProxies).Name("suggest_proxies")
+					r.Get("/proxies/{proxy_id}/edit", proxies.Edit).Name("edit_proxy")
+					r.Get("/proxies/{proxy_id}/people", proxies.People).Name("proxy_people")
+					r.Get("/proxies/{proxy_id}/people/suggest", proxies.SuggestPeople).Name("proxy_suggest_people")
+					r.Post("/proxies/{proxy_id}/people", proxies.AddPerson).Name("proxy_add_person")
+					r.Delete("/proxies/{proxy_id}/people/{person_id}", proxies.DeletePerson).Name("proxy_remove_person")
 
 					// impersonate user
 					r.Get("/impersonation/add", impersonating.AddImpersonation).Name("add_impersonation")
@@ -263,12 +304,10 @@ func Register(c Config) {
 
 					r.Route("/publication/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetPublication(c.Services.Repo))
-						r.Use(ctx.RequireViewPublication)
+						r.Use(ctx.RequireViewPublication(c.Services.Repo))
 
 						// view only functions
 						r.Group(func(r *ich.Mux) {
-							r.Use(ctx.RequireViewPublication)
-
 							r.Get("/", publicationviewing.Show).Name("publication")
 							r.With(ctx.SetSubNav("description")).Get("/description", publicationviewing.ShowDescription).Name("publication_description")
 							r.With(ctx.SetSubNav("contributors")).Get("/contributors", publicationviewing.ShowContributors).Name("publication_contributors")
@@ -280,7 +319,7 @@ func Register(c Config) {
 
 						// edit only
 						r.Group(func(r *ich.Mux) {
-							r.Use(ctx.RequireEditPublication)
+							r.Use(ctx.RequireEditPublication(c.Services.Repo))
 
 							// add (wizard part 2 - after save)
 							r.Group(func(r *ich.Mux) {
@@ -428,7 +467,7 @@ func Register(c Config) {
 
 					r.Route("/dataset/{id}", func(r *ich.Mux) {
 						r.Use(ctx.SetDataset(c.Services.Repo))
-						r.Use(ctx.RequireViewDataset)
+						r.Use(ctx.RequireViewDataset(c.Services.Repo))
 
 						// view only functions
 						r.Get("/", datasetviewing.Show).Name("dataset")
@@ -439,7 +478,7 @@ func Register(c Config) {
 
 						// edit only
 						r.Group(func(r *ich.Mux) {
-							r.Use(ctx.RequireEditDataset)
+							r.Use(ctx.RequireEditDataset(c.Services.Repo))
 
 							// wizard (part 2)
 							r.Group(func(r *ich.Mux) {

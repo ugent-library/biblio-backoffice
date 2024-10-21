@@ -249,7 +249,7 @@ describe("Publication import", () => {
   // Example publication: "How can we possibly resolve the planet's nitrogen dilemma?" in import-from-wos.txt
   it("should report errors after import");
 
-  function deletePublication(title) {
+  function deletePublication(title: string) {
     cy.ensureNoModal();
 
     cy.contains(".list-group-item-title", title)

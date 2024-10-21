@@ -81,7 +81,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if c.User.CanEditPublication(p) {
+		if c.Repo.CanEditPublication(c.User, p) {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"p-6\" method=\"POST\" action=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -375,7 +375,7 @@ func FilesBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if c.User.CanEditPublication(p) {
+				if c.Repo.CanEditPublication(c.User, p) {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-button-toolbar\"><button class=\"btn btn-icon-only\" type=\"button\" hx-get=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err

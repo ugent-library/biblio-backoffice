@@ -125,10 +125,7 @@ describe("Issue #1278: [Plato imports] As a researcher or supervisor, I can see 
 
   type UserRole = "author" | "editor" | "supervisor" | "creator" | "registrar";
 
-  function verifyMyRoles(
-    scope: "publication" | "dataset",
-    ...expectedRoles: UserRole[]
-  ) {
+  function verifyMyRoles(scope: Biblio.Scope, ...expectedRoles: UserRole[]) {
     cy.get<string>("@biblioId").then((biblioId) => {
       cy.visit(`/${scope}`, { qs: { q: biblioId } });
     });

@@ -31,7 +31,7 @@ templ Datasets(c *ctx.Ctx, publication *models.Publication, datasets []*models.D
 					</a>
 				</div>
 				<div class="bc-toolbar-right">
-					if c.User.CanEditPublication(publication) {
+					if c.Repo.CanEditPublication(c.User, publication) {
 						<div class="c-button-toolbar" data-panel-state="read">
 							<button
 								class="btn btn-outline-primary"
@@ -60,13 +60,7 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 					<li class="list-group-item">
 						<div class="d-flex w-100">
 							<div class="w-100">
-								if c.User.CanViewDataset(d) {
-									@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
-										Dataset: d,
-										URL:     c.PathTo("dataset", "id", d.ID),
-										Actions: datasetSummaryActions(c, p, d),
-									})
-								} else {
+								if !c.Repo.CanViewDataset(c.User, d) && d.Status == "returned" {
 									<div class="hstack-md-responsive align-items-start gap-3 w-100">
 										<div class="vstack gap-2">
 											<div class="d-inline-flex align-items-center flex-wrap">
@@ -96,6 +90,12 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 											</div>
 										</div>
 									</div>
+								} else {
+									@datasetsummaryviews.Summary(c, datasetsummaryviews.SummaryArgs{
+										Dataset: d,
+										URL:     c.PathTo("dataset", "id", d.ID),
+										Actions: datasetSummaryActions(c, p, d),
+									})
 								}
 							</div>
 						</div>
@@ -111,10 +111,10 @@ templ DatasetsBody(c *ctx.Ctx, p *models.Publication, datasets []*models.Dataset
 }
 
 templ datasetSummaryActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset) {
-	if c.User.CanViewDataset(d) || c.User.CanEditPublication(p) {
+	if c.Repo.CanViewDataset(c.User, d) || c.Repo.CanEditPublication(c.User, p) {
 		<div class="bc-toolbar-item ms-auto ms-lg-0">
 			<div class="c-button-toolbar">
-				if c.User.CanViewDataset(d) {
+				if c.Repo.CanViewDataset(c.User, d) {
 					<a
 						class="btn btn-tertiary"
 						href={ templ.URL(c.PathTo("dataset", "id", d.ID).String()) }
@@ -123,7 +123,7 @@ templ datasetSummaryActions(c *ctx.Ctx, p *models.Publication, d *models.Dataset
 						<span class="btn-text">View</span>
 					</a>
 				}
-				if c.User.CanEditPublication(p) {
+				if c.Repo.CanEditPublication(c.User, p) {
 					<button
 						class="btn btn-tertiary"
 						type="button"

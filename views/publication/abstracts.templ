@@ -16,7 +16,7 @@ templ Abstracts(c *ctx.Ctx, p *models.Publication) {
 					<h1 class="bc-toolbar-title">Abstract</h1>
 				</div>
 				<div class="bc-toolbar-right">
-					if c.User.CanEditPublication(p) {
+					if c.Repo.CanEditPublication(c.User, p) {
 						<button
 							class="btn btn-outline-primary"
 							type="button"
@@ -55,7 +55,7 @@ templ AbstractsBody(c *ctx.Ctx, p *models.Publication) {
 							</td>
 							<td>{ localize.LanguageName(a.Lang) }</td>
 							<td class="pe-6">
-								if c.User.CanEditPublication(p) {
+								if c.Repo.CanEditPublication(c.User, p) {
 									<div class="c-button-toolbar">
 										<div class="dropdown">
 											<button class="btn btn-link btn-icon-only btn-link-muted" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

@@ -96,11 +96,7 @@ describe("Editing publication description", () => {
         })
         .closeModal("Proceed");
 
-      cy.ensureModal(null).within(() => {
-        cy.contains(
-          "Publication has been modified by another user. Please reload the page.",
-        ).should("be.visible");
-      });
+      cy.verifyConflictErrorDialog("publication");
     });
 
     it("should have clickable labels in the Journal Article form", () => {
