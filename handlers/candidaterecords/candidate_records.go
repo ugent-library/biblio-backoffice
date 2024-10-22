@@ -33,7 +33,6 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 			searchArgs.WithFilter("person_id", c.User.ID)
 		}
 	}
-	total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs)
 
 	total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs)
 	if err != nil {
