@@ -41,7 +41,7 @@ templ ProjectsBody(c *ctx.Ctx, p *models.Publication) {
 	if len(p.RelatedProjects) > 0 {
 		<ul class="list-group list-group-flush">
 			for _, rel := range p.RelatedProjects {
-				<li class="row-{{$i}} list-group-item">
+				<li class="list-group-item">
 					<div class="list-group-item-inner">
 						<div class="list-group-item-main">
 							<div class="d-flex align-items-top">

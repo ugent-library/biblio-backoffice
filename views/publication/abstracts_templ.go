@@ -97,7 +97,7 @@ func AbstractsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, a := range p.Abstract {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr class=\"row-{{$i}}\"><td class=\"ps-6\"><p>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr><td class=\"ps-6\"><p>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

@@ -49,7 +49,7 @@ templ AbstractsBody(c *ctx.Ctx, p *models.Publication) {
 				</thead>
 				<tbody>
 					for _, a := range p.Abstract {
-						<tr class="row-{{$i}}">
+						<tr>
 							<td class="ps-6">
 								<p>{ a.Text }</p>
 							</td>

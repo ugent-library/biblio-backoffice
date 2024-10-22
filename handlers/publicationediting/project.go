@@ -109,7 +109,7 @@ func ConfirmDeleteProject(w http.ResponseWriter, r *http.Request) {
 	views.ConfirmDeleteDialog(views.ConfirmDeleteDialogArgs{
 		Context:    c,
 		Question:   "Are you sure you want to remove this project from the publication?",
-		DeleteUrl:  c.PathTo("publication_delete_project", "id", p.ID, "project_id", projectID),
+		DeleteUrl:  c.PathTo("publication_delete_project", "id", p.ID, "project_id", url.PathEscape(projectID)),
 		SnapshotID: p.SnapshotID,
 	}).Render(r.Context(), w)
 }

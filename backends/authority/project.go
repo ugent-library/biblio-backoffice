@@ -6,6 +6,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/elastic/go-elasticsearch/v6/esapi"
@@ -51,7 +52,7 @@ func (c *Client) SeedProject(data []byte) error {
 	res, err := c.es.Index(
 		"biblio_project",
 		bytes.NewReader(data),
-		c.es.Index.WithDocumentID(id),
+		c.es.Index.WithDocumentID(url.PathEscape(id)),
 		c.es.Index.WithRefresh("true"),
 	)
 	if err != nil {
