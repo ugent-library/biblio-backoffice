@@ -1,9 +1,9 @@
 package proxyviews
 
 import (
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/models"
-	"github.com/samber/lo"
 )
 
 templ Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) {
@@ -24,15 +24,16 @@ templ Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) {
 			<div class="p-6 border-bottom">
 				<form class="row">
 					<div class="form-group col-6">
-						<label class="col-form-label">Search researchers</label>
+						<label class="col-form-label" for="proxy-query">Search researchers</label>
 						<input
 							class="form-control"
 							type="search"
 							id="proxy-query"
 							name="proxy_query"
 							value=""
+							autofocus
 							hx-get={ c.PathTo("proxy_suggest_people", "proxy_id", proxy.ID).String() }
-							hx-trigger="input changed delay:250ms, proxy_query, proxyChanged from:body"
+							hx-trigger="input changed delay:250ms, proxyChanged from:body"
 							hx-target="#people-suggestions"
 							hx-swap="outerHTML"
 						/>

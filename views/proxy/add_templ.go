@@ -8,8 +8,10 @@ package proxyviews
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/ugent-library/biblio-backoffice/ctx"
-import "github.com/ugent-library/biblio-backoffice/models"
+import (
+	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/models"
+)
 
 func Add(c *ctx.Ctx, hits []*models.Person) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -29,20 +31,20 @@ func Add(c *ctx.Ctx, hits []*models.Person) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><div class=\"mt-5\"><h2 class=\"modal-title\">Choose a proxy</h2><p class=\"mb-5 text-muted\">The person that will take on responsibility for researchers.</p></div></div></div></div></div><div class=\"p-6 border-bottom\"><div class=\"form-group col-5\"><label class=\"col-form-label\">Search a proxy</label> <input class=\"form-control\" type=\"search\" id=\"proxy-query\" name=\"proxy_query\" value=\"\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><div class=\"mt-5\"><h2 class=\"modal-title\">Choose a proxy</h2><p class=\"mb-5 text-muted\">The person that will take on responsibility for researchers.</p></div></div></div></div></div><div class=\"p-6 border-bottom\"><div class=\"form-group col-5\"><label class=\"col-form-label\" for=\"proxy-query\">Search a proxy</label> <input class=\"form-control\" type=\"search\" id=\"proxy-query\" name=\"proxy_query\" value=\"\" autofocus hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("suggest_proxies").String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/add.templ`, Line: 25, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `proxy/add.templ`, Line: 33, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"input changed delay:250ms, proxy_query\" hx-target=\".modal-body\"> <span class=\"form-text text-muted\" for=\"proxy-query\">Enter first- and last name, OrcID or UGent ID.</span></div></div><div class=\"modal-body\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"input changed delay:250ms\" hx-target=\".modal-body\"> <span class=\"form-text text-muted\" for=\"proxy-query\">Enter first- and last name, OrcID or UGent ID.</span></div></div><div class=\"modal-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

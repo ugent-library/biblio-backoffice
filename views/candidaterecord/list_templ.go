@@ -69,7 +69,15 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h2 class=\"bc-toolbar-title\">Suggestions</h2><p class=\"c-intro\">Import and complete research gathered from other platforms.</p></div></div></div></div></div><div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"row\"><div class=\"col-xl-6 col-lg-8 col-md-10\"><div class=\"alert alert-success border border-success mb-6\"><span class=\"badge rounded-pill bg-success me-6\">Beta</span><div class=\"alert-content\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><h3 class=\"alert-title\">Biblio now automatically picks up dissertations from Plato.<br>Preview, import and complete your research output.</h3><p>We are testing this new feature for the Faculty of Engineering and Architecture<br>until the end of November, and would appreciate your feedback.&nbsp;<a class=\"c-link\" target=\"_blank\" href=\"https://forms.office.com/Pages/ResponsePage.aspx?id=3hyB1-_sbEmPkaF4YkG5nLzhS3gYTQlIoRZOSkcIt81UNE5UTU5ZNThPM0dJSkczOERMUThHOFgwVC4u\">Give feedback</a></p><p class=\"mt-4\"><a class=\"c-link text-muted\" target=\"_blank\" href=\"https://onderzoektips.ugent.be/en/tips/00002247/\"><span class=\"text-decoration-underline\">Read the research tip for more information</span> <i class=\"if if--small if-external-link\"></i></a></p></div></div></div></div></div></div></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h2 class=\"bc-toolbar-title\">Suggestions</h2><p class=\"c-intro\">Import and complete research gathered from other platforms.</p></div></div></div></div></div><div class=\"u-scroll-wrapper__body w-100 p-6\"><div class=\"row\"><div class=\"col-xl-6 col-lg-8 col-md-10\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = CandidateRecordInfo().Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -122,7 +130,7 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 						var templ_7745c5c3_Var6 string
 						templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("f[%s]", f))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 80, Col: 62}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 53, Col: 62}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 						if templ_7745c5c3_Err != nil {
@@ -135,7 +143,7 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 						var templ_7745c5c3_Var7 string
 						templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(val)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 80, Col: 76}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 53, Col: 76}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 						if templ_7745c5c3_Err != nil {
@@ -159,7 +167,7 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 					var templ_7745c5c3_Var8 string
 					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(sort)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 87, Col: 24}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 60, Col: 24}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 					if templ_7745c5c3_Err != nil {
@@ -182,7 +190,7 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("candidate_record_sorts." + sort))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 92, Col: 57}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 65, Col: 57}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -208,7 +216,7 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, searchHits.Pagination))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 111, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 84, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -239,7 +247,7 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(views.PaginationCount(c, searchHits.Pagination))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 135, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 108, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -257,7 +265,7 @@ func List(c *ctx.Ctx, searchArgs *models.SearchArgs, searchHits *models.SearchHi
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(c.AssetPath("/images/inbox-illustration.svg"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 145, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 118, Col: 75}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -396,7 +404,7 @@ func ListItem(c *ctx.Ctx, rec *models.CandidateRecord) templ.Component {
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("candidate-record-%s", rec.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 183, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/list.templ`, Line: 156, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
@@ -424,6 +432,32 @@ func ListItem(c *ctx.Ctx, rec *models.CandidateRecord) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func CandidateRecordInfo() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var19 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var19 == nil {
+			templ_7745c5c3_Var19 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"alert alert-success border border-success mb-6\"><span class=\"badge rounded-pill bg-success me-6\">Beta</span><div class=\"alert-content\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><h3 class=\"alert-title\">Biblio now automatically picks up dissertations from Plato.<br>Preview, import and complete your research output.</h3><p>We are testing this new feature for the Faculty of Engineering and Architecture<br>until the end of November, and would appreciate your feedback.&nbsp;<a class=\"c-link\" target=\"_blank\" href=\"https://forms.office.com/Pages/ResponsePage.aspx?id=3hyB1-_sbEmPkaF4YkG5nLzhS3gYTQlIoRZOSkcIt81UNE5UTU5ZNThPM0dJSkczOERMUThHOFgwVC4u\">Give feedback</a></p><p class=\"mt-4\"><a class=\"c-link text-muted\" target=\"_blank\" href=\"https://onderzoektips.ugent.be/en/tips/00002247/\"><span class=\"text-decoration-underline\">Read the research tip for more information</span> <i class=\"if if--small if-external-link\"></i></a></p></div></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

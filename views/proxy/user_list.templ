@@ -56,7 +56,7 @@ templ UserList(c *ctx.Ctx, people []ProxiedPerson) {
 							for _, p := range people {
 								<tr>
 									<td class="text-nowrap">
-										@tableItem(c, p.Person)
+										@tableItem(p.Person)
 									</td>
 									<td>
 										<a

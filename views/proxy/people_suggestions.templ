@@ -7,8 +7,8 @@ import (
 )
 
 templ PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person, proxiedPeople map[string]struct{}) {
-	if len(hits) > 0 {
-		<div id="people-suggestions">
+	<div id="people-suggestions">
+		if len(hits) > 0 {
 			<ul class="list-group me-6">
 				for  _, p := range hits {
 					<li class="list-group-item">
@@ -40,14 +40,14 @@ templ PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person,
 				}
 			</ul>
 			<p class="text-muted mt-4">Refine your search to get different results.</p>
-		</div>
-	} else {
-		<div class="c-blank-slate c-blank-slate-muted c-blank-slate-large">
-			<div class="bc-avatar bc-avatar--small">
-				<i class="if if-info-circle"></i>
+		} else {
+			<div class="c-blank-slate c-blank-slate-muted c-blank-slate-large">
+				<div class="bc-avatar bc-avatar--small">
+					<i class="if if-info-circle"></i>
+				</div>
+				<h3 class="c-blank-slate-title">No researchers found.</h3>
+				<p>Refine your search to see different results.</p>
 			</div>
-			<h3 class="c-blank-slate-title">No researchers found.</h3>
-			<p>Refine your search to see different results.</p>
-		</div>
-	}
+		}
+	</div>
 }
