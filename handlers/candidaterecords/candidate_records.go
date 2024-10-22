@@ -115,6 +115,16 @@ func RestoreRejectedCandidateRecord(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	rec := ctx.GetCandidateRecord(r)
 
+	if rec.Status != "rejected" {
+		c.HandleError(w, r, httperror.BadRequest)
+		return
+	}
+
+	if !c.Repo.CanCurate(c.User) && rec.StatusPerson != nil && c.Repo.CanCurate(rec.StatusPerson) {
+		c.HandleError(w, r, httperror.Unauthorized)
+		return
+	}
+
 	err := c.Repo.RestoreCandidateRecord(r.Context(), rec.ID, c.User)
 	if err != nil {
 		c.HandleError(w, r, err)
