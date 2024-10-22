@@ -28,16 +28,40 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 
 	if c.UserRole != "curator" {
 		if c.ProxiedPerson != nil {
-			searchArgs.WithFilter("PersonID", c.ProxiedPerson.ID)
+			searchArgs.WithFilter("person_id", c.ProxiedPerson.ID)
 		} else {
-			searchArgs.WithFilter("PersonID", c.User.ID)
+			searchArgs.WithFilter("person_id", c.User.ID)
 		}
 	}
-	total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs)
 
+	total, recs, err = c.Repo.GetCandidateRecords(r.Context(), searchArgs)
 	if err != nil {
 		c.HandleError(w, r, err)
 		return
+	}
+
+	statusFacet, err := c.Repo.GetCandidateRecordsStatusFacet(r.Context(), searchArgs)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	facultyFacet, err := c.Repo.GetCandidateRecordsFacultyFacet(r.Context(), searchArgs)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	publicationYearFacet, err := c.Repo.GetCandidateRecordsPublicationYearFacet(r.Context(), searchArgs)
+	if err != nil {
+		c.HandleError(w, r, err)
+		return
+	}
+
+	facets := map[string]models.FacetValues{
+		"status":     statusFacet,
+		"faculty_id": facultyFacet,
+		"year":       publicationYearFacet,
 	}
 
 	searchHits := &models.SearchHits{
@@ -46,6 +70,7 @@ func CandidateRecords(w http.ResponseWriter, r *http.Request) {
 			Limit:  searchArgs.Limit(),
 			Total:  total,
 		},
+		Facets: facets,
 	}
 
 	candidaterecordviews.List(c, searchArgs, searchHits, recs).Render(r.Context(), w)
