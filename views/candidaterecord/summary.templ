@@ -223,7 +223,7 @@ templ summaryBadge(colorClass string, text string) {
 templ importedInfo(c *ctx.Ctx, rec *models.CandidateRecord) {
 	<p class="text-muted text-md-end text-nowrap">
 		<span>
-			Claimed: { statusPersonName(c, rec.StatusPerson) }.
+			Imported by: { statusPersonName(c, rec.StatusPerson) }.
 			if rec.ImportedID != "" {
 				<a class="c-link c-link-muted" type="button" href={ templ.URL(c.PathTo("publication", "id", rec.ImportedID).String()) }>View</a>
 			}
@@ -238,7 +238,7 @@ templ importedInfo(c *ctx.Ctx, rec *models.CandidateRecord) {
 templ rejectedInfo(c *ctx.Ctx, rec *models.CandidateRecord) {
 	<p class="text-muted text-md-end text-nowrap">
 		<span>
-			Rejected: { statusPersonName(c, rec.StatusPerson) }.
+			Rejected by: { statusPersonName(c, rec.StatusPerson) }.
 			if c.Repo.CanCurate(c.User) || (rec.StatusPerson != nil && !c.Repo.CanCurate(rec.StatusPerson)) {
 				<a
 					class="c-link c-link-muted"
