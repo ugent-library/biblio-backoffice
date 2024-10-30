@@ -479,6 +479,39 @@ func (s *Repo) EachPublicationWithStatus(status string, fn func(*models.Publicat
 }
 
 // TODO add handle with a listener, then this method isn't needed anymore
+func (s *Repo) EachPublicationWithHandle(fn func(*models.Publication) bool) error {
+	sql := `
+		SELECT * FROM publications WHERE date_until IS NULL AND
+		data->>'status' = 'public' AND
+		data ? 'handle'
+		`
+	c, err := s.publicationStore.Select(sql, nil, s.opts)
+	if err != nil {
+		return fmt.Errorf("repo.EachPublicationWithHandle: %w", err)
+	}
+	defer c.Close()
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
+			return fmt.Errorf("repo.EachPublicationWithHandle: %w", err)
+		}
+		p, err := s.snapshotToPublication(snap)
+		if err != nil {
+			return fmt.Errorf("repo.EachPublicationWithHandle: %w", err)
+		}
+		if ok := fn(p); !ok {
+			break
+		}
+	}
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.EachPublicationWithHandle: %w", c.Err())
+	}
+
+	return nil
+}
+
+// TODO add handle with a listener, then this method isn't needed anymore
 func (s *Repo) EachPublicationWithoutHandle(fn func(*models.Publication) bool) error {
 	sql := `
 		SELECT * FROM publications WHERE date_until IS NULL AND
@@ -935,6 +968,38 @@ func (s *Repo) EachDatasetSnapshot(fn func(*models.Dataset) bool) error {
 
 	if c.Err() != nil {
 		return fmt.Errorf("repo.EachDatasetSnapshot: %w", c.Err())
+	}
+
+	return nil
+}
+
+func (s *Repo) EachDatasetWithHandle(fn func(*models.Dataset) bool) error {
+	sql := `
+		SELECT * FROM datasets WHERE date_until IS NULL AND
+		data->>'status' = 'public' AND
+		data ? 'handle'
+		`
+	c, err := s.datasetStore.Select(sql, nil, s.opts)
+	if err != nil {
+		return fmt.Errorf("repo.EachDatasetWithHandle: %w", err)
+	}
+	defer c.Close()
+	for c.HasNext() {
+		snap, err := c.Next()
+		if err != nil {
+			return fmt.Errorf("repo.EachDatasetWithHandle: %w", err)
+		}
+		d, err := s.snapshotToDataset(snap)
+		if err != nil {
+			return fmt.Errorf("repo.EachDatasetWithHandle: %w", err)
+		}
+		if ok := fn(d); !ok {
+			break
+		}
+	}
+
+	if c.Err() != nil {
+		return fmt.Errorf("repo.EachDatasetWithHandle: %w", c.Err())
 	}
 
 	return nil
