@@ -163,7 +163,7 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 				if len(args.Scopes) > 0 {
 					<div class="bc-navbar bc-navbar--bordered-bottom bc-navbar--white">
 						<ul
-							class={ "nav nav-tabs", templ.KV("nav--success", c.ProxiedPerson != nil)}
+							class={ "nav nav-tabs", templ.KV("nav--success", c.ProxiedPerson != nil) }
 						>
 							for _, scope := range args.Scopes {
 								<li class="nav-item">
@@ -181,13 +181,15 @@ templ Search(c *ctx.Ctx, args *SearchArgs) {
 			</div>
 			<div class="u-scroll-wrapper__body p-6">
 				@views.Query(c, args.SearchArgs)
-				@views.Facets(c, args.SearchArgs) {
-					if c.UserRole == "curator" {
-						@CurationFacets(c, args.SearchArgs, args.Hits.Facets)
-					} else {
-						@Facets(c, args.SearchArgs, args.Hits.Facets)
+				<div class="mb-6">
+					@views.Facets(c, args.SearchArgs) {
+						if c.UserRole == "curator" {
+							@CurationFacets(c, args.SearchArgs, args.Hits.Facets)
+						} else {
+							@Facets(c, args.SearchArgs, args.Hits.Facets)
+						}
 					}
-				}
+				</div>
 				<div class="card mb-6">
 					<div class="card-header fw-normal">
 						<div class="bc-toolbar">
