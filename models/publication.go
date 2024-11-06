@@ -1478,6 +1478,24 @@ func (p *Publication) ChangeType(newType string) {
 	p.CleanupUnusedFields()
 }
 
+func (pf *PublicationFile) IsUnderEmbargo() (bool, error) {
+	if pf.AccessLevel != "info:eu-repo/semantics/embargoedAccess" {
+		return false, nil
+	}
+
+	// TODO: what with empty embargo_date?
+	if pf.EmbargoDate == "" {
+		return false, nil
+	}
+
+	embargoDate, err := time.Parse("2006-01-02", pf.EmbargoDate)
+	if err != nil {
+		return false, err
+	}
+
+	return embargoDate.After(time.Now()), nil
+}
+
 func (pf *PublicationFile) ClearEmbargo() {
 	pf.AccessLevel = pf.AccessLevelAfterEmbargo
 	pf.AccessLevelDuringEmbargo = ""

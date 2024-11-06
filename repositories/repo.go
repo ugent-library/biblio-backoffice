@@ -583,17 +583,14 @@ func (s *Repo) UpdatePublicationEmbargoes() (int, error) {
 
 		// clear expired embargoes
 		for _, file := range p.File {
-			if file.AccessLevel != embargoAccessLevel {
-				continue
+			isUnderEmbargo, err := file.IsUnderEmbargo()
+			if err != nil {
+				return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
 			}
-			// TODO: what with empty embargo_date?
-			if file.EmbargoDate == "" {
-				continue
+
+			if !isUnderEmbargo {
+				file.ClearEmbargo()
 			}
-			if file.EmbargoDate > now {
-				continue
-			}
-			file.ClearEmbargo()
 		}
 
 		if err = s.UpdatePublication(p.SnapshotID, p, nil); err != nil {

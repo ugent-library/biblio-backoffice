@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 const addCandidateRecord = `-- name: AddCandidateRecord :one
@@ -126,6 +128,21 @@ func (q *Queries) PersonHasCandidateRecords(ctx context.Context, query []byte) (
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
+}
+
+const setCandidateRecordMetadata = `-- name: SetCandidateRecordMetadata :execresult
+UPDATE candidate_records
+SET metadata = $1
+WHERE id = $2
+`
+
+type SetCandidateRecordMetadataParams struct {
+	Metadata []byte
+	ID       string
+}
+
+func (q *Queries) SetCandidateRecordMetadata(ctx context.Context, arg SetCandidateRecordMetadataParams) (pgconn.CommandTag, error) {
+	return q.db.Exec(ctx, setCandidateRecordMetadata, arg.Metadata, arg.ID)
 }
 
 const setCandidateRecordStatus = `-- name: SetCandidateRecordStatus :one

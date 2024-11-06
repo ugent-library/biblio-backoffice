@@ -31,3 +31,8 @@ WHERE id = sqlc.arg('id') RETURNING id;
 
 -- name: GetCandidateRecordBySource :one
 SELECT * FROM candidate_records WHERE source_name = $1 AND source_id = $2 LIMIT 1;
+
+-- name: SetCandidateRecordMetadata :execresult
+UPDATE candidate_records
+SET metadata = sqlc.arg('metadata')
+WHERE id = sqlc.arg('id');

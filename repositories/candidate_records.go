@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -50,21 +51,7 @@ func (r *Repo) GetCandidateRecords(ctx context.Context, searchArgs *models.Searc
 		return 0, nil, err
 	}
 
-	total, result, err = r.mapRows(candidateRecordRows, func(row candidateRecordRow) *models.CandidateRecord {
-		return &models.CandidateRecord{
-			ID:             row.ID,
-			SourceName:     row.SourceName,
-			SourceID:       row.SourceID,
-			Type:           row.Type,
-			Metadata:       row.Metadata,
-			DateCreated:    row.DateCreated,
-			Status:         row.Status,
-			Publication:    &models.Publication{},
-			StatusDate:     row.StatusDate,
-			StatusPersonID: lo.FromPtr(row.StatusPersonID),
-			ImportedID:     lo.FromPtr(row.ImportedID),
-		}
-	})
+	total, result, err = r.mapRows(candidateRecordRows)
 
 	return
 }
@@ -279,7 +266,7 @@ func getPersonFilter(personID string) []byte {
 	return personFilter
 }
 
-func (r *Repo) mapRows(rows []candidateRecordRow, iteratee func(candidateRecordRow) *models.CandidateRecord) (int, []*models.CandidateRecord, error) {
+func (r *Repo) mapRows(rows []candidateRecordRow) (int, []*models.CandidateRecord, error) {
 	if len(rows) == 0 {
 		return 0, make([]*models.CandidateRecord, 0), nil
 	}
@@ -287,7 +274,19 @@ func (r *Repo) mapRows(rows []candidateRecordRow, iteratee func(candidateRecordR
 	results := make([]*models.CandidateRecord, 0, len(rows))
 
 	for _, item := range rows {
-		result := iteratee(item)
+		result := &models.CandidateRecord{
+			ID:             item.ID,
+			SourceName:     item.SourceName,
+			SourceID:       item.SourceID,
+			Type:           item.Type,
+			Metadata:       item.Metadata,
+			DateCreated:    item.DateCreated,
+			Status:         item.Status,
+			Publication:    &models.Publication{},
+			StatusDate:     item.StatusDate,
+			StatusPersonID: lo.FromPtr(item.StatusPersonID),
+			ImportedID:     lo.FromPtr(item.ImportedID),
+		}
 
 		err := r.loadCandidateRecord(result)
 		if err != nil {
@@ -317,4 +316,54 @@ func (r *Repo) loadCandidateRecord(result *models.CandidateRecord) error {
 	}
 
 	return nil
+}
+
+func (r *Repo) UpdateCandidateRecordEmbargoes() (int, error) {
+	var n int
+	now := time.Now().Format("2006-01-02")
+
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	query := psql.Select("*", "-1 AS total").
+		From("candidate_records").
+		Where(sq.NotEq{"metadata->'file'": nil}).
+		Where(sq.Expr("EXISTS(SELECT 1 FROM jsonb_array_elements(metadata->'file') AS f WHERE f->>'access_level' = ? AND f->>'embargo_date' <= ?)", "info:eu-repo/semantics/embargoedAccess", now))
+
+	rows, err := queryRows[candidateRecordRow](r, context.Background(), query)
+	if err != nil {
+		return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
+	}
+
+	_, candidateRecords, err := r.mapRows(rows)
+	if err != nil {
+		return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
+	}
+
+	for _, cr := range candidateRecords {
+		for _, file := range cr.Publication.File {
+			isUnderEmbargo, err := file.IsUnderEmbargo()
+			if err != nil {
+				return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
+			}
+			if !isUnderEmbargo {
+				file.ClearEmbargo()
+			}
+		}
+
+		metadata, err := json.Marshal(cr.Publication)
+		if err != nil {
+			return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
+		}
+
+		params := db.SetCandidateRecordMetadataParams{
+			ID:       cr.ID,
+			Metadata: metadata,
+		}
+		if _, err = r.queries.SetCandidateRecordMetadata(context.Background(), params); err != nil {
+			return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
+		}
+
+		n++
+	}
+
+	return n, nil
 }
