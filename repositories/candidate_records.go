@@ -400,13 +400,16 @@ func (r *Repo) loadCandidateRecord(result *models.CandidateRecord) error {
 
 func (r *Repo) UpdateCandidateRecordEmbargoes() (int, error) {
 	var n int
-	now := time.Now().Format("2006-01-02")
 
 	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 	query := psql.Select("*", "-1 AS total").
 		From("candidate_records").
 		Where(sq.NotEq{"metadata->'file'": nil}).
-		Where(sq.Expr("EXISTS(SELECT 1 FROM jsonb_array_elements(metadata->'file') AS f WHERE f->>'access_level' = ? AND f->>'embargo_date' <= ?)", "info:eu-repo/semantics/embargoedAccess", now))
+		Where(sq.Expr("EXISTS(?)",
+			psql.Select("1").From("jsonb_array_elements(metadata->'file') AS f").
+				Where(sq.Eq{"f->>'access_level'": "info:eu-repo/semantics/embargoedAccess"}).
+				Where(sq.Expr("CAST(f->>'embargo_date' AS DATE) <= CURRENT_DATE")),
+		))
 
 	rows, err := queryRows[candidateRecordRow](r, context.Background(), query)
 	if err != nil {
