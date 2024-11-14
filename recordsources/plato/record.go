@@ -72,8 +72,8 @@ func (r *platoRecord) ToCandidateRecord(services *backends.Services) (*models.Ca
 		if err != nil {
 			return nil, err
 		}
-		if len(hits) != 1 {
-			return nil, errors.New("multiple or no matches for ugent id " + ugentID)
+		if len(hits) == 0 {
+			return nil, errors.New("no matches for ugent id " + ugentID)
 		}
 		c := models.ContributorFromPerson(hits[0])
 		p.Author = append(p.Author, c)
@@ -92,8 +92,8 @@ func (r *platoRecord) ToCandidateRecord(services *backends.Services) (*models.Ca
 				cbErr = err
 				return false
 			}
-			if len(hits) != 1 {
-				cbErr = errors.New("multiple or no matches for ugent id " + v.String())
+			if len(hits) == 0 {
+				cbErr = errors.New("no matches for ugent id " + v.String())
 				return false
 			}
 			p.Supervisor = append(p.Supervisor, models.ContributorFromPerson(hits[0]))
