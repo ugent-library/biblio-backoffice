@@ -22,6 +22,9 @@ var updateEmbargoes = &cobra.Command{
 		if err := updateDatasetEmbargoes(services); err != nil {
 			return err
 		}
+		if err := updateCandidateRecordEmbargoes(services); err != nil {
+			return err
+		}
 		return nil
 	},
 }
@@ -37,13 +40,24 @@ func updatePublicationEmbargoes(services *backends.Services) error {
 	return nil
 }
 
-func updateDatasetEmbargoes(e *backends.Services) error {
-	n, err := e.Repo.UpdateDatasetEmbargoes()
+func updateDatasetEmbargoes(services *backends.Services) error {
+	n, err := services.Repo.UpdateDatasetEmbargoes()
 	if err != nil {
 		return err
 	}
 
 	logger.Info(fmt.Sprintf("updated %d dataset embargoes", n))
+
+	return nil
+}
+
+func updateCandidateRecordEmbargoes(services *backends.Services) error {
+	n, err := services.Repo.UpdateCandidateRecordEmbargoes()
+	if err != nil {
+		return err
+	}
+
+	logger.Info(fmt.Sprintf("updated %d candidate record embargoes", n))
 
 	return nil
 }
