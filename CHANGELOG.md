@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.61] - 2024-11-14
+
+### Added
+
+- Publication suggestion filters
+- #1723: Add publication suggestions to dashboard
+
+### Fixed
+
+- #1729: Various proxy fixes
+- #1724: Fix remove project
+- #1735: Fix setting creator on suggestion import
+
 ## [v1.0.60] - 2024-09-30
 
 ### Added
@@ -622,7 +635,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.60...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.61...HEAD
+[v1.0.61]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.60...v1.0.61
 [v1.0.60]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.59...v1.0.60
 [v1.0.59]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.58...v1.0.59
 [v1.0.58]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.56...v1.0.58
