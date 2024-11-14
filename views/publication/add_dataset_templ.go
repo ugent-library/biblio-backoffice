@@ -31,7 +31,7 @@ func AddDataset(c *ctx.Ctx, publication *models.Publication, hits *models.Datase
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-fullscreen modal-dialog-scrollable\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Select datasets</h2></div><div class=\"p-6 border-bottom\"><label class=\"form-label\" for=\"publication-q\">Search datasets</label> <input class=\"form-control mb-4\" type=\"search\" id=\"publication-q\" name=\"q\" placeholder=\"Search...\" autofocus hx-get=\"")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -44,7 +44,7 @@ func AddDataset(c *ctx.Ctx, publication *models.Publication, hits *models.Datase
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"input changed delay:500ms, search\" hx-target=\"#dataset-suggestions\"><p class=\"text-muted\">Select one or more datasets that are already registered in Biblio. <a href=\"https://onderzoektips.ugent.be/en/tips/00002061/\" target=\"_blank\">View documentation <i class=\"if if--small if-external-link\"></i></a></p></div><div class=\"modal-body\"><div id=\"dataset-suggestions\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -52,7 +52,7 @@ func AddDataset(c *ctx.Ctx, publication *models.Publication, hits *models.Datase
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><div class=\"modal-footer\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><button class=\"btn btn-link modal-close\" data-bs-dismiss=\"modal\">Cancel</button></div></div></div></div></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

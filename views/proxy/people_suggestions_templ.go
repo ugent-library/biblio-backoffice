@@ -33,12 +33,12 @@ func PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person, 
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(hits) > 0 {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"people-suggestions\"><ul class=\"list-group me-6\">")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for _, p := range hits {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item\">")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -55,7 +55,7 @@ func PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person, 
 					}
 					ctx = templ.InitializeContext(ctx)
 					if _, ok := proxiedPeople[p.ID]; ok {
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<btn class=\"btn btn-default\" type=\"button\" hx-delete=\"")
+						templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -68,12 +68,12 @@ func PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person, 
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\"><i class=\"if if-arrow-left\"></i> <span class=\"btn-text\">Deselect</span></btn>")
+						templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					} else {
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"btn btn-outline-primary\" type=\"button\" hx-post=\"")
+						templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -86,7 +86,7 @@ func PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person, 
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-vals=\"")
+						templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -99,7 +99,7 @@ func PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person, 
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"none\"><span class=\"btn-text\">Select researcher</span> <i class=\"if if-arrow-right\"></i></div>")
+						templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -110,17 +110,17 @@ func PeopleSuggestions(c *ctx.Ctx, proxy *models.Person, hits []*models.Person, 
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li>")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul><p class=\"text-muted mt-4\">Refine your search to get different results.</p></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 9)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-blank-slate c-blank-slate-muted c-blank-slate-large\"><div class=\"bc-avatar bc-avatar--small\"><i class=\"if if-info-circle\"></i></div><h3 class=\"c-blank-slate-title\">No researchers found.</h3><p>Refine your search to see different results.</p></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 10)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

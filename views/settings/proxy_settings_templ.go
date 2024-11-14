@@ -45,17 +45,17 @@ func ProxySettings(c *ctx.Ctx, proxies []*models.Person) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"c-sub-sidebar c-sidebar--bordered\"><div class=\"bc-navbar bc-navbar--large bc-navbar--bordered-bottom\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><h4 class=\"bc-toolbar-title\">Settings</h4></div></div></div></div><div class=\"c-sub-sidebar__menu my-6\"><nav><ul class=\"c-sub-sidebar-menu\"><li class=\"c-sub-sidebar__item c-sub-sidebar__item--active\"><a href=\"\"><span class=\"c-sidebar__label\">Proxies</span></a></li></ul></nav></div></div><div class=\"w-100 u-scroll-wrapper\"><div class=\"bc-navbar bc-navbar--large bc-navbar--white bc-navbar--bordered-bottom\"><div class=\"bc-toolbar py-4\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><h4 class=\"bc-toolbar-title\">Proxies</h4></div></div></div></div><div class=\"u-scroll-wrapper__body p-6\"><div class=\"row\"><div class=\"col-xl-4 mb-4\"><div class=\"my-4\"><h2 class=\"my-5\">Your proxies</h2><p class=\"pb-5 text-muted\">Who can view and edit your <strong>unlocked</strong> publications and datasets, and the other way around.</p><p class=\"text-muted\">Get in touch with&nbsp;<a href=\"mailto:biblio@ugent.be\">biblio@ugent.be</a>&nbsp;to add or remove proxies.</p></div></div><div class=\"col-xl-8\"><div class=\"card mb-6\"><div class=\"card-header h-auto\"><div class=\"my-5\"><h3 class=\"card-title mb-2\">People who can manage your research output</h3><p class=\"c-body fw-normal text-muted\">These people can see and edit your <strong>unlocked</strong> publications and datasets.</p></div></div><div class=\"card-body p-0\">")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(proxies) > 0 {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ul class=\"list-group list-group-flush\">")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, p := range proxies {
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"list-group-item\">")
+					templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -63,22 +63,22 @@ func ProxySettings(c *ctx.Ctx, proxies []*models.Person) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</li>")
+					templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul>")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"card shadow-none bg-lightest\"><div class=\"card-body\"><div class=\"c-blank-slate py-4\"><p>No people selected to manage your research output.</p></div></div></div>")
+				templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><p>View who can see and edit your unlocked publications and datasets as a proxy in the&nbsp;<a href=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -87,7 +87,7 @@ func ProxySettings(c *ctx.Ctx, proxies []*models.Person) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Proxy dashboard</a>.</p></div></div></div></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -32,7 +32,7 @@ func Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) templ
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><div class=\"mt-5\"><h2 class=\"modal-title\">Select researchers</h2><p class=\"mb-5 text-muted\">The researchers that <strong>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -45,7 +45,7 @@ func Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</strong> will be responsible for. You can only add UGent researchers.</p></div></div></div></div></div><div class=\"p-6 border-bottom\"><form class=\"row\"><div class=\"form-group col-6\"><label class=\"col-form-label\">Search researchers</label> <input class=\"form-control\" type=\"search\" id=\"proxy-query\" name=\"proxy_query\" value=\"\" hx-get=\"")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -58,7 +58,7 @@ func Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-trigger=\"input changed delay:250ms, proxy_query, proxyChanged from:body\" hx-target=\"#people-suggestions\" hx-swap=\"outerHTML\"> <span class=\"form-text text-muted\" for=\"proxy-query\">Enter first- and last name, OrcID or UGent ID.</span></div></form></div><div class=\"modal-body\"><div class=\"row h-100 mb-8\"><div class=\"col-6 border-end\"><h3 class=\"mb-4\">Search results</h3>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -66,7 +66,7 @@ func Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"col-6 ps-8\"><h3 class=\"mb-4\">Selected researchers for ")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -79,7 +79,7 @@ func Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -87,7 +87,7 @@ func Edit(c *ctx.Ctx, proxy *models.Person, people, hits []*models.Person) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div><div class=\"modal-footer\"><div class=\"bc-toolbar h-auto\"><div class=\"bc-toolbar-right flex-wrap\"><div class=\"bc-toolbar-item\"><button class=\"btn btn-primary modal-close\">Done</button></div></div></div></div></div></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
