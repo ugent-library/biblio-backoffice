@@ -300,7 +300,7 @@ func addQueryFilters(query sq.SelectBuilder, searchArgs *models.SearchArgs, omit
 			sq.Eq{"status": "new"},
 			sq.And{
 				sq.Expr("status_date IS NOT NULL"),
-				sq.LtOrEq{"EXTRACT(DAY FROM (current_timestamp - status_date))": "90"},
+				sq.LtOrEq{"EXTRACT(DAY FROM (current_timestamp - status_date))": "365"},
 			},
 		})
 
