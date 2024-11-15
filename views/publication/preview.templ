@@ -281,10 +281,14 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 											for _, a := range p.Abstract {
 												<div class="card shadow-none mb-6">
 													<div class="card-body">
-														if a.Lang != "und" {
-															<p class="c-body-small text-muted mb-1">{ a.Lang }</p>
-														}
-														{ a.Text }
+														<p>
+															if a.Lang != "und" {
+																<span class="text-uppercase text-muted fw-bold">[{ a.Lang }]</span>
+															} else {
+																<span class="text-muted fw-bold">[Language missing]</span>
+															}
+															{ a.Text }
+														</p>
 													</div>
 												</div>
 											}
