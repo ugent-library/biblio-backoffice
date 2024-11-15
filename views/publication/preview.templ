@@ -104,6 +104,10 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 				</div>
 				<div class="w-100 u-scroll-wrapper">
 					<div class="u-scroll-wrapper__body u-smooth-scroll p-6" data-bs-spy="scroll" data-bs-target="#publication-data" data-bs-offset="160" data-scroll-area="">
+						<div class="alert alert-info mb-6">
+							<i class="if if-info-circle-filled"></i>
+							<p>Import the suggestion, complete the required missing information and publish.</p>
+						</div>
 						<div class="mb-6" id="type">
 							<div class="mb-4">
 								<h2>Type</h2>
@@ -126,8 +130,8 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 								<h2>Full text &amp; info</h2>
 							</div>
 							<div class="card mb-6">
-								if f := p.MainFile(); f != nil {
-									<div class="card-body border-bottom">
+								<div class="card-body border-bottom">
+									if f := p.MainFile(); f != nil {
 										<div class="form-group">
 											<label class="form-label form-label-top">Full text</label>
 											<div class="list-group mb-4">
@@ -159,57 +163,62 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 											<label class="form-label form-label-top">Publication version</label>
 											<p>{ c.Loc.Get("publication_versions." + f.PublicationVersion) }</p>
 										</div>
-									</div>
-								} else {
-									<div class="card-body border-bottom">
-										<p>-</p>
-									</div>
-								}
+									} else {
+										<div class="form-group">
+											<label class="form-label form-label-top">Full text <span class="badge badge-outline-primary badge-sm">Required</span></label>
+											<p class="text-muted fst-italic">Missing file and publication version.</p>
+										</div>
+									}
+								</div>
 								<div class="card-body border-bottom">
 									<h3 class="mb-3">Access level information</h3>
 									<div class="form-group">
-										<label class="form-label form-label-top pb-0 d-block" for="">
+										<label class="form-label form-label-top pb-0 mb-2 d-block" for="">
 											Is a patent application ongoing or planned?
+											<span class="badge badge-outline-primary badge-sm">Required</span>
 										</label>
 										if p.HasPatentApplication != "" {
 											{ p.HasPatentApplication }
 										} else {
-											<p>-</p>
+											<p class="text-muted fst-italic">Missing information.</p>
 										}
 									</div>
 									<div class="form-group">
-										<label class="form-label form-label-top pb-0 d-block" for="">
+										<label class="form-label form-label-top pb-0 mb-0 d-block" for="">
 											Does the dissertation contain privacy-sensitive information?
+											<span class="badge badge-outline-primary badge-sm">Required</span>
 										</label>
-										<small class="form-text mb-2">Does not include patents. Private or sensitive information about individuals or companies that should <strong>never</strong> be disclosed.</small>
+										<p class="form-text mb-3 small">Does not include patents. Private or sensitive information about individuals or companies that should <strong>never</strong> be disclosed.</p>
 										if p.HasConfidentialData != "" {
 											{ p.HasConfidentialData }
 										} else {
-											<p>-</p>
+											<p class="text-muted fst-italic">Missing information.</p>
 										}
 									</div>
 									<div class="form-group">
-										<label class="form-label form-label-top pb-0 d-block" for="">
+										<label class="form-label form-label-top pb-0 mb-0 d-block" for="">
 											Are other publications planned based on this dissertation?
+											<span class="badge badge-outline-primary badge-sm">Required</span>
 										</label>
-										<small class="form-text mb-2">e.g. articles or book</small>
+										<p class="form-text mb-3 small">e.g. articles or book</p>
 										if p.HasPublicationsPlanned != "" {
 											{ p.HasPublicationsPlanned }
 										} else {
-											<p>-</p>
+											<p class="text-muted fst-italic">Missing information.</p>
 										}
 									</div>
 									<div class="form-group">
-										<label class="form-label form-label-top pb-0 d-block" for="">
+										<label class="form-label form-label-top pb-0 mb-0 d-block" for="">
 											Does the dissertation contain published articles?
+											<span class="badge badge-outline-primary badge-sm">Required</span>
 										</label>
-										<small class="form-text mb-2">
+										<p class="form-text mb-3 small">
 											The dissertation contains a copy of the full text, either in the publisher's layout (VoR) or your own (AAM). <a class="c-link" href="https://researchtips.ugent.be/en/tips/00002066">Read more</a>
-										</small>
+										</p>
 										if p.HasPublishedMaterial != "" {
 											{ p.HasPublishedMaterial }
 										} else {
-											<p>-</p>
+											<p class="text-muted fst-italic">Missing information.</p>
 										}
 									</div>
 								</div>
@@ -222,7 +231,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 													@PreviewAccesLevel(c, f)
 												</div>
 											} else {
-												<p>-</p>
+												<p class="text-muted fst-italic">Missing information.</p>
 											}
 										</div>
 									</div>
@@ -243,24 +252,29 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 												</label>
 											</div>
 										</div>
-										<span>
+										<p>
 											if p.Title != "" {
 												{ p.Title }
 											} else {
 												Untitled record
 											}
-										</span>
+										</p>
 									</div>
-									<div class="form-group">
-										<label class="form-label form-label-top" for="">Alternative title</label>
-										if len(p.AlternativeTitle) > 0 {
-											<span>{ p.AlternativeTitle[0] }</span>
-										}
-									</div>
+									if len(p.AlternativeTitle) > 0 {
+										<div class="form-group">
+											<label class="form-label form-label-top" for="">Alternative title</label>
+											<p>{ p.AlternativeTitle[0] }</p>
+										</div>
+									}
 									<div class="form-group">
 										<div class="bc-toolbar h-auto">
 											<div class="bc-toolbar-left">
-												<label class="form-label">Abstract</label>
+												<label class="form-label">
+													Abstract
+													if len(p.Abstract) < 1 {
+														<span class="badge badge-outline-primary badge-sm">Required</span>
+													}
+												</label>
 											</div>
 										</div>
 										if len(p.Abstract) > 0 {
@@ -277,18 +291,18 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 										} else {
 											<div class="card shadow-none mb-6">
 												<div class="card-body">
-													<p>-</p>
+													<p class="text-muted fst-italic">Missing information.</p>
 												</div>
 											</div>
 										}
 									</div>
-									<div class="form-group">
-										<div class="bc-toolbar h-auto">
-											<div class="bc-toolbar-left">
-												<label class="form-label">Lay summary</label>
+									if len(p.LaySummary) > 0 {
+										<div class="form-group">
+											<div class="bc-toolbar h-auto">
+												<div class="bc-toolbar-left">
+													<label class="form-label">Lay summary</label>
+												</div>
 											</div>
-										</div>
-										if len(p.LaySummary) > 0 {
 											for _, s := range p.LaySummary {
 												<div class="card shadow-none mb-6">
 													<div class="card-body">
@@ -299,38 +313,28 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 													</div>
 												</div>
 											}
-										} else {
-											<div class="card shadow-none mb-6">
-												<div class="card-body">
-													<p>-</p>
-												</div>
-											</div>
-										}
-									</div>
-									<div class="form-group">
-										<label class="form-label form-label-top form-label form-label-top" for="keywords">Keywords</label>
-										if len(p.Keyword) > 0 {
+										</div>
+									}
+									if len(p.Keyword) > 0 {
+										<div class="form-group">
+											<label class="form-label form-label-top form-label form-label-top" for="keywords">Keywords</label>
 											<ul class="badge-list">
 												for _, k := range p.Keyword {
 													<li class="badge badge-light">{ k }</li>
 												}
 											</ul>
-										} else {
-											<p>-</p>
-										}
-									</div>
-									<div class="form-group">
-										<label class="form-label form-label-top form-label form-label-top" for="keywords">Research field</label>
-										if len(p.ResearchField) > 0 {
+										</div>
+									}
+									if len(p.ResearchField) > 0 {
+										<div class="form-group">
+											<label class="form-label form-label-top form-label form-label-top" for="keywords">Research field</label>
 											<ul class="badge-list">
 												for _, r := range p.ResearchField {
 													<li class="badge badge-light">{ r }</li>
 												}
 											</ul>
-										} else {
-											<p>-</p>
-										}
-									</div>
+										</div>
+									}
 								</div>
 							</div>
 						</div>
@@ -343,7 +347,12 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 									<div class="form-group">
 										<div class="bc-toolbar h-auto">
 											<div class="bc-toolbar-left">
-												<label class="form-label form-label-top">Authors</label>
+												<label class="form-label form-label-top">
+													Authors
+													if len(p.Author) < 1 {
+														<span class="badge badge-outline-primary badge-sm">Required</span>
+													}
+												</label>
 											</div>
 										</div>
 										if len(p.Author) > 0 {
@@ -382,7 +391,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 												}
 											</div>
 										} else {
-											<p>-</p>
+											<p class="text-muted fst-italic">Missing information.</p>
 										}
 									</div>
 									<div class="form-group">
@@ -433,7 +442,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 												}
 											</ul>
 										} else {
-											<p>-</p>
+											<p class="text-muted fst-italic">Missing information.</p>
 										}
 									</div>
 									<div class="form-group">
@@ -463,7 +472,7 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 												}
 											</ul>
 										} else {
-											<p>-</p>
+											<p class="text-muted fst-italic">Missing information.</p>
 										}
 									</div>
 								</div>
@@ -475,75 +484,80 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 							</div>
 							<div class="card mb-6">
 								<div class="card-body p-0">
-									<ul class="list-group list-group-flush">
-										<ul class="list-group list-group-flush">
-											<li class="list-group-item bg-transparent">
-												<div class="form-group">
-													<label class="form-label form-label-top" for="Publishing status">Publishing status</label>
-													if p.PublicationStatus != "" {
-														<span>{ c.Loc.Get("publication_publishing_statuses." + p.PublicationStatus) }</span>
-													} else {
-														<span>-</span>
+									<ul class="list-group list-group-flush vstack gap-1">
+										<li class="list-group-item bg-transparent">
+											<div class="form-group">
+												<label class="form-label form-label-top" for="Publishing status">Publishing status</label>
+												if p.PublicationStatus != "" {
+													<p>{ c.Loc.Get("publication_publishing_statuses." + p.PublicationStatus) }</p>
+												} else {
+													<p class="text-muted fst-italic">-</p>
+												}
+											</div>
+											<div class="form-group">
+												<label class="form-label form-label-top" for="Publication year">
+													Publication year
+													if p.Year == "" {
+														<span class="badge badge-outline-primary badge-sm">Required</span>
 													}
-												</div>
-												<div class="form-group">
-													<label class="form-label form-label-top" for="Publication year">Publication year</label>
-													if p.Year != "" {
-														<span>{ p.Year }</span>
-													} else {
-														<span>-</span>
-													}
-												</div>
-												<div class="form-group">
-													<label class="form-label form-label-top" for="Place of publication">Place of publication</label>
-													if p.PlaceOfPublication != "" {
-														<span>{ p.PlaceOfPublication }</span>
-													} else {
-														<span>-</span>
-													}
-												</div>
-												<div class="form-group">
-													<label class="form-label form-label-top" for="Publisher">Publisher</label>
-													if p.Publisher != "" {
-														<span>{ p.Publisher }</span>
-													} else {
-														<span>-</span>
-													}
-												</div>
-												<div class="form-group">
-													<label class="form-label form-label-top" for="Languages">Languages</label>
-													if len(p.Language) > 0 {
-														<span>{ strings.Join(p.Language, ", ") } </span>
-													} else {
-														<span>-</span>
-													}
-												</div>
-												<div class="form-group">
-													<label class="form-label form-label-top" for="Number of pages">Number of pages</label>
-													if p.PageCount != "" {
-														<span>{ p.PageCount }</span>
-													} else {
-														<span>-</span>
-													}
-												</div>
-												<div class="form-group">
-													<label class="form-label form-label-top" for="Date of defense">Date of defense</label>
-													if p.DefenseDate != "" {
-														<span>{ p.DefenseDate }</span>
-													} else {
-														<span>-</span>
-													}
-												</div>
-												<div class="form-group">
-													<label class="form-label form-label-top" for="Place of defense">Place of defense</label>
-													if p.DefensePlace != "" {
-														<span>{ p.DefensePlace }</span>
-													} else {
-														<span>-</span>
-													}
-												</div>
-											</li>
-										</ul>
+												</label>
+												if p.Year != "" {
+													<p>{ p.Year }</p>
+												} else {
+													<p class="text-muted fst-italic">Missing information.</p>
+												}
+											</div>
+											<div class="form-group">
+												<label class="form-label form-label-top" for="Place of publication">
+													Place of publication
+												</label>
+												if p.PlaceOfPublication != "" {
+													<p>{ p.PlaceOfPublication }</p>
+												} else {
+													<p class="text-muted fst-italic">-</p>
+												}
+											</div>
+											<div class="form-group">
+												<label class="form-label form-label-top" for="Publisher">Publisher</label>
+												if p.Publisher != "" {
+													<p>{ p.Publisher }</p>
+												} else {
+													<p class="text-muted fst-italic">-</p>
+												}
+											</div>
+											<div class="form-group">
+												<label class="form-label form-label-top" for="Languages">Languages</label>
+												if len(p.Language) > 0 {
+													<p>{ strings.Join(p.Language, ", ") } </p>
+												} else {
+													<p class="text-muted fst-italic">-</p>
+												}
+											</div>
+											<div class="form-group">
+												<label class="form-label form-label-top" for="Number of pages">Number of pages</label>
+												if p.PageCount != "" {
+													<p>{ p.PageCount }</p>
+												} else {
+													<p class="text-muted fst-italic">-</p>
+												}
+											</div>
+											<div class="form-group">
+												<label class="form-label form-label-top" for="Date of defense">Date of defense</label>
+												if p.DefenseDate != "" {
+													<p>{ p.DefenseDate }</p>
+												} else {
+													<p class="text-muted fst-italic">-</p>
+												}
+											</div>
+											<div class="form-group">
+												<label class="form-label form-label-top" for="Place of defense">Place of defense</label>
+												if p.DefensePlace != "" {
+													<p>{ p.DefensePlace }</p>
+												} else {
+													<p class="text-muted fst-italic">-</p>
+												}
+											</div>
+										</li>
 									</ul>
 								</div>
 							</div>
@@ -553,25 +567,27 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 								<h2>Identifiers</h2>
 							</div>
 							<div class="card mb-6">
-								<div class="card-body">
-									<li class="list-group-item bg-transparent">
-										<div class="form-group">
-											<label class="form-label form-label-top" for="ISSN">ISSN</label>
-											if len(p.ISSN) > 0 {
-												<span>{ strings.Join(p.ISSN, ", ") } </span>
-											} else {
-												<span>-</span>
-											}
-										</div>
-										<div class="form-group">
-											<label class="form-label form-label-top" for="ISBN">ISBN</label>
-											if len(p.ISBN) > 0 {
-												<span>{ strings.Join(p.ISBN, ", ") } </span>
-											} else {
-												<span>-</span>
-											}
-										</div>
-									</li>
+								<div class="card-body p-0">
+									<ul class="list-group list-group-flush vstack gap-1">
+										<li class="list-group-item bg-transparent">
+											<div class="form-group">
+												<label class="form-label form-label-top" for="ISSN">ISSN</label>
+												if len(p.ISSN) > 0 {
+													<p>{ strings.Join(p.ISSN, ", ") } </p>
+												} else {
+													<p class="text-muted fst-italic">-</p>
+												}
+											</div>
+											<div class="form-group">
+												<label class="form-label form-label-top" for="ISBN">ISBN</label>
+												if len(p.ISBN) > 0 {
+													<p>{ strings.Join(p.ISBN, ", ") } </p>
+												} else {
+													<p class="text-muted fst-italic">-</p>
+												}
+											</div>
+										</li>
+									</ul>
 								</div>
 							</div>
 						</div>
