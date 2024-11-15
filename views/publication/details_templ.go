@@ -574,8 +574,9 @@ func DetailsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 				}
 				ctx = templ.InitializeContext(ctx)
 				templ_7745c5c3_Err = display.Field(display.FieldArgs{
-					Label: c.Loc.Get("builder.has_confidential_data"),
-					Value: c.Loc.Get("confirmations." + p.HasConfidentialData),
+					Label:    c.Loc.Get("builder.has_confidential_data"),
+					Value:    c.Loc.Get("confirmations." + p.HasConfidentialData),
+					Required: true,
 				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -585,8 +586,9 @@ func DetailsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = display.Field(display.FieldArgs{
-					Label: c.Loc.Get("builder.has_patent_application"),
-					Value: c.Loc.Get("confirmations." + p.HasPatentApplication),
+					Label:    c.Loc.Get("builder.has_patent_application"),
+					Value:    c.Loc.Get("confirmations." + p.HasPatentApplication),
+					Required: true,
 				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -596,8 +598,9 @@ func DetailsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = display.Field(display.FieldArgs{
-					Label: c.Loc.Get("builder.has_publications_planned"),
-					Value: c.Loc.Get("confirmations." + p.HasPublicationsPlanned),
+					Label:    c.Loc.Get("builder.has_publications_planned"),
+					Value:    c.Loc.Get("confirmations." + p.HasPublicationsPlanned),
+					Required: true,
 				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -607,8 +610,9 @@ func DetailsBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = display.Field(display.FieldArgs{
-					Label: c.Loc.Get("builder.has_published_material"),
-					Value: c.Loc.Get("confirmations." + p.HasPublishedMaterial),
+					Label:    c.Loc.Get("builder.has_published_material"),
+					Value:    c.Loc.Get("confirmations." + p.HasPublishedMaterial),
+					Required: true,
 				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
