@@ -222,7 +222,7 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
             cy.contains("No affiliation").click();
             cy.contains(".btn", "Apply filter").click();
           });
-        cy.getParams().should("eql", { q: "", "f[faculty_id]": "missing" });
+        cy.getParams().should("eql", { "f[faculty_id]": "missing" });
         assertAssetsAreCollapsed();
 
         cy.contains(".dropdown", "Locked")
@@ -232,7 +232,6 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
             cy.contains(".btn", "Apply filter").click();
           });
         cy.getParams().should("eql", {
-          q: "",
           "f[faculty_id]": "missing",
           "f[locked]": "false",
         });
@@ -248,7 +247,6 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
             cy.contains(".btn", "Apply filter").click();
           });
         cy.getParams().should("eql", {
-          q: "",
           "f[faculty_id]": "missing",
           "f[locked]": "false",
           "f[file_relation]": "main_file",
@@ -262,7 +260,6 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
             cy.contains(".btn", "Apply filter").click();
           });
         cy.getParams().should("eql", {
-          q: "",
           "f[faculty_id]": "missing",
           "f[locked]": "false",
           "f[file_relation]": "main_file",
@@ -271,7 +268,7 @@ describe("Issue #961: [filters] Prioritise filter sequence and visibility", () =
         assertAssetsAreExpanded();
 
         cy.contains(".btn", "Reset filters").click();
-        cy.getParams().should("eql", { q: "" });
+        cy.getParams().should("eql", {});
         assertAssetsAreCollapsed();
       });
 
