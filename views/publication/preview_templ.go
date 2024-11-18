@@ -464,7 +464,7 @@ func Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction 
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-group\"><label class=\"form-label form-label-top pb-0 mb-0 d-block\" for=\"\">Does the dissertation contain published articles? <span class=\"badge badge-outline-primary badge-sm\">Required</span></label><p class=\"form-text mb-3 small\">The dissertation contains a copy of the full text, either in the publisher's layout (VoR) or your own (AAM). <a class=\"c-link\" href=\"https://researchtips.ugent.be/en/tips/00002066\">Read more</a></p>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"form-group\"><label class=\"form-label form-label-top pb-0 mb-0 d-block\" for=\"\">Does the dissertation contain published articles? <span class=\"badge badge-outline-primary badge-sm\">Required</span></label><p class=\"form-text mb-3 small\">The dissertation contains a copy of the full text, either in the publisher's layout (VoR) or your own (AAM). <a class=\"c-link\" href=\"https://researchtips.ugent.be/en/tips/00002066\" target=\"_blank\">Read more</a></p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
