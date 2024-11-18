@@ -148,7 +148,7 @@ func Summary(c *ctx.Ctx, rec *models.CandidateRecord) templ.Component {
 				}
 				return templ_7745c5c3_Err
 			})
-			templ_7745c5c3_Err = publicationSummary(c, rec.Publication, SummaryOpts{
+			templ_7745c5c3_Err = publicationSummary(c, rec, SummaryOpts{
 				Badge:       summaryBadge("badge-default", fmt.Sprintf("Biblio suggestion via %s", rec.SourceName)),
 				ShowDetails: true,
 				Thumbnail:   c.AssetPath("/images/plato-logo.svg")}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
@@ -156,14 +156,14 @@ func Summary(c *ctx.Ctx, rec *models.CandidateRecord) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		case "imported":
-			templ_7745c5c3_Err = publicationSummary(c, rec.Publication, SummaryOpts{
+			templ_7745c5c3_Err = publicationSummary(c, rec, SummaryOpts{
 				Badge: summaryBadge("badge-warning-light", fmt.Sprintf("Imported %s suggestion", rec.SourceName)),
 				Info:  importedInfo(c, rec)}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "rejected":
-			templ_7745c5c3_Err = publicationSummary(c, rec.Publication, SummaryOpts{
+			templ_7745c5c3_Err = publicationSummary(c, rec, SummaryOpts{
 				Badge: summaryBadge("badge-danger-light", fmt.Sprintf("Rejected %s suggestion", rec.SourceName)),
 				Info:  rejectedInfo(c, rec)}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
@@ -174,7 +174,7 @@ func Summary(c *ctx.Ctx, rec *models.CandidateRecord) templ.Component {
 	})
 }
 
-func publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) templ.Component {
+func publicationSummary(c *ctx.Ctx, rec *models.CandidateRecord, opts SummaryOpts) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -229,11 +229,11 @@ func publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) tem
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if p.Classification != "" {
+		if rec.Publication.Classification != "" {
 			var templ_7745c5c3_Var10 string
-			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s: %s", c.Loc.Get("publication_types."+p.Type), p.Classification))
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s: %s", c.Loc.Get("publication_types."+rec.Publication.Type), rec.Publication.Classification))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/summary.templ`, Line: 112, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/summary.templ`, Line: 112, Col: 121}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -241,9 +241,9 @@ func publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) tem
 			}
 		} else {
 			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_types." + p.Type))
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(c.Loc.Get("publication_types." + rec.Publication.Type))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/summary.templ`, Line: 114, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/summary.templ`, Line: 114, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -254,7 +254,7 @@ func publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) tem
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if mainFile := p.MainFile(); mainFile != nil {
+		if mainFile := rec.Publication.MainFile(); mainFile != nil {
 			var templ_7745c5c3_Var12 = []any{"c-subline", "me-3", "pe-3", templ.KV("border-end", mainFile.AccessLevel == "info:eu-repo/semantics/embargoedAccess")}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var12...)
 			if templ_7745c5c3_Err != nil {
@@ -430,11 +430,11 @@ func publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) tem
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if p.Title != "" {
+		if rec.Publication.Title != "" {
 			var templ_7745c5c3_Var21 string
-			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(p.Title)
+			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(rec.Publication.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/summary.templ`, Line: 156, Col: 19}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `candidaterecord/summary.templ`, Line: 156, Col: 33}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -455,7 +455,7 @@ func publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) tem
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			for _, summaryPart := range p.SummaryParts() {
+			for _, summaryPart := range rec.Publication.SummaryParts() {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -480,9 +480,9 @@ func publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) tem
 			}
 			templ_7745c5c3_Err = contributorviews.Summary(c, contributorviews.SummaryArgs{
 				Role:                    "author",
-				Contributors:            p.Author,
-				CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
-				CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
+				Contributors:            rec.Publication.Author,
+				CanViewMoreContributors: c.Repo.CanViewPublication(c.User, rec.Publication),
+				CanEditContributors:     c.Repo.CanEditPublication(c.User, rec.Publication),
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -493,10 +493,10 @@ func publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) tem
 			}
 			templ_7745c5c3_Err = contributorviews.Summary(c, contributorviews.SummaryArgs{
 				Role:                    "supervisor",
-				Contributors:            p.Supervisor,
-				CurrentUserRoles:        publicationsummaryviews.GetUserContributorRoles(p, c.User),
-				CanViewMoreContributors: c.Repo.CanViewPublication(c.User, p),
-				CanEditContributors:     c.Repo.CanEditPublication(c.User, p),
+				Contributors:            rec.Publication.Supervisor,
+				CurrentUserRoles:        publicationsummaryviews.GetUserContributorRoles(rec.Publication, c.User),
+				CanViewMoreContributors: c.Repo.CanViewPublication(c.User, rec.Publication),
+				CanEditContributors:     c.Repo.CanEditPublication(c.User, rec.Publication),
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -505,12 +505,12 @@ func publicationSummary(c *ctx.Ctx, p *models.Publication, opts SummaryOpts) tem
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if len(p.RelatedOrganizations) > 0 {
+			if len(rec.Publication.RelatedOrganizations) > 0 {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"d-inline-flex align-items-center flex-wrap\"><span class=\"badge rounded-pill badge-light me-4\">Suggested departments</span><ul class=\"c-meta-list c-meta-list-inline\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				for _, o := range p.RelatedOrganizations {
+				for _, o := range rec.Publication.RelatedOrganizations {
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li class=\"c-meta-item\"><i class=\"if if-building if--small if--muted pe-1\"></i> <span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
