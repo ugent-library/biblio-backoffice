@@ -38,7 +38,10 @@ templ Summary(c *ctx.Ctx, rec *models.CandidateRecord) {
 					hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
 					hx-target="#modals"
 				>
-					<div class="btn-text">Reject</div>
+					<div class="btn-text">
+						Reject
+						<span class="d-lg-none d-xl-inline-block">duplicate</span>
+					</div>
 				</button>
 				if c.UserRole == "curator" {
 					<button
@@ -223,13 +226,8 @@ templ summaryBadge(colorClass string, text string) {
 templ importedInfo(c *ctx.Ctx, rec *models.CandidateRecord) {
 	<p class="text-muted text-md-end text-nowrap">
 		<span>
-			Claimed:
-			if rec.StatusPerson != nil {
-				{ rec.StatusPerson.FullName }.
-			} else {
-				[missing].
-			}
-			if rec.ImportedID != "" {
+			Imported by: { statusPersonName(c, rec.StatusPerson) }.
+			if c.Repo.CanCurate(c.User) && rec.ImportedID != "" {
 				<a class="c-link c-link-muted" type="button" href={ templ.URL(c.PathTo("publication", "id", rec.ImportedID).String()) }>View</a>
 			}
 		</span>
@@ -243,21 +241,28 @@ templ importedInfo(c *ctx.Ctx, rec *models.CandidateRecord) {
 templ rejectedInfo(c *ctx.Ctx, rec *models.CandidateRecord) {
 	<p class="text-muted text-md-end text-nowrap">
 		<span>
-			Rejected:
-			if rec.StatusPerson != nil {
-				{ rec.StatusPerson.FullName }.
-			} else {
-				[missing].
-			}
+			Rejected as a duplicate by { statusPersonName(c, rec.StatusPerson) }.
 			<a
 				class="c-link c-link-muted"
 				type="button"
 				hx-put={ c.PathTo("restore_rejected_candidate_record", "id", rec.ID).String() }
 				hx-target={ fmt.Sprintf("#candidate-record-%s", rec.ID) }
 				hx-swap="outerHTML"
-			>Restore</a>
+			>Restore: not a duplicate.</a>
 		</span>
 		<br/>
 		<small class="fst-italic d-inline-block pt-2">On { rec.StatusDate.Format("2006-01-02") }. Reminder disappears in { daysUntilDisappearanceDate(*rec.StatusDate) } day(s).</small>
 	</p>
+}
+
+func statusPersonName(c *ctx.Ctx, person *models.Person) string {
+	if person != nil {
+		if c.Repo.CanCurate(c.User) || !c.Repo.CanCurate(person) {
+			return person.FullName
+		} else {
+			return "a biblio team member"
+		}
+	} else {
+		return "[missing]"
+	}
 }

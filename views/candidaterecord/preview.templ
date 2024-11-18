@@ -16,7 +16,7 @@ templ actions(c *ctx.Ctx, rec *models.CandidateRecord) {
 		hx-get={ c.PathTo("confirm_reject_candidate_record", "id", rec.ID, "redirect-url", c.URLTo("candidate_records").String()).String() }
 		hx-target="#modals"
 	>
-		<div class="btn-text">Reject</div>
+		<div class="btn-text">Reject duplicate</div>
 	</button>
 
 	<button
