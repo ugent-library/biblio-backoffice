@@ -32,7 +32,7 @@ func ConfirmHide(c *ctx.Ctx, rec *models.CandidateRecord) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-body\"><div class=\"c-blank-slate c-blank-slate-muted\"><div class=\"bc-avatar\"><i class=\"if if-alert\"></i></div><h4>Do you want to reject this suggestion for<br>its authors and supervisors?</h4><p>Rejecting this suggestion will remove it for all involved parties.</p></div></div><div class=\"modal-footer\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><button class=\"btn btn-link modal-close\">No, cancel</button></div></div><div class=\"bc-toolbar-right\"><button class=\"btn btn-danger\" hx-put=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"modal-dialog modal-dialog-centered\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-body\"><div class=\"c-blank-slate c-blank-slate-muted\"><div class=\"bc-avatar\"><i class=\"if if-alert\"></i></div><h1 class=\"h3\">If this publication is already in Biblio, <br>you can reject it as a duplicate.</h1><p>Rejecting this suggestion will remove it for <span class=\"text-dark\">all involved parties</span>.</p></div></div><div class=\"modal-footer\"><div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"bc-toolbar-item\"><button class=\"btn btn-link modal-close\">No, cancel</button></div></div><div class=\"bc-toolbar-right\"><button class=\"btn btn-danger\" hx-put=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -58,7 +58,7 @@ func ConfirmHide(c *ctx.Ctx, rec *models.CandidateRecord) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outerHTML\">Yes, reject suggestion</button></div></div></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-swap=\"outerHTML\">Yes, reject as duplicate</button></div></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
