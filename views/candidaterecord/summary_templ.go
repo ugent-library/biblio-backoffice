@@ -27,7 +27,7 @@ type SummaryOpts struct {
 }
 
 func daysUntilDisappearanceDate(date time.Time) string {
-	disappearanceDate := util.DateOnly(date).AddDate(0, 0, 90)
+	disappearanceDate := util.DateOnly(date).AddDate(0, 0, 365)
 	today := util.DateOnly(time.Now())
 	daysUntil := math.Max(0, disappearanceDate.Sub(today).Hours()/24)
 
