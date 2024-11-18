@@ -97,8 +97,8 @@ describe("Login & authorization", () => {
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
-    cy.contains(".c-sidebar__item", "Batch").should("be.visible");
     cy.contains(".c-sidebar__item", "Suggestions").should("be.visible");
+    cy.contains(".c-sidebar__item", "Batch").should("be.visible");
 
     cy.loginAsLibrarian("librarian1", "Researcher");
 
@@ -117,8 +117,8 @@ describe("Login & authorization", () => {
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
+    cy.contains(".c-sidebar__item", "Suggestions").should("be.visible");
     cy.contains(".c-sidebar__item", "Batch").should("not.exist");
-    cy.contains(".c-sidebar__item", "Suggestions").should("not.exist");
 
     cy.loginAsLibrarian("librarian1", "Librarian");
 
@@ -137,8 +137,8 @@ describe("Login & authorization", () => {
     cy.contains(".c-sidebar__item", "Dashboard").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Publications").should("be.visible");
     cy.contains(".c-sidebar__item", "Biblio Datasets").should("be.visible");
-    cy.contains(".c-sidebar__item", "Batch").should("be.visible");
     cy.contains(".c-sidebar__item", "Suggestions").should("be.visible");
+    cy.contains(".c-sidebar__item", "Batch").should("be.visible");
 
     cy.get(".c-sidebar").should("have.class", "c-sidebar--dark-gray");
   });
