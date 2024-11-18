@@ -1273,7 +1273,7 @@ func RadioGroup(args RadioGroupArgs) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if args.Required {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("&nbsp;<span class=\"badge badge-outline-primary badge-sm ms-0\">Required</span>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<span class=\"badge badge-outline-primary badge-sm ms-0\">Required</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

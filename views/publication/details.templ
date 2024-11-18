@@ -226,18 +226,22 @@ templ DetailsBody(c *ctx.Ctx, p *models.Publication) {
 					@display.Field(display.FieldArgs{
 						Label: c.Loc.Get("builder.has_confidential_data"),
 						Value: c.Loc.Get("confirmations." + p.HasConfidentialData),
+						Required: true,
 					})
 					@display.Field(display.FieldArgs{
 						Label: c.Loc.Get("builder.has_patent_application"),
 						Value: c.Loc.Get("confirmations." + p.HasPatentApplication),
+						Required: true,
 					})
 					@display.Field(display.FieldArgs{
 						Label: c.Loc.Get("builder.has_publications_planned"),
 						Value: c.Loc.Get("confirmations." + p.HasPublicationsPlanned),
+						Required: true,
 					})
 					@display.Field(display.FieldArgs{
 						Label: c.Loc.Get("builder.has_published_material"),
 						Value: c.Loc.Get("confirmations." + p.HasPublishedMaterial),
+						Required: true,
 					})
 				}
 			}

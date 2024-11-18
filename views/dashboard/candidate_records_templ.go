@@ -34,7 +34,7 @@ func CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) tem
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(recs) > 0 {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center\"><label class=\"badge badge-sm rounded-pill bg-success me-3\">New &mdash; in beta</label><h2 class=\"mb-0\">Suggestions</h2>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bc-toolbar\"><div class=\"bc-toolbar-left\"><div class=\"d-flex align-items-center\"><h2 class=\"mb-0\">Suggestions</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -46,7 +46,7 @@ func CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) tem
 				var templ_7745c5c3_Var2 string
 				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprint(total))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dashboard/candidate_records.templ`, Line: 18, Col: 86}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `dashboard/candidate_records.templ`, Line: 17, Col: 86}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
@@ -96,7 +96,7 @@ func CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) tem
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(c.AssetPath("/images/book-illustration.svg"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dashboard/candidate_records.templ`, Line: 55, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `dashboard/candidate_records.templ`, Line: 54, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
