@@ -93,7 +93,11 @@ templ publicationSummary(c *ctx.Ctx, rec *models.CandidateRecord, opts SummaryOp
 	<div class="w-100">
 		<div class="c-thumbnail-and-text align-items-start w-100">
 			if opts.Thumbnail != "" {
-				<div class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img c-thumbnail-small c-thumbnail-lg-large">
+				<div
+					class="c-thumbnail c-thumbnail-1-1 c-thumbnail-img d-sm-none d-lg-block"
+					hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
+					hx-target="#modals"
+				>
 					<div class="c-thumbnail-inner">
 						<img src={ opts.Thumbnail }/>
 					</div>
@@ -151,13 +155,19 @@ templ publicationSummary(c *ctx.Ctx, rec *models.CandidateRecord, opts SummaryOp
 								}
 							</div>
 							<h4 class="mb-0">
-								<span class="list-group-item-title">
-									if rec.Publication.Title != "" {
-										{ rec.Publication.Title }
-									} else {
-										Untitled record
-									}
-								</span>
+								<a
+									href="#"
+									hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
+									hx-target="#modals"
+								>
+									<span class="list-group-item-title">
+										if rec.Publication.Title != "" {
+											{ rec.Publication.Title }
+										} else {
+											Untitled record
+										}
+									</span>
+								</a>
 							</h4>
 							if opts.ShowDetails {
 								<ul class="c-meta-list c-meta-list-inline">
