@@ -12,7 +12,6 @@ templ CandidateRecords(c *ctx.Ctx, total int, recs []*models.CandidateRecord) {
 		<div class="bc-toolbar">
 			<div class="bc-toolbar-left">
 				<div class="d-flex align-items-center">
-					<label class="badge badge-sm rounded-pill bg-success me-3">New &mdash; in beta</label>
 					<h2 class="mb-0">Suggestions</h2>
 					if total > 0 {
 						<span class="badge badge-primary rounded-pill badge-sm ms-3">{ fmt.Sprint(total) }</span>
