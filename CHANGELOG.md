@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.62] - 2024-11-19
+
+### Added
+
+### Fixed
+
+- #1742: Allow restore of rejected suggestion by reviewer as normal user
+
 ## [v1.0.61] - 2024-11-14
 
 ### Added
@@ -635,7 +643,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.61...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.62...HEAD
+[v1.0.62]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.61...v1.0.62
 [v1.0.61]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.60...v1.0.61
 [v1.0.60]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.59...v1.0.60
 [v1.0.59]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.58...v1.0.59
