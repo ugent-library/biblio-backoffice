@@ -158,11 +158,7 @@ templ publicationSummary(c *ctx.Ctx, rec *models.CandidateRecord, opts SummaryOp
 								}
 							</div>
 							<h4 class="mb-0">
-								<a
-									href="#"
-									hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
-									hx-target="#modals"
-								>
+								if opts.Info != nil {
 									<span class="list-group-item-title">
 										if rec.Publication.Title != "" {
 											{ rec.Publication.Title }
@@ -170,7 +166,21 @@ templ publicationSummary(c *ctx.Ctx, rec *models.CandidateRecord, opts SummaryOp
 											Untitled record
 										}
 									</span>
-								</a>
+								} else {
+									<a
+										href="#"
+										hx-get={ c.PathTo("candidate_records_preview", "id", rec.ID, "redirect-url", c.PathTo("candidate_records").String()).String() }
+										hx-target="#modals"
+									>
+										<span class="list-group-item-title">
+											if rec.Publication.Title != "" {
+												{ rec.Publication.Title }
+											} else {
+												Untitled record
+											}
+										</span>
+									</a>
+								}
 							</h4>
 							if opts.ShowDetails {
 								<ul class="c-meta-list c-meta-list-inline">
@@ -236,7 +246,7 @@ templ summaryBadge(colorClass string, text string) {
 templ importedInfo(c *ctx.Ctx, rec *models.CandidateRecord) {
 	<p class="text-muted text-md-end text-nowrap">
 		<span>
-			Imported by: { statusPersonName(c, rec.StatusPerson) }.
+			Imported by { statusPersonName(c, rec.StatusPerson) }.
 			if c.Repo.CanCurate(c.User) && rec.ImportedID != "" {
 				<a class="c-link c-link-muted" type="button" href={ templ.URL(c.PathTo("publication", "id", rec.ImportedID).String()) }>View</a>
 			}
