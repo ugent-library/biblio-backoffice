@@ -160,6 +160,7 @@ func Register(c Config) {
 				Env:         c.Env,
 				StatusErrorHandlers: map[int]http.HandlerFunc{
 					http.StatusNotFound:            handlers.NotFound,
+					http.StatusUnauthorized:        handlers.Unauthorized,
 					http.StatusInternalServerError: handlers.InternalServerError,
 				},
 				ErrorHandlers: map[error]http.HandlerFunc{

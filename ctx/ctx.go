@@ -31,6 +31,7 @@ const (
 	OriginalUserIDKey   = "original_user_id"
 	UserRoleKey         = "user_role"
 	OriginalUserRoleKey = "original_user_role"
+	DestinationKey      = "destination"
 	FlashCookiePrefix   = "flash"
 )
 

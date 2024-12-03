@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/handlers/authenticating"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/htmx"
 )
 
 func UserNotFound(w http.ResponseWriter, r *http.Request) {
@@ -32,6 +34,16 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
 	w.WriteHeader(404)
 	views.NotFound(c).Render(r.Context(), w)
+}
+
+func Unauthorized(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet && strings.Contains(r.Header.Get("Accept"), "text/html") && !htmx.Request(r) {
+		c := ctx.Get(r)
+		http.Redirect(w, r, c.PathTo("login", "destination", r.URL.String()).String(), http.StatusSeeOther)
+		return
+	}
+
+	http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 }
 
 func InternalServerError(w http.ResponseWriter, r *http.Request) {

@@ -55,16 +55,42 @@ func (h *AuthHandler) Callback(w http.ResponseWriter, r *http.Request) {
 		session.Values[ctx.UserRoleKey] = "user"
 	}
 
+	var destination string
+	if v, ok := session.Values[ctx.DestinationKey]; ok {
+		destination = v.(string)
+		delete(session.Values, ctx.DestinationKey)
+	} else {
+		destination = c.PathTo("home").String()
+	}
+
 	if err := session.Save(r, w); err != nil {
 		c.HandleError(w, r, fmt.Errorf("session could not be saved: %w", err))
 		return
 	}
 
-	http.Redirect(w, r, c.PathTo("home").String(), http.StatusFound)
+	http.Redirect(w, r, destination, http.StatusFound)
 }
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	c := ctx.Get(r)
+
+	session, err := c.SessionStore.Get(r, c.SessionName)
+	if err != nil {
+		c.HandleError(w, r, fmt.Errorf("session could not be retrieved: %w", err))
+		return
+	}
+
+	if destination := r.URL.Query().Get("destination"); destination != "" {
+		session.Values[ctx.DestinationKey] = destination
+	} else {
+		delete(session.Values, ctx.DestinationKey)
+	}
+
+	if err := session.Save(r, w); err != nil {
+		c.HandleError(w, r, fmt.Errorf("session could not be saved: %w", err))
+		return
+	}
+
 	if err := h.auth.BeginAuth(w, r); err != nil {
 		c.HandleError(w, r, err)
 		return
