@@ -224,10 +224,10 @@ describe("Authorization", () => {
 
     cy.setUpPublication();
 
-    testUnauthorizedPublicationRoute("/reviewer-tags/edit");
-    testUnauthorizedPublicationRoute("/reviewer-tags", "PUT");
-    testUnauthorizedPublicationRoute("/reviewer-note/edit");
-    testUnauthorizedPublicationRoute("/reviewer-note", "PUT");
+    testForbiddenPublicationRoute("/reviewer-tags/edit");
+    testForbiddenPublicationRoute("/reviewer-tags", "PUT");
+    testForbiddenPublicationRoute("/reviewer-note/edit");
+    testForbiddenPublicationRoute("/reviewer-note", "PUT");
   });
 
   it("should not be possible to edit dataset reviewer tags and notes as a regular user", () => {
@@ -235,10 +235,10 @@ describe("Authorization", () => {
 
     cy.setUpDataset();
 
-    testUnauthorizedDatasetRoute("/reviewer-tags/edit");
-    testUnauthorizedDatasetRoute("/reviewer-tags", "PUT");
-    testUnauthorizedDatasetRoute("/reviewer-note/edit");
-    testUnauthorizedDatasetRoute("/reviewer-note", "PUT");
+    testForbiddenDatasetRoute("/reviewer-tags/edit");
+    testForbiddenDatasetRoute("/reviewer-tags", "PUT");
+    testForbiddenDatasetRoute("/reviewer-note/edit");
+    testForbiddenDatasetRoute("/reviewer-note", "PUT");
   });
 
   type HttpMethods = ("GET" | "PUT" | "POST" | "DELETE")[];
@@ -249,15 +249,6 @@ describe("Authorization", () => {
     });
   }
 
-  function testUnauthorizedDatasetRoute(
-    route: string,
-    ...methods: HttpMethods
-  ) {
-    cy.then(function () {
-      testRouteHttpStatus(401, `/dataset/${this.biblioId}${route}`, ...methods);
-    });
-  }
-
   function testForbiddenPublicationRoute(
     route: string,
     ...methods: HttpMethods
@@ -265,19 +256,6 @@ describe("Authorization", () => {
     cy.then(function () {
       testRouteHttpStatus(
         403,
-        `/publication/${this.biblioId}${route}`,
-        ...methods,
-      );
-    });
-  }
-
-  function testUnauthorizedPublicationRoute(
-    route: string,
-    ...methods: HttpMethods
-  ) {
-    cy.then(function () {
-      testRouteHttpStatus(
-        401,
         `/publication/${this.biblioId}${route}`,
         ...methods,
       );
