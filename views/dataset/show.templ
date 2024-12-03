@@ -1,9 +1,17 @@
 package dataset
 
 import (
+	"fmt"
+	"github.com/samber/lo"
 	"github.com/ugent-library/biblio-backoffice/ctx"
+	"github.com/ugent-library/biblio-backoffice/identifiers"
+	"github.com/ugent-library/biblio-backoffice/localize"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/views"
+	"github.com/ugent-library/biblio-backoffice/views/display"
+	"github.com/ugent-library/biblio-backoffice/views/form"
+	"github.com/ugent-library/biblio-backoffice/views/shared"
+	"github.com/ugent-library/okay"
 )
 
 templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
@@ -28,7 +36,6 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 											<span class="text-muted c-body-small ms-2">Locked</span>
 										</span>
 									}
-
 									if dataset.AccessLevel != "" {
 										<span class="c-subline pe-3">
 											if dataset.AccessLevel == "info:eu-repo/semantics/openAccess" {
@@ -53,7 +60,6 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 												</span>
 											}
 										</span>
-
 										if dataset.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
 											<span class="c-subline me-3 px-3 border-end border-start">
 												<i class="if if-eye-off if--small if--muted"></i>
@@ -75,7 +81,6 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 											</span>
 										}
 									}
-
 									<span class="c-subline me-3 ps-3 border-start">
 										if dataset.License != "" {
 											if dataset.License == "LicenseNotListed" {
@@ -172,7 +177,6 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 								}
 							</div>
 						</div>
-
 						<h4 class="w-100 mb-0 mb-lg-2">
 							if len(dataset.Author) == 1 && dataset.Author[0] != nil {
 								{ dataset.Author[0].LastName() }, { dataset.Author[0].FirstName() }, creator.
@@ -242,7 +246,186 @@ templ Show(c *ctx.Ctx, dataset *models.Dataset, redirectURL string) {
 					hx-trigger="load delay:100ms"
 					hx-target="#show-content"
 				></div>
+				@shared.DetailsSidebar(c,
+					shared.DetailsSidebarStepArgs{
+						ID:           "message",
+						Icon:         "if-message",
+						Title:        "Biblio messages",
+						Component:    messagesPane(c, dataset),
+						Notification: dataset.Message != "",
+					},
+					shared.DetailsSidebarStepArgs{
+						ID:        "history",
+						Icon:      "if-time",
+						Title:     "Activity history",
+						Component: historyPane(c, dataset),
+					},
+					shared.DetailsSidebarStepArgs{
+						ID:        "info",
+						Icon:      "if-info-circle",
+						Title:     "Details",
+						Component: infoPane(c, dataset),
+					})
 			</div>
 		</div>
 	}
+}
+
+templ messagesPane(c *ctx.Ctx, d *models.Dataset) {
+	<div hx-get={ c.PathTo("dataset_messages", "id", d.ID).String() } hx-trigger="load delay:100ms">
+		Loading messages&hellip;
+	</div>
+}
+
+type MessagesArgs struct {
+	Dataset  *models.Dataset
+	Errors   *okay.Errors
+	Conflict bool
+}
+
+templ Messages(c *ctx.Ctx, args MessagesArgs) {
+	<div class="form-group">
+		if args.Conflict {
+			<div class="alert alert-danger mb-4" role="alert">
+				<i class="if if--error if-error-circle-fill"></i>
+				The dataset you are editing has been changed by someone else. Please copy your edits, then refresh this form.
+			</div>
+		}
+		@form.Errors(localize.ValidationErrors(c.Loc, args.Errors))
+		<div class="bc-toolbar gap-2">
+			<div class="bc-toolbar-left">
+				<label class="col-form-label">Messages from and for Biblio team</label>
+			</div>
+			<div class="bc-toolbar-right">
+				if !args.Conflict && c.Repo.CanEditDataset(c.User, args.Dataset) {
+					<button
+						class="btn btn-primary btn-sm"
+						hx-put={ c.PathTo("dataset_messages_update_biblio_message", "id", args.Dataset.ID).String() }
+						hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.Dataset.SnapshotID) }
+						hx-include="closest .form-group"
+						hx-target="closest .sidebar-content"
+						hx-swap="innerHTML"
+					>Save</button>
+				}
+			</div>
+		</div>
+		@form.TextArea(form.TextAreaArgs{
+			FieldArgs: form.FieldArgs{
+				Name:     "message",
+				Error:    localize.ValidationErrorAt(c.Loc, args.Errors, "/message"),
+				Theme:    form.ThemeVertical,
+				Readonly: !c.Repo.CanEditDataset(c.User, args.Dataset),
+			},
+			Value: args.Dataset.Message,
+			Rows:  15,
+		})
+		<p class="text-muted mt-2">Have any questions or changes to report? Mail to <a href="mailto:biblio@ugent.be">biblio@ugent.be</a>.</p>
+	</div>
+	if c.Repo.CanCurate(c.User) {
+		<div class="form-group">
+			<div class="bc-toolbar gap-2">
+				<div class="bc-toolbar-left">
+					<label class="col-form-label">Librarian tags</label>
+				</div>
+				<div class="bc-toolbar-right">
+					if !args.Conflict {
+						<button
+							class="btn btn-primary btn-sm"
+							hx-put={ c.PathTo("dataset_messages_update_reviewer_tags", "id", args.Dataset.ID).String() }
+							hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.Dataset.SnapshotID) }
+							hx-include="closest .form-group"
+							hx-target="closest .sidebar-content"
+							hx-swap="innerHTML"
+						>Save</button>
+					}
+				</div>
+			</div>
+			@form.Tags(form.TagsArgs{
+				FieldArgs: form.FieldArgs{
+					Name:  "reviewer_tags",
+					Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/message"),
+					Theme: form.ThemeVertical,
+					Help:  c.Loc.Get("builder.keyword.help"),
+				},
+				Values: args.Dataset.ReviewerTags,
+			})
+			<p class="text-muted mt-2">For internal use only.</p>
+		</div>
+		<div class="form-group">
+			<div class="bc-toolbar gap-2">
+				<div class="bc-toolbar-left">
+					<label class="col-form-label">Librarian note</label>
+				</div>
+				<div class="bc-toolbar-right">
+					if !args.Conflict {
+						<button
+							class="btn btn-primary btn-sm"
+							hx-put={ c.PathTo("dataset_messages_update_reviewer_note", "id", args.Dataset.ID).String() }
+							hx-headers={ fmt.Sprintf(`{"If-Match": "%s"}`, args.Dataset.SnapshotID) }
+							hx-include="closest .form-group"
+							hx-target="closest .sidebar-content"
+							hx-swap="innerHTML"
+						>Save</button>
+					}
+				</div>
+			</div>
+			@form.TextArea(form.TextAreaArgs{
+				FieldArgs: form.FieldArgs{
+					Name:  "reviewer_note",
+					Error: localize.ValidationErrorAt(c.Loc, args.Errors, "/reviewer_note"),
+					Theme: form.ThemeVertical,
+				},
+				Value: args.Dataset.ReviewerNote,
+				Rows:  15,
+			})
+			<p class="text-muted mt-2">For internal use only.</p>
+		</div>
+	}
+}
+
+templ historyPane(c *ctx.Ctx, d *models.Dataset) {
+	<div hx-get={ c.PathTo("dataset_recent_activity", "id", d.ID).String() } hx-trigger="load delay:100ms">
+		Loading recent activity&hellip;
+	</div>
+}
+
+templ RecentActivity(c *ctx.Ctx, acts []views.Activity, d *models.Dataset) {
+	@views.ActivityList(c, acts, lo.ToPtr(d.ID))
+}
+
+templ infoPane(c *ctx.Ctx, d *models.Dataset) {
+	<ul class="c-activity-list">
+		<div class="form-group">
+			<label class="form-label form-label-top">Created by</label>
+			<p>
+				if d.Creator != nil {
+					{ d.Creator.FullName }
+				} else {
+					[missing]
+				}
+			</p>
+		</div>
+		<div class="form-group">
+			<label class="form-label form-label-top">Creation date</label>
+			<p>{ d.DateCreated.Format("2006-01-02") }</p>
+		</div>
+		for key, v := range d.Identifiers {
+			<div class="form-group">
+				<label class="form-label form-label-top">{ key }</label>
+				for _, i := range v {
+					@display.Link(i, func(id string) string { return identifiers.Resolve(key, id) })
+				}
+			</div>
+		}
+		if d.Status =="public" {
+			<div class="form-group">
+				<label class="form-label form-label-top">Public Biblio Location</label>
+				{{ handleURL := identifiers.Handle.Resolve("1854/LU-" + d.ID) }}
+				<a href={ templ.SafeURL(handleURL) } target="_blank">
+					{ handleURL }
+					<i class="if if--small if-external-link"></i>
+				</a>
+			</div>
+		}
+	</ul>
 }

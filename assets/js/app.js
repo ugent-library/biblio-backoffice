@@ -17,6 +17,7 @@ import collapseSubSidebar from "./ui/collapsible_sub_sidebar.js";
 import fileUpload from "./ui/file_upload.js";
 import tags from "./ui/tags.js";
 import facetDropdowns from "./ui/facet_dropdowns.js";
+import initSidebarMenu from "./ui/sidebar_menu.ts";
 import initSearchFields from "./ui/search";
 
 // configure htmx
@@ -51,4 +52,5 @@ document.addEventListener("DOMContentLoaded", function () {
 htmx.onLoad(function (el) {
   clipboard(el);
   initSearchFields(el);
+  initSidebarMenu(el);
 });

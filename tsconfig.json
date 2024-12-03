@@ -2,6 +2,7 @@
   "include": ["assets/js/**/*.ts"],
   "compilerOptions": {
     "lib": ["dom"],
+    "target": "ES2018",
     "noEmit": true,
     "allowJs": true
   }
