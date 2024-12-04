@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Redirect users to login and back when login is needed
+
 ### Fixed
+
+- #1745: Skip empty Plato abstracts
 
 ## [v1.0.62] - 2024-11-19
 
