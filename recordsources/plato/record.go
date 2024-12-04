@@ -119,8 +119,8 @@ func (r *platoRecord) ToCandidateRecord(services *backends.Services) (*models.Ca
 	if v := md.Get("pdf.ISBN"); v.Exists() {
 		p.ISBN = append(p.ISBN, v.String())
 	}
-	if v := md.Get("pdf.abstract"); v.Exists() {
-		p.AddAbstract(&models.Text{Lang: "dut", Text: v.String()})
+	if v := md.Get("pdf.abstract").String(); v != "" {
+		p.AddAbstract(&models.Text{Lang: "dut", Text: v})
 	}
 	if v := md.Get("pdf.url"); v.Exists() {
 		sha256, size, err := recordsources.StoreURL(context.TODO(), v.String(), services.FileStore)
