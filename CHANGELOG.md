@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+## [v1.0.63] - 2024-12-04
+
+### Added
+
 - Redirect users to login and back when login is needed
 
 ### Fixed
@@ -647,7 +653,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.62...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.63...HEAD
+[v1.0.63]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.62...v1.0.63
 [v1.0.62]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.61...v1.0.62
 [v1.0.61]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.60...v1.0.61
 [v1.0.60]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.59...v1.0.60
