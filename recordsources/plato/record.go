@@ -43,23 +43,23 @@ func (r *platoRecord) ToCandidateRecord(services *backends.Services) (*models.Ca
 	p.SourceDB = "plato"
 	p.SourceID = platoID
 
-	if v := md.Get("titel.eng"); v.Exists() {
-		p.Title = v.String()
-		if v := md.Get("titel.ned"); v.Exists() {
-			p.AlternativeTitle = append(p.AlternativeTitle, v.String())
+	if v := md.Get("titel.eng").String(); v != "" {
+		p.Title = v
+		if v := md.Get("titel.ned").String(); v != "" {
+			p.AlternativeTitle = append(p.AlternativeTitle, v)
 		}
-	} else if v := md.Get("titel.ned"); v.Exists() {
-		p.Title = v.String()
+	} else if v := md.Get("titel.ned").String(); v != "" {
+		p.Title = v
 	}
 
-	if v := md.Get("year"); v.Exists() {
-		p.Year = v.String()
+	if v := md.Get("year").String(); v != "" {
+		p.Year = v
 	}
 	p.PlaceOfPublication = "Ghent, Belgium"
 	p.PublicationStatus = "published"
 
-	if v := md.Get("defence.date"); v.Exists() {
-		p.DefenseDate = v.String()
+	if v := md.Get("defence.date").String(); v != "" {
+		p.DefenseDate = v
 	}
 	p.DefensePlace = "Ghent, Belgium"
 
@@ -86,14 +86,14 @@ func (r *platoRecord) ToCandidateRecord(services *backends.Services) (*models.Ca
 
 	var cbErr error
 	md.Get("supervisors").ForEach(func(key, val gjson.Result) bool {
-		if v := val.Get("ugentid"); v.Exists() {
-			hits, err := services.PersonSearchService.SuggestPeople(v.String())
+		if v := val.Get("ugentid").String(); v != "" {
+			hits, err := services.PersonSearchService.SuggestPeople(v)
 			if err != nil {
 				cbErr = err
 				return false
 			}
 			if len(hits) == 0 {
-				cbErr = errors.New("no matches for ugent id " + v.String())
+				cbErr = errors.New("no matches for ugent id " + v)
 				return false
 			}
 			p.Supervisor = append(p.Supervisor, models.ContributorFromPerson(hits[0]))
@@ -116,14 +116,14 @@ func (r *platoRecord) ToCandidateRecord(services *backends.Services) (*models.Ca
 		return nil, cbErr
 	}
 
-	if v := md.Get("pdf.ISBN"); v.Exists() {
-		p.ISBN = append(p.ISBN, v.String())
+	if v := md.Get("pdf.ISBN").String(); v != "" {
+		p.ISBN = append(p.ISBN, v)
 	}
 	if v := md.Get("pdf.abstract").String(); v != "" {
 		p.AddAbstract(&models.Text{Lang: "dut", Text: v})
 	}
-	if v := md.Get("pdf.url"); v.Exists() {
-		sha256, size, err := recordsources.StoreURL(context.TODO(), v.String(), services.FileStore)
+	if v := md.Get("pdf.url").String(); v != "" {
+		sha256, size, err := recordsources.StoreURL(context.TODO(), v, services.FileStore)
 		if err != nil {
 			return nil, err
 		}
