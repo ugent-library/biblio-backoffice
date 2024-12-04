@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.64] - 2024-12-04
+
+### Added
+
+### Fixed
+
+- #1745: Skip all empty and null Plato fields on import
+
 ## [v1.0.63] - 2024-12-04
 
 ### Added
@@ -19,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- #1745: Skip empty Plato abstracts
+- #1745: Skip empty Plato abstracts on import
 
 ## [v1.0.62] - 2024-11-19
 
@@ -653,7 +661,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.63...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.64...HEAD
+[v1.0.64]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.63...v1.0.64
 [v1.0.63]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.62...v1.0.63
 [v1.0.62]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.61...v1.0.62
 [v1.0.61]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.60...v1.0.61
