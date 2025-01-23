@@ -44,8 +44,7 @@ require (
 )
 
 require (
-	github.com/jackc/pgconn v1.14.1 // indirect
-	github.com/jackc/pgx/v4 v4.18.1 // indirect
+	github.com/jackc/pgx/v4 v4.18.2 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 )
 
