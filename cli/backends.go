@@ -69,8 +69,8 @@ func newServices() *backends.Services {
 				BaseURL:         config.Handle.URL,
 				FrontEndBaseURL: fmt.Sprintf("%s/publication", config.Frontend.URL),
 				Prefix:          config.Handle.Prefix,
-				Username:        config.Handle.Username,
-				Password:        config.Handle.Password,
+				ADMID:           config.Handle.ADMID,
+				ADMPrivateKey:   config.Handle.ADMPrivateKey,
 			},
 		)
 	}
