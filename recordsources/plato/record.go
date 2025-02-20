@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/tidwall/gjson"
@@ -121,6 +122,9 @@ func (r *platoRecord) ToCandidateRecord(services *backends.Services) (*models.Ca
 	}
 	if v := md.Get("pdf.abstract").String(); v != "" {
 		p.AddAbstract(&models.Text{Lang: "dut", Text: v})
+	}
+	if v := md.Get("pdf.confidential_reason").String(); v != "" {
+		p.ReviewerNote = fmt.Sprintf("plato confidential reason: %s", v)
 	}
 	if v := md.Get("pdf.url").String(); v != "" {
 		sha256, size, err := recordsources.StoreURL(context.TODO(), v, services.FileStore)
