@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.64] - 2025-02-20
+
+### Added
+
+### Fixed
+
+- #1754: map Plato confidentiality reason to reviewer note
+
 ## [v1.0.64] - 2024-12-04
 
 ### Added
@@ -661,7 +669,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.64...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.65...HEAD
+[v1.0.65]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.64...v1.0.65
 [v1.0.64]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.63...v1.0.64
 [v1.0.63]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.62...v1.0.63
 [v1.0.62]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.61...v1.0.62
