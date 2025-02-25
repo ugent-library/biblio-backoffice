@@ -39,7 +39,7 @@
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
     "env-cmd": "^10.1.0",
-    "esbuild": "^0.21.4",
+    "esbuild": "^0.25.0",
     "esbuild-plugin-clean": "^1.0.1",
     "esbuild-plugin-manifest": "^1.0.3",
     "esbuild-sass-plugin": "^3.3.0",
