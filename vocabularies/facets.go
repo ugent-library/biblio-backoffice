@@ -25,6 +25,7 @@ var Facets = map[string][][]string{
 			"faculty_id",
 			"year",
 			"type",
+			"miscellaneous_type",
 		},
 		{
 			"publication_status",
