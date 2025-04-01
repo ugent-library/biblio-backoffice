@@ -71,6 +71,7 @@ var fixedFacetValues = map[string][]string{
 	"publication_status": append([]string{backends.MissingValue}, vocabularies.Map["publication_publishing_statuses"]...),
 	"status":             vocabularies.Map["visible_publication_statuses"],
 	"type":               vocabularies.Map["publication_types"],
+	"miscellaneous_type": vocabularies.Map["miscellaneous_types"],
 	"vabb_type":          vocabularies.Map["publication_vabb_types"],
 }
 
