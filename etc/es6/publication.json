@@ -189,6 +189,9 @@
                 "type": {
                     "type": "keyword"
                 },
+                "miscellaneous_type": {
+                    "type": "keyword"
+                },
                 "year": {
                     "type": "date",
                     "format": "year",

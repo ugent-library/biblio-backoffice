@@ -133,6 +133,13 @@ templ CurationFacets(c *ctx.Ctx, searchArgs *models.SearchArgs, facets map[strin
 			LocPrefixShort: "publication_types",
 			FacetValues:    facets["type"],
 		}, searchArgs)
+		@views.Facet(c, views.FacetArgs{
+			FieldName:      "miscellaneous_type",
+			Title:          "Miscellaneous type",
+			LocPrefix:      "miscellaneous_types",
+			LocPrefixShort: "miscellaneous_types",
+			FacetValues:    facets["miscellaneous_type"],
+		}, searchArgs)
 	}
 	@views.FacetLine() {
 		@views.Facet(c, views.FacetArgs{
