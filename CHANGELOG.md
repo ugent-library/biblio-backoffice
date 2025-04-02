@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.66] - 2025-04-02
+
+### Added
+
+- Add miscellaneous type curator facet filter
+
+### Fixed
+
 ## [v1.0.65] - 2025-02-20
 
 ### Added
@@ -669,7 +677,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.65...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.66...HEAD
+[v1.0.66]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.65...v1.0.66
 [v1.0.65]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.64...v1.0.65
 [v1.0.64]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.63...v1.0.64
 [v1.0.63]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.62...v1.0.63
