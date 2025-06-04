@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.68] - 2025-06-04
+
+### Added
+
+### Fixed
+
+- Add cleanup step to fix old publications that have files with no access level
+
 ## [v1.0.67] - 2025-05-05
 
 ### Added
@@ -685,7 +693,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.67...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.68...HEAD
+[v1.0.68]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.67...v1.0.68
 [v1.0.67]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.66...v1.0.67
 [v1.0.66]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.65...v1.0.66
 [v1.0.65]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.64...v1.0.65
