@@ -111,6 +111,10 @@ func Register(c Config) {
 			AllowedIPs:     strings.Split(c.IPRanges, ","),
 			BlockByDefault: true,
 		}),
+		Router:       c.Router,
+		SessionStore: c.SessionStore,
+		SessionName:  c.SessionName,
+		UserService:  c.Services.UserService,
 	}
 
 	c.Router.Group(func(r *ich.Mux) {

@@ -10,8 +10,11 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/gorilla/sessions"
 	"github.com/jpillora/ipfilter"
+	"github.com/nics/ich"
 	"github.com/ugent-library/biblio-backoffice/backends"
+	"github.com/ugent-library/biblio-backoffice/ctx"
 	"github.com/ugent-library/biblio-backoffice/frontoffice"
 	"github.com/ugent-library/biblio-backoffice/models"
 	"github.com/ugent-library/biblio-backoffice/repositories"
@@ -21,11 +24,15 @@ import (
 )
 
 type Handler struct {
-	Log       *slog.Logger
-	Repo      *repositories.Repo
-	FileStore backends.FileStore
-	IPRanges  string
-	IPFilter  *ipfilter.IPFilter
+	Log          *slog.Logger
+	Repo         *repositories.Repo
+	FileStore    backends.FileStore
+	IPRanges     string
+	IPFilter     *ipfilter.IPFilter
+	Router       *ich.Mux
+	SessionStore sessions.Store
+	SessionName  string
+	UserService  backends.UserService
 }
 
 type Hits[T any] struct {
@@ -187,15 +194,32 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	case "info:eu-repo/semantics/openAccess":
 		// ok
 	case "info:eu-repo/semantics/restrictedAccess":
-		// check ip
-		ip := r.Header.Get("X-Forwarded-For")
-		if ip == "" {
-			remoteIP, _, _ := net.SplitHostPort(r.RemoteAddr)
-			ip = remoteIP
+		var hasAccess bool
+
+		hasUser, err := h.userIsLoggedIn(r)
+		if err != nil {
+			h.Log.Error("download file: unable to get user", "error", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
 		}
-		if !h.IPFilter.Allowed(ip) {
-			h.Log.Warn("ip not allowed, allowed", "ip", ip, "allowed", h.IPRanges)
-			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+
+		if hasUser {
+			hasAccess = true
+		} else {
+			// check ip
+			ip := r.Header.Get("X-Forwarded-For")
+			if ip == "" {
+				remoteIP, _, _ := net.SplitHostPort(r.RemoteAddr)
+				ip = remoteIP
+			}
+
+			if h.IPFilter.Allowed(ip) {
+				hasAccess = true
+			}
+		}
+
+		if !hasAccess {
+			http.Redirect(w, r, h.Router.Path("login", "destination", r.URL.String()).String(), http.StatusSeeOther)
 			return
 		}
 	default:
@@ -268,4 +292,26 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		io.Copy(w, reader)
 	}
 
+}
+
+func (h *Handler) userIsLoggedIn(r *http.Request) (bool, error) {
+	session, err := h.SessionStore.Get(r, h.SessionName)
+	if err != nil {
+		return false, err
+	}
+
+	userID := session.Values[ctx.UserIDKey]
+	if userID == nil {
+		return false, nil
+	}
+
+	_, err = h.UserService.GetUser(userID.(string))
+	if errors.Is(err, models.ErrNotFound) {
+		return false, models.ErrUserNotFound
+	}
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
