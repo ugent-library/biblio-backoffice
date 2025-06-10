@@ -196,28 +196,32 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	case "info:eu-repo/semantics/restrictedAccess":
 		var hasAccess bool
 
-		hasUser, err := h.userIsLoggedIn(r)
-		if err != nil {
-			h.Log.Error("download file: unable to get user", "error", err)
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-			return
+		// check ip
+		ip := r.Header.Get("X-Forwarded-For")
+		if ip == "" {
+			remoteIP, _, _ := net.SplitHostPort(r.RemoteAddr)
+			ip = remoteIP
 		}
 
-		if hasUser {
+		if h.IPFilter.Allowed(ip) {
 			hasAccess = true
-		} else {
-			// check ip
-			ip := r.Header.Get("X-Forwarded-For")
-			if ip == "" {
-				remoteIP, _, _ := net.SplitHostPort(r.RemoteAddr)
-				ip = remoteIP
+		}
+
+		// check logged in
+		if !hasAccess {
+			hasUser, err := h.userIsLoggedIn(r)
+			if err != nil {
+				h.Log.Error("download file: unable to get user", "error", err)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
 			}
 
-			if h.IPFilter.Allowed(ip) {
+			if hasUser {
 				hasAccess = true
 			}
 		}
 
+		// else redirect to login
 		if !hasAccess {
 			http.Redirect(w, r, h.Router.Path("login", "destination", r.URL.String()).String(), http.StatusSeeOther)
 			return
