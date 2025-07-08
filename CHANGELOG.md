@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.70] - 2025-07-08
+
+### Added
+
+### Fixed
+
+- Fix links
+
 ## [v1.0.69] - 2025-06-10
 
 ### Added
@@ -701,7 +709,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.69...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.70...HEAD
+[v1.0.70]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.69...v1.0.70
 [v1.0.69]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.68...v1.0.69
 [v1.0.68]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.67...v1.0.68
 [v1.0.67]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.66...v1.0.67

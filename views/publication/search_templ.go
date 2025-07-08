@@ -860,7 +860,7 @@ func Search(c *ctx.Ctx, args *SearchArgs) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var26 templ.SafeURL = templ.URL(c.PathTo("dataset_add").String())
+				var templ_7745c5c3_Var26 templ.SafeURL = templ.URL(c.PathTo("publication_add").String())
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var26)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
