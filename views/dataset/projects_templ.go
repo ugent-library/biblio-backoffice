@@ -208,7 +208,7 @@ func ProjectsBody(c *ctx.Ctx, dataset *models.Dataset) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var10 templ.SafeURL = templ.URL(fmt.Sprintf("%s/%s", c.FrontendURL, rel.Project.ID))
+				var templ_7745c5c3_Var10 templ.SafeURL = templ.URL(fmt.Sprintf("%s/project/%s", c.FrontendURL, rel.Project.ID))
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var10)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
