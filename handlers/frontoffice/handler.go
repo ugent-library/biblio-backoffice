@@ -251,8 +251,8 @@ func (h *Handler) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		{"ETag", f.SHA256},
 	}
 
-	// show pdf's up to 60 megabytes inline, download otherwise
-	if f.ContentType != "application/pdf" || f.Size > 60000000 {
+	// show pdf's up to 50 megabytes inline, download otherwise
+	if f.ContentType != "application/pdf" || f.Size >= 50000000 {
 		responseHeaders = append(responseHeaders, []string{"Content-Disposition", fmt.Sprintf("attachment; filename*=UTF-8''%s", url.PathEscape(f.Name))})
 	}
 
