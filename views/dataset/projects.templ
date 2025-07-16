@@ -73,7 +73,7 @@ templ ProjectsBody(c *ctx.Ctx, dataset *models.Dataset) {
 												<div class="me-3">
 													<a
 														class="c-link c-link-muted"
-														href={ templ.URL(fmt.Sprintf("%s/%s", c.FrontendURL, rel.Project.ID)) }
+														href={ templ.URL(fmt.Sprintf("%s/project/%s", c.FrontendURL, rel.Project.ID)) }
 														target="blank"
 													>
 														Read more <i class="if if-external-link if--small"></i>
