@@ -583,14 +583,20 @@ func (s *Repo) UpdatePublicationEmbargoes() (int, error) {
 
 		// clear expired embargoes
 		for _, file := range p.File {
-			isUnderEmbargo, err := file.IsUnderEmbargo()
-			if err != nil {
-				return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
-			}
+			if file.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+				isUnderEmbargo, err := file.IsUnderEmbargo()
+				if err != nil {
+					return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
+				}
 
-			if !isUnderEmbargo {
-				file.ClearEmbargo()
+				if !isUnderEmbargo {
+					file.ClearEmbargo()
+				}
 			}
+		}
+
+		if err := p.Validate(); err != nil {
+			return n, fmt.Errorf("repo.UpdatePublicationEmbargoes %s: %w", p.ID, err)
 		}
 
 		if err = s.UpdatePublication(p.SnapshotID, p, nil); err != nil {

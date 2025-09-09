@@ -423,12 +423,14 @@ func (r *Repo) UpdateCandidateRecordEmbargoes() (int, error) {
 
 	for _, cr := range candidateRecords {
 		for _, file := range cr.Publication.File {
-			isUnderEmbargo, err := file.IsUnderEmbargo()
-			if err != nil {
-				return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
-			}
-			if !isUnderEmbargo {
-				file.ClearEmbargo()
+			if file.AccessLevel == "info:eu-repo/semantics/embargoedAccess" {
+				isUnderEmbargo, err := file.IsUnderEmbargo()
+				if err != nil {
+					return n, fmt.Errorf("repo.UpdatePublicationEmbargoes: %w", err)
+				}
+				if !isUnderEmbargo {
+					file.ClearEmbargo()
+				}
 			}
 		}
 

@@ -894,8 +894,18 @@ func (s *server) CleanupPublications(req *api.CleanupPublicationsRequest, stream
 		// fix missing access levels
 		for _, f := range p.File {
 			if f.AccessLevel == "" {
-				f.AccessLevel = "info:eu-repo/semantics/restrictedAccess"
-				fixed = true
+				s.services.Repo.PublicationHistory(p.ID, func(pOld *models.Publication) bool {
+					for _, fOld := range pOld.File {
+						if fOld.ID == f.ID {
+							if fOld.AccessLevel != "" {
+								f.AccessLevel = fOld.AccessLevel
+								fixed = true
+							}
+							break
+						}
+					}
+					return !fixed
+				})
 			}
 		}
 

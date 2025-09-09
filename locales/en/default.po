@@ -1766,7 +1766,7 @@ msgid "organization.WE01"
 msgstr "Department of Mathematics: Algebra and Geometry"
 
 msgid "organization.WE02"
-msgstr "Department of Applied mathematics, computer science and statistics"
+msgstr "Department of Mathematics, Computer Science and Statistics"
 
 msgid "organization.WE03*"
 msgstr "Department of Mathematical Physics and Astronomy (ceased 1-1-2010)"
