@@ -89,7 +89,7 @@ func (d *Decoder) Decode(p *models.Publication) error {
 	for d.scanner.Scan() {
 		line := d.scanner.Text()
 
-		switch line {
+		switch strings.TrimSpace(line) {
 		case "ER", "ER  -":
 			mapRecord(rec, p)
 			return nil

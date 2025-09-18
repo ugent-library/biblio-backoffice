@@ -138,6 +138,7 @@ func Register(c Config) {
 			csrf.SameSite(csrf.SameSiteStrictMode),
 			csrf.FieldName("csrf-token"),
 			csrf.Secure(c.Env != "local"),
+			csrf.TrustedOrigins([]string{c.BaseURL.Host}),
 		))
 		r.Use(secure.New(secure.Options{
 			IsDevelopment: c.Env == "local",
