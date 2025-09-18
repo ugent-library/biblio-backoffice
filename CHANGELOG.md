@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.73] - 2025-09-18
+
+### Added
+
+### Fixed
+
+- Fix RIS decoding when the record separator tag has trailing spaces
+
 ## [v1.0.72] - 2025-09-09
 
 ### Added
@@ -725,7 +733,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.72...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.73...HEAD
+[v1.0.73]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.72...v1.0.73
 [v1.0.72]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.71...v1.0.72
 [v1.0.71]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.70...v1.0.71
 [v1.0.70]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.69...v1.0.70
