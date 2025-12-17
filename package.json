@@ -35,11 +35,11 @@
   },
   "devDependencies": {
     "cypress": "^15.8.0",
-    "cypress-common": "github:ugent-library/cypress-common#3.17.1",
+    "cypress-common": "github:ugent-library/cypress-common#v3.17.4",
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
     "env-cmd": "^10.1.0",
-    "esbuild": "^0.21.4",
+    "esbuild": "^0.27.2",
     "esbuild-plugin-clean": "^1.0.1",
     "esbuild-plugin-manifest": "^1.0.3",
     "esbuild-sass-plugin": "^3.3.0",
