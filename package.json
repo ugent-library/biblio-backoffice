@@ -50,5 +50,9 @@
     "sass": "^1.68.0",
     "sass-loader": "^12.6.0",
     "typescript": "^5.5.4"
+  },
+  "overrides": {
+    "cross-spawn": "^7.0.6",
+    "systeminformation": "^5.27.14"
   }
 }
