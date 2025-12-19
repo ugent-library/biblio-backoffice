@@ -34,8 +34,8 @@
     "sortablejs": "^1.15.0"
   },
   "devDependencies": {
-    "cypress": "^15.8.0",
-    "cypress-common": "github:ugent-library/cypress-common#v3.17.4",
+    "cypress": "^15.8.1",
+    "cypress-common": "^github:ugent-library/cypress-common#v3.17.5",
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
     "env-cmd": "^10.1.0",
@@ -52,7 +52,6 @@
     "typescript": "^5.5.4"
   },
   "overrides": {
-    "cross-spawn": "^7.0.6",
-    "systeminformation": "^5.27.14"
+    "cross-spawn": "^7.0.6"
   }
 }
