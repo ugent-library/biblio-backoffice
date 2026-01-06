@@ -34,7 +34,7 @@
     "sortablejs": "^1.15.0"
   },
   "devDependencies": {
-    "cypress": "^15.8.1",
+    "cypress": "^15.8.2",
     "cypress-common": "^github:ugent-library/cypress-common#v3.17.5",
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
