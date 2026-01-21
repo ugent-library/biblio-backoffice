@@ -737,7 +737,8 @@ Security update
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.73...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.74...HEAD
+[v1.0.74]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.73...v1.0.74
 [v1.0.73]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.72...v1.0.73
 [v1.0.72]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.71...v1.0.72
 [v1.0.71]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.70...v1.0.71
