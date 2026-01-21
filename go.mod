@@ -14,7 +14,7 @@ require (
 	github.com/caarlos0/env/v10 v10.0.0
 	github.com/caltechlibrary/doitools v0.0.1
 	github.com/elastic/go-elasticsearch/v6 v6.8.10
-	github.com/go-chi/chi/v5 v5.0.12
+	github.com/go-chi/chi/v5 v5.2.2
 	github.com/go-chi/httplog/v2 v2.0.11
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/csrf v1.7.3
