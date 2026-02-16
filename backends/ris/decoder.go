@@ -119,7 +119,7 @@ func mapRecord(r Record, p *models.Publication) {
 
 	for k, v := range r {
 		switch k {
-		case "TY", "DT", "PT":
+		case "TY", "DT":
 			p.WOSType = v[0]
 			types := reSplit.Split(p.WOSType, -1)
 			for i, t := range types {
