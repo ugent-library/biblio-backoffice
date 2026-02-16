@@ -254,7 +254,7 @@ func mapRecord(r Record, p *models.Publication) {
 			p.SeriesTitle = v[0]
 		case "Y1", "PY":
 			p.Year = v[0]
-		case "BP", "SP":
+		case "BP":
 			p.PageFirst = v[0]
 		case "EP":
 			p.PageLast = v[0]
