@@ -276,6 +276,9 @@ func SetLocked(p *models.Publication, args []string) error {
 }
 
 func SetWOSID(p *models.Publication, args []string) error {
+	if !p.UsesWOS() {
+		return &ArgumentError{"wos id not used for this publication type"}
+	}
 	if len(args) != 1 {
 		return &ArgumentError{"wos id is missing"}
 	}
@@ -284,6 +287,9 @@ func SetWOSID(p *models.Publication, args []string) error {
 }
 
 func SetWOSType(p *models.Publication, args []string) error {
+	if !p.UsesWOS() {
+		return &ArgumentError{"wos id not used for this publication type"}
+	}
 	if len(args) != 1 {
 		return &ArgumentError{"wos type is missing"}
 	}
