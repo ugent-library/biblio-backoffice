@@ -283,7 +283,8 @@ func SetWOSID(p *models.Publication, args []string) error {
 	if len(args) != 1 {
 		return &ArgumentError{"wos id is missing"}
 	}
-	wos_id, _ := strings.CutPrefix(args[0], "ISI:")
+	wos_id := strings.TrimSpace(args[0])
+	wos_id, _ = strings.CutPrefix(wos_id, "ISI:")
 	wos_id, _ = strings.CutPrefix(wos_id, "WOS:")
 	p.WOSID = wos_id
 	return nil
@@ -296,6 +297,6 @@ func SetWOSType(p *models.Publication, args []string) error {
 	if len(args) != 1 {
 		return &ArgumentError{"wos type is missing"}
 	}
-	p.WOSType = args[0]
+	p.WOSType = strings.TrimSpace(args[0])
 	return nil
 }
