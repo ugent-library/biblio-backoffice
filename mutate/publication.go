@@ -3,6 +3,7 @@ package mutate
 import (
 	"errors"
 	"slices"
+	"strings"
 
 	"github.com/ugent-library/biblio-backoffice/models"
 )
@@ -282,7 +283,9 @@ func SetWOSID(p *models.Publication, args []string) error {
 	if len(args) != 1 {
 		return &ArgumentError{"wos id is missing"}
 	}
-	p.WOSID = args[0]
+	wos_id, _ := strings.CutPrefix(args[0], "ISI:")
+	wos_id, _ = strings.CutPrefix(wos_id, "WOS:")
+	p.WOSID = wos_id
 	return nil
 }
 
