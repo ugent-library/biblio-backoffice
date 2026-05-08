@@ -274,3 +274,19 @@ func SetLocked(p *models.Publication, args []string) error {
 	}
 	return nil
 }
+
+func SetWOSID(p *models.Publication, args []string) error {
+	if len(args) != 1 {
+		return &ArgumentError{"wos id is missing"}
+	}
+	p.WOSID = args[0]
+	return nil
+}
+
+func SetWOSType(p *models.Publication, args []string) error {
+	if len(args) != 1 {
+		return &ArgumentError{"wos type is missing"}
+	}
+	p.WOSType = args[0]
+	return nil
+}
