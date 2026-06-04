@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.75] - 2026-03-03
+
+### Added
+
+### Fixed
+
+- #1770: WoS not importing fields correctly
+
 ## [v1.0.74] - 2026-01-21
 
 Security update
@@ -737,7 +745,8 @@ Security update
 
 - Initial release
 
-[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.74...HEAD
+[unreleased]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.75...HEAD
+[v1.0.75]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.74...v1.0.75
 [v1.0.74]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.73...v1.0.74
 [v1.0.73]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.72...v1.0.73
 [v1.0.72]: https://github.com/ugent-library/biblio-backoffice/compare/v1.0.71...v1.0.72
