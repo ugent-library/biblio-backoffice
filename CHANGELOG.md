@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.76] - 2026-06-04
+
+### Added
+
+- #1773: add batch operations `set_wos_id` and `set_wos_type`
+
 ## [v1.0.75] - 2026-03-03
 
 ### Added
