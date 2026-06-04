@@ -3,6 +3,7 @@ package mutate
 import (
 	"errors"
 	"slices"
+	"strings"
 
 	"github.com/ugent-library/biblio-backoffice/models"
 )
@@ -272,5 +273,30 @@ func SetLocked(p *models.Publication, args []string) error {
 	default:
 		return &ArgumentError{"value must be 'true' or 'false'"}
 	}
+	return nil
+}
+
+func SetWOSID(p *models.Publication, args []string) error {
+	if !p.UsesWOS() {
+		return &ArgumentError{"wos id not used for this publication type"}
+	}
+	if len(args) != 1 {
+		return &ArgumentError{"wos id is missing"}
+	}
+	wos_id := strings.TrimSpace(args[0])
+	wos_id, _ = strings.CutPrefix(wos_id, "ISI:")
+	wos_id, _ = strings.CutPrefix(wos_id, "WOS:")
+	p.WOSID = wos_id
+	return nil
+}
+
+func SetWOSType(p *models.Publication, args []string) error {
+	if !p.UsesWOS() {
+		return &ArgumentError{"wos id not used for this publication type"}
+	}
+	if len(args) != 1 {
+		return &ArgumentError{"wos type is missing"}
+	}
+	p.WOSType = strings.TrimSpace(args[0])
 	return nil
 }

@@ -341,6 +341,8 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 			"set_external_field":       mutate.SetExternalField,
 			"set_status":               mutate.SetStatus,
 			"set_locked":               mutate.SetLocked,
+			"set_wos_id":               mutate.SetWOSID,
+			"set_wos_type":             mutate.SetWOSType,
 		},
 
 		CandidateRecordLoaders: []repositories.CandidateRecordVisitor{
