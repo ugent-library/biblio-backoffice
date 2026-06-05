@@ -343,6 +343,8 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 			"set_locked":               mutate.SetLocked,
 			"set_wos_id":               mutate.SetWOSID,
 			"set_wos_type":             mutate.SetWOSType,
+			"set_publisher":            mutate.SetPublisher,
+			"remove_publisher":         mutate.RemovePublisher,
 		},
 
 		CandidateRecordLoaders: []repositories.CandidateRecordVisitor{
