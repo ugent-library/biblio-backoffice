@@ -300,3 +300,28 @@ func SetWOSType(p *models.Publication, args []string) error {
 	p.WOSType = strings.TrimSpace(args[0])
 	return nil
 }
+
+// SetPublisher sets attribute Publisher of models.Publication to provided value
+// length of args must be 1
+func SetPublisher(p *models.Publication, args []string) error {
+	// TODO: dead code as UsesPublisher always returns true?
+	if !p.UsesPublisher() {
+		return &ArgumentError{}
+	}
+	if len(args) != 1 {
+		return &ArgumentError{"publisher is missing"}
+	}
+	p.Publisher = args[0]
+	return nil
+}
+
+// RemovePublisher sets attribute Publisher of models.Publication to empty string
+// args is ignored
+func RemovePublisher(p *models.Publication, args []string) error {
+	// TODO: dead code as UsesPublisher always returns true?
+	if !p.UsesPublisher() {
+		return &ArgumentError{}
+	}
+	p.Publisher = ""
+	return nil
+}
