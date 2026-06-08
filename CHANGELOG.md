@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.77] - 2026-06-08
+
+### Added
+
+- #1775: add batch operations `set_publisher` and `remove_publisher`
+
 ## [v1.0.76] - 2026-06-04
 
 ### Added
