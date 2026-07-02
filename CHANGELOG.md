@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [v1.0.78] - 2026-07-02
+
+### Fixed
+
+- plato: avoid harvest timing out on stale keep-alive connections and retry transient failures
+
 ## [v1.0.77] - 2026-06-08
 
 ### Added
