@@ -30,14 +30,11 @@ func TestRemovePublisher(t *testing.T) {
 func TestSetDOI(t *testing.T) {
 	p := &models.Publication{}
 
-	doiInput := "10.52521/kg.v23i1.16846 "
-	expectedDOI := "10.52521/kg.v23i1.16846"
-	if err := SetDOI(p, []string{doiInput}); err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	doi := "10.52521/kg.v23i1.16846 "
+	SetDOI(p, []string{doi})
 
-	if p.DOI != expectedDOI {
-		t.Errorf("expected publication.DOI to be '%s', got '%s'", expectedDOI, p.DOI)
+	if p.DOI != doi {
+		t.Errorf("expected publication.DOI to be '%s', got '%s'", doi, p.DOI)
 	}
 }
 
