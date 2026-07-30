@@ -325,3 +325,28 @@ func RemovePublisher(p *models.Publication, args []string) error {
 	p.Publisher = ""
 	return nil
 }
+
+// SetDOI sets attribute DOI of models.Publication to provided value
+// length of args must be 1
+func SetDOI(p *models.Publication, args []string) error {
+	// TODO: dead code as UsesDOI always returns true?
+	if !p.UsesDOI() {
+		return &ArgumentError{"doi not used for this publication type"}
+	}
+	if len(args) != 1 {
+		return &ArgumentError{"doi is missing"}
+	}
+	p.DOI = strings.TrimSpace(args[0])
+	return nil
+}
+
+// RemoveDOI sets attribute DOI of models.Publication to empty string
+// args is ignored
+func RemoveDOI(p *models.Publication, args []string) error {
+	// TODO: dead code as UsesDOI always returns true?
+	if !p.UsesDOI() {
+		return &ArgumentError{}
+	}
+	p.DOI = ""
+	return nil
+}

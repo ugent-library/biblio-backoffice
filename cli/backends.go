@@ -345,6 +345,8 @@ func newRepo(conn *pgxpool.Pool, personService backends.PersonService, organizat
 			"set_wos_type":             mutate.SetWOSType,
 			"set_publisher":            mutate.SetPublisher,
 			"remove_publisher":         mutate.RemovePublisher,
+			"set_doi":                  mutate.SetDOI,
+			"remove_doi":               mutate.RemoveDOI,
 		},
 
 		CandidateRecordLoaders: []repositories.CandidateRecordVisitor{
