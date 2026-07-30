@@ -1,6 +1,7 @@
 package mutate
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/ugent-library/biblio-backoffice/models"
@@ -31,17 +32,22 @@ func TestSetDOI(t *testing.T) {
 	p := &models.Publication{}
 
 	doi := "10.52521/kg.v23i1.16846 "
-	SetDOI(p, []string{doi})
+	if err := SetDOI(p, []string{doi}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 
-	if p.DOI != doi {
-		t.Errorf("expected publication.DOI to be '%s', got '%s'", doi, p.DOI)
+	wantDOI := strings.TrimSpace(doi)
+	if p.DOI != wantDOI {
+		t.Errorf("expected publication.DOI to be '%s', got '%s'", wantDOI, p.DOI)
 	}
 }
 
 func TestRemoveDOI(t *testing.T) {
 	p := &models.Publication{DOI: "10.52521/kg.v23i1.16846 "}
 
-	RemoveDOI(p, nil)
+	if err := RemoveDOI(p, nil); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 
 	if p.DOI != "" {
 		t.Errorf("expected publication.DOI to be '', got '%s'", p.DOI)
