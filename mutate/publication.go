@@ -331,9 +331,12 @@ func RemovePublisher(p *models.Publication, args []string) error {
 func SetDOI(p *models.Publication, args []string) error {
 	// TODO: dead code as UsesDOI always returns true?
 	if !p.UsesDOI() {
-		return &ArgumentError{}
+		return &ArgumentError{"doi not used for this publication type"}
 	}
-	p.DOI = args[0]
+	if len(args) != 1 {
+		return &ArgumentError{"doi is missing"}
+	}
+	p.DOI = strings.TrimSpace(args[0])
 	return nil
 }
 
