@@ -1,13 +1,16 @@
 # build stage
-FROM golang:alpine AS build
+FROM golang:1.27.3-alpine AS build
 WORKDIR /build
 COPY . .
 RUN go get -v ./...
 RUN go build -o app -v
-RUN GOBIN=/build/ go install github.com/jackc/tern/v2@latest
+RUN GOBIN=/build/ go install github.com/jackc/tern/v2@v2.4.3
 
 # final stage
-FROM alpine:latest
+FROM alpine:3.24
+# hooks/build passes a new value on every build, so this layer is never served from cache.
+ARG SNAPSHOT_EPOCH
+RUN apk upgrade --no-cache
 
 ARG SOURCE_BRANCH
 ARG SOURCE_COMMIT
