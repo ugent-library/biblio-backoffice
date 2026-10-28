@@ -131,6 +131,14 @@ func Register(c Config) {
 
 	c.Router.Group(func(r *ich.Mux) {
 		r.Use(httpx.MethodOverride) // TODO eliminate need for method override with htmx
+		// csrf assumes https and rejects plain http requests unless they are marked as such
+		if c.Env == "local" && c.BaseURL.Scheme == "http" {
+			r.Use(func(next http.Handler) http.Handler {
+				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					next.ServeHTTP(w, csrf.PlaintextHTTPRequest(r))
+				})
+			})
+		}
 		r.Use(csrf.Protect(
 			[]byte(c.CSRFSecret),
 			csrf.CookieName(c.CSRFName),
