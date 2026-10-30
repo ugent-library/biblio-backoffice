@@ -53,5 +53,12 @@
   },
   "overrides": {
     "cross-spawn": "^7.0.6"
+  },
+  "allowScripts": {
+    "cypress@15.20.0": true,
+    "esbuild@0.27.2": true,
+    "fsevents@2.3.3": true,
+    "pre-commit@1.2.2": true,
+    "spawn-sync@1.0.15": true
   }
 }
