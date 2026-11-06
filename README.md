@@ -294,3 +294,19 @@ The application and its dependencies run on these ports:
 | Mock OIDC         | 3002 |
 | DB Application    | 3051 |
 | Elastic Search    | 3061 |
+| LocalStack (S3)   | 3071 |
+
+**Moving files from MinIO to LocalStack**
+
+The dev container used to run MinIO for S3. It now runs LocalStack, because MinIO images are no longer
+published. Copy the `BIBLIO_BACKOFFICE_S3_*` lines from `.devcontainer.env.example` into your
+`.devcontainer.env`.
+
+If you uploaded files in the old setup, copy them over once, from the host, with the dev container running:
+
+```
+.devcontainer/scripts/migrate-minio-to-localstack.sh
+```
+
+The script needs the old MinIO image to still be cached locally and skips the migration without it. It also
+does nothing if your old MinIO bucket is empty. It leaves the old `miniodata` volume in place.
