@@ -267,7 +267,7 @@ type DatasetListExporter interface {
 type DatasetListExporterFactory func(io.Writer) DatasetListExporter
 
 type HandleService interface {
-	UpsertHandle(string) (*models.Handle, error)
+	UpsertHandle(string) (*models.UpsertHandleResponse, error)
 }
 
 const MissingValue = "missing"
