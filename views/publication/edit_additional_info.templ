@@ -25,20 +25,6 @@ templ EditAdditionalInfoDialog(c *ctx.Ctx, p *models.Publication, conflict bool,
 				@form.Errors(localize.ValidationErrors(c.Loc, errors))
 				<ul class="list-group list-group-flush" data-panel-state="edit">
 					<li class="list-group-item">
-						if p.UsesResearchField() {
-							@form.SelectRepeat(form.SelectRepeatArgs{
-								FieldArgs: form.FieldArgs{
-									Label:     c.Loc.Get("builder.research_field"),
-									Name:      "research_field",
-									Cols:      9,
-									Error:     localize.ValidationErrorAt(c.Loc, errors, "/research_field"),
-									AutoFocus: true,
-								},
-								Values:      p.ResearchField,
-								EmptyOption: true,
-								Options:     localize.ResearchFieldOptions(c.Loc),
-							})
-						}
 						if p.UsesKeyword() {
 							@form.Tags(form.TagsArgs{
 								FieldArgs: form.FieldArgs{

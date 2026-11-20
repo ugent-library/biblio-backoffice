@@ -329,16 +329,6 @@ templ Preview(c *ctx.Ctx, p *models.Publication, actions, downloadMainFileAction
 											</ul>
 										</div>
 									}
-									if len(p.ResearchField) > 0 {
-										<div class="form-group">
-											<label class="form-label form-label-top form-label form-label-top" for="keywords">Research field</label>
-											<ul class="badge-list">
-												for _, r := range p.ResearchField {
-													<li class="badge badge-light">{ r }</li>
-												}
-											</ul>
-										</div>
-									}
 								</div>
 							</div>
 						</div>

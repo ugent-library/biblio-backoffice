@@ -63,15 +63,6 @@ func ClassificationSelectOptions(loc *gotext.Locale, vals []string) []form.Optio
 	return opts
 }
 
-func ResearchFieldOptions(loc *gotext.Locale) []form.Option {
-	opts := make([]form.Option, len(vocabularies.Map["research_fields"]))
-	for i, v := range vocabularies.Map["research_fields"] {
-		opts[i].Label = v
-		opts[i].Value = v
-	}
-	return opts
-}
-
 func LanguageSelectOptions() []form.Option {
 	vals, ok := vocabularies.Map["language_codes"]
 	if !ok {

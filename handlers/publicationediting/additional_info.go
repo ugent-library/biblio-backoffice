@@ -16,7 +16,6 @@ import (
 type BindAdditionalInfo struct {
 	AdditionalInfo string   `form:"additional_info"`
 	Keyword        []string `form:"keyword"`
-	ResearchField  []string `form:"research_field"`
 }
 
 func EditAdditionalInfo(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +36,6 @@ func UpdateAdditionalInfo(w http.ResponseWriter, r *http.Request) {
 
 	p.AdditionalInfo = b.AdditionalInfo
 	p.Keyword = b.Keyword
-	p.ResearchField = b.ResearchField
 
 	if validationErrs := p.Validate(); validationErrs != nil {
 		views.ReplaceModal(publicationviews.EditAdditionalInfoDialog(c, p, false, validationErrs.(*okay.Errors))).Render(r.Context(), w)
