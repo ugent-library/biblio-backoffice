@@ -53,23 +53,6 @@ func EditAdditionalInfoDialog(c *ctx.Ctx, p *models.Publication, conflict bool, 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if p.UsesResearchField() {
-			templ_7745c5c3_Err = form.SelectRepeat(form.SelectRepeatArgs{
-				FieldArgs: form.FieldArgs{
-					Label:     c.Loc.Get("builder.research_field"),
-					Name:      "research_field",
-					Cols:      9,
-					Error:     localize.ValidationErrorAt(c.Loc, errors, "/research_field"),
-					AutoFocus: true,
-				},
-				Values:      p.ResearchField,
-				EmptyOption: true,
-				Options:     localize.ResearchFieldOptions(c.Loc),
-			}).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
 		if p.UsesKeyword() {
 			templ_7745c5c3_Err = form.Tags(form.TagsArgs{
 				FieldArgs: form.FieldArgs{
@@ -115,7 +98,7 @@ func EditAdditionalInfoDialog(c *ctx.Ctx, p *models.Publication, conflict bool, 
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(c.PathTo("publication_update_additional_info", "id", p.ID).String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_additional_info.templ`, Line: 82, Col: 84}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_additional_info.templ`, Line: 68, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -128,7 +111,7 @@ func EditAdditionalInfoDialog(c *ctx.Ctx, p *models.Publication, conflict bool, 
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf(`{"If-Match": "%s"}`, p.SnapshotID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_additional_info.templ`, Line: 83, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `publication/edit_additional_info.templ`, Line: 69, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {

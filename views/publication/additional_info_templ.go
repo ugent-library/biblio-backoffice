@@ -96,13 +96,6 @@ func AdditionalInfoBody(c *ctx.Ctx, p *models.Publication) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = display.Field(display.FieldArgs{
-			Label:   c.Loc.Get("builder.research_field"),
-			Content: display.List(p.ResearchField, nil),
-		}).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = display.Field(display.FieldArgs{
 			Label:   c.Loc.Get("builder.keyword"),
 			Content: display.InlineList(p.Keyword, display.Badge),
 		}).Render(ctx, templ_7745c5c3_Buffer)

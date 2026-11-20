@@ -717,9 +717,6 @@ msgstr "Web of Science ID"
 msgid "builder.report_number"
 msgstr "Report number"
 
-msgid "builder.research_field"
-msgstr "Research field"
-
 msgid "builder.reviewer_tags"
 msgstr "Librarian tags"
 
